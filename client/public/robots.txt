@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /picks
+Allow: /stats
+Allow: /leaderboard
+Allow: /pricing
+Allow: /backtesting
+
+Disallow: /dashboard
+Disallow: /api/
+Disallow: /payment/
+
+Sitemap: /sitemap.xml

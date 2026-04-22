@@ -1,22 +1,30 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import {
+  boolean,
+  decimal,
+  int,
+  json,
+  mysqlEnum,
+  mysqlTable,
+  text,
+  timestamp,
+  varchar,
+} from "drizzle-orm/mysql-core";
 
-/**
- * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
- */
+// ─── Users ────────────────────────────────────────────────────────────────────
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  stripeCustomerId: varchar("stripeCustomerId", { length: 64 }),
+  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 64 }),
+  subscriptionTier: mysqlEnum("subscriptionTier", ["free", "daily", "monthly", "yearly"]).default("free").notNull(),
+  subscriptionExpiresAt: timestamp("subscriptionExpiresAt"),
+  totalBets: int("totalBets").default(0).notNull(),
+  winningBets: int("winningBets").default(0).notNull(),
+  totalProfit: decimal("totalProfit", { precision: 10, scale: 2 }).default("0").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -25,4 +33,243 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+// ─── Sports ───────────────────────────────────────────────────────────────────
+export const sports = mysqlTable("sports", {
+  id: int("id").autoincrement().primaryKey(),
+  key: varchar("key", { length: 32 }).notNull().unique(),
+  name: varchar("name", { length: 64 }).notNull(),
+  icon: varchar("icon", { length: 16 }),
+  isActive: boolean("isActive").default(true).notNull(),
+  sortOrder: int("sortOrder").default(0).notNull(),
+});
+
+export type Sport = typeof sports.$inferSelect;
+
+// ─── Teams ────────────────────────────────────────────────────────────────────
+export const teams = mysqlTable("teams", {
+  id: int("id").autoincrement().primaryKey(),
+  sportKey: varchar("sportKey", { length: 32 }).notNull(),
+  externalId: varchar("externalId", { length: 64 }),
+  name: varchar("name", { length: 128 }).notNull(),
+  abbreviation: varchar("abbreviation", { length: 16 }),
+  city: varchar("city", { length: 64 }),
+  logoUrl: varchar("logoUrl", { length: 512 }),
+  conference: varchar("conference", { length: 64 }),
+  division: varchar("division", { length: 64 }),
+  wins: int("wins").default(0),
+  losses: int("losses").default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Team = typeof teams.$inferSelect;
+
+// ─── Players ──────────────────────────────────────────────────────────────────
+export const players = mysqlTable("players", {
+  id: int("id").autoincrement().primaryKey(),
+  externalId: varchar("externalId", { length: 64 }),
+  teamId: int("teamId"),
+  sportKey: varchar("sportKey", { length: 32 }).notNull(),
+  name: varchar("name", { length: 128 }).notNull(),
+  position: varchar("position", { length: 32 }),
+  jerseyNumber: varchar("jerseyNumber", { length: 8 }),
+  imageUrl: varchar("imageUrl", { length: 512 }),
+  status: mysqlEnum("status", ["active", "injured", "questionable", "out", "inactive"]).default("active"),
+  injuryNote: text("injuryNote"),
+  stats: json("stats"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Player = typeof players.$inferSelect;
+
+// ─── Games ────────────────────────────────────────────────────────────────────
+export const games = mysqlTable("games", {
+  id: int("id").autoincrement().primaryKey(),
+  externalId: varchar("externalId", { length: 64 }).unique(),
+  sportKey: varchar("sportKey", { length: 32 }).notNull(),
+  homeTeamId: int("homeTeamId"),
+  awayTeamId: int("awayTeamId"),
+  homeTeamName: varchar("homeTeamName", { length: 128 }),
+  awayTeamName: varchar("awayTeamName", { length: 128 }),
+  homeScore: int("homeScore"),
+  awayScore: int("awayScore"),
+  status: mysqlEnum("status", ["scheduled", "live", "final", "postponed", "cancelled"]).default("scheduled").notNull(),
+  gameTime: timestamp("gameTime").notNull(),
+  venue: varchar("venue", { length: 128 }),
+  homeMoneyline: int("homeMoneyline"),
+  awayMoneyline: int("awayMoneyline"),
+  spread: decimal("spread", { precision: 4, scale: 1 }),
+  overUnder: decimal("overUnder", { precision: 5, scale: 1 }),
+  homeSpreadOdds: int("homeSpreadOdds"),
+  awaySpreadOdds: int("awaySpreadOdds"),
+  rawOddsData: json("rawOddsData"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Game = typeof games.$inferSelect;
+
+// ─── Picks ────────────────────────────────────────────────────────────────────
+export const picks = mysqlTable("picks", {
+  id: int("id").autoincrement().primaryKey(),
+  gameId: int("gameId"),
+  sportKey: varchar("sportKey", { length: 32 }).notNull(),
+  pickDate: varchar("pickDate", { length: 16 }).notNull(),
+  pickType: mysqlEnum("pickType", ["moneyline", "spread", "over_under", "player_prop", "parlay"]).notNull(),
+  tier: mysqlEnum("tier", ["free", "premium"]).default("free").notNull(),
+  homeTeam: varchar("homeTeam", { length: 128 }),
+  awayTeam: varchar("awayTeam", { length: 128 }),
+  recommendation: varchar("recommendation", { length: 256 }).notNull(),
+  odds: int("odds"),
+  confidenceScore: int("confidenceScore").notNull(),
+  edgeScore: decimal("edgeScore", { precision: 5, scale: 2 }),
+  aiAnalysis: text("aiAnalysis"),
+  keyFactors: json("keyFactors"),
+  result: mysqlEnum("result", ["win", "loss", "push", "pending"]).default("pending").notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  isFeatured: boolean("isFeatured").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Pick = typeof picks.$inferSelect;
+export type InsertPick = typeof picks.$inferInsert;
+
+// ─── Player Props ─────────────────────────────────────────────────────────────
+export const playerProps = mysqlTable("player_props", {
+  id: int("id").autoincrement().primaryKey(),
+  gameId: int("gameId"),
+  playerId: int("playerId"),
+  sportKey: varchar("sportKey", { length: 32 }).notNull(),
+  pickDate: varchar("pickDate", { length: 16 }).notNull(),
+  playerName: varchar("playerName", { length: 128 }).notNull(),
+  teamName: varchar("teamName", { length: 128 }),
+  propType: varchar("propType", { length: 64 }).notNull(),
+  line: decimal("line", { precision: 6, scale: 1 }).notNull(),
+  recommendation: mysqlEnum("recommendation", ["over", "under"]).notNull(),
+  odds: int("odds"),
+  confidenceScore: int("confidenceScore").notNull(),
+  edgeScore: decimal("edgeScore", { precision: 5, scale: 2 }),
+  aiAnalysis: text("aiAnalysis"),
+  tier: mysqlEnum("tier", ["free", "premium"]).default("free").notNull(),
+  result: mysqlEnum("result", ["win", "loss", "push", "pending"]).default("pending").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PlayerProp = typeof playerProps.$inferSelect;
+
+// ─── User Bets ────────────────────────────────────────────────────────────────
+export const userBets = mysqlTable("user_bets", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  pickId: int("pickId"),
+  sportKey: varchar("sportKey", { length: 32 }).notNull(),
+  description: varchar("description", { length: 256 }).notNull(),
+  betType: mysqlEnum("betType", ["moneyline", "spread", "over_under", "player_prop", "parlay", "other"]).notNull(),
+  stake: decimal("stake", { precision: 10, scale: 2 }).notNull(),
+  odds: int("odds").notNull(),
+  potentialPayout: decimal("potentialPayout", { precision: 10, scale: 2 }),
+  result: mysqlEnum("result", ["win", "loss", "push", "pending"]).default("pending").notNull(),
+  profit: decimal("profit", { precision: 10, scale: 2 }).default("0"),
+  notes: text("notes"),
+  betDate: varchar("betDate", { length: 16 }).notNull(),
+  settledAt: timestamp("settledAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type UserBet = typeof userBets.$inferSelect;
+export type InsertUserBet = typeof userBets.$inferInsert;
+
+// ─── Backtests ────────────────────────────────────────────────────────────────
+export const backtests = mysqlTable("backtests", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  name: varchar("name", { length: 128 }).notNull(),
+  sportKey: varchar("sportKey", { length: 32 }),
+  pickType: varchar("pickType", { length: 32 }),
+  minConfidence: int("minConfidence").default(0),
+  dateFrom: varchar("dateFrom", { length: 16 }).notNull(),
+  dateTo: varchar("dateTo", { length: 16 }).notNull(),
+  totalPicks: int("totalPicks").default(0).notNull(),
+  wins: int("wins").default(0).notNull(),
+  losses: int("losses").default(0).notNull(),
+  pushes: int("pushes").default(0).notNull(),
+  winRate: decimal("winRate", { precision: 5, scale: 2 }),
+  roi: decimal("roi", { precision: 8, scale: 2 }),
+  totalProfit: decimal("totalProfit", { precision: 10, scale: 2 }),
+  results: json("results"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Backtest = typeof backtests.$inferSelect;
+export type InsertBacktest = typeof backtests.$inferInsert;
+
+// ─── Leaderboard ──────────────────────────────────────────────────────────────
+export const leaderboard = mysqlTable("leaderboard", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  displayName: varchar("displayName", { length: 128 }),
+  totalBets: int("totalBets").default(0).notNull(),
+  wins: int("wins").default(0).notNull(),
+  losses: int("losses").default(0).notNull(),
+  winRate: decimal("winRate", { precision: 5, scale: 2 }).default("0"),
+  roi: decimal("roi", { precision: 8, scale: 2 }).default("0"),
+  totalProfit: decimal("totalProfit", { precision: 10, scale: 2 }).default("0"),
+  streak: int("streak").default(0),
+  rank: int("rank"),
+  badge: varchar("badge", { length: 32 }),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type LeaderboardEntry = typeof leaderboard.$inferSelect;
+
+// ─── Subscription Orders ──────────────────────────────────────────────────────
+export const subscriptionOrders = mysqlTable("subscription_orders", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  stripeSessionId: varchar("stripeSessionId", { length: 128 }),
+  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 128 }),
+  tier: mysqlEnum("tier", ["daily", "monthly", "yearly"]).notNull(),
+  status: mysqlEnum("status", ["pending", "active", "cancelled", "expired"]).default("pending").notNull(),
+  amountCents: int("amountCents").notNull(),
+  currency: varchar("currency", { length: 8 }).default("usd").notNull(),
+  startsAt: timestamp("startsAt"),
+  expiresAt: timestamp("expiresAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SubscriptionOrder = typeof subscriptionOrders.$inferSelect;
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+export const notifications = mysqlTable("notifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  type: mysqlEnum("type", ["daily_picks", "subscription", "performance", "system"]).notNull(),
+  title: varchar("title", { length: 256 }).notNull(),
+  message: text("message").notNull(),
+  isRead: boolean("isRead").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Notification = typeof notifications.$inferSelect;
+
+// ─── Pick Stats ───────────────────────────────────────────────────────────────
+export const pickStats = mysqlTable("pick_stats", {
+  id: int("id").autoincrement().primaryKey(),
+  sportKey: varchar("sportKey", { length: 32 }).notNull(),
+  period: varchar("period", { length: 16 }).notNull(),
+  totalPicks: int("totalPicks").default(0).notNull(),
+  wins: int("wins").default(0).notNull(),
+  losses: int("losses").default(0).notNull(),
+  pushes: int("pushes").default(0).notNull(),
+  winRate: decimal("winRate", { precision: 5, scale: 2 }),
+  roi: decimal("roi", { precision: 8, scale: 2 }),
+  avgConfidence: decimal("avgConfidence", { precision: 5, scale: 2 }),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PickStat = typeof pickStats.$inferSelect;

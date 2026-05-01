@@ -1,7 +1,8 @@
 import { getDb } from "./db";
-import { picks, users } from "../drizzle/schema";
+import { picks, users, subscriptionOrders } from "../drizzle/schema";
 import { invokeLLM } from "./_core/llm";
 import { eq, and, gte, lte } from "drizzle-orm";
+import { sendDailyPicksToAllUsers, sendDailyDigestToAllUsers } from "./notificationService";
 
 const DAILY_MATCHUPS = [
   { sportKey: "nfl", homeTeam: "Kansas City Chiefs", awayTeam: "Las Vegas Raiders", pickType: "spread" as const },
@@ -139,19 +140,46 @@ export async function runDailyPicksJob() {
   }
 
   console.log(`[Scheduler] Daily picks job complete: ${generated}/${DAILY_MATCHUPS.length} picks generated`);
+
+  // Send daily picks notifications to all subscribed users
+  if (generated > 0) {
+    try {
+      await sendDailyPicksToAllUsers();
+      console.log("[Scheduler] Daily picks notifications sent to subscribed users");
+    } catch (err) {
+      console.error("[Scheduler] Failed to send daily picks notifications:", err);
+    }
+  }
+}
+
+/**
+ * Schedule a function to run at a specific hour (UTC) every day.
+ * Uses setInterval to check every minute if it's time to run.
+ */
+function scheduleDaily(hourUTC: number, fn: () => Promise<void>, label: string) {
+  let lastRun: string | null = null;
+  setInterval(() => {
+    const now = new Date();
+    const dateKey = now.toISOString().split("T")[0];
+    if (now.getUTCHours() === hourUTC && now.getUTCMinutes() === 0 && lastRun !== dateKey) {
+      lastRun = dateKey;
+      fn().catch(err => console.error(`[Scheduler] ${label} failed:`, err));
+    }
+  }, 60 * 1000); // check every minute
+  console.log(`[Scheduler] ${label} scheduled at ${hourUTC}:00 UTC daily`);
 }
 
 export function startScheduler() {
-  // Run immediately on startup
+  // Run picks generation immediately on startup (5s delay)
   setTimeout(() => {
     runDailyPicksJob().catch(console.error);
-  }, 5000); // 5 second delay to let server fully start
+  }, 5000);
 
-  // Then run every 24 hours
-  const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
-  setInterval(() => {
-    runDailyPicksJob().catch(console.error);
-  }, TWENTY_FOUR_HOURS);
+  // Schedule daily picks generation at 6:00 UTC (2am EST)
+  scheduleDaily(6, runDailyPicksJob, "Daily Picks Generation");
 
-  console.log("[Scheduler] Daily picks scheduler started");
+  // Schedule daily digest emails at 13:00 UTC (8am EST)
+  scheduleDaily(13, sendDailyDigestToAllUsers, "Daily Digest Emails");
+
+  console.log("[Scheduler] All scheduled jobs started");
 }

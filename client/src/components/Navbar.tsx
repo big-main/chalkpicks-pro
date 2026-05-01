@@ -29,7 +29,7 @@ export default function Navbar() {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const { data: notifCount } = trpc.notifications.unreadCount.useQuery(undefined, {
+  const { data: notifCount } = trpc.notifications.getUnreadCount.useQuery(undefined, {
     enabled: isAuthenticated,
     refetchInterval: 30000,
   });
@@ -75,12 +75,12 @@ export default function Navbar() {
             {isAuthenticated ? (
               <>
                 {/* Notifications */}
-                <Link href="/dashboard">
+                <Link href="/notifications">
                   <Button variant="ghost" size="icon" className="relative">
                     <Bell className="w-4 h-4" />
-                    {notifCount && notifCount > 0 ? (
+                    {notifCount && notifCount.count > 0 ? (
                       <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center font-bold">
-                        {notifCount > 9 ? "9+" : notifCount}
+                        {notifCount.count > 9 ? "9+" : notifCount.count}
                       </span>
                     ) : null}
                   </Button>

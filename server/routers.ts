@@ -8,7 +8,7 @@ import { backtestRouter } from "./routers/backtest";
 import { betsRouter } from "./routers/bets";
 import { leaderboardRouter } from "./routers/leaderboard";
 import { subscriptionRouter } from "./routers/subscription";
-import { notificationsRouter } from "./routers/notifications";
+import { notificationsRouter } from "./routers/notificationsRouter";
 import { feedbackRouter } from "./routers/feedback";
 import { paypalRouter } from "./routers/paypal";
 

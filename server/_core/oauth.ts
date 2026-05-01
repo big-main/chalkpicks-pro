@@ -3,6 +3,7 @@ import type { Express, Request, Response } from "express";
 import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
+import { sendLoginAlert, ensureUserPreferences } from "../notificationService";
 
 function getQueryParam(req: Request, key: string): string | undefined {
   const value = req.query[key];
@@ -35,6 +36,17 @@ export function registerOAuthRoutes(app: Express) {
         loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
         lastSignedIn: new Date(),
       });
+
+      // Fire login alert notification (non-blocking)
+      if (userInfo.email) {
+        const dbUser = await db.getUserByOpenId(userInfo.openId);
+        if (dbUser) {
+          const ip = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.socket.remoteAddress;
+          ensureUserPreferences(dbUser.id).then(() =>
+            sendLoginAlert(dbUser.id, userInfo.email!, userInfo.name || "there", ip)
+          ).catch(err => console.error("[OAuth] Login alert failed:", err));
+        }
+      }
 
       const sessionToken = await sdk.createSessionToken(userInfo.openId, {
         name: userInfo.name || "",

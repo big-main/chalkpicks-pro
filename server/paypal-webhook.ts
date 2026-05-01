@@ -1,5 +1,6 @@
 import express, { Express } from "express";
 import { getDb } from "./db";
+import { sendSubscriptionConfirmation } from "./notificationService";
 
 /**
  * Register PayPal webhook endpoint
@@ -55,13 +56,29 @@ async function handleSubscriptionCreated(event: any) {
   const resource = event.resource;
   console.log("[PayPal] Subscription created:", resource.id);
 
-  // In production, update user subscription in database
-  // const subscription = {
-  //   paypalSubscriptionId: resource.id,
-  //   status: resource.status,
-  //   planId: resource.plan_id,
-  //   createdAt: new Date(),
-  // };
+  // Extract subscriber info from PayPal event
+  const subscriberEmail = resource.subscriber?.email_address;
+  const subscriberName = resource.subscriber?.name?.given_name || "Subscriber";
+  const planId = resource.plan_id || resource.plan?.id || "unknown";
+
+  // Map PayPal plan IDs to tier names
+  const tierMap: Record<string, string> = {
+    "P-DAILY": "Daily",
+    "P-MONTHLY": "Monthly",
+    "P-YEARLY": "Yearly",
+  };
+  const tierName = tierMap[planId] || "Premium";
+
+  // Send subscription confirmation notification
+  if (subscriberEmail) {
+    try {
+      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days default
+      await sendSubscriptionConfirmation(0, subscriberEmail, subscriberName, tierName, expiresAt);
+      console.log("[PayPal] Subscription confirmation sent to:", subscriberEmail);
+    } catch (err) {
+      console.error("[PayPal] Failed to send confirmation:", err);
+    }
+  }
 }
 
 /**

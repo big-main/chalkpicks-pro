@@ -96,6 +96,26 @@
 - [x] Create Railway deployment guide with PayPal setup
 - [x] Document chalkpicks.ml free domain setup
 - [x] Document PayPal webhook configuration
+- [x] Create comprehensive MAIN_INTEGRATION.md combining all guides
+- [x] Integrate Superpowers development practices
+- [x] Add AI agent guidelines and best practices
 - [ ] Deploy to Railway from GitHub (user action)
 - [ ] Configure chalkpicks.ml domain (user action)
 - [ ] Test live deployment (user action)
+
+## Custom Notification System (COMPLETE)
+- [x] Add notificationPreferences table to schema
+- [x] Add notificationLogs table to schema
+- [x] Run database migration
+- [x] Build notification service (email via SendGrid + SMS via Twilio)
+- [x] Create email templates (login alert, subscription confirmation, daily picks, daily digest)
+- [x] Create SMS templates
+- [x] Wire login alert on OAuth callback
+- [x] Wire subscription confirmation on PayPal webhook
+- [x] Wire daily picks notification to scheduler
+- [x] Build daily digest scheduler (sends at 8am daily)
+- [x] Create notification preferences UI page (/notifications)
+- [x] Create in-app notification center (bell icon in Navbar)
+- [x] Add notification preferences to user dashboard
+- [x] Write tests for notification system (15 tests passing)
+- [x] All 52 tests passing across 4 test files

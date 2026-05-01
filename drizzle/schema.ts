@@ -289,3 +289,50 @@ export const pickFeedback = mysqlTable("pick_feedback", {
 
 export type PickFeedback = typeof pickFeedback.$inferSelect;
 export type InsertPickFeedback = typeof pickFeedback.$inferInsert;
+
+// ─── Notification Preferences ────────────────────────────────────────────────
+export const notificationPreferences = mysqlTable("notification_preferences", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  // Email notifications
+  emailEnabled: boolean("emailEnabled").default(true).notNull(),
+  emailDailyPicks: boolean("emailDailyPicks").default(true).notNull(),
+  emailDailyDigest: boolean("emailDailyDigest").default(true).notNull(),
+  emailSubscriptionConfirm: boolean("emailSubscriptionConfirm").default(true).notNull(),
+  emailLoginAlert: boolean("emailLoginAlert").default(false).notNull(),
+  emailPerformanceSummary: boolean("emailPerformanceSummary").default(true).notNull(),
+  emailDigestTime: varchar("emailDigestTime", { length: 8 }).default("08:00").notNull(), // HH:MM format
+  // SMS notifications
+  smsEnabled: boolean("smsEnabled").default(false).notNull(),
+  smsPhone: varchar("smsPhone", { length: 32 }),
+  smsDailyPicks: boolean("smsDailyPicks").default(false).notNull(),
+  smsDailyDigest: boolean("smsDailyDigest").default(false).notNull(),
+  smsSubscriptionConfirm: boolean("smsSubscriptionConfirm").default(false).notNull(),
+  smsLoginAlert: boolean("smsLoginAlert").default(false).notNull(),
+  // In-app notifications
+  inAppEnabled: boolean("inAppEnabled").default(true).notNull(),
+  inAppDailyPicks: boolean("inAppDailyPicks").default(true).notNull(),
+  inAppPerformance: boolean("inAppPerformance").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type NotificationPreference = typeof notificationPreferences.$inferSelect;
+export type InsertNotificationPreference = typeof notificationPreferences.$inferInsert;
+
+// ─── Notification Logs ────────────────────────────────────────────────────────
+export const notificationLogs = mysqlTable("notification_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  channel: mysqlEnum("channel", ["email", "sms", "in_app"]).notNull(),
+  type: mysqlEnum("type", ["login_alert", "subscription_confirm", "daily_picks", "daily_digest", "performance_summary", "system"]).notNull(),
+  recipient: varchar("recipient", { length: 320 }), // email or phone
+  subject: varchar("subject", { length: 256 }),
+  status: mysqlEnum("status", ["sent", "failed", "pending"]).default("pending").notNull(),
+  errorMessage: text("errorMessage"),
+  sentAt: timestamp("sentAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type NotificationLog = typeof notificationLogs.$inferSelect;
+export type InsertNotificationLog = typeof notificationLogs.$inferInsert;

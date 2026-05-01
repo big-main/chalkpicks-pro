@@ -9,6 +9,7 @@ import { betsRouter } from "./routers/bets";
 import { leaderboardRouter } from "./routers/leaderboard";
 import { subscriptionRouter } from "./routers/subscription";
 import { notificationsRouter } from "./routers/notifications";
+import { feedbackRouter } from "./routers/feedback";
 
 export const appRouter = router({
   system: systemRouter,
@@ -27,6 +28,7 @@ export const appRouter = router({
   leaderboard: leaderboardRouter,
   subscription: subscriptionRouter,
   notifications: notificationsRouter,
+  feedback: feedbackRouter,
 });
 
 export type AppRouter = typeof appRouter;

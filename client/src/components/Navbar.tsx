@@ -20,6 +20,7 @@ const navLinks = [
   { href: "/stats", label: "Live Stats" },
   { href: "/backtesting", label: "Backtesting" },
   { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/feedback-analytics", label: "Feedback" },
   { href: "/pricing", label: "Pricing" },
 ];
 

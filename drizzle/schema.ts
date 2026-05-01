@@ -273,3 +273,19 @@ export const pickStats = mysqlTable("pick_stats", {
 });
 
 export type PickStat = typeof pickStats.$inferSelect;
+
+// ─── Pick Feedback ────────────────────────────────────────────────────────────
+export const pickFeedback = mysqlTable("pick_feedback", {
+  id: int("id").autoincrement().primaryKey(),
+  pickId: int("pickId").notNull(),
+  userId: int("userId").notNull(),
+  rating: int("rating").notNull(), // 1-5 stars
+  comment: text("comment"),
+  sentiment: mysqlEnum("sentiment", ["positive", "neutral", "negative"]).default("neutral").notNull(),
+  wasHelpful: boolean("wasHelpful"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PickFeedback = typeof pickFeedback.$inferSelect;
+export type InsertPickFeedback = typeof pickFeedback.$inferInsert;

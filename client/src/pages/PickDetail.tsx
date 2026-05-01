@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Brain, Zap, Target, TrendingUp, Lock, CheckCircle2, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import PickFeedback from "@/components/PickFeedback";
 
 export default function PickDetail() {
   const { id } = useParams<{ id: string }>();
@@ -197,6 +198,19 @@ export default function PickDetail() {
               </CardContent>
             </Card>
           )}
+
+          {/* Feedback Section */}
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Brain className="w-5 h-5 text-primary" />
+                Community Feedback
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PickFeedback pickId={pick.id} isAuthenticated={isAuthenticated} />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import MatchupAnalysis from "./pages/MatchupAnalysis";
 import SubscriptionManagement from "./pages/SubscriptionManagement";
+import FeedbackAnalytics from "./pages/FeedbackAnalytics";
 
 function Router() {
   return (
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/payment/success" component={PaymentSuccess} />
       <Route path="/matchup-analysis" component={MatchupAnalysis} />
       <Route path="/subscription-management" component={SubscriptionManagement} />
+      <Route path="/feedback-analytics" component={FeedbackAnalytics} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

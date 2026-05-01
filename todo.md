@@ -70,6 +70,17 @@
 - [x] Email notification service with templates
 - [x] Routes for all new pages
 
+## Feedback & Rating System (NEW)
+- [x] Add pickFeedback table to database schema
+- [x] Create feedback router with CRUD operations
+- [x] Build feedback UI component for pick cards
+- [x] Create feedback analytics dashboard
+- [x] Implement sentiment analysis for comments
+- [x] Add feedback display on pick detail page
+- [x] Create feedback leaderboard (best-rated picks)
+- [x] Add tests for feedback system
+- [ ] Update AI pick generation to consider feedback (future enhancement)
+
 ## Deployment
 - [x] Create deployment guide for Railway
 - [x] Document environment variables
@@ -77,6 +88,8 @@
 - [x] Document Stripe webhook configuration
 - [x] Document custom domain setup
 - [x] Document SSL/TLS configuration
+- [x] Remove API Access from yearly subscription
+- [x] Create comprehensive Railway deployment guide
 - [x] Remove API Access from yearly subscription
 - [x] Create comprehensive Railway deployment guide
 - [ ] Deploy to Railway (user action)

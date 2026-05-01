@@ -165,6 +165,9 @@ export default function Navbar() {
                       <Link href="/dashboard">My Dashboard</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link href="/account-settings">Account Settings</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link href="/tools">Power Tools</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
@@ -182,39 +185,41 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="hidden sm:flex"
-                  style={{ color: "rgba(200,200,220,0.7)" }}
-                  onClick={() => (window.location.href = getLoginUrl())}
-                >
-                  Sign In
-                </Button>
-                <button
-                  className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm font-bold tracking-wider transition-all"
-                  style={{
-                    background: "#00ff88",
-                    color: "#080814",
-                    borderRadius: "4px",
-                    fontFamily: "'Exo 2', sans-serif",
-                    boxShadow: "0 0 15px rgba(0,255,136,0.3)",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 25px rgba(0,255,136,0.5), 0 0 50px rgba(0,255,136,0.2)";
-                    (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                <Link href="/login">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hidden sm:flex"
+                    style={{ color: "rgba(200,200,220,0.7)" }}
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <button
+                    className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm font-bold tracking-wider transition-all"
+                    style={{
+                      background: "#00ff88",
+                      color: "#080814",
+                      borderRadius: "4px",
+                      fontFamily: "'Exo 2', sans-serif",
+                      boxShadow: "0 0 15px rgba(0,255,136,0.3)",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 25px rgba(0,255,136,0.5), 0 0 50px rgba(0,255,136,0.2)";
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 15px rgba(0,255,136,0.3)";
                     (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
                   }}
-                  onClick={() => (window.location.href = getLoginUrl())}
-                >
-                  <Zap className="w-3.5 h-3.5" />
-                  LAUNCH APP
-                </button>
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                    LAUNCH APP
+                  </button>
+                </Link>
               </>
             )}
 

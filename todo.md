@@ -159,3 +159,13 @@
 - [x] Keep Picks page and Home page free for all users
 - [x] Add upgrade CTA buttons throughout the site (Paywall component)
 - [x] Test paywall flow end-to-end (all 74 tests passing)
+
+
+## Authentication Pages (NEW)
+- [x] Create Sign-Up page with Manus OAuth
+- [x] Create Login page with Manus OAuth
+- [x] Create Account Settings page with profile, security, notifications
+- [x] Add Sign-Up, Login, and Account Settings routes to App.tsx
+- [x] Wire authentication flow in Navbar (Sign In, Sign Up buttons)
+- [x] Add Account Settings link to user dropdown menu
+- [x] Logout functionality already in Navbar

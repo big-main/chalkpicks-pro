@@ -20,6 +20,9 @@ import FeedbackAnalytics from "./pages/FeedbackAnalytics";
 import Notifications from "@/pages/Notifications";
 import EVFinder from "@/pages/EVFinder";
 import Tools from "@/pages/Tools";
+import SignUp from "@/pages/SignUp";
+import Login from "@/pages/Login";
+import AccountSettings from "@/pages/AccountSettings";
 
 function Router() {
   return (
@@ -40,6 +43,9 @@ function Router() {
       <Route path="/notifications" component={Notifications} />
       <Route path="/ev-finder" component={EVFinder} />
       <Route path="/tools" component={Tools} />
+      <Route path="/signup" component={SignUp} />
+      <Route path="/login" component={Login} />
+      <Route path="/account-settings" component={AccountSettings} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

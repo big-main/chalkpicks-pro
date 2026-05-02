@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, SQL } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -18,19 +18,16 @@ export async function getDb() {
   return _db;
 }
 
-export async function getUserById(id: number) {
+async function findUser(condition: SQL) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  const result = await db.select().from(users).where(condition).limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function getUserByEmail(email: string) {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
-}
+export const getUserById = (id: number) => findUser(eq(users.id, id));
+export const getUserByEmail = (email: string) => findUser(eq(users.email, email));
+export const getUserByOpenId = (openId: string) => findUser(eq(users.openId, openId));
 
 export async function createUser(data: { name: string; email: string; passwordHash: string }) {
   const db = await getDb();
@@ -98,14 +95,3 @@ export async function upsertUser(user: Partial<InsertUser> & { openId?: string }
   }
 }
 
-export async function getUserByOpenId(openId: string) {
-  const db = await getDb();
-  if (!db) {
-    console.warn("[Database] Cannot get user: database not available");
-    return undefined;
-  }
-
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-
-  return result.length > 0 ? result[0] : undefined;
-}

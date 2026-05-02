@@ -6,7 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { Zap, Lock } from "lucide-react";
+import AuthPageShell from "@/components/AuthPageShell";
+import { Lock } from "lucide-react";
+
+const inputStyle = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", color: "white" };
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -18,9 +21,7 @@ export default function Login() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (isAuthenticated) {
-      setLocation("/");
-    }
+    if (isAuthenticated) setLocation("/");
   }, [isAuthenticated, setLocation]);
 
   const loginMutation = trpc.auth.login.useMutation({
@@ -28,137 +29,65 @@ export default function Login() {
       await utils.auth.me.invalidate();
       setLocation("/");
     },
-    onError: (err) => {
-      setError(err.message || "Invalid email or password");
-    },
+    onError: (err) => setError(err.message || "Invalid email or password"),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!email || !password) {
-      setError("Please enter your email and password");
-      return;
-    }
+    if (!email || !password) { setError("Please enter your email and password"); return; }
     loginMutation.mutate({ email, password });
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#080814" }}>
-      {/* Navbar */}
-      <div className="border-b" style={{ borderColor: "rgba(0,212,255,0.1)" }}>
-        <div className="container h-16 flex items-center justify-between">
-          <Link href="/">
-            <a className="flex items-center gap-2">
-              <Zap className="w-6 h-6" style={{ color: "#00ff88" }} />
-              <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.25rem", textTransform: "uppercase", color: "white" }}>
-                ChalkPicks
-              </span>
-            </a>
-          </Link>
-          <Link href="/signup">
-            <a>
-              <Button style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", color: "#080814", fontWeight: 700 }}>
-                Sign Up
-              </Button>
-            </a>
-          </Link>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", textTransform: "uppercase", color: "white", lineHeight: 1.2 }}>
-              Welcome{" "}
-              <span style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                Back
-              </span>
-            </h1>
-            <p style={{ color: "#a8a8b0", fontSize: "1rem", marginTop: "1rem" }}>
-              Access your picks, stats, and advanced betting tools
-            </p>
-          </div>
-
-          <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
-            <CardHeader>
-              <CardTitle style={{ color: "white", fontSize: "1.5rem" }}>Log In to Your Account</CardTitle>
-              <CardDescription style={{ color: "#a8a8b0" }}>
-                Enter your email and password to continue
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email" style={{ color: "#a8a8b0" }}>Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="email"
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", color: "white" }}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password" style={{ color: "#a8a8b0" }}>Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", color: "white" }}
-                  />
-                </div>
-
-                {error && (
-                  <p style={{ color: "#ff4d4d", fontSize: "0.875rem" }}>{error}</p>
-                )}
-
-                <Button
-                  type="submit"
-                  className="w-full"
-                  size="lg"
-                  disabled={loginMutation.isPending}
-                  style={{
-                    background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)",
-                    color: "#080814",
-                    fontWeight: 700,
-                    height: "2.75rem",
-                    fontSize: "1rem",
-                  }}
-                >
-                  <Lock className="w-5 h-5 mr-2" />
-                  {loginMutation.isPending ? "Logging in..." : "Log In"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          <div className="text-center">
-            <p style={{ color: "#a8a8b0" }}>
-              Don't have an account?{" "}
-              <Link href="/signup">
-                <a style={{ color: "#00d4ff", fontWeight: 600, textDecoration: "none" }} className="hover:underline">
-                  Sign up here
-                </a>
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ borderTop: "1px solid rgba(0,212,255,0.1)", padding: "2rem", textAlign: "center" }}>
-        <p style={{ color: "#666", fontSize: "0.875rem" }}>
-          © 2026 ChalkPicks Pro. All rights reserved.
+    <AuthPageShell rightLink={{ href: "/signup", label: "Sign Up" }}>
+      <div className="text-center mb-8">
+        <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", textTransform: "uppercase", color: "white", lineHeight: 1.2 }}>
+          Welcome{" "}
+          <span style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            Back
+          </span>
+        </h1>
+        <p style={{ color: "#a8a8b0", fontSize: "1rem", marginTop: "1rem" }}>
+          Access your picks, stats, and advanced betting tools
         </p>
       </div>
-    </div>
+
+      <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
+        <CardHeader>
+          <CardTitle style={{ color: "white", fontSize: "1.5rem" }}>Log In to Your Account</CardTitle>
+          <CardDescription style={{ color: "#a8a8b0" }}>Enter your email and password to continue</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" style={{ color: "#a8a8b0" }}>Email</Label>
+              <Input id="email" type="email" placeholder="you@example.com" value={email}
+                onChange={(e) => setEmail(e.target.value)} autoComplete="email" style={inputStyle} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" style={{ color: "#a8a8b0" }}>Password</Label>
+              <Input id="password" type="password" placeholder="••••••••" value={password}
+                onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" style={inputStyle} />
+            </div>
+            {error && <p style={{ color: "#ff4d4d", fontSize: "0.875rem" }}>{error}</p>}
+            <Button type="submit" className="w-full" size="lg" disabled={loginMutation.isPending}
+              style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", color: "#080814", fontWeight: 700, height: "2.75rem", fontSize: "1rem" }}>
+              <Lock className="w-5 h-5 mr-2" />
+              {loginMutation.isPending ? "Logging in..." : "Log In"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <div className="text-center">
+        <p style={{ color: "#a8a8b0" }}>
+          Don't have an account?{" "}
+          <Link href="/signup">
+            <a style={{ color: "#00d4ff", fontWeight: 600, textDecoration: "none" }} className="hover:underline">Sign up here</a>
+          </Link>
+        </p>
+      </div>
+    </AuthPageShell>
   );
 }

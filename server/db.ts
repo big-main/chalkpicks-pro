@@ -18,11 +18,36 @@ export async function getDb() {
   return _db;
 }
 
-export async function upsertUser(user: InsertUser): Promise<void> {
-  if (!user.openId) {
-    throw new Error("User openId is required for upsert");
-  }
+export async function getUserById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
 
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createUser(data: { name: string; email: string; passwordHash: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database unavailable");
+  await db.insert(users).values({
+    name: data.name,
+    email: data.email,
+    passwordHash: data.passwordHash,
+    loginMethod: "email",
+    lastSignedIn: new Date(),
+  });
+  const user = await getUserByEmail(data.email);
+  if (!user) throw new Error("Failed to retrieve created user");
+  return user;
+}
+
+export async function upsertUser(user: Partial<InsertUser> & { openId?: string }): Promise<void> {
   const db = await getDb();
   if (!db) {
     console.warn("[Database] Cannot upsert user: database not available");
@@ -30,23 +55,19 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 
   try {
-    const values: InsertUser = {
-      openId: user.openId,
-    };
+    const values: Record<string, unknown> = {};
     const updateSet: Record<string, unknown> = {};
 
-    const textFields = ["name", "email", "loginMethod"] as const;
-    type TextField = (typeof textFields)[number];
+    if (user.openId !== undefined) values.openId = user.openId;
 
-    const assignNullable = (field: TextField) => {
+    const textFields = ["name", "email", "loginMethod"] as const;
+    for (const field of textFields) {
       const value = user[field];
-      if (value === undefined) return;
+      if (value === undefined) continue;
       const normalized = value ?? null;
       values[field] = normalized;
       updateSet[field] = normalized;
-    };
-
-    textFields.forEach(assignNullable);
+    }
 
     if (user.lastSignedIn !== undefined) {
       values.lastSignedIn = user.lastSignedIn;
@@ -55,7 +76,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     if (user.role !== undefined) {
       values.role = user.role;
       updateSet.role = user.role;
-    } else if (user.openId === ENV.ownerOpenId) {
+    } else if (user.openId && user.openId === ENV.ownerOpenId) {
       values.role = 'admin';
       updateSet.role = 'admin';
     }
@@ -68,7 +89,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.lastSignedIn = new Date();
     }
 
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    await db.insert(users).values(values as InsertUser).onDuplicateKeyUpdate({
       set: updateSet,
     });
   } catch (error) {
@@ -88,5 +109,3 @@ export async function getUserByOpenId(openId: string) {
 
   return result.length > 0 ? result[0] : undefined;
 }
-
-// TODO: add feature queries here as your schema grows.

@@ -1,0 +1,23 @@
+name: Deploy to Oracle Cloud
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ubuntu
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          script: |
+            set -e
+            cd /home/ubuntu/chalkpicks
+            git pull origin main
+            pnpm install --frozen-lockfile
+            pnpm build
+            pm2 restart chalkpicks

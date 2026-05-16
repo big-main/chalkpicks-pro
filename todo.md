@@ -192,3 +192,9 @@
 - [x] Display 92% overall win rate on Home page hero section
 - [x] Update leaderboard to show 92% platform average
 - [x] Update stats page with 92% win rate metric
+
+
+## Critical Bug Fixes (NEW)
+- [x] Fix database query error on Sign-Up page (select fields mismatch) — Applied migration to add passwordHash column
+- [x] Audit all auth flows for database compatibility — Auth flows verified working
+- [x] Fix any other runtime errors found — Dev server running with no critical errors

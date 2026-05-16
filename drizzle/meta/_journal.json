@@ -29,6 +29,13 @@
       "when": 1777664823044,
       "tag": "0003_bumpy_cammi",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1778924756228,
+      "tag": "0004_stormy_firebird",
+      "breakpoints": true
     }
   ]
 }

@@ -5,11 +5,11 @@ import * as db from "../db";
 import { promoCodes } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 
-// Pricing plans
+// Pricing plans - must match subscription.ts PLANS
 const PLANS = [
   { tier: "daily", name: "Daily Pass", amount: 9.99 },
-  { tier: "monthly", name: "Monthly Pro", amount: 49.99 },
-  { tier: "yearly", name: "Yearly Pro", amount: 499.99 },
+  { tier: "monthly", name: "Monthly Pro", amount: 29.99 },
+  { tier: "yearly", name: "Yearly Pro", amount: 199.99 },
 ];
 
 export const promoCodeRouter = router({

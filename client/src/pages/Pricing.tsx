@@ -114,6 +114,7 @@ export default function Pricing() {
       const result = await createCheckout.mutateAsync({
         tier: tier as "daily" | "monthly" | "yearly",
         origin: window.location.origin,
+        promoCode: promoCode || undefined,
       });
       if (result.url) {
         toast.success("Redirecting to secure Stripe checkout...");

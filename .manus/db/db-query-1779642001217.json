@@ -1,0 +1,55 @@
+{
+  "query": "SELECT code, discountType, discountValue, tier, maxUses, currentUses, isActive FROM promo_codes WHERE isActive = true ORDER BY code;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4KDcFVgMZb4NWgA.root --database XUi7Hd5RzDcuAESzHPA75p --execute SELECT code, discountType, discountValue, tier, maxUses, currentUses, isActive FROM promo_codes WHERE isActive = true ORDER BY code;",
+  "rows": [
+    {
+      "code": "BETTERSCORE",
+      "discountType": "fixed",
+      "discountValue": "10.00",
+      "tier": "monthly",
+      "maxUses": "100",
+      "currentUses": "0",
+      "isActive": "1"
+    },
+    {
+      "code": "LAUNCH50",
+      "discountType": "percentage",
+      "discountValue": "50.00",
+      "tier": "monthly",
+      "maxUses": "100",
+      "currentUses": "0",
+      "isActive": "1"
+    },
+    {
+      "code": "REDDIT25",
+      "discountType": "percentage",
+      "discountValue": "25.00",
+      "tier": "monthly",
+      "maxUses": "75",
+      "currentUses": "0",
+      "isActive": "1"
+    },
+    {
+      "code": "SPORTS20",
+      "discountType": "percentage",
+      "discountValue": "20.00",
+      "tier": "yearly",
+      "maxUses": "50",
+      "currentUses": "0",
+      "isActive": "1"
+    },
+    {
+      "code": "TWITTER50",
+      "discountType": "percentage",
+      "discountValue": "50.00",
+      "tier": "daily",
+      "maxUses": "200",
+      "currentUses": "0",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "code\tdiscountType\tdiscountValue\ttier\tmaxUses\tcurrentUses\tisActive\nBETTERSCORE\tfixed\t10.00\tmonthly\t100\t0\t1\nLAUNCH50\tpercentage\t50.00\tmonthly\t100\t0\t1\nREDDIT25\tpercentage\t25.00\tmonthly\t75\t0\t1\nSPORTS20\tpercentage\t20.00\tyearly\t50\t0\t1\nTWITTER50\tpercentage\t50.00\tdaily\t200\t0\t1\n",
+  "stderr": "",
+  "execution_time_ms": 262
+}

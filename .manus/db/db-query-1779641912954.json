@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO promo_codes (code, discountType, discountValue, tier, maxUses, currentUses, source, isActive, createdAt, updatedAt) VALUES\n('LAUNCH50', 'percentage', 50.00, 'monthly', 100, 0, 'launch', true, NOW(), NOW()),\n('SPORTS20', 'percentage', 20.00, 'yearly', 50, 0, 'email', true, NOW(), NOW()),\n('TWITTER50', 'percentage', 50.00, 'daily', 200, 0, 'twitter', true, NOW(), NOW()),\n('REDDIT25', 'percentage', 25.00, 'monthly', 75, 0, 'reddit', true, NOW(), NOW()),\n('BETTERSCORE', 'fixed', 10.00, 'monthly', 100, 0, 'affiliate', true, NOW(), NOW())\nON DUPLICATE KEY UPDATE isActive = true, updatedAt = NOW();",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4KDcFVgMZb4NWgA.root --database XUi7Hd5RzDcuAESzHPA75p --execute INSERT INTO promo_codes (code, discountType, discountValue, tier, maxUses, currentUses, source, isActive, createdAt, updatedAt) VALUES\n('LAUNCH50', 'percentage', 50.00, 'monthly', 100, 0, 'launch', true, NOW(), NOW()),\n('SPORTS20', 'percentage', 20.00, 'yearly', 50, 0, 'email', true, NOW(), NOW()),\n('TWITTER50', 'percentage', 50.00, 'daily', 200, 0, 'twitter', true, NOW(), NOW()),\n('REDDIT25', 'percentage', 25.00, 'monthly', 75, 0, 'reddit', true, NOW(), NOW()),\n('BETTERSCORE', 'fixed', 10.00, 'monthly', 100, 0, 'affiliate', true, NOW(), NOW())\nON DUPLICATE KEY UPDATE isActive = true, updatedAt = NOW();",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 269
+}

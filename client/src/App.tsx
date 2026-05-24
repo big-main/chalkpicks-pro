@@ -23,6 +23,7 @@ import Tools from "@/pages/Tools";
 import SignUp from "@/pages/SignUp";
 import Login from "@/pages/Login";
 import AccountSettings from "@/pages/AccountSettings";
+import AdminPromos from "@/pages/AdminPromos";
 
 function Router() {
   return (
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/signup" component={SignUp} />
       <Route path="/login" component={Login} />
       <Route path="/account-settings" component={AccountSettings} />
+      <Route path="/admin/promos" component={AdminPromos} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

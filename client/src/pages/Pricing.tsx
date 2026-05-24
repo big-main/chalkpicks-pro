@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
+import { PromoCodeInput } from "@/components/PromoCodeInput";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Check, Zap, Crown, Star, Shield, ArrowRight, Lock } from "lucide-react";
@@ -187,6 +188,18 @@ export default function Pricing() {
               )}
             </div>
           )}
+        </div>
+
+        {/* Promo code section */}
+        <div className="max-w-md mx-auto mb-8">
+          <PromoCodeInput
+            tier={selectedTier}
+            onPromoApplied={(code, discount, finalPrice) => {
+              setPromoCode(code);
+              setDiscount(discount);
+              setFinalPrice(finalPrice);
+            }}
+          />
         </div>
 
         {/* Pricing cards */}

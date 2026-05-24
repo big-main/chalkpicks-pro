@@ -10,7 +10,8 @@
     "check": "tsc --noEmit",
     "format": "prettier --write .",
     "test": "vitest run",
-    "db:push": "drizzle-kit generate && drizzle-kit migrate"
+    "db:push": "drizzle-kit generate && drizzle-kit migrate",
+    "seed:promos": "node seed-promo-codes.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.94.0",

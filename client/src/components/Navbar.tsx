@@ -1,4 +1,3 @@
-import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,6 +12,9 @@ import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { Menu, X, Zap, ChevronDown, Bell, Crown, TrendingUp, BarChart3, Calculator, Layers } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
+import ESPNNewsTicker from "./ESPNNewsTicker";
+import RealtimeStats from "./RealtimeStats";
 
 const navLinks = [
   { href: "/picks", label: "Picks" },
@@ -25,9 +27,9 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const { data: notifCount } = trpc.notifications.getUnreadCount.useQuery(undefined, {
     enabled: isAuthenticated,
@@ -37,16 +39,25 @@ export default function Navbar() {
   const isPremium = user?.subscriptionTier && user.subscriptionTier !== "free";
 
   return (
-    <nav
-      className="fixed top-0 left-0 right-0 z-50"
-      style={{
-        background: "rgba(8, 8, 20, 0.92)",
-        backdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(0, 255, 136, 0.12)",
-      }}
-    >
-      <div className="container">
-        <div className="flex items-center justify-between h-16">
+    <>
+      {/* ESPN News Ticker */}
+      <ESPNNewsTicker />
+
+      {/* Real-time Stats Bar */}
+      <RealtimeStats />
+
+      {/* Main Navbar */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{
+          background: "rgba(8, 8, 20, 0.92)",
+          backdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(0, 255, 136, 0.12)",
+          marginTop: "56px",
+        }}
+      >
+        <div className="container">
+          <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
             <div
@@ -275,7 +286,8 @@ export default function Navbar() {
             )}
           </div>
         )}
-      </div>
-    </nav>
+        </div>
+      </nav>
+    </>
   );
 }

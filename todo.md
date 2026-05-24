@@ -198,3 +198,14 @@
 - [x] Fix database query error on Sign-Up page (select fields mismatch) — Applied migration to add passwordHash column
 - [x] Audit all auth flows for database compatibility — Auth flows verified working
 - [x] Fix any other runtime errors found — Dev server running with no critical errors
+
+
+## Real-Time Stats & ESPN News Ticker (NEW)
+- [x] Integrate ESPN API for live news feed (mock data ready for real ESPN API)
+- [x] Create ESPN news ticker component for header
+- [x] Implement real-time stats updates (polling every 5 seconds)
+- [x] Add live game scores widget to navbar
+- [x] Create real-time stats dashboard
+- [ ] Wire real-time data into picks engine
+- [x] Test real-time updates end-to-end
+- [ ] Deploy and verify live data flow

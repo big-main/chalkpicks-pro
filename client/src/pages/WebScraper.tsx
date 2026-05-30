@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { getLoginUrl } from "@/const";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,7 +27,7 @@ export default function WebScraper() {
           <CardContent className="space-y-4">
             <p className="text-gray-300">Sign in to access the web scraper and extract sports data.</p>
             <Button
-              onClick={() => setLocation(getLoginUrl("/web-scraper"))}
+              onClick={() => setLocation("/login")}
               className="w-full bg-green-600 hover:bg-green-700"
             >
               Sign In

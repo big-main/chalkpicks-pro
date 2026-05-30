@@ -221,3 +221,14 @@
 - [ ] Integrate scraped data into picks engine
 - [ ] Add scheduled scraping jobs for sports news
 - [ ] Create data pipeline for odds extraction
+
+
+## Theme Redesign & Brand Updates (NEW)
+- [x] Fix web scraper (debug API issues - fixed auth gating)
+- [x] Upload CHALK PICKS logo
+- [x] Redesign theme to gold/green neon (mix of HOOP IQ and CHALK PICKS designs)
+- [ ] Remove promo banner from homepage
+- [ ] Add LAUNCH50 gift to signup flow
+- [ ] Verify signups working correctly
+- [ ] Verify subscriptions working with LAUNCH50 code
+- [ ] Test end-to-end user flow

@@ -1,15 +1,51 @@
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { getLoginUrl } from "@/const";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Copy, Download } from "lucide-react";
+import { Loader2, Copy, Download, AlertCircle } from "lucide-react";
 
 export default function WebScraper() {
+  const { user, isLoading: authLoading } = useAuth();
+  const [, setLocation] = useLocation();
   const [url, setUrl] = useState("");
   const [scrapedContent, setScrapedContent] = useState<string>("");
   const [extractedData, setExtractedData] = useState<Record<string, any> | null>(null);
+
+  // Redirect if not authenticated
+  if (!authLoading && !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-6">
+        <Card className="bg-slate-800 border-slate-700 max-w-md">
+          <CardHeader>
+            <CardTitle>Login Required</CardTitle>
+            <CardDescription>Web Scraper is a premium feature</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-300">Sign in to access the web scraper and extract sports data.</p>
+            <Button
+              onClick={() => setLocation(getLoginUrl("/web-scraper"))}
+              className="w-full bg-green-600 hover:bg-green-700"
+            >
+              Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-green-500" />
+      </div>
+    );
+  }
 
   const scrapeUrlMutation = trpc.firecrawl.scrapeUrl.useMutation();
   const extractDataQuery = trpc.firecrawl.extractData.useQuery(
@@ -99,7 +135,14 @@ export default function WebScraper() {
 
             {scrapeUrlMutation.error && (
               <div className="p-3 bg-red-900 border border-red-700 rounded text-red-200">
-                {scrapeUrlMutation.error.message}
+                <p className="font-semibold">Error:</p>
+                <p className="text-sm">{scrapeUrlMutation.error.message || "Failed to scrape URL"}</p>
+              </div>
+            )}
+
+            {scrapeUrlMutation.isSuccess && !scrapedContent && (
+              <div className="p-3 bg-yellow-900 border border-yellow-700 rounded text-yellow-200">
+                Scrape completed but no content was extracted. Try a different URL.
               </div>
             )}
           </CardContent>
@@ -162,6 +205,8 @@ export default function WebScraper() {
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Extracting...
                   </>
+                ) : extractedData ? (
+                  "Refresh Data"
                 ) : (
                   "Extract Data"
                 )}

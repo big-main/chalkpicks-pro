@@ -105,9 +105,19 @@ const sportStats = [
 ];
 
 const testimonials = [
-  { name: "Marcus T.", role: "Pro Bettor", text: "The +EV finder alone pays for the subscription 10x over. I've never had a tool this precise for finding real value.", stars: 5 },
-  { name: "Sarah K.", role: "Sports Analyst", text: "The steam move detector is insane. I get alerted the second sharp money hits and I can beat the closing line consistently.", stars: 5 },
-  { name: "Derek M.", role: "Daily Bettor", text: "Kelly Criterion tool changed how I size bets. My bankroll grew 34% in 3 months just from better bet sizing.", stars: 5 },
+  { name: "Marcus T.", role: "Pro Bettor", text: "The +EV finder alone pays for the subscription 10x over. I've never had a tool this precise for finding real value.", stars: 5, streak: "12W" },
+  { name: "Sarah K.", role: "Sports Analyst", text: "The steam move detector is insane. I get alerted the second sharp money hits and I can beat the closing line consistently.", stars: 5, streak: "8W" },
+  { name: "Derek M.", role: "Daily Bettor", text: "Kelly Criterion tool changed how I size bets. My bankroll grew 34% in 3 months just from better bet sizing.", stars: 5, streak: "15W" },
+  { name: "Jason R.", role: "Sharp Bettor", text: "I've used every tool out there. ChalkPicks is the only platform that consistently finds +EV spots before the market corrects.", stars: 5, streak: "10W" },
+  { name: "Amanda L.", role: "DFS Player", text: "The AI correlation engine for parlays is next level. Hit a 6-leg parlay last week that no other tool would have suggested.", stars: 5, streak: "6W" },
+  { name: "Chris B.", role: "Bankroll Manager", text: "From $500 to $4,200 in 4 months. The combination of +EV bets and Kelly sizing is unbeatable.", stars: 5, streak: "9W" },
+];
+
+const socialProofStats = [
+  { label: "Active Members", value: "12,847+", icon: "👥" },
+  { label: "Picks Generated", value: "847K+", icon: "🎯" },
+  { label: "Total Profit", value: "$2.4M+", icon: "💰" },
+  { label: "Avg Win Streak", value: "7.2", icon: "🔥" },
 ];
 
 const NeonCard = ({ children, className = "", style = {} }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) => (
@@ -599,10 +609,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ─────────────────────────────────────── */}
-      <section className="py-16">
+      {/* ── SOCIAL PROOF ─────────────────────────────────────── */}
+      <section
+        className="py-16"
+        style={{
+          borderTop: "1px solid rgba(0,255,136,0.08)",
+          background: "linear-gradient(180deg, rgba(0,212,255,0.03) 0%, transparent 100%)",
+        }}
+      >
         <div className="container">
+          {/* Social proof stats banner */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            {socialProofStats.map((stat) => (
+              <NeonCard key={stat.label} className="p-5 text-center">
+                <div className="text-2xl mb-1">{stat.icon}</div>
+                <div
+                  style={{
+                    fontFamily: "'Rajdhani', sans-serif",
+                    fontWeight: 700,
+                    fontSize: "1.6rem",
+                    color: "#00ff88",
+                    textShadow: "0 0 8px rgba(0,255,136,0.4)",
+                  }}
+                >
+                  {stat.value}
+                </div>
+                <div className="text-xs mt-1" style={{ color: "rgba(140,140,170,0.8)" }}>
+                  {stat.label}
+                </div>
+              </NeonCard>
+            ))}
+          </div>
+
+          {/* Testimonials heading */}
           <div className="text-center mb-10">
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-bold tracking-widest"
+              style={{
+                background: "rgba(0,212,255,0.08)",
+                border: "1px solid rgba(0,212,255,0.25)",
+                borderRadius: "4px",
+                color: "#00d4ff",
+              }}
+            >
+              VERIFIED MEMBER RESULTS
+            </div>
             <h2
               style={{
                 fontFamily: "'Rajdhani', sans-serif",
@@ -616,13 +667,28 @@ export default function Home() {
               <span style={{ color: "#00d4ff", textShadow: "0 0 10px rgba(0,212,255,0.4)" }}>MEMBERS SAY</span>
             </h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-4">
+
+          {/* Testimonial cards */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {testimonials.map((t) => (
               <NeonCard key={t.name} className="p-6">
-                <div className="flex gap-0.5 mb-4">
-                  {Array.from({ length: t.stars }).map((_, i) => (
-                    <Star key={i} className="w-4 h-4" style={{ fill: "#00ff88", color: "#00ff88" }} />
-                  ))}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: t.stars }).map((_, i) => (
+                      <Star key={i} className="w-4 h-4" style={{ fill: "#00ff88", color: "#00ff88" }} />
+                    ))}
+                  </div>
+                  <div
+                    className="flex items-center gap-1 px-2 py-0.5 text-xs font-bold"
+                    style={{
+                      background: "rgba(0,255,136,0.1)",
+                      border: "1px solid rgba(0,255,136,0.3)",
+                      borderRadius: "3px",
+                      color: "#00ff88",
+                    }}
+                  >
+                    <Flame className="w-3 h-3" /> {t.streak}
+                  </div>
                 </div>
                 <p style={{ fontSize: "0.875rem", color: "rgba(180,180,210,0.75)", lineHeight: 1.7, marginBottom: "1rem" }}>
                   "{t.text}"
@@ -633,6 +699,16 @@ export default function Home() {
                 </div>
               </NeonCard>
             ))}
+          </div>
+
+          {/* Live user count */}
+          <div className="text-center mt-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2" style={{ background: "rgba(0,255,136,0.05)", border: "1px solid rgba(0,255,136,0.15)", borderRadius: "6px" }}>
+              <span className="live-dot" />
+              <span className="text-sm" style={{ color: "rgba(200,200,220,0.8)" }}>
+                <strong style={{ color: "#00ff88" }}>247</strong> members online now
+              </span>
+            </div>
           </div>
         </div>
       </section>

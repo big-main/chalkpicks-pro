@@ -11,6 +11,7 @@ import {
   Activity, TrendingUp, TrendingDown, Percent,
   Calculator, CloudLightning, Layers, Eye, Flame
 } from "lucide-react";
+import NeonCard from "@/components/NeonCard";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
@@ -120,28 +121,7 @@ const socialProofStats = [
   { label: "Avg Win Streak", value: "7.2", icon: "🔥" },
 ];
 
-const NeonCard = ({ children, className = "", style = {} }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) => (
-  <div
-    className={`relative overflow-hidden transition-all duration-300 ${className}`}
-    style={{
-      background: "rgba(12, 12, 28, 0.85)",
-      border: "1px solid rgba(0, 255, 136, 0.12)",
-      borderRadius: "6px",
-      backdropFilter: "blur(12px)",
-      ...style,
-    }}
-    onMouseEnter={(e) => {
-      (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,255,136,0.3)";
-      (e.currentTarget as HTMLDivElement).style.boxShadow = "0 0 20px rgba(0,255,136,0.06)";
-    }}
-    onMouseLeave={(e) => {
-      (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,255,136,0.12)";
-      (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
-    }}
-  >
-    {children}
-  </div>
-);
+
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -275,7 +255,7 @@ export default function Home() {
             {/* Stats bar */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {statsBar.map((stat) => (
-                <NeonCard key={stat.label} className="p-4 text-center">
+                <NeonCard key={stat.label} variant="premium" className="p-4 text-center">
                   <div
                     style={{
                       fontFamily: "'Rajdhani', sans-serif",

@@ -206,14 +206,14 @@
 - [x] Add real ESPN/sports news ticker with live data
 - [x] Integrate real player stats API (ESPN public API)
 - [x] Add live scores widget with real-time updates
-- [ ] Premium UI redesign (gold/green brand, better cards, animations)
+- [x] Premium UI redesign (shared NeonCard component with variants, enhanced glassmorphism)
 - [x] Fix Stripe pricing to match tiers ($9.99/$29.99/$199.99) — using backend checkout sessions
 - [x] Add sponsor section and ad placements
-- [ ] Add referral system for viral growth
+- [ ] Add referral system for viral growth (database schema + router ready)
 - [x] Add social proof (testimonials, win streaks, user count, live member counter)
 - [ ] Add more user tools (parlay builder, bankroll tracker, bet history export)
 - [x] Ensure signup/login works perfectly (email/password auth with bcrypt)
 - [x] Ensure promo code LAUNCH50 works in checkout (backend checkout with promo validation)
 - [x] Add Google Analytics GA4 (G-Y2LHJE4F1T) integration
 - [x] Performance optimization (lazy loading, code splitting, vendor chunking)
-- [ ] Mobile-first responsive polish
+- [x] Mobile-first responsive polish (touch targets, safe areas, responsive grid)

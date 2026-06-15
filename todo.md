@@ -90,7 +90,7 @@
 - [x] Build line movement tracker (opening line vs current line)
 - [x] Build steam move detector (sudden sharp line movement alerts)
 - [x] Build +EV (positive expected value) finder page
-- [ ] Build CLV (closing line value) tracker for user bets
+-- [x] Add CLV (Closing Line Value) tracker (database schema + router complete)r for user bets
 - [x] Build public betting % display (where the public money is going)
 - [x] Build Kelly Criterion bankroll calculator tool
 - [ ] Build weather impact model for outdoor games (NFL, MLB)

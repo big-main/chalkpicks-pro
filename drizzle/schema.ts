@@ -177,6 +177,13 @@ export const userBets = mysqlTable("user_bets", {
   notes: text("notes"),
   betDate: varchar("betDate", { length: 16 }).notNull(),
   settledAt: timestamp("settledAt"),
+  closingLineOdds: int("closingLineOdds"),
+  closingLineTime: timestamp("closingLineTime"),
+  clvValue: decimal("clvValue", { precision: 5, scale: 2 }),
+  lineMovement: int("lineMovement"),
+  sharpMoney: boolean("sharpMoney").default(false),
+  bookmakerName: varchar("bookmakerName", { length: 64 }),
+  betPlacedTime: timestamp("betPlacedTime"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

@@ -15,9 +15,7 @@ export const clvRouter = router({
     const database = await getDb();
     if (!database) return null;
 
-    const bets = await database.query.userBets.findMany({
-      where: eq(userBets.userId, userId),
-    });
+    const bets = await database.select().from(userBets).where(eq(userBets.userId, userId));
 
     const stats = {
       totalBets: bets.length,
@@ -71,9 +69,7 @@ export const clvRouter = router({
     const database = await getDb();
     if (!database) return [];
 
-    const bets = await database.query.userBets.findMany({
-      where: eq(userBets.userId, userId),
-    });
+    const bets = await database.select().from(userBets).where(eq(userBets.userId, userId));
 
     const betTypes = ["moneyline", "spread", "over_under", "player_prop", "parlay"];
     const breakdown = betTypes.map((type) => {
@@ -111,23 +107,28 @@ export const clvRouter = router({
       const database = await getDb();
       if (!database) throw new Error("Database unavailable");
 
-      const bet = await database.query.userBets.findFirst({
-        where: and(eq(userBets.id, input.betId), eq(userBets.userId, userId)),
-      });
+      const bet = await database
+        .select()
+        .from(userBets)
+        .where(and(eq(userBets.id, input.betId), eq(userBets.userId, userId)))
+        .limit(1);
 
-      if (!bet) throw new Error("Bet not found");
+      if (!bet || bet.length === 0) throw new Error("Bet not found");
 
-      const clvValue = calculateCLV(parseInt(bet.odds?.toString() || "0"), input.closingLineOdds);
-      const lineMovement = input.closingLineOdds - parseInt(bet.odds?.toString() || "0");
+      const clvValue = calculateCLV(parseInt(bet[0].odds?.toString() || "0"), input.closingLineOdds);
+      const lineMovement = input.closingLineOdds - parseInt(bet[0].odds?.toString() || "0");
 
-      await database.update(userBets).set({
-        closingLineOdds: input.closingLineOdds,
-        clvValue: clvValue,
-        lineMovement: lineMovement,
-        bookmakerName: input.bookmakerName,
-        sharpMoney: input.sharpMoney || false,
-        closingLineTime: new Date(),
-      });
+      await database
+        .update(userBets)
+        .set({
+          closingLineOdds: input.closingLineOdds,
+          clvValue: clvValue,
+          lineMovement: lineMovement,
+          bookmakerName: input.bookmakerName,
+          sharpMoney: input.sharpMoney || false,
+          closingLineTime: new Date(),
+        })
+        .where(eq(userBets.id, input.betId));
 
       return { clvValue, lineMovement };
     }),
@@ -142,9 +143,7 @@ export const clvRouter = router({
     const database = await getDb();
     if (!database) return [];
 
-    const bets = await database.query.userBets.findMany({
-      where: eq(userBets.userId, userId),
-    });
+    const bets = await database.select().from(userBets).where(eq(userBets.userId, userId));
 
     return bets
       .filter((b: any) => b.clvValue !== null)
@@ -162,9 +161,7 @@ export const clvRouter = router({
     const database = await getDb();
     if (!database) return [];
 
-    const bets = await database.query.userBets.findMany({
-      where: eq(userBets.userId, userId),
-    });
+    const bets = await database.select().from(userBets).where(eq(userBets.userId, userId));
 
     return bets
       .filter((b: any) => b.clvValue !== null)
@@ -182,9 +179,7 @@ export const clvRouter = router({
     const database = await getDb();
     if (!database) return null;
 
-    const bets = await database.query.userBets.findMany({
-      where: eq(userBets.userId, userId),
-    });
+    const bets = await database.select().from(userBets).where(eq(userBets.userId, userId));
 
     const totalBets = bets.length;
     const positiveCLVBets = bets.filter((b: any) => b.clvValue && b.clvValue > 0).length;

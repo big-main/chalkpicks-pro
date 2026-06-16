@@ -21,6 +21,7 @@ const navLinks = [
   { href: "/backtesting", label: "Backtest" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/kalshi", label: "Kalshi" },
+  { href: "/clv-tracker", label: "CLV" },
   { href: "/tools", label: "Tools" },
   { href: "/pricing", label: "Pricing" },
 ];
@@ -51,7 +52,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
             <img
-              src="/manus-storage/IMG_8342_a95475aa.PNG"
+              src="https://chalkpicks-xui7hd5r.manus.space/manus-storage/IMG_8342_a95475aa.PNG"
               alt="ChalkPicks"
               className="h-10 w-auto transition-all group-hover:scale-105"
               style={{ filter: "drop-shadow(0 0 8px rgba(0,255,136,0.3))" }}

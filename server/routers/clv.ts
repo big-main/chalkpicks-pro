@@ -121,7 +121,7 @@ export const clvRouter = router({
       await database
         .update(userBets)
         .set({
-          closingLineOdds: input.closingLineOdds,
+          closingLineOdds: Math.round(input.closingLineOdds),
           clvValue: clvValue,
           lineMovement: lineMovement || 0,
           bookmakerName: input.bookmakerName,

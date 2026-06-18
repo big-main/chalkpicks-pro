@@ -19,7 +19,7 @@ import { oddsRouter } from "./routers/odds";
 import { aiPicksRouter } from "./routers/aiPicks";
 import { promoCodeRouter } from "./routers/promoCode";
 import { kalshiRouter } from "./routers/kalshi";
-import { clvRouter } from "./routers/clv";
+// import { clvRouter } from "./routers/clv"; // TODO: Fix TypeScript schema imports
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import type { Response, Request } from "express";
@@ -96,7 +96,7 @@ export const appRouter = router({
   aiPicks: aiPicksRouter,
   promoCode: promoCodeRouter,
   kalshi: kalshiRouter,
-  clv: clvRouter,
+  // clv: clvRouter, // TODO: Fix TypeScript schema imports
 });
 
 export type AppRouter = typeof appRouter;

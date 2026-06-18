@@ -123,7 +123,7 @@ export const clvRouter = router({
         .set({
           closingLineOdds: input.closingLineOdds,
           clvValue: clvValue,
-          lineMovement: lineMovement,
+          lineMovement: lineMovement || 0,
           bookmakerName: input.bookmakerName,
           sharpMoney: input.sharpMoney || false,
           closingLineTime: new Date(),

@@ -122,7 +122,7 @@ export const clvRouter = router({
         .update(userBets)
         .set({
           closingLineOdds: input.closingLineOdds,
-          clvValue: clvValue,
+          clvValue: clvValue.toString() as any,
           lineMovement: lineMovement,
           bookmakerName: input.bookmakerName,
           sharpMoney: input.sharpMoney || false,

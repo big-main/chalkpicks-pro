@@ -1,0 +1,8 @@
+{
+  "query": "ALTER TABLE `user_bets` ADD `closingLineOdds` int;\nALTER TABLE `user_bets` ADD `closingLineTime` timestamp;\nALTER TABLE `user_bets` ADD `clvValue` decimal(5,2);\nALTER TABLE `user_bets` ADD `lineMovement` int;\nALTER TABLE `user_bets` ADD `sharpMoney` boolean DEFAULT false;\nALTER TABLE `user_bets` ADD `bookmakerName` varchar(64);\nALTER TABLE `user_bets` ADD `betPlacedTime` timestamp;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4KDcFVgMZb4NWgA.root --database XUi7Hd5RzDcuAESzHPA75p --execute ALTER TABLE `user_bets` ADD `closingLineOdds` int;\nALTER TABLE `user_bets` ADD `closingLineTime` timestamp;\nALTER TABLE `user_bets` ADD `clvValue` decimal(5,2);\nALTER TABLE `user_bets` ADD `lineMovement` int;\nALTER TABLE `user_bets` ADD `sharpMoney` boolean DEFAULT false;\nALTER TABLE `user_bets` ADD `bookmakerName` varchar(64);\nALTER TABLE `user_bets` ADD `betPlacedTime` timestamp;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1060 (42S21) at line 1: Duplicate column name 'closingLineOdds'"
+  ]
+}

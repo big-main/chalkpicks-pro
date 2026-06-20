@@ -158,7 +158,7 @@ class KalshiService {
   async analyzeMarket(market: KalshiMarket, history?: any[]): Promise<KalshiMarketAnalysis> {
     const impliedProbability = market.yes_price;
 
-    let lineMovement = { direction: "flat" as const, change_percentage: 0 };
+    let lineMovement: { direction: "flat" | "up" | "down"; change_percentage: number } = { direction: "flat", change_percentage: 0 };
     if (history && history.length > 1) {
       const oldPrice = history[0].yes_price || 50;
       const newPrice = history[history.length - 1].yes_price || 50;

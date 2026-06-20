@@ -35,6 +35,7 @@ const CLVTracker = lazy(() => import("@/pages/CLVTracker"));
 const ParlayBuilder = lazy(() => import("@/pages/ParlayBuilder"));
 const BankrollTracker = lazy(() => import("@/pages/BankrollTracker"));
 const Referral = lazy(() => import("@/pages/Referral"));
+const Onboarding = lazy(() => import("@/pages/Onboarding"));
 
 function PageLoader() {
   return (
@@ -82,6 +83,7 @@ function Router() {
         <Route path="/parlay-builder" component={ParlayBuilder} />
         <Route path="/bankroll-tracker" component={BankrollTracker} />
         <Route path="/referral" component={Referral} />
+        <Route path="/onboarding" component={Onboarding} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

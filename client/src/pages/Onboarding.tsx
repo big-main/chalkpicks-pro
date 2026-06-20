@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -73,14 +73,14 @@ const questions = [
 
 export default function Onboarding() {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [ageVerified, setAgeVerified] = useState(false);
 
   const completeOnboarding = trpc.auth.completeOnboarding.useMutation({
     onSuccess: () => {
-      navigate("/dashboard");
+      setLocation("/dashboard");
     },
   });
 

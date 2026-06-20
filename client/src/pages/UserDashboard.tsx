@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "wouter";
 import { Plus, TrendingUp, TrendingDown, Target, DollarSign, Trophy, CheckCircle2, XCircle, Clock, Trash2, Crown } from "lucide-react";
 import { toast } from "sonner";
+import DashboardMetrics from "@/components/DashboardMetrics";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
@@ -115,6 +116,18 @@ export default function UserDashboard() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-16">
+        {/* Edge Terminal Metrics */}
+        {summary && (
+          <div className="border-b border-border/50 bg-card/30">
+            <div className="container py-6">
+              <DashboardMetrics
+                totalBets={summary.totalBets || 0}
+                winningBets={summary.wins || 0}
+                totalProfit={parseFloat(summary.profit?.toString() || "0")}
+              />
+            </div>
+          </div>
+        )}
         {/* Header */}
         <div className="border-b border-border/50 bg-card/30">
           <div className="container py-8">

@@ -231,3 +231,16 @@
 - [x] Create market alerts for significant line movements
 - [ ] Build market analytics dashboard (future enhancement)
 - [ ] Test Kalshi integration end-to-end (add automated tests + verify loading/error states)
+
+
+## Edge Terminal Integration (NEW)
+- [ ] Add 6-question onboarding questionnaire (age, experience, frequency, bet size, intent, contact)
+- [ ] Implement tier-based access system (Recreational <$100, Serious $100-$500, Professional $1K+)
+- [ ] Add age verification enforcement (21+ requirement)
+- [ ] Enhance dashboard metrics (win rate %, calibrated outcomes, P&L, ROI, annual volume)
+- [ ] Implement pick ranking by EV edge across 18+ sportsbooks
+- [ ] Add application review workflow (hand-reviewed applications with 24-hour response)
+- [ ] Wire tier system to feature access (premium features locked behind tier)
+- [ ] Add "projected P&L YTD" calculation to user dashboard
+- [ ] Create admin panel for reviewing applications
+- [ ] Test Edge Terminal features end-to-end

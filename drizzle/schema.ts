@@ -29,6 +29,16 @@ export const users = mysqlTable("users", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
+  ageVerified: boolean("ageVerified").default(false).notNull(),
+  experienceLevel: mysqlEnum("experienceLevel", ["brand_new", "just_started", "few_months", "experienced_unprofitable", "experienced_profitable", "years_in"]),
+  bettingFrequency: mysqlEnum("bettingFrequency", ["occasionally", "few_times_week", "multiple_times_day"]),
+  weeklyBetSize: mysqlEnum("weeklyBetSize", ["under_100", "100_500", "1000_5000", "over_5000"]),
+  onboardingIntent: text("onboardingIntent"),
+  accessTier: mysqlEnum("accessTier", ["free", "recreational", "serious", "professional"]).default("free").notNull(),
+  applicationStatus: mysqlEnum("applicationStatus", ["not_applied", "pending", "approved", "rejected"]).default("not_applied").notNull(),
+  applicationReviewedAt: timestamp("applicationReviewedAt"),
+  applicationReviewedBy: int("applicationReviewedBy"),
+  onboardingCompletedAt: timestamp("onboardingCompletedAt"),
 });
 
 export type User = typeof users.$inferSelect;

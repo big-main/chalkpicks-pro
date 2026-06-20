@@ -141,16 +141,16 @@ export default function Navbar() {
                       </Badge>
                     </div>
                     <DropdownMenuSeparator style={{ borderColor: "rgba(0,255,136,0.1)" }} />
-                    <DropdownMenuItem asChild>
+                    <DropdownMenuItem>
                       <Link href="/dashboard">My Dashboard</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
+                    <DropdownMenuItem>
                       <Link href="/account-settings">Account Settings</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
+                    <DropdownMenuItem>
                       <Link href="/tools">Power Tools</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
+                    <DropdownMenuItem>
                       <Link href="/pricing">Upgrade Plan</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator style={{ borderColor: "rgba(0,255,136,0.1)" }} />

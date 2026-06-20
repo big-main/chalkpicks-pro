@@ -23,6 +23,7 @@ const navLinks = [
   { href: "/kalshi", label: "Kalshi" },
   { href: "/clv-tracker", label: "CLV" },
   { href: "/tools", label: "Tools" },
+  { href: "/referral", label: "Referral" },
   { href: "/pricing", label: "Pricing" },
 ];
 

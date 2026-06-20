@@ -209,7 +209,7 @@
 - [x] Premium UI redesign (shared NeonCard component with variants, enhanced glassmorphism)
 - [x] Fix Stripe pricing to match tiers ($9.99/$29.99/$199.99) — using backend checkout sessions
 - [x] Add sponsor section and ad placements
-- [ ] Add referral system for viral growth (database schema + router ready)
+- [x] Add referral system for viral growth (database schema + router + UI page complete)
 - [x] Add social proof (testimonials, win streaks, user count, live member counter)
 - [x] Fix Parlay Builder American odds calculations (negative odds like -110 now working correctly)
 - [ ] Add bet history export (CSV/PDF) functionality

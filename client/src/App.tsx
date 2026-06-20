@@ -34,6 +34,7 @@ const KalshiMarkets = lazy(() => import("@/pages/KalshiMarkets"));
 const CLVTracker = lazy(() => import("@/pages/CLVTracker"));
 const ParlayBuilder = lazy(() => import("@/pages/ParlayBuilder"));
 const BankrollTracker = lazy(() => import("@/pages/BankrollTracker"));
+const Referral = lazy(() => import("@/pages/Referral"));
 
 function PageLoader() {
   return (
@@ -80,6 +81,7 @@ function Router() {
         <Route path="/clv-tracker" component={CLVTracker} />
         <Route path="/parlay-builder" component={ParlayBuilder} />
         <Route path="/bankroll-tracker" component={BankrollTracker} />
+        <Route path="/referral" component={Referral} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

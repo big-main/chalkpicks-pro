@@ -211,7 +211,8 @@
 - [x] Add sponsor section and ad placements
 - [ ] Add referral system for viral growth (database schema + router ready)
 - [x] Add social proof (testimonials, win streaks, user count, live member counter)
-- [ ] Add more user tools (parlay builder, bankroll tracker, bet history export)
+- [x] Fix Parlay Builder American odds calculations (negative odds like -110 now working correctly)
+- [ ] Add bet history export (CSV/PDF) functionality
 - [x] Ensure signup/login works perfectly (email/password auth with bcrypt)
 - [x] Ensure promo code LAUNCH50 works in checkout (backend checkout with promo validation)
 - [x] Add Google Analytics GA4 (G-Y2LHJE4F1T) integration
@@ -229,4 +230,4 @@
 - [ ] Add market comparison (Kalshi vs traditional sportsbooks) (future enhancement)
 - [x] Create market alerts for significant line movements
 - [ ] Build market analytics dashboard (future enhancement)
-- [ ] Test Kalshi integration end-to-end
+- [ ] Test Kalshi integration end-to-end (add automated tests + verify loading/error states)

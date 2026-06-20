@@ -63,7 +63,14 @@ export default function ParlayBuilder() {
   const calculatePayout = (legs: ParlayLeg[], stake: number) => {
     let multiplier = 1;
     for (const leg of legs) {
-      multiplier *= (leg.odds + 100) / 100;
+      // Convert American odds to decimal odds
+      let decimalOdds: number;
+      if (leg.odds > 0) {
+        decimalOdds = (leg.odds + 100) / 100;
+      } else {
+        decimalOdds = 1 + 100 / Math.abs(leg.odds);
+      }
+      multiplier *= decimalOdds;
     }
     return stake * multiplier;
   };

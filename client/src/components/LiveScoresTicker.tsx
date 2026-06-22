@@ -89,7 +89,7 @@ export default function LiveScoresTicker() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    {game.awayLogo && <img src={game.awayLogo} alt="" className="w-4 h-4" />}
+                    {game.awayLogo && <img src={game.awayLogo} alt={`${game.awayTeam} logo`} className="w-4 h-4" />}
                     <span className="text-xs font-medium" style={{ color: "rgba(220,220,240,0.9)" }}>
                       {game.awayTeam?.split(" ").pop()}
                     </span>
@@ -100,7 +100,7 @@ export default function LiveScoresTicker() {
                 </div>
                 <div className="flex items-center justify-between mt-0.5">
                   <div className="flex items-center gap-1.5">
-                    {game.homeLogo && <img src={game.homeLogo} alt="" className="w-4 h-4" />}
+                    {game.homeLogo && <img src={game.homeLogo} alt={`${game.homeTeam} logo`} className="w-4 h-4" />}
                     <span className="text-xs font-medium" style={{ color: "rgba(220,220,240,0.9)" }}>
                       {game.homeTeam?.split(" ").pop()}
                     </span>

@@ -437,3 +437,85 @@ export const referralRewards = mysqlTable("referral_rewards", {
 
 export type ReferralReward = typeof referralRewards.$inferSelect;
 export type InsertReferralReward = typeof referralRewards.$inferInsert;
+
+
+// ─── Arbitrage Opportunities ──────────────────────────────────────────────────
+export const arbitrageOpportunities = mysqlTable("arbitrage_opportunities", {
+  id: int("id").autoincrement().primaryKey(),
+  eventId: varchar("eventId", { length: 64 }).notNull(),
+  sport: varchar("sport", { length: 32 }).notNull(),
+  league: varchar("league", { length: 32 }).notNull(),
+  matchup: varchar("matchup", { length: 256 }).notNull(),
+  eventTime: timestamp("eventTime").notNull(),
+  
+  // Arbitrage details
+  bookA: varchar("bookA", { length: 64 }).notNull(), // e.g., "DraftKings"
+  bookB: varchar("bookB", { length: 64 }).notNull(), // e.g., "FanDuel"
+  
+  // Outcome A (e.g., Team 1 to win)
+  outcomeA: varchar("outcomeA", { length: 256 }).notNull(),
+  oddsA: decimal("oddsA", { precision: 6, scale: 2 }).notNull(), // American odds
+  impliedProbabilityA: decimal("impliedProbabilityA", { precision: 5, scale: 4 }).notNull(),
+  
+  // Outcome B (e.g., Team 2 to win)
+  outcomeB: varchar("outcomeB", { length: 256 }).notNull(),
+  oddsB: decimal("oddsB", { precision: 6, scale: 2 }).notNull(),
+  impliedProbabilityB: decimal("impliedProbabilityB", { precision: 5, scale: 4 }).notNull(),
+  
+  // Arbitrage metrics
+  totalImpliedProbability: decimal("totalImpliedProbability", { precision: 5, scale: 4 }).notNull(),
+  arbitragePercentage: decimal("arbitragePercentage", { precision: 5, scale: 4 }).notNull(), // e.g., 0.0245 = 2.45%
+  profitPercentage: decimal("profitPercentage", { precision: 5, scale: 4 }).notNull(),
+  
+  // Stake calculation (for $100 total investment)
+  stakeA: decimal("stakeA", { precision: 8, scale: 2 }).notNull(),
+  stakeB: decimal("stakeB", { precision: 8, scale: 2 }).notNull(),
+  guaranteedProfit: decimal("guaranteedProfit", { precision: 8, scale: 2 }).notNull(),
+  
+  // Status
+  isActive: boolean("isActive").default(true).notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  
+  // Metadata
+  source: varchar("source", { length: 64 }).default("api").notNull(),
+  lastUpdated: timestamp("lastUpdated").defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ArbitrageOpportunity = typeof arbitrageOpportunities.$inferSelect;
+export type InsertArbitrageOpportunity = typeof arbitrageOpportunities.$inferInsert;
+
+// ─── User Arbitrage Trades ────────────────────────────────────────────────────
+export const userArbitrageTrades = mysqlTable("user_arbitrage_trades", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  arbitrageId: int("arbitrageId").notNull(),
+  
+  // Trade details
+  stakeA: decimal("stakeA", { precision: 8, scale: 2 }).notNull(),
+  stakeB: decimal("stakeB", { precision: 8, scale: 2 }).notNull(),
+  totalStake: decimal("totalStake", { precision: 8, scale: 2 }).notNull(),
+  
+  // Execution
+  bookABetId: varchar("bookABetId", { length: 128 }),
+  bookBBetId: varchar("bookBBetId", { length: 128 }),
+  executedAt: timestamp("executedAt"),
+  
+  // Results
+  resultA: mysqlEnum("resultA", ["pending", "won", "lost", "void"]).default("pending").notNull(),
+  resultB: mysqlEnum("resultB", ["pending", "won", "lost", "void"]).default("pending").notNull(),
+  winningsA: decimal("winningsA", { precision: 8, scale: 2 }),
+  winningsB: decimal("winningsB", { precision: 8, scale: 2 }),
+  totalWinnings: decimal("totalWinnings", { precision: 8, scale: 2 }),
+  actualProfit: decimal("actualProfit", { precision: 8, scale: 2 }),
+  
+  // Status
+  status: mysqlEnum("status", ["pending", "executed", "completed", "failed"]).default("pending").notNull(),
+  notes: text("notes"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type UserArbitrageTrade = typeof userArbitrageTrades.$inferSelect;
+export type InsertUserArbitrageTrade = typeof userArbitrageTrades.$inferInsert;

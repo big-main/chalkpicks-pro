@@ -22,6 +22,7 @@ import { kalshiRouter } from "./routers/kalshi";
 import { clvRouter } from "./routers/clv";
 import { referralRouter } from "./routers/referral";
 import { featureRouter } from "./routers/features";
+import { arbitrageRouter } from "./routers/arbitrage";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import type { Response, Request } from "express";
@@ -127,6 +128,7 @@ export const appRouter = router({
   clv: clvRouter,
   referral: referralRouter,
   features: featureRouter,
+  arbitrage: arbitrageRouter,
 });
 
 export type AppRouter = typeof appRouter;

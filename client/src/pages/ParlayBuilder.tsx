@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2, Copy, DollarSign, Zap } from "lucide-react";
+import { FeatureGate } from "@/components/FeatureGate";
 
 interface ParlayLeg {
   id: string;
@@ -19,7 +20,7 @@ interface Parlay {
   created: Date;
 }
 
-export default function ParlayBuilder() {
+function ParlayBuilderContent() {
   const [parlays, setParlays] = useState<Parlay[]>([]);
   const [currentLegs, setCurrentLegs] = useState<ParlayLeg[]>([]);
   const [stake, setStake] = useState(100);
@@ -84,8 +85,7 @@ export default function ParlayBuilder() {
   const roi = calculateROI(currentLegs, stake);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 p-4 md:p-8">      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Parlay Builder</h1>
@@ -269,4 +269,8 @@ export default function ParlayBuilder() {
       </div>
     </div>
   );
+}
+
+export default function ParlayBuilder() {
+  return <FeatureGate feature="parlay_builder" fallbackComponent={<ParlayBuilderContent />} />;
 }

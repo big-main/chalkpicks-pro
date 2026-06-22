@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Plus, TrendingUp, TrendingDown, Target, AlertCircle } from "lucide-react";
+import { FeatureGate } from "@/components/FeatureGate";
 
 interface BankrollEntry {
   id: string;
@@ -23,7 +24,7 @@ interface BankrollSession {
   created: Date;
 }
 
-export default function BankrollTracker() {
+function BankrollTrackerContent() {
   const [sessions, setSessions] = useState<BankrollSession[]>([]);
   const [activeSession, setActiveSession] = useState<BankrollSession | null>(null);
   const [showNewSession, setShowNewSession] = useState(false);
@@ -386,4 +387,8 @@ export default function BankrollTracker() {
       </div>
     </div>
   );
+}
+
+export default function BankrollTracker() {
+  return <FeatureGate feature="bankroll_tracker" fallbackComponent={<BankrollTrackerContent />} />;
 }

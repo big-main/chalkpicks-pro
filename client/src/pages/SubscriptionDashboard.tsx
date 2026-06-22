@@ -243,7 +243,12 @@ export default function SubscriptionDashboard() {
                   : "Reactivate your subscription to regain access to premium features."}
               </p>
               <Button
-                onClick={() => navigate("/account/subscription")}
+                onClick={() => {
+                  if (subscription?.customerId) {
+                    // Open Stripe customer portal
+                    window.location.href = `https://billing.stripe.com/login/test_YWNjdF8xSXRyeUNoOFBtbnl0QWsxN1Z6ckhaamVUeTRoTjZjTElnNQ?prefilled_email=${encodeURIComponent(user?.email || '')}`;
+                  }
+                }}
                 className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700"
               >
                 Manage Subscription

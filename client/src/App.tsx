@@ -37,6 +37,7 @@ const BankrollTracker = lazy(() => import("@/pages/BankrollTracker"));
 const Referral = lazy(() => import("@/pages/Referral"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const SubscriptionDashboard = lazy(() => import("@/pages/SubscriptionDashboard"));
+const ArbitrageFinder = lazy(() => import("@/pages/ArbitrageFinder"));
 
 function PageLoader() {
   return (
@@ -86,6 +87,7 @@ function Router() {
         <Route path="/bankroll-tracker" component={BankrollTracker} />
         <Route path="/referral" component={Referral} />
         <Route path="/onboarding" component={Onboarding} />
+        <Route path="/arbitrage" component={ArbitrageFinder} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

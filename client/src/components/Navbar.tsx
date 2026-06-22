@@ -22,6 +22,7 @@ const navLinks = [
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/kalshi", label: "Kalshi" },
   { href: "/clv-tracker", label: "CLV" },
+  { href: "/arbitrage", label: "Arbitrage" },
   { href: "/tools", label: "Tools" },
   { href: "/referral", label: "Referral" },
   { href: "/pricing", label: "Pricing" },

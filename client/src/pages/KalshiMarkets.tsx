@@ -5,8 +5,9 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { TrendingUp, TrendingDown, AlertCircle, Search } from "lucide-react";
+import { FeatureGate } from "@/components/FeatureGate";
 
-export default function KalshiMarkets() {
+function KalshiMarketsContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("sports");
 
@@ -217,5 +218,13 @@ function MarketCard({ market }: { market: any }) {
         </Button>
       )}
     </Card>
+  );
+}
+
+export default function KalshiMarkets() {
+  return (
+    <FeatureGate feature="kalshi">
+      <KalshiMarketsContent />
+    </FeatureGate>
   );
 }

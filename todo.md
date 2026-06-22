@@ -244,3 +244,11 @@
 - [ ] Add "projected P&L YTD" calculation to user dashboard
 - [ ] Create admin panel for reviewing applications
 - [ ] Test Edge Terminal features end-to-end
+
+
+## Tier-Gating Implementation (NEW)
+- [x] Create feature access control procedures in tRPC router (features.ts with canAccess, getAccessSummary, getUpgradeInfo)
+- [x] Add tier-gating to Kalshi Markets page (premium feature) - Monthly Pro required
+- [x] Add tier-gating to CLV Tracker page (premium feature) - Monthly Pro required
+- [x] Create paywall/upgrade modals for locked features (Paywall component already exists)
+- [ ] Test tier-gating end-to-end with different subscription tiers

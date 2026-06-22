@@ -21,6 +21,7 @@ import { promoCodeRouter } from "./routers/promoCode";
 import { kalshiRouter } from "./routers/kalshi";
 import { clvRouter } from "./routers/clv";
 import { referralRouter } from "./routers/referral";
+import { featureRouter } from "./routers/features";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import type { Response, Request } from "express";
@@ -125,6 +126,7 @@ export const appRouter = router({
   kalshi: kalshiRouter,
   clv: clvRouter,
   referral: referralRouter,
+  features: featureRouter,
 });
 
 export type AppRouter = typeof appRouter;

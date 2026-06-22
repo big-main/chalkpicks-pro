@@ -251,4 +251,4 @@
 - [x] Add tier-gating to Kalshi Markets page (premium feature) - Monthly Pro required
 - [x] Add tier-gating to CLV Tracker page (premium feature) - Monthly Pro required
 - [x] Create paywall/upgrade modals for locked features (Paywall component already exists)
-- [ ] Test tier-gating end-to-end with different subscription tiers
+- [x] Test tier-gating end-to-end with different subscription tiers (Kalshi and CLV Tracker properly gated)

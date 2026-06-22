@@ -1,12 +1,21 @@
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
+import { useRealtimeData } from "@/hooks/useRealtimeData";
 
 export default function LiveScoresTicker() {
   const [sport, setSport] = useState("nba");
+  
+  // Real-time WebSocket data
+  const { data: realtimeScores, isConnected } = useRealtimeData({ channel: "live-scores" });
+  
+  // Fallback to tRPC polling if WebSocket not available
   const { data: games, isLoading } = trpc.stats.liveGames.useQuery(
     { sportKey: sport },
-    { refetchInterval: 60_000, staleTime: 30_000 }
+    { refetchInterval: isConnected ? 300_000 : 60_000, staleTime: isConnected ? 60_000 : 30_000, enabled: !isConnected }
   );
+  
+  // Use real-time data if available, otherwise use tRPC data
+  const displayGames = realtimeScores?.scores || games;
 
   const sportColors: Record<string, string> = {
     nfl: "#00ff88",
@@ -41,13 +50,13 @@ export default function LiveScoresTicker() {
               {s.toUpperCase()}
             </button>
           ))}
-          <span className="ml-auto text-[9px] font-medium" style={{ color: "rgba(140,140,170,0.5)" }}>
-            Auto-updates every 60s
+          <span className="ml-auto text-[9px] font-medium" style={{ color: isConnected ? "#00ff88" : "rgba(140,140,170,0.5)" }}>
+            {isConnected ? "🔴 LIVE" : "Auto-updates every 60s"}
           </span>
         </div>
 
         {/* Games */}
-        {isLoading ? (
+        {isLoading && !displayGames ? (
           <div className="flex gap-3">
             {[1, 2, 3].map((i) => (
               <div

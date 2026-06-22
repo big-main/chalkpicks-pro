@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express from "express";
-import { createServer } from "http";
+import { createServer, Server } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter } from "../routers";
@@ -10,6 +10,8 @@ import { registerStripeWebhook } from "../webhook";
 import { registerStorageProxy } from "./storageProxy";
 import { registerPayPalWebhook } from "../paypal-webhook";
 import { startScheduler } from "../scheduler";
+import { initializeWebSocket } from "../websocket";
+import { startLiveDataStreaming } from "./liveDataStreamer";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -69,6 +71,10 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    // Initialize WebSocket for real-time updates
+    initializeWebSocket(server);
+    // Start live data streaming
+    startLiveDataStreaming();
     // Start daily picks scheduler
     startScheduler();
   });

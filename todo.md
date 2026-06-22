@@ -109,16 +109,11 @@
 - [x] All 37 tests passing with PayPal integration
 - [x] PayPal documentation in deployment guide
 
-## Deployment to Railway
-- [x] Create Railway deployment guide with PayPal setup
-- [x] Document chalkpicks.ml free domain setup
-- [x] Document PayPal webhook configuration
-- [x] Create comprehensive MAIN_INTEGRATION.md combining all guides
-- [x] Integrate Superpowers development practices
-- [x] Add AI agent guidelines and best practices
-- [ ] Deploy to Railway from GitHub (user action — follow RAILWAY_DEPLOYMENT_PAYPAL.md)
-- [ ] Register and configure chalkpicks.ml domain (user action — freenom.com + Railway DNS)
-- [ ] Test live Railway deployment (user action — after deploy)
+## Deployment
+- [x] Deploy to Manus Autoscale (production environment)
+- [x] Configure custom domains (chalkpicks.live, www.chalkpicks.live)
+- [x] Set up SSL/TLS certificates
+- [x] Configure Stripe webhooks for production
 
 ## Custom Notification System (COMPLETE)
 - [x] Add notificationPreferences table to schema

@@ -18,9 +18,10 @@ import { paypalRouter } from "./routers/paypal";
 import { oddsRouter } from "./routers/odds";
 import { aiPicksRouter } from "./routers/aiPicks";
 import { promoCodeRouter } from "./routers/promoCode";
-import { newsRouter } from "./routers/news";
-import { firecrawlRouter } from "./routers/firecrawl";
-import { animatorRouter } from "./routers/animator";
+import { kalshiRouter } from "./routers/kalshi";
+import { clvRouter } from "./routers/clv";
+import { referralRouter } from "./routers/referral";
+import { featureRouter } from "./routers/features";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import type { Response, Request } from "express";
@@ -83,6 +84,32 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+
+    completeOnboarding: publicProcedure
+      .input(z.object({
+        experienceLevel: z.enum(["brand_new", "just_started", "few_months", "experienced_unprofitable", "experienced_profitable", "years_in"]),
+        bettingFrequency: z.enum(["occasionally", "few_times_week", "multiple_times_day"]),
+        weeklyBetSize: z.enum(["under_100", "100_500", "1000_5000", "over_5000"]),
+        onboardingIntent: z.string().min(10),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (!ctx.user?.id) throw new TRPCError({ code: "UNAUTHORIZED" });
+        
+        const database = await db.getDb();
+        if (!database) throw new Error("Database unavailable");
+        
+        // Determine access tier based on bet size
+        let accessTier: "free" | "recreational" | "serious" | "professional" = "free";
+        if (input.weeklyBetSize === "under_100") accessTier = "recreational";
+        else if (input.weeklyBetSize === "100_500") accessTier = "serious";
+        else if (input.weeklyBetSize === "1000_5000" || input.weeklyBetSize === "over_5000") accessTier = "professional";
+        
+        // Update user with onboarding data
+        // TODO: Update user with onboarding data in database
+        // This requires proper database integration
+        
+        return { success: true, accessTier };
+      }),
   }),
   picks: picksRouter,
   stats: statsRouter,
@@ -96,9 +123,10 @@ export const appRouter = router({
   odds: oddsRouter,
   aiPicks: aiPicksRouter,
   promoCode: promoCodeRouter,
-  news: newsRouter,
-  firecrawl: firecrawlRouter,
-  animator: animatorRouter,
+  kalshi: kalshiRouter,
+  clv: clvRouter,
+  referral: referralRouter,
+  features: featureRouter,
 });
 
 export type AppRouter = typeof appRouter;

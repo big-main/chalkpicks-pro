@@ -1,3 +1,4 @@
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,9 +13,6 @@ import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { Menu, X, Zap, ChevronDown, Bell, Crown, TrendingUp, BarChart3, Calculator, Layers } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { useAuth } from "@/_core/hooks/useAuth";
-import ESPNNewsTicker from "./ESPNNewsTicker";
-import RealtimeStats from "./RealtimeStats";
 
 const navLinks = [
   { href: "/picks", label: "Picks" },
@@ -22,14 +20,17 @@ const navLinks = [
   { href: "/ev-finder", label: "+EV Finder" },
   { href: "/backtesting", label: "Backtest" },
   { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/kalshi", label: "Kalshi" },
+  { href: "/clv-tracker", label: "CLV" },
   { href: "/tools", label: "Tools" },
+  { href: "/referral", label: "Referral" },
   { href: "/pricing", label: "Pricing" },
 ];
 
 export default function Navbar() {
+  const { user, isAuthenticated, logout } = useAuth();
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
 
   const { data: notifCount } = trpc.notifications.getUnreadCount.useQuery(undefined, {
     enabled: isAuthenticated,
@@ -39,54 +40,24 @@ export default function Navbar() {
   const isPremium = user?.subscriptionTier && user.subscriptionTier !== "free";
 
   return (
-    <>
-      {/* ESPN News Ticker */}
-      <ESPNNewsTicker />
-
-      {/* Real-time Stats Bar */}
-      <RealtimeStats />
-
-      {/* Main Navbar */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-50"
-        style={{
-          background: "rgba(8, 8, 20, 0.92)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(0, 255, 136, 0.12)",
-          marginTop: "56px",
-        }}
-      >
-        <div className="container">
-          <div className="flex items-center justify-between h-16">
+    <nav
+      className="fixed top-0 left-0 right-0 z-50"
+      style={{
+        background: "rgba(8, 8, 20, 0.92)",
+        backdropFilter: "blur(20px)",
+        borderBottom: "1px solid rgba(0, 255, 136, 0.12)",
+      }}
+    >
+      <div className="container">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div
-              className="w-8 h-8 flex items-center justify-center transition-all group-hover:scale-105"
-              style={{
-                border: "1.5px solid #00ff88",
-                borderRadius: "6px",
-                boxShadow: "0 0 10px rgba(0,255,136,0.3), inset 0 0 8px rgba(0,255,136,0.08)",
-              }}
-            >
-              <Zap className="w-4 h-4" style={{ color: "#00ff88" }} />
-            </div>
-            <span
-              className="font-display text-xl text-white"
-              style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, letterSpacing: "0.06em" }}
-            >
-              CHALK<span style={{ color: "#00ff88", textShadow: "0 0 10px rgba(0,255,136,0.5)" }}>PICKS</span>
-            </span>
-            <span
-              className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold tracking-widest"
-              style={{
-                background: "rgba(0,255,136,0.1)",
-                border: "1px solid rgba(0,255,136,0.3)",
-                borderRadius: "3px",
-                color: "#00ff88",
-              }}
-            >
-              PRO
-            </span>
+          <Link href="/" className="flex items-center gap-2 group">
+            <img
+              src="https://chalkpicks-xui7hd5r.manus.space/manus-storage/IMG_8342_a95475aa.PNG"
+              alt="ChalkPicks"
+              className="h-10 w-auto transition-all group-hover:scale-105"
+              style={{ filter: "drop-shadow(0 0 8px rgba(0,255,136,0.3))" }}
+            />
           </Link>
 
           {/* Desktop Nav */}
@@ -286,8 +257,7 @@ export default function Navbar() {
             )}
           </div>
         )}
-        </div>
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 }

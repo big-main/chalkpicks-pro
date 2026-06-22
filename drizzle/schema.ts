@@ -29,6 +29,16 @@ export const users = mysqlTable("users", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
+  ageVerified: boolean("ageVerified").default(false).notNull(),
+  experienceLevel: mysqlEnum("experienceLevel", ["brand_new", "just_started", "few_months", "experienced_unprofitable", "experienced_profitable", "years_in"]),
+  bettingFrequency: mysqlEnum("bettingFrequency", ["occasionally", "few_times_week", "multiple_times_day"]),
+  weeklyBetSize: mysqlEnum("weeklyBetSize", ["under_100", "100_500", "1000_5000", "over_5000"]),
+  onboardingIntent: text("onboardingIntent"),
+  accessTier: mysqlEnum("accessTier", ["free", "recreational", "serious", "professional"]).default("free").notNull(),
+  applicationStatus: mysqlEnum("applicationStatus", ["not_applied", "pending", "approved", "rejected"]).default("not_applied").notNull(),
+  applicationReviewedAt: timestamp("applicationReviewedAt"),
+  applicationReviewedBy: int("applicationReviewedBy"),
+  onboardingCompletedAt: timestamp("onboardingCompletedAt"),
 });
 
 export type User = typeof users.$inferSelect;
@@ -177,6 +187,13 @@ export const userBets = mysqlTable("user_bets", {
   notes: text("notes"),
   betDate: varchar("betDate", { length: 16 }).notNull(),
   settledAt: timestamp("settledAt"),
+  closingLineOdds: int("closingLineOdds"),
+  closingLineTime: timestamp("closingLineTime"),
+  clvValue: decimal("clvValue", { precision: 5, scale: 2 }),
+  lineMovement: int("lineMovement"),
+  sharpMoney: boolean("sharpMoney").default(false),
+  bookmakerName: varchar("bookmakerName", { length: 64 }),
+  betPlacedTime: timestamp("betPlacedTime"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -371,3 +388,52 @@ export const promoCodeUsage = mysqlTable("promo_code_usage", {
 
 export type PromoCodeUsage = typeof promoCodeUsage.$inferSelect;
 export type InsertPromoCodeUsage = typeof promoCodeUsage.$inferInsert;
+
+// ─── Referral System ──────────────────────────────────────────────────────────
+export const referralCodes = mysqlTable("referral_codes", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  code: varchar("code", { length: 32 }).unique().notNull(),
+  discountPercentage: int("discountPercentage").default(10).notNull(),
+  maxRedemptions: int("maxRedemptions"),
+  currentRedemptions: int("currentRedemptions").default(0).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  expiresAt: timestamp("expiresAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ReferralCode = typeof referralCodes.$inferSelect;
+export type InsertReferralCode = typeof referralCodes.$inferInsert;
+
+// ─── Referrals (tracking who referred whom) ────────────────────────────────
+export const referrals = mysqlTable("referrals", {
+  id: int("id").autoincrement().primaryKey(),
+  referrerId: int("referrerId").notNull(),
+  referredUserId: int("referredUserId").notNull(),
+  referralCodeId: int("referralCodeId").notNull(),
+  status: mysqlEnum("status", ["pending", "active", "cancelled"]).default("pending").notNull(),
+  discountApplied: decimal("discountApplied", { precision: 10, scale: 2 }).default("0"),
+  commissionEarned: decimal("commissionEarned", { precision: 10, scale: 2 }).default("0"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Referral = typeof referrals.$inferSelect;
+export type InsertReferral = typeof referrals.$inferInsert;
+
+// ─── Referral Rewards ─────────────────────────────────────────────────────
+export const referralRewards = mysqlTable("referral_rewards", {
+  id: int("id").autoincrement().primaryKey(),
+  referrerId: int("referrerId").notNull(),
+  referralId: int("referralId").notNull(),
+  rewardType: mysqlEnum("rewardType", ["commission", "bonus_credit", "subscription_extension"]).notNull(),
+  rewardAmount: decimal("rewardAmount", { precision: 10, scale: 2 }).notNull(),
+  rewardValue: varchar("rewardValue", { length: 64 }),
+  status: mysqlEnum("status", ["pending", "earned", "claimed"]).default("pending").notNull(),
+  claimedAt: timestamp("claimedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ReferralReward = typeof referralRewards.$inferSelect;
+export type InsertReferralReward = typeof referralRewards.$inferInsert;

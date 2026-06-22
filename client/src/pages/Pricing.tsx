@@ -1,10 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
-import { PromoCodeInput } from "@/components/PromoCodeInput";
 import { trpc } from "@/lib/trpc";
-import { toast } from "sonner";
-import { Check, Zap, Crown, Star, Shield, ArrowRight, Lock } from "lucide-react";
+import { Check, Zap, Crown, Star, Shield, Lock, Tag, Loader2 } from "lucide-react";
 
 // ─── Plan meta ────────────────────────────────────────────────────────────────
 
@@ -44,13 +42,12 @@ const FEATURE_ROWS = [
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const NeonCard = ({
-  children, className = "", style = {}, onClick,
+  children, className = "", style = {},
 }: {
-  children: React.ReactNode; className?: string; style?: React.CSSProperties; onClick?: () => void;
+  children: React.ReactNode; className?: string; style?: React.CSSProperties;
 }) => (
   <div
     className={className}
-    onClick={onClick}
     style={{
       background: "rgba(12, 12, 28, 0.9)",
       border: "1px solid rgba(0, 255, 136, 0.12)",
@@ -74,22 +71,92 @@ function CheckMark({ value, color }: { value: boolean; color: string }) {
 
 export default function Pricing() {
   const { isAuthenticated } = useAuth();
-  const [loading, setLoading] = useState<string | null>(null);
   const [showComparison, setShowComparison] = useState(false);
   const [promoCode, setPromoCode] = useState("");
-  const [selectedTier, setSelectedTier] = useState<"daily" | "monthly" | "yearly">("monthly");
-  const [discount, setDiscount] = useState(0);
-  const [finalPrice, setFinalPrice] = useState(0);
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [promoError, setPromoError] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoDiscountType, setPromoDiscountType] = useState<"percentage" | "fixed">("percentage");
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
 
   const { data: plansData } = trpc.subscription.plans.useQuery();
-  const createCheckout = trpc.subscription.createCheckout.useMutation();
-  const validatePromo = trpc.promoCode.validate.useQuery(
-    { code: promoCode, tier: selectedTier },
-    { enabled: promoCode.length > 0 }
-  );
   const { data: mySubscription } = trpc.subscription.mySubscription.useQuery(undefined, {
     enabled: isAuthenticated,
   });
+
+  const [promoValidating, setPromoValidating] = useState(false);
+  const [promoQueryCode, setPromoQueryCode] = useState("");
+
+  const { data: promoResult, error: promoQueryError } = trpc.promoCode.validate.useQuery(
+    { code: promoQueryCode, tier: "monthly" },
+    {
+      enabled: !!promoQueryCode && promoValidating,
+      retry: false,
+    }
+  );
+
+  // Handle promo validation result
+  React.useEffect(() => {
+    if (!promoValidating) return;
+    if (promoResult) {
+      setPromoApplied(true);
+      setPromoError("");
+      setPromoDiscount(promoResult.discount ?? 0);
+      setPromoDiscountType("percentage");
+      setPromoValidating(false);
+    }
+  }, [promoResult, promoValidating]);
+
+  React.useEffect(() => {
+    if (!promoValidating) return;
+    if (promoQueryError) {
+      setPromoApplied(false);
+      setPromoError(promoQueryError.message || "Invalid promo code");
+      setPromoValidating(false);
+    }
+  }, [promoQueryError, promoValidating]);
+
+  const createCheckout = trpc.subscription.createCheckout.useMutation({
+    onSuccess: (data) => {
+      if (data.url) {
+        window.location.href = data.url;
+      }
+      setLoadingTier(null);
+    },
+    onError: (err) => {
+      alert(err.message || "Failed to create checkout session");
+      setLoadingTier(null);
+    },
+  });
+
+  const handleApplyPromo = () => {
+    if (!promoCode.trim()) return;
+    setPromoError("");
+    setPromoApplied(false);
+    setPromoValidating(true);
+    setPromoQueryCode(promoCode.trim());
+  };
+
+  const handleSubscribe = (tier: "daily" | "monthly" | "yearly") => {
+    if (!isAuthenticated) {
+      window.location.href = "/login";
+      return;
+    }
+    setLoadingTier(tier);
+    createCheckout.mutate({
+      tier,
+      origin: window.location.origin,
+      promoCode: promoApplied ? promoCode.trim() : undefined,
+    });
+  };
+
+  const getDiscountedPrice = (amountCents: number) => {
+    if (!promoApplied) return amountCents;
+    if (promoDiscountType === "percentage") {
+      return Math.max(0, amountCents - Math.round((amountCents * promoDiscount) / 100));
+    }
+    return Math.max(0, amountCents - Math.round(promoDiscount * 100));
+  };
 
   // Build ordered plan list from server data or fallback defaults
   const planOrder: Array<"daily" | "monthly" | "yearly"> = ["daily", "monthly", "yearly"];
@@ -103,29 +170,6 @@ export default function Pricing() {
     };
     return { key, ...defaults[key] };
   });
-
-  const handleSubscribe = async (tier: string) => {
-    if (!isAuthenticated) {
-      window.location.href = "/login";
-      return;
-    }
-    setLoading(tier);
-    try {
-      const result = await createCheckout.mutateAsync({
-        tier: tier as "daily" | "monthly" | "yearly",
-        origin: window.location.origin,
-        promoCode: promoCode || undefined,
-      });
-      if (result.url) {
-        toast.success("Redirecting to secure Stripe checkout...");
-        window.open(result.url, "_blank");
-      }
-    } catch (err: any) {
-      toast.error(err?.message ?? "Failed to start checkout. Please try again.");
-    } finally {
-      setLoading(null);
-    }
-  };
 
   const currentTier = mySubscription?.tier ?? "free";
   const isActive = mySubscription?.isActive ?? false;
@@ -192,15 +236,47 @@ export default function Pricing() {
         </div>
 
         {/* Promo code section */}
-        <div className="max-w-md mx-auto mb-8">
-          <PromoCodeInput
-            tier={selectedTier}
-            onPromoApplied={(code, discount, finalPrice) => {
-              setPromoCode(code);
-              setDiscount(discount);
-              setFinalPrice(finalPrice);
-            }}
-          />
+        <div className="max-w-md mx-auto mb-10">
+          <NeonCard className="p-5" style={{ borderColor: promoApplied ? "rgba(0,255,136,0.4)" : "rgba(0,212,255,0.2)" }}>
+            <div className="flex items-center gap-2 mb-3">
+              <Tag className="w-4 h-4" style={{ color: "#00d4ff" }} />
+              <span className="text-sm font-bold tracking-wider" style={{ color: "#00d4ff", fontFamily: "'Exo 2', sans-serif" }}>
+                PROMO CODE
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={promoCode}
+                onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoApplied(false); setPromoError(""); }}
+                placeholder="Enter code (e.g. LAUNCH50)"
+                className="flex-1 px-3 py-2 text-sm rounded"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", color: "white", outline: "none" }}
+              />
+              <button
+                onClick={handleApplyPromo}
+                disabled={promoValidating || !promoCode.trim()}
+                className="px-4 py-2 text-sm font-bold rounded transition-all"
+                style={{
+                  background: promoApplied ? "rgba(0,255,136,0.15)" : "rgba(0,212,255,0.12)",
+                  border: `1px solid ${promoApplied ? "rgba(0,255,136,0.4)" : "rgba(0,212,255,0.3)"}`,
+                  color: promoApplied ? "#00ff88" : "#00d4ff",
+                  cursor: promoValidating ? "wait" : "pointer",
+                  opacity: !promoCode.trim() ? 0.5 : 1,
+                }}
+              >
+                {promoValidating ? "..." : promoApplied ? "✓ Applied" : "Apply"}
+              </button>
+            </div>
+            {promoApplied && (
+              <p className="mt-2 text-xs font-bold" style={{ color: "#00ff88" }}>
+                ✓ {promoDiscountType === "percentage" ? `${promoDiscount}% off` : `$${promoDiscount} off`} applied! Discount will be reflected at checkout.
+              </p>
+            )}
+            {promoError && (
+              <p className="mt-2 text-xs" style={{ color: "#ff4d4d" }}>{promoError}</p>
+            )}
+          </NeonCard>
         </div>
 
         {/* Pricing cards */}
@@ -209,8 +285,12 @@ export default function Pricing() {
             const meta = PLAN_META[plan.key] ?? PLAN_META.monthly;
             const Icon = meta.icon;
             const isCurrent = isActive && currentTier === plan.key;
-            const price = plan.amountCents / 100;
+            const originalPrice = plan.amountCents / 100;
+            const discountedCents = getDiscountedPrice(plan.amountCents);
+            const finalPrice = discountedCents / 100;
+            const hasDiscount = promoApplied && discountedCents < plan.amountCents;
             const isPopular = meta.popular;
+            const isLoading = loadingTier === plan.key;
 
             return (
               <div key={plan.key} className="relative flex flex-col" style={{ transform: isPopular ? "scale(1.03)" : "scale(1)" }}>
@@ -247,17 +327,27 @@ export default function Pricing() {
                   {/* Price */}
                   <div className="mb-6">
                     <div className="flex items-end gap-1">
-                      <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "3rem", color: meta.color, textShadow: `0 0 15px ${meta.glow}`, lineHeight: 1 }}>
-                        ${price % 1 === 0 ? price.toFixed(0) : price.toFixed(2)}
+                      {hasDiscount && (
+                        <span className="mb-1.5 text-lg line-through" style={{ color: "rgba(140,140,170,0.5)" }}>
+                          ${originalPrice.toFixed(2)}
+                        </span>
+                      )}
+                      <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "3rem", color: hasDiscount ? "#00ff88" : meta.color, textShadow: `0 0 15px ${meta.glow}`, lineHeight: 1 }}>
+                        ${finalPrice.toFixed(2)}
                       </span>
                       <span className="mb-1.5 text-sm" style={{ color: "rgba(140,140,170,0.6)" }}>
                         /{plan.key === "daily" ? "day" : plan.key === "monthly" ? "mo" : "yr"}
                       </span>
                     </div>
-                    {plan.key === "yearly" && (
-                      <div className="text-xs mt-1" style={{ color: "#a855f7" }}>= ${(price / 12).toFixed(2)}/mo · Save $16/mo vs monthly</div>
+                    {hasDiscount && (
+                      <div className="text-xs mt-1 font-bold" style={{ color: "#00ff88" }}>
+                        🎉 PROMO APPLIED — You save ${(originalPrice - finalPrice).toFixed(2)}!
+                      </div>
                     )}
-                    {plan.key === "monthly" && (
+                    {plan.key === "yearly" && !hasDiscount && (
+                      <div className="text-xs mt-1" style={{ color: "#a855f7" }}>= ${(originalPrice / 12).toFixed(2)}/mo · Save $16/mo vs monthly</div>
+                    )}
+                    {plan.key === "monthly" && !hasDiscount && (
                       <div className="text-xs mt-1" style={{ color: "rgba(140,140,170,0.5)" }}>Billed monthly · cancel anytime</div>
                     )}
                   </div>
@@ -272,7 +362,7 @@ export default function Pricing() {
                     ))}
                   </ul>
 
-                  {/* CTA */}
+                  {/* CTA — Backend Checkout Session */}
                   {isCurrent ? (
                     <div
                       className="w-full py-3 text-center text-sm font-bold tracking-wider"
@@ -283,25 +373,24 @@ export default function Pricing() {
                   ) : (
                     <button
                       onClick={() => handleSubscribe(plan.key)}
-                      disabled={loading === plan.key}
+                      disabled={isLoading}
                       className="w-full py-3 text-sm font-bold tracking-wider flex items-center justify-center gap-2 transition-all"
                       style={{
-                        background: isPopular ? "#00ff88" : `${meta.color}18`,
+                        background: isPopular ? meta.color : `${meta.color}18`,
                         color: isPopular ? "#080814" : meta.color,
-                        border: `1px solid ${isPopular ? "#00ff88" : `${meta.color}50`}`,
+                        border: `1px solid ${meta.color}50`,
                         borderRadius: "5px",
-                        cursor: loading === plan.key ? "not-allowed" : "pointer",
-                        opacity: loading === plan.key ? 0.7 : 1,
+                        cursor: isLoading ? "wait" : "pointer",
                         fontFamily: "'Exo 2', sans-serif",
-                        boxShadow: isPopular ? "0 0 20px rgba(0,255,136,0.3)" : "none",
+                        boxShadow: isPopular ? `0 0 20px ${meta.glow}` : "none",
                       }}
                     >
-                      {loading === plan.key ? (
-                        <><span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> REDIRECTING...</>
+                      {isLoading ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" /> PROCESSING...</>
                       ) : !isAuthenticated ? (
                         <><Lock className="w-4 h-4" /> SIGN IN TO SUBSCRIBE</>
                       ) : (
-                        <>GET STARTED <ArrowRight className="w-4 h-4" /></>
+                        <><Zap className="w-4 h-4" /> {hasDiscount ? "GET DISCOUNTED ACCESS" : "GET ACCESS NOW"}</>
                       )}
                     </button>
                   )}
@@ -380,7 +469,7 @@ export default function Pricing() {
               Not satisfied? Contact us within 48 hours of your first purchase and we'll issue a full refund — no questions asked.
             </p>
             <div className="mt-4 text-xs" style={{ color: "rgba(140,140,170,0.5)" }}>
-              Payments processed securely by Stripe · Test card: <code style={{ background: "rgba(255,255,255,0.08)", padding: "1px 6px", borderRadius: "3px" }}>4242 4242 4242 4242</code>
+              Payments processed securely by Stripe
             </div>
           </NeonCard>
         </div>

@@ -36,6 +36,7 @@ const ParlayBuilder = lazy(() => import("@/pages/ParlayBuilder"));
 const BankrollTracker = lazy(() => import("@/pages/BankrollTracker"));
 const Referral = lazy(() => import("@/pages/Referral"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
+const SubscriptionDashboard = lazy(() => import("@/pages/SubscriptionDashboard"));
 
 function PageLoader() {
   return (
@@ -77,6 +78,7 @@ function Router() {
         <Route path="/signup" component={SignUp} />
         <Route path="/login" component={Login} />
         <Route path="/account-settings" component={AccountSettings} />
+        <Route path="/subscription-dashboard" component={SubscriptionDashboard} />
         <Route path="/admin/promos" component={AdminPromos} />
         <Route path="/kalshi" component={KalshiMarkets} />
         <Route path="/clv-tracker" component={CLVTracker} />

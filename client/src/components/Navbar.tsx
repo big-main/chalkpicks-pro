@@ -146,6 +146,9 @@ export default function Navbar() {
                       <Link href="/dashboard">My Dashboard</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link href="/subscription-dashboard">Subscription</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link href="/account-settings">Account Settings</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>

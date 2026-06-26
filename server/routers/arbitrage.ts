@@ -47,12 +47,18 @@ const calculateStakes = (oddsA: number, oddsB: number, totalStake: number = 100)
 };
 
 export const arbitrageRouter = router({
-  // Get all active arbitrage opportunities
+  // Get all active arbitrage opportunities with advanced filtering
   getOpportunities: protectedProcedure
     .input(
       z.object({
-        sport: z.string().optional(),
-        minArbitrage: z.number().default(0.01), // 1% minimum
+        sports: z.array(z.string()).default([]),
+        sportsbooks: z.array(z.string()).default([]),
+        minProfitMargin: z.number().default(0.5),
+        maxProfitMargin: z.number().default(5),
+        minGuaranteedProfit: z.number().default(10),
+        eventTimeRange: z.enum(["today", "this_week", "this_month", "all"]).default("all"),
+        sortBy: z.enum(["profit_desc", "profit_asc", "margin_desc", "margin_asc", "time_asc"]).default("profit_desc"),
+        onlyActive: z.boolean().default(true),
         limit: z.number().default(50),
       })
     )
@@ -66,19 +72,58 @@ export const arbitrageRouter = router({
       if (!db) throw new Error("Database not available");
       
       const now = new Date();
+      const conditions = [];
+      
+      // Active status
+      if (input.onlyActive) {
+        conditions.push(eq(arbitrageOpportunities.isActive, true));
+        conditions.push(gt(arbitrageOpportunities.expiresAt, now));
+      }
+      
+      // Profit margin range
+      conditions.push(gt(arbitrageOpportunities.arbitragePercentage, input.minProfitMargin / 100));
+      conditions.push(lt(arbitrageOpportunities.arbitragePercentage, input.maxProfitMargin / 100));
+      
+      // Guaranteed profit minimum
+      conditions.push(gt(arbitrageOpportunities.guaranteedProfit, input.minGuaranteedProfit));
+      
+      // Sports filter
+      if (input.sports.length > 0) {
+        conditions.push(arbitrageOpportunities.sport.inArray(input.sports));
+      }
+      
+      // Event time range
+      if (input.eventTimeRange !== "all") {
+        const today = new Date();
+        let startDate = new Date();
+        
+        if (input.eventTimeRange === "today") {
+          startDate.setHours(0, 0, 0, 0);
+        } else if (input.eventTimeRange === "this_week") {
+          startDate.setDate(startDate.getDate() - startDate.getDay());
+        } else if (input.eventTimeRange === "this_month") {
+          startDate.setDate(1);
+        }
+        
+        conditions.push(gt(arbitrageOpportunities.eventTime, startDate));
+      }
+      
       let query = db
         .select()
         .from(arbitrageOpportunities)
-        .where(
-          and(
-            eq(arbitrageOpportunities.isActive, true),
-            gt(arbitrageOpportunities.expiresAt, now),
-            gt(arbitrageOpportunities.arbitragePercentage, input.minArbitrage)
-          )
-        );
-
-      if (input.sport) {
-        query = query.where(eq(arbitrageOpportunities.sport, input.sport));
+        .where(and(...conditions));
+      
+      // Apply sorting
+      if (input.sortBy === "profit_desc") {
+        query = query.orderBy((t) => [t.guaranteedProfit, "desc"]);
+      } else if (input.sortBy === "profit_asc") {
+        query = query.orderBy((t) => [t.guaranteedProfit, "asc"]);
+      } else if (input.sortBy === "margin_desc") {
+        query = query.orderBy((t) => [t.arbitragePercentage, "desc"]);
+      } else if (input.sortBy === "margin_asc") {
+        query = query.orderBy((t) => [t.arbitragePercentage, "asc"]);
+      } else if (input.sortBy === "time_asc") {
+        query = query.orderBy((t) => [t.eventTime, "asc"]);
       }
 
       const opportunities = await query.limit(input.limit);

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FeatureGate } from "@/components/FeatureGate";
+import { ArbitrageFilters, type ArbitrageFilterOptions } from "@/components/ArbitrageFilters";
 import {
   TrendingUp,
   TrendingDown,
@@ -23,11 +24,29 @@ function ArbitrageFinderContent() {
   const [customOddsA, setCustomOddsA] = useState<string>("-110");
   const [customOddsB, setCustomOddsB] = useState<string>("-110");
   const [customStake, setCustomStake] = useState<string>("100");
-  const [minArbitrage, setMinArbitrage] = useState<string>("0.01");
+  
+  // Filter state
+  const [filters, setFilters] = useState<ArbitrageFilterOptions>({
+    sports: [],
+    minProfitMargin: 0.5,
+    maxProfitMargin: 5,
+    sportsbooks: [],
+    minGuaranteedProfit: 10,
+    eventTimeRange: "all",
+    sortBy: "profit_desc",
+    onlyActive: true,
+  });
 
-  // Fetch opportunities
+  // Fetch opportunities with filters
   const opportunities = trpc.arbitrage.getOpportunities.useQuery({
-    minArbitrage: parseFloat(minArbitrage) || 0.01,
+    sports: filters.sports,
+    sportsbooks: filters.sportsbooks,
+    minProfitMargin: filters.minProfitMargin,
+    maxProfitMargin: filters.maxProfitMargin,
+    minGuaranteedProfit: filters.minGuaranteedProfit,
+    eventTimeRange: filters.eventTimeRange,
+    sortBy: filters.sortBy,
+    onlyActive: filters.onlyActive,
     limit: 50,
   });
 
@@ -70,6 +89,15 @@ function ArbitrageFinderContent() {
               <p className="text-sm text-slate-400">Active Opportunities</p>
             </div>
           </div>
+        </div>
+
+        {/* Filters */}
+        <div className="mb-6">
+          <ArbitrageFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            isLoading={opportunities.isLoading}
+          />
         </div>
 
         {/* Stats Grid */}

@@ -36,6 +36,9 @@ function ArbitrageFinderContent() {
     sortBy: "profit_desc",
     onlyActive: true,
   });
+  
+  // Legacy minArbitrage state (for backward compatibility)
+  const [minArbitrage, setMinArbitrage] = useState<string>("0.5");
 
   // Fetch opportunities with filters
   const opportunities = trpc.arbitrage.getOpportunities.useQuery({

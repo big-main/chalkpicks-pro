@@ -274,6 +274,16 @@
 - [x] Create automation script (setup-gated-feature.py)
 - [x] Validate skill and publish
 
+## Phase 10: Promotions & Design Overhaul (COMPLETE)
+- [x] Implement 5-day free trial logic in Stripe and backend
+- [x] Create $5 for $100 promotional credit offer
+- [x] Update database schema with accountBalance and trial fields
+- [x] Redesign Home and Pricing pages with high-impact "Design B" neon cyber theme
+- [x] Integrate ad-inspired graphics, neon green accents, and gritty textures
+- [x] Add account balance display to user dashboard
+- [x] Create hidden admin elevation tool for initial setup
+- [x] Generate promotional ad assets for social media
+
 ## Remaining Items
 - [ ] Add bet history export (CSV/PDF) functionality
 - [ ] Implement pick ranking by EV edge across 18+ sportsbooks

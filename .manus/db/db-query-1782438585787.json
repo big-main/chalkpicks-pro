@@ -1,0 +1,22 @@
+{
+  "query": "\nSELECT \n  COUNT(*) as total_opportunities,\n  ROUND(AVG(CAST(arbitragePercentage AS DECIMAL(5,4))), 4) as avg_arbitrage_percentage,\n  ROUND(MAX(CAST(arbitragePercentage AS DECIMAL(5,4))), 4) as max_arbitrage_percentage,\n  ROUND(MIN(CAST(arbitragePercentage AS DECIMAL(5,4))), 4) as min_arbitrage_percentage,\n  COUNT(CASE WHEN isActive = 1 THEN 1 END) as active_opportunities,\n  COUNT(CASE WHEN isActive = 0 THEN 1 END) as inactive_opportunities,\n  ROUND(AVG(CAST(profitPercentage AS DECIMAL(5,4))), 4) as avg_profit_percentage\nFROM arbitrage_opportunities;\n\nSELECT \n  sport,\n  COUNT(*) as opportunities_count,\n  ROUND(AVG(CAST(arbitragePercentage AS DECIMAL(5,4))), 4) as avg_edge,\n  COUNT(CASE WHEN isActive = 1 THEN 1 END) as active_count\nFROM arbitrage_opportunities\nGROUP BY sport\nORDER BY opportunities_count DESC;\n\nSELECT \n  DATE(createdAt) as date,\n  COUNT(*) as opportunities_found,\n  ROUND(AVG(CAST(arbitragePercentage AS DECIMAL(5,4))), 4) as avg_edge,\n  COUNT(CASE WHEN isActive = 1 THEN 1 END) as active_count\nFROM arbitrage_opportunities\nWHERE createdAt >= DATE_SUB(NOW(), INTERVAL 7 DAY)\nGROUP BY DATE(createdAt)\nORDER BY date DESC;\n\nSELECT \n  COUNT(*) as total_trades,\n  COUNT(CASE WHEN executedAt IS NOT NULL THEN 1 END) as executed_trades,\n  COUNT(CASE WHEN resultA = 'won' OR resultB = 'won' THEN 1 END) as winning_trades,\n  ROUND(AVG(CAST(totalWinnings AS DECIMAL(10,2))), 2) as avg_winnings\nFROM user_arbitrage_trades;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4KDcFVgMZb4NWgA.root --database XUi7Hd5RzDcuAESzHPA75p --execute \nSELECT \n  COUNT(*) as total_opportunities,\n  ROUND(AVG(CAST(arbitragePercentage AS DECIMAL(5,4))), 4) as avg_arbitrage_percentage,\n  ROUND(MAX(CAST(arbitragePercentage AS DECIMAL(5,4))), 4) as max_arbitrage_percentage,\n  ROUND(MIN(CAST(arbitragePercentage AS DECIMAL(5,4))), 4) as min_arbitrage_percentage,\n  COUNT(CASE WHEN isActive = 1 THEN 1 END) as active_opportunities,\n  COUNT(CASE WHEN isActive = 0 THEN 1 END) as inactive_opportunities,\n  ROUND(AVG(CAST(profitPercentage AS DECIMAL(5,4))), 4) as avg_profit_percentage\nFROM arbitrage_opportunities;\n\nSELECT \n  sport,\n  COUNT(*) as opportunities_count,\n  ROUND(AVG(CAST(arbitragePercentage AS DECIMAL(5,4))), 4) as avg_edge,\n  COUNT(CASE WHEN isActive = 1 THEN 1 END) as active_count\nFROM arbitrage_opportunities\nGROUP BY sport\nORDER BY opportunities_count DESC;\n\nSELECT \n  DATE(createdAt) as date,\n  COUNT(*) as opportunities_found,\n  ROUND(AVG(CAST(arbitragePercentage AS DECIMAL(5,4))), 4) as avg_edge,\n  COUNT(CASE WHEN isActive = 1 THEN 1 END) as active_count\nFROM arbitrage_opportunities\nWHERE createdAt >= DATE_SUB(NOW(), INTERVAL 7 DAY)\nGROUP BY DATE(createdAt)\nORDER BY date DESC;\n\nSELECT \n  COUNT(*) as total_trades,\n  COUNT(CASE WHEN executedAt IS NOT NULL THEN 1 END) as executed_trades,\n  COUNT(CASE WHEN resultA = 'won' OR resultB = 'won' THEN 1 END) as winning_trades,\n  ROUND(AVG(CAST(totalWinnings AS DECIMAL(10,2))), 2) as avg_winnings\nFROM user_arbitrage_trades;\n",
+  "rows": [
+    {
+      "total_opportunities": "0",
+      "avg_arbitrage_percentage": "NULL",
+      "max_arbitrage_percentage": "NULL",
+      "min_arbitrage_percentage": "NULL",
+      "active_opportunities": "0",
+      "inactive_opportunities": "0",
+      "avg_profit_percentage": "NULL"
+    }
+  ],
+  "messages": [
+    "total_trades\texecuted_trades\twinning_trades\tavg_winnings",
+    "0\t0\t0\tNULL"
+  ],
+  "stdout": "total_opportunities\tavg_arbitrage_percentage\tmax_arbitrage_percentage\tmin_arbitrage_percentage\tactive_opportunities\tinactive_opportunities\tavg_profit_percentage\n0\tNULL\tNULL\tNULL\t0\t0\tNULL\ntotal_trades\texecuted_trades\twinning_trades\tavg_winnings\n0\t0\t0\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 286
+}

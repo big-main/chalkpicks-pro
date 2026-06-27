@@ -232,7 +232,7 @@ export default function Home() {
                   }}
                   onClick={() => (window.location.href = "/signup")}
                 >
-                  START 5-DAY FREE TRIAL <ArrowRight className="w-4 h-4" />
+                  GET STARTED NOW <ArrowRight className="w-4 h-4" />
                 </button>
               )}
               <Link href="/pricing">
@@ -247,12 +247,12 @@ export default function Home() {
                     cursor: "pointer",
                   }}
                 >
-                  PAY $5, GET $100 CREDIT
+                  VIEW PRICING PLANS
                 </button>
               </Link>
             </div>
             <p className="text-xs text-muted-foreground/60 mb-16 uppercase tracking-widest font-bold">
-              Limited Time Offer — No Cost, Cancel Anytime
+              Daily · Monthly · Yearly Plans — Cancel Anytime
             </p>
 
             {/* Stats bar */}
@@ -859,7 +859,7 @@ export default function Home() {
             {/* Brand */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <img src="/manus-storage/IMG_8342_a95475aa.PNG" alt="ChalkPicks" className="h-8 w-auto" />
+                <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp" alt="ChalkPicks" className="h-10 w-auto" style={{ filter: 'drop-shadow(0 0 8px rgba(0,255,136,0.4))' }} />
               </div>
               <p className="text-sm" style={{ color: "rgba(140,140,170,0.7)", lineHeight: 1.6 }}>
                 AI-powered sports betting analytics. Beat the books with data-driven picks.

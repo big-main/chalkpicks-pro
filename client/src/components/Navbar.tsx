@@ -87,10 +87,10 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
             <img
-              src="https://chalkpicks-xui7hd5r.manus.space/manus-storage/IMG_8342_a95475aa.PNG"
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp"
               alt="ChalkPicks"
-              className="h-10 w-auto transition-all group-hover:scale-105"
-              style={{ filter: "drop-shadow(0 0 8px rgba(0,255,136,0.3))" }}
+              className="h-12 w-auto transition-all group-hover:scale-105"
+              style={{ filter: "drop-shadow(0 0 12px rgba(0,255,136,0.5))" }}
             />
           </Link>
 

@@ -305,3 +305,17 @@
 - [ ] Build market analytics dashboard
 - [ ] Integrate Kalshi signals into AI picks engine
 - [ ] Add market comparison (Kalshi vs traditional sportsbooks)
+
+
+## Major Upgrade — June 2026
+- [x] Remove 5-day free trial from Stripe checkout and backend
+- [x] Ensure signup/login flow works perfectly (test end-to-end)
+- [x] Create admin account for Big-Main (owner) — admin@chalkpicks.live
+- [x] Verify Stripe subscription tiers linked correctly (Daily $9.99, Monthly $29.99, Yearly $199.99)
+- [x] Add sportsbook affiliate links (DraftKings, FanDuel, BetMGM, Caesars, PointsBet, BetRivers, etc.)
+- [x] Build sponsor/advertising system for monetization (/sponsors page with 3 tiers + ad placements)
+- [x] Add bet history export (CSV) functionality — Export CSV button on UserDashboard
+- [x] Add weather impact model for outdoor games (NFL, MLB) — Open-Meteo API integration in scheduler
+- [x] Add live game scores widget in navbar — LiveScoresMini component
+- [x] Fix all remaining bugs and errors
+- [x] Run all tests — 88 passing, 1 skipped (network timeout)

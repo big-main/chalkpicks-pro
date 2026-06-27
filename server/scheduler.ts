@@ -12,14 +12,86 @@ const DAILY_MATCHUPS = [
   { sportKey: "nba", homeTeam: "Denver Nuggets", awayTeam: "Phoenix Suns", pickType: "player_prop" as const },
 ];
 
+async function getWeatherContext(sportKey: string, homeTeam: string): Promise<string> {
+  // Only relevant for outdoor sports
+  if (!['nfl', 'mlb', 'ncaaf'].includes(sportKey)) return '';
+  
+  // Map teams to approximate cities for weather context
+  const TEAM_CITIES: Record<string, string> = {
+    'Kansas City Chiefs': 'Kansas City, MO',
+    'Las Vegas Raiders': 'Las Vegas, NV',
+    'Los Angeles Dodgers': 'Los Angeles, CA',
+    'San Francisco Giants': 'San Francisco, CA',
+    'Chicago Bears': 'Chicago, IL',
+    'Green Bay Packers': 'Green Bay, WI',
+    'New England Patriots': 'Boston, MA',
+    'Buffalo Bills': 'Buffalo, NY',
+    'Denver Broncos': 'Denver, CO',
+    'Seattle Seahawks': 'Seattle, WA',
+    'Miami Dolphins': 'Miami, FL',
+    'Dallas Cowboys': 'Dallas, TX',
+    'New York Giants': 'New York, NY',
+    'Philadelphia Eagles': 'Philadelphia, PA',
+    'Pittsburgh Steelers': 'Pittsburgh, PA',
+    'Baltimore Ravens': 'Baltimore, MD',
+  };
+  
+  const city = TEAM_CITIES[homeTeam];
+  if (!city) return '';
+  
+  try {
+    // Use Open-Meteo free API (no key required)
+    const [lat, lon] = await getCityCoords(city);
+    if (!lat || !lon) return '';
+    
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m,precipitation,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) return '';
+    const data = await res.json() as any;
+    const c = data.current;
+    const temp = Math.round(c.temperature_2m);
+    const wind = Math.round(c.wind_speed_10m);
+    const precip = c.precipitation;
+    const code = c.weather_code;
+    const condition = code >= 80 ? 'rainy/stormy' : code >= 51 ? 'drizzle' : code >= 3 ? 'cloudy' : 'clear';
+    return `Weather at ${city}: ${temp}°F, ${wind} mph wind, ${precip}mm precip, ${condition} conditions.`;
+  } catch {
+    return '';
+  }
+}
+
+async function getCityCoords(city: string): Promise<[number, number]> {
+  const COORDS: Record<string, [number, number]> = {
+    'Kansas City, MO': [39.0997, -94.5786],
+    'Las Vegas, NV': [36.1699, -115.1398],
+    'Los Angeles, CA': [34.0522, -118.2437],
+    'San Francisco, CA': [37.7749, -122.4194],
+    'Chicago, IL': [41.8781, -87.6298],
+    'Green Bay, WI': [44.5133, -88.0133],
+    'Boston, MA': [42.3601, -71.0589],
+    'Buffalo, NY': [42.8864, -78.8784],
+    'Denver, CO': [39.7392, -104.9903],
+    'Seattle, WA': [47.6062, -122.3321],
+    'Miami, FL': [25.7617, -80.1918],
+    'Dallas, TX': [32.7767, -96.7970],
+    'New York, NY': [40.7128, -74.0060],
+    'Philadelphia, PA': [39.9526, -75.1652],
+    'Pittsburgh, PA': [40.4406, -79.9959],
+    'Baltimore, MD': [39.2904, -76.6122],
+  };
+  return COORDS[city] ?? [0, 0];
+}
+
 async function generatePickForMatchup(matchup: typeof DAILY_MATCHUPS[0], date: string) {
   try {
+    const weatherContext = await getWeatherContext(matchup.sportKey, matchup.homeTeam);
+    const weatherSection = weatherContext ? `\nWeather Conditions: ${weatherContext}\nConsider weather impact on totals, passing game, and scoring.` : '';
     const prompt = `You are an expert sports betting analyst. Generate a betting pick for this matchup:
 Sport: ${matchup.sportKey.toUpperCase()}
 Home Team: ${matchup.homeTeam}
 Away Team: ${matchup.awayTeam}
 Bet Type: ${matchup.pickType}
-Date: ${date}
+Date: ${date}${weatherSection}
 
 Respond with JSON only:
 {

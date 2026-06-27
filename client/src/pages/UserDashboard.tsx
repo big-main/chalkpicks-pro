@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "wouter";
-import { Plus, TrendingUp, TrendingDown, Target, DollarSign, Trophy, CheckCircle2, XCircle, Clock, Trash2, Crown } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, Target, DollarSign, Trophy, CheckCircle2, XCircle, Clock, Trash2, Crown, Download } from "lucide-react";
 import { toast } from "sonner";
 import DashboardMetrics from "@/components/DashboardMetrics";
 import {
@@ -150,6 +150,37 @@ export default function UserDashboard() {
                     <DollarSign className="w-3 h-3" /> Balance: ${(mySubscription.accountBalance / 100).toFixed(2)}
                   </Badge>
                 )}
+                <Button
+                  variant="outline"
+                  className="h-9 text-sm font-bold"
+                  onClick={() => {
+                    if (!betsData?.bets?.length) { toast.error("No bets to export"); return; }
+                    const header = ["Date","Description","Sport","Type","Odds","Stake","Payout","Result","Profit/Loss","Notes"];
+                    const rows = (betsData.bets as any[]).map((b: any) => [
+                      b.betDate ?? new Date(b.createdAt).toISOString().split("T")[0],
+                      `"${(b.description ?? "").replace(/"/g, '""')}"`,
+                      b.sportKey ?? "",
+                      b.betType ?? "",
+                      b.odds?.toString() ?? "",
+                      b.stake?.toString() ?? "",
+                      b.potentialPayout?.toString() ?? "",
+                      b.result ?? "pending",
+                      b.profit?.toString() ?? "0",
+                      `"${(b.notes ?? "").replace(/"/g, '""')}"`
+                    ]);
+                    const csv = [header.join(","), ...rows.map((r: any[]) => r.join(","))].join("\n");
+                    const blob = new Blob([csv], { type: "text/csv" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `chalkpicks-bets-${new Date().toISOString().split("T")[0]}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    toast.success("Bet history exported!");
+                  }}
+                >
+                  <Download className="w-4 h-4 mr-1.5" /> Export CSV
+                </Button>
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                   <DialogTrigger asChild>
                     <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold h-9">

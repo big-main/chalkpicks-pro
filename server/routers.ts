@@ -9,7 +9,7 @@ import { publicProcedure, router } from "./_core/trpc";
 import { picksRouter } from "./routers/picks";
 import { statsRouter } from "./routers/stats";
 import { backtestRouter } from "./routers/backtest";
-import { betsRouter } from "./routers/bets";
+import { betsRouter, betsExportRouter } from "./routers/bets";
 import { leaderboardRouter } from "./routers/leaderboard";
 import { subscriptionRouter } from "./routers/subscription";
 import { notificationsRouter } from "./routers/notificationsRouter";
@@ -130,6 +130,7 @@ export const appRouter = router({
   stats: statsRouter,
   backtest: backtestRouter,
   bets: betsRouter,
+  betsExport: betsExportRouter,
   leaderboard: leaderboardRouter,
   subscription: subscriptionRouter,
   notifications: notificationsRouter,

@@ -11,8 +11,39 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
-import { Menu, X, Zap, ChevronDown, Bell, Crown, TrendingUp, BarChart3, Calculator, Layers } from "lucide-react";
+import { Menu, X, Zap, ChevronDown, Bell, Crown, TrendingUp, BarChart3, Calculator, Layers, Activity } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+
+function LiveScoresMini() {
+  const { data: games } = trpc.stats.allGames.useQuery(undefined, {
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+  });
+  const liveGames = (games ?? []).filter((g: any) => g.status === 'in_progress' || g.status === 'live').slice(0, 5);
+  if (!liveGames.length) return null;
+  return (
+    <div
+      className="hidden lg:flex items-center gap-4 overflow-x-auto px-4 py-1 text-[11px]"
+      style={{ background: 'rgba(0,255,136,0.04)', borderBottom: '1px solid rgba(0,255,136,0.08)' }}
+    >
+      <div className="flex items-center gap-1 flex-shrink-0" style={{ color: '#00ff88' }}>
+        <Activity className="w-3 h-3 animate-pulse" />
+        <span className="font-bold tracking-widest" style={{ fontFamily: "'Exo 2', sans-serif" }}>LIVE</span>
+      </div>
+      {liveGames.map((g: any, i: number) => (
+        <div key={i} className="flex items-center gap-1.5 flex-shrink-0" style={{ color: 'rgba(200,200,220,0.75)' }}>
+          <span className="font-bold" style={{ color: 'white' }}>{g.awayTeam}</span>
+          <span style={{ color: '#00ff88', fontWeight: 700 }}>{g.awayScore ?? 0}</span>
+          <span style={{ color: 'rgba(140,140,170,0.4)' }}>@</span>
+          <span className="font-bold" style={{ color: 'white' }}>{g.homeTeam}</span>
+          <span style={{ color: '#00ff88', fontWeight: 700 }}>{g.homeScore ?? 0}</span>
+          {g.period && <span className="text-[10px]" style={{ color: 'rgba(140,140,170,0.5)' }}>{g.period}</span>}
+          {i < liveGames.length - 1 && <span className="ml-2" style={{ color: 'rgba(0,255,136,0.2)' }}>|</span>}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const navLinks = [
   { href: "/picks", label: "Picks" },
@@ -23,6 +54,7 @@ const navLinks = [
   { href: "/kalshi", label: "Kalshi" },
   { href: "/clv-tracker", label: "CLV" },
   { href: "/arbitrage", label: "Arbitrage" },
+  { href: "/sportsbooks", label: "Sportsbooks" },
   { href: "/tools", label: "Tools" },
   { href: "/referral", label: "Referral" },
   { href: "/pricing", label: "Pricing" },
@@ -49,6 +81,7 @@ export default function Navbar() {
         borderBottom: "1px solid rgba(0, 255, 136, 0.12)",
       }}
     >
+      <LiveScoresMini />
       <div className="container">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

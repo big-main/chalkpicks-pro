@@ -164,3 +164,34 @@ export const betsRouter = router({
     };
   }),
 });
+
+// Export endpoint — returns all bets as CSV string
+export const betsExportRouter = router({
+  exportCSV: protectedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+    const allBets = await db
+      .select()
+      .from(userBets)
+      .where(eq(userBets.userId, ctx.user.id))
+      .orderBy(desc(userBets.createdAt));
+
+    const header = ["Date", "Description", "Sport", "Type", "Odds", "Stake", "Payout", "Result", "Profit/Loss", "Notes"];
+    const rows = allBets.map((b) => [
+      b.betDate ?? (b.createdAt ? new Date(b.createdAt).toISOString().split("T")[0] : ""),
+      `"${(b.description ?? "").replace(/"/g, '""')}"`,
+      b.sportKey ?? "",
+      b.betType ?? "",
+      b.odds?.toString() ?? "",
+      b.stake?.toString() ?? "",
+      b.potentialPayout?.toString() ?? "",
+      b.result ?? "pending",
+      b.profit?.toString() ?? "0",
+      `"${(b.notes ?? "").replace(/"/g, '""')}"`,
+    ]);
+
+    const csv = [header.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    return { csv, filename: `chalkpicks-bets-${new Date().toISOString().split("T")[0]}.csv` };
+  }),
+});

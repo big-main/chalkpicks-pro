@@ -38,6 +38,8 @@ const Referral = lazy(() => import("@/pages/Referral"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const SubscriptionDashboard = lazy(() => import("@/pages/SubscriptionDashboard"));
 const ArbitrageFinder = lazy(() => import("@/pages/ArbitrageFinder"));
+const Sportsbooks = lazy(() => import("@/pages/Sportsbooks"));
+const Sponsors = lazy(() => import("@/pages/Sponsors"));
 
 function PageLoader() {
   return (
@@ -88,6 +90,8 @@ function Router() {
         <Route path="/referral" component={Referral} />
         <Route path="/onboarding" component={Onboarding} />
         <Route path="/arbitrage" component={ArbitrageFinder} />
+        <Route path="/sportsbooks" component={Sportsbooks} />
+        <Route path="/sponsors" component={Sponsors} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

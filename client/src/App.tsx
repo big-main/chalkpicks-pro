@@ -40,6 +40,7 @@ const SubscriptionDashboard = lazy(() => import("@/pages/SubscriptionDashboard")
 const ArbitrageFinder = lazy(() => import("@/pages/ArbitrageFinder"));
 const Sportsbooks = lazy(() => import("@/pages/Sportsbooks"));
 const Sponsors = lazy(() => import("@/pages/Sponsors"));
+const AdminPanel = lazy(() => import("@/pages/AdminPanel"));
 
 function PageLoader() {
   return (
@@ -92,6 +93,7 @@ function Router() {
         <Route path="/arbitrage" component={ArbitrageFinder} />
         <Route path="/sportsbooks" component={Sportsbooks} />
         <Route path="/sponsors" component={Sponsors} />
+        <Route path="/admin" component={AdminPanel} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

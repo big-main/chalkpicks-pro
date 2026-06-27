@@ -1,0 +1,32 @@
+{
+  "name": "ChalkPicks — AI Sports Betting Analytics",
+  "short_name": "ChalkPicks",
+  "description": "AI-powered sports betting picks with confidence scores, +EV finder, steam move detector, and CLV tracker.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#00ff88",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["sports", "finance", "utilities"],
+  "screenshots": [
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-og-image-7aYW8gXvMNjJG4DGWdRwYR.png",
+      "sizes": "1200x630",
+      "type": "image/png"
+    }
+  ]
+}

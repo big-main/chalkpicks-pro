@@ -11,7 +11,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
-import { Menu, X, Zap, ChevronDown, Bell, Crown, TrendingUp, BarChart3, Calculator, Layers, Activity } from "lucide-react";
+import { Menu, X, Zap, ChevronDown, Bell, Crown, TrendingUp, BarChart3, Calculator, Layers, Activity, Shield } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 function LiveScoresMini() {
@@ -191,6 +191,17 @@ export default function Navbar() {
                     <DropdownMenuItem asChild>
                       <Link href="/pricing">Upgrade Plan</Link>
                     </DropdownMenuItem>
+                    {user?.role === "admin" && (
+                      <>
+                        <DropdownMenuSeparator style={{ borderColor: "rgba(0,255,136,0.1)" }} />
+                        <DropdownMenuItem asChild>
+                          <Link href="/admin" className="flex items-center gap-2" style={{ color: "#00ff88" }}>
+                            <Shield className="w-3 h-3" />
+                            Admin Panel
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
                     <DropdownMenuSeparator style={{ borderColor: "rgba(0,255,136,0.1)" }} />
                     <DropdownMenuItem
                       onClick={() => logout()}

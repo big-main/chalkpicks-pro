@@ -237,7 +237,7 @@
 - [ ] Add application review workflow (hand-reviewed applications with 24-hour response)
 - [ ] Wire tier system to feature access (premium features locked behind tier)
 - [ ] Add "projected P&L YTD" calculation to user dashboard
-- [ ] Create admin panel for reviewing applications
+- [x] Create admin panel for reviewing applications — /admin route with overview, user mgmt, subscriptions, picks engine tabs
 - [ ] Test Edge Terminal features end-to-end
 
 
@@ -297,7 +297,7 @@
 - [ ] Add application review workflow for Edge Terminal
 - [ ] Wire tier system to feature access (premium features locked behind tier)
 - [ ] Add "projected P&L YTD" calculation to user dashboard
-- [ ] Create admin panel for reviewing applications
+- [x] Create admin panel for reviewing applications — /admin route with overview, user mgmt, subscriptions, picks engine tabs
 - [ ] Test Edge Terminal features end-to-end
 - [x] Add weather impact model for outdoor games (NFL, MLB) — Open-Meteo API in scheduler
 - [ ] Add real scores/results feed via API (future)
@@ -319,3 +319,15 @@
 - [x] Add live game scores widget in navbar — LiveScoresMini component
 - [x] Fix all remaining bugs and errors
 - [x] Run all tests — 88 passing, 1 skipped (network timeout)
+
+## Logo & Site-Wide Update — June 2026
+- [x] Generate enhanced ChalkPicks logo (neon cyber checkmark + lightning bolt mark)
+- [x] Deploy new logo to navbar, footer, auth pages, hero section
+- [x] Generate favicon.ico and PWA manifest.json with new branding
+- [x] Update OG/Twitter meta tags and social preview image
+- [x] Update README.md with accurate feature list (removed free trial references)
+- [x] Add Admin Panel (/admin) with overview, subscriptions, picks engine tabs
+- [x] Add Admin Panel link to user dropdown (visible to admins only)
+- [x] 0 TypeScript errors after all changes
+- [ ] Implement full application review workflow in admin panel (future enhancement)
+- [ ] Add projected P&L YTD to user dashboard (future enhancement)

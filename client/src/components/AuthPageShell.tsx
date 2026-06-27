@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Zap } from "lucide-react";
+
+const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp";
 
 interface AuthPageShellProps {
   children: React.ReactNode;
@@ -13,11 +14,13 @@ export default function AuthPageShell({ children, rightLink }: AuthPageShellProp
       <div className="border-b" style={{ borderColor: "rgba(0,212,255,0.1)" }}>
         <div className="container h-16 flex items-center justify-between">
           <Link href="/">
-            <a className="flex items-center gap-2">
-              <Zap className="w-6 h-6" style={{ color: "#00ff88" }} />
-              <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.25rem", textTransform: "uppercase", color: "white" }}>
-                ChalkPicks
-              </span>
+            <a className="flex items-center gap-2 group">
+              <img
+                src={LOGO_URL}
+                alt="ChalkPicks"
+                className="h-10 w-auto transition-all group-hover:scale-105"
+                style={{ filter: "drop-shadow(0 0 10px rgba(0,255,136,0.4))" }}
+              />
             </a>
           </Link>
           <Link href={rightLink.href}>
@@ -43,7 +46,7 @@ export default function AuthPageShell({ children, rightLink }: AuthPageShellProp
 
       <div style={{ borderTop: "1px solid rgba(0,212,255,0.1)", padding: "2rem", textAlign: "center" }}>
         <p style={{ color: "#666", fontSize: "0.875rem" }}>
-          © 2026 ChalkPicks Pro. All rights reserved.
+          © 2026 ChalkPicks. All rights reserved.
         </p>
       </div>
     </div>

@@ -390,5 +390,5 @@ function BankrollTrackerContent() {
 }
 
 export default function BankrollTracker() {
-  return <FeatureGate feature="bankroll_tracker" fallbackComponent={<BankrollTrackerContent />} />;
+  return <FeatureGate feature="bankroll_tracker" children={<BankrollTrackerContent />} />;
 }

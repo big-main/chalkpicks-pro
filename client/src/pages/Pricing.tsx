@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
@@ -189,7 +190,7 @@ export default function Pricing() {
     setPromoQueryCode(promoCode.trim());
   };
 
-  const handleSubscribe = (tier: "daily" | "monthly" | "yearly") => {
+  const handleSubscribe = (tier: "trial" | "credit" | "daily" | "monthly" | "yearly") => {
     if (!isAuthenticated) {
       window.location.href = "/login";
       return;

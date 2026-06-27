@@ -52,21 +52,25 @@ export function registerStripeWebhook(app: express.Application) {
 
             const now = new Date();
             let expiresAt = new Date(now);
-            let subscriptionTier = tier;
+            let subscriptionTier: "trial" | "daily" | "monthly" | "yearly" = "trial";
             let accountBalanceToAdd = 0;
 
             if (tier === "trial") {
+              subscriptionTier = "trial";
               expiresAt.setDate(expiresAt.getDate() + 5);
             } else if (tier === "credit") {
               // Credit offer: add $100 to account balance
               accountBalanceToAdd = 10000; // $100 in cents
               subscriptionTier = "trial";
-              expiresAt = null as any;
+              expiresAt.setDate(expiresAt.getDate() + 5);
             } else if (tier === "daily") {
+              subscriptionTier = "daily";
               expiresAt.setDate(expiresAt.getDate() + 1);
             } else if (tier === "monthly") {
+              subscriptionTier = "monthly";
               expiresAt.setMonth(expiresAt.getMonth() + 1);
             } else {
+              subscriptionTier = "yearly";
               expiresAt.setFullYear(expiresAt.getFullYear() + 1);
             }
 
@@ -78,7 +82,7 @@ export function registerStripeWebhook(app: express.Application) {
             await db.update(users).set({
               ...(tier !== "credit" ? { subscriptionTier } : {}),
               ...(tier !== "credit" ? { subscriptionExpiresAt: expiresAt } : {}),
-              accountBalance: newBalance,
+              accountBalance: String(newBalance),
               stripeSubscriptionId: session.subscription?.toString() ?? null,
             }).where(eq(users.id, userId));
 

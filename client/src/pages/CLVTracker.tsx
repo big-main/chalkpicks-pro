@@ -87,7 +87,7 @@ function CLVTrackerContent() {
               <CardTitle className="text-sm font-medium text-slate-400">ROI (Pos CLV)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-purple-400">{stats.roiWithPositiveCLV.toFixed(1)}%</div>
+              <div className="text-3xl font-bold text-purple-400">{stats.profitWithPositiveCLV.toFixed(1)}%</div>
               <p className="text-xs text-slate-500 mt-1">Return on positive edge bets</p>
             </CardContent>
           </Card>
@@ -142,8 +142,8 @@ function CLVTrackerContent() {
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
                         <p className="text-slate-400">Avg CLV</p>
-                        <p className={type.avgClv >= 0 ? "text-emerald-400 font-semibold" : "text-red-400 font-semibold"}>
-                          {type.avgClv.toFixed(2)}%
+                        <p className={type.averageCLV >= 0 ? "text-emerald-400 font-semibold" : "text-red-400 font-semibold"}>
+                          {type.averageCLV.toFixed(2)}%
                         </p>
                       </div>
                       <div>
@@ -152,8 +152,8 @@ function CLVTrackerContent() {
                       </div>
                       <div>
                         <p className="text-slate-400">ROI</p>
-                        <p className={type.roi >= 0 ? "text-purple-400 font-semibold" : "text-red-400 font-semibold"}>
-                          {type.roi.toFixed(1)}%
+                        <p className={type.totalProfit >= 0 ? "text-purple-400 font-semibold" : "text-red-400 font-semibold"}>
+                          {(type.totalProfit / (type.count * 100)).toFixed(1)}%
                         </p>
                       </div>
                     </div>
@@ -177,8 +177,8 @@ function CLVTrackerContent() {
               <div className="space-y-3">
                 {bestBets && bestBets.map((bet, idx) => (
                   <div key={idx} className="p-3 bg-slate-900 rounded border border-emerald-500/20">
-                    <p className="text-sm text-white font-semibold">{bet.pick}</p>
-                    <p className="text-xs text-slate-400 mt-1">CLV: {bet.clv.toFixed(2)}%</p>
+                    <p className="text-sm text-white font-semibold">{bet.description}</p>
+                    <p className="text-xs text-slate-400 mt-1">Stake: ${Number(bet.stake).toFixed(2)}</p>
                   </div>
                 ))}
               </div>
@@ -196,8 +196,8 @@ function CLVTrackerContent() {
               <div className="space-y-3">
                 {worstBets && worstBets.map((bet, idx) => (
                   <div key={idx} className="p-3 bg-slate-900 rounded border border-red-500/20">
-                    <p className="text-sm text-white font-semibold">{bet.pick}</p>
-                    <p className="text-xs text-slate-400 mt-1">CLV: {bet.clv.toFixed(2)}%</p>
+                    <p className="text-sm text-white font-semibold">{bet.description}</p>
+                    <p className="text-xs text-slate-400 mt-1">Stake: ${Number(bet.stake).toFixed(2)}</p>
                   </div>
                 ))}
               </div>
@@ -215,7 +215,17 @@ function CLVTrackerContent() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-300 leading-relaxed">{insights}</p>
+              {Array.isArray(insights) ? (
+                <ul className="space-y-2">
+                  {insights.map((insight: any, idx: number) => (
+                    <li key={idx} className="text-slate-300 text-sm">
+                      <strong>{insight.title}:</strong> {insight.message}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-slate-300 leading-relaxed">{insights}</p>
+              )}
             </CardContent>
           </Card>
         )}

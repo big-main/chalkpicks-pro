@@ -192,21 +192,25 @@ export const subscriptionRouter = router({
 
       const now = new Date();
       let expiresAt = new Date(now);
-      let subscriptionTier = input.tier;
+      let subscriptionTier: "trial" | "daily" | "monthly" | "yearly" = "trial";
       let accountBalanceToAdd = 0;
 
       if (input.tier === "trial") {
+        subscriptionTier = "trial";
         expiresAt.setDate(expiresAt.getDate() + 5);
       } else if (input.tier === "credit") {
         // Credit offer: add $100 to account balance, keep existing subscription tier
         accountBalanceToAdd = 10000; // $100 in cents
         subscriptionTier = "trial"; // Keep as trial for credit offer
-        expiresAt = null as any; // No expiration for credit
+        expiresAt.setDate(expiresAt.getDate() + 5);
       } else if (input.tier === "daily") {
+        subscriptionTier = "daily";
         expiresAt.setDate(expiresAt.getDate() + 1);
       } else if (input.tier === "monthly") {
+        subscriptionTier = "monthly";
         expiresAt.setMonth(expiresAt.getMonth() + 1);
       } else {
+        subscriptionTier = "yearly";
         expiresAt.setFullYear(expiresAt.getFullYear() + 1);
       }
 
@@ -218,7 +222,7 @@ export const subscriptionRouter = router({
       await db.update(users).set({
         ...(input.tier !== "credit" ? { subscriptionTier } : {}),
         ...(input.tier !== "credit" ? { subscriptionExpiresAt: expiresAt } : {}),
-        accountBalance: newBalance,
+        accountBalance: String(newBalance),
         stripeSubscriptionId: session?.subscription?.toString() ?? null,
       }).where(eq(users.id, ctx.user.id));
 

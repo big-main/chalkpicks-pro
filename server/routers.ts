@@ -25,6 +25,8 @@ import { featureRouter } from "./routers/features";
 import { arbitrageRouter } from "./routers/arbitrage";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
+import { users } from "../drizzle/schema";
+import { eq } from "drizzle-orm";
 import type { Response, Request } from "express";
 
 function safeUser(user: User) {

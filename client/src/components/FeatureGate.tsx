@@ -4,7 +4,7 @@ import { Paywall } from "./Paywall";
 import { Spinner } from "./ui/spinner";
 
 interface FeatureGateProps {
-  feature: "kalshi" | "clvTracker" | "evFinder" | "tools" | "backtesting" | "liveStats" | "leaderboard";
+  feature: "kalshi" | "clvTracker" | "evFinder" | "tools" | "backtesting" | "liveStats" | "leaderboard" | "arbitrage" | "parlay_builder" | "bankroll_tracker";
   children: ReactNode;
   fallback?: ReactNode;
   requiredTier?: "daily" | "monthly" | "yearly";
@@ -18,6 +18,9 @@ const FEATURE_TIER_MAP: Record<string, "daily" | "monthly" | "yearly"> = {
   backtesting: "monthly",
   liveStats: "daily",
   leaderboard: "daily",
+  arbitrage: "monthly",
+  parlay_builder: "monthly",
+  bankroll_tracker: "monthly",
 };
 
 export function FeatureGate({

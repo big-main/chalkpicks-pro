@@ -2,7 +2,7 @@ import { router, protectedProcedure } from "../\_core/trpc";
 import { z } from "zod";
 import { getDb } from "../db";
 import { arbitrageOpportunities, userArbitrageTrades } from "../../drizzle/schema";
-import { eq, and, gt, lt } from "drizzle-orm";
+import { eq, and, gt, lt, asc, desc, inArray } from "drizzle-orm";
 
 // Helper: Convert American odds to decimal
 const americanToDecimal = (odds: number): number => {
@@ -81,15 +81,15 @@ export const arbitrageRouter = router({
       }
       
       // Profit margin range
-      conditions.push(gt(arbitrageOpportunities.arbitragePercentage, input.minProfitMargin / 100));
-      conditions.push(lt(arbitrageOpportunities.arbitragePercentage, input.maxProfitMargin / 100));
+      conditions.push(gt(arbitrageOpportunities.arbitragePercentage, String(input.minProfitMargin / 100)));
+      conditions.push(lt(arbitrageOpportunities.arbitragePercentage, String(input.maxProfitMargin / 100)));
       
       // Guaranteed profit minimum
-      conditions.push(gt(arbitrageOpportunities.guaranteedProfit, input.minGuaranteedProfit));
+      conditions.push(gt(arbitrageOpportunities.guaranteedProfit, String(input.minGuaranteedProfit)));
       
       // Sports filter
       if (input.sports.length > 0) {
-        conditions.push(arbitrageOpportunities.sport.inArray(input.sports));
+        conditions.push(inArray(arbitrageOpportunities.sport, input.sports));
       }
       
       // Event time range
@@ -108,26 +108,30 @@ export const arbitrageRouter = router({
         conditions.push(gt(arbitrageOpportunities.eventTime, startDate));
       }
       
-      let query = db
+      // Build base query
+      let baseQuery = db
         .select()
         .from(arbitrageOpportunities)
         .where(and(...conditions));
       
       // Apply sorting
+      let query: any = baseQuery;
       if (input.sortBy === "profit_desc") {
-        query = query.orderBy((t) => [t.guaranteedProfit, "desc"]);
+        query = baseQuery.orderBy(desc(arbitrageOpportunities.guaranteedProfit));
       } else if (input.sortBy === "profit_asc") {
-        query = query.orderBy((t) => [t.guaranteedProfit, "asc"]);
+        query = baseQuery.orderBy(asc(arbitrageOpportunities.guaranteedProfit));
       } else if (input.sortBy === "margin_desc") {
-        query = query.orderBy((t) => [t.arbitragePercentage, "desc"]);
+        query = baseQuery.orderBy(desc(arbitrageOpportunities.arbitragePercentage));
       } else if (input.sortBy === "margin_asc") {
-        query = query.orderBy((t) => [t.arbitragePercentage, "asc"]);
+        query = baseQuery.orderBy(asc(arbitrageOpportunities.arbitragePercentage));
       } else if (input.sortBy === "time_asc") {
-        query = query.orderBy((t) => [t.eventTime, "asc"]);
+        query = baseQuery.orderBy(asc(arbitrageOpportunities.eventTime));
+      } else {
+        query = baseQuery;
       }
 
       const opportunities = await query.limit(input.limit);
-      return opportunities.map((opp) => ({
+      return opportunities.map((opp: any) => ({
         ...opp,
         arbitragePercentage: Number(opp.arbitragePercentage),
         profitPercentage: Number(opp.profitPercentage),
@@ -220,18 +224,18 @@ export const arbitrageRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
-      const trade = await db.insert(userArbitrageTrades).values({
+      const result = await db.insert(userArbitrageTrades).values({
         userId: ctx.user.id,
         arbitrageId: input.arbitrageId,
-        stakeA: input.stakeA,
-        stakeB: input.stakeB,
-        totalStake: input.stakeA + input.stakeB,
+        stakeA: String(input.stakeA),
+        stakeB: String(input.stakeB),
+        totalStake: String(input.stakeA + input.stakeB),
         bookABetId: input.bookABetId,
         bookBBetId: input.bookBBetId,
         status: "pending",
       });
 
-      return { success: true, tradeId: trade[0] };
+      return { success: true, tradeId: (result as any).insertId || 0 };
     }),
 
   // Get user's arbitrage trades
@@ -250,16 +254,16 @@ export const arbitrageRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
-      let query = db
-        .select()
-        .from(userArbitrageTrades)
-        .where(eq(userArbitrageTrades.userId, ctx.user.id));
-
+      const conditions = [eq(userArbitrageTrades.userId, ctx.user.id)];
       if (input.status) {
-        query = query.where(eq(userArbitrageTrades.status, input.status));
+        conditions.push(eq(userArbitrageTrades.status, input.status));
       }
 
-      const trades = await query.limit(input.limit);
+      const trades = await db
+        .select()
+        .from(userArbitrageTrades)
+        .where(and(...conditions))
+        .limit(input.limit);
       return trades.map((trade) => ({
         ...trade,
         stakeA: Number(trade.stakeA),

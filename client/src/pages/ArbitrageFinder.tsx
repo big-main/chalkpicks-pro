@@ -184,7 +184,7 @@ function ArbitrageFinderContent() {
               </Card>
             ) : opportunities.data && opportunities.data.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {opportunities.data.map((arb) => (
+                {opportunities.data.map((arb: any) => (
                   <Card
                     key={arb.id}
                     className={`bg-slate-800 border-slate-700 hover:border-amber-500/50 transition-all cursor-pointer ${
@@ -355,5 +355,5 @@ function ArbitrageFinderContent() {
 }
 
 export default function ArbitrageFinder() {
-  return <FeatureGate feature="arbitrage" fallbackComponent={<ArbitrageFinderContent />} />;
+  return <FeatureGate feature="arbitrage" children={<ArbitrageFinderContent />} />;
 }

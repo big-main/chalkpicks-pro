@@ -30,6 +30,9 @@ const FEATURE_TIERS = {
   backtesting: ["monthly", "yearly"],
   kalshi: ["monthly", "yearly"],
   clvTracker: ["monthly", "yearly"],
+  arbitrage: ["monthly", "yearly"],
+  parlay_builder: ["monthly", "yearly"],
+  bankroll_tracker: ["monthly", "yearly"],
   
   // Annual Elite features ($199.99)
   vipDiscord: ["yearly"],
@@ -136,7 +139,7 @@ export const featureRouter = router({
     // Build feature access map
     const features: Record<FeatureName, boolean> = {} as any;
     for (const [feature, tiers] of Object.entries(FEATURE_TIERS)) {
-      features[feature as FeatureName] = (tiers as string[]).includes(currentTier);
+      features[feature as FeatureName] = [...(tiers as readonly string[])].includes(currentTier);
     }
 
     return {

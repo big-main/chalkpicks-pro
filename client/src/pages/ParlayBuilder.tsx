@@ -272,5 +272,5 @@ function ParlayBuilderContent() {
 }
 
 export default function ParlayBuilder() {
-  return <FeatureGate feature="parlay_builder" fallbackComponent={<ParlayBuilderContent />} />;
+  return <FeatureGate feature="parlay_builder" children={<ParlayBuilderContent />} />;
 }

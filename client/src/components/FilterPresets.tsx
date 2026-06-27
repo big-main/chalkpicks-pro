@@ -33,13 +33,14 @@ export function FilterPresets({
     }
   };
 
-  const QUICK_PRESETS = [
+  const QUICK_PRESETS: Array<{ name: string; filters: ArbitrageFilterOptions }> = [
     {
       name: "High Margin (>2%)",
       filters: {
         ...currentFilters,
         minProfitMargin: 2,
         maxProfitMargin: 10,
+        eventTimeRange: "all" as const,
       },
     },
     {
@@ -47,6 +48,7 @@ export function FilterPresets({
       filters: {
         ...currentFilters,
         minGuaranteedProfit: 50,
+        eventTimeRange: "all" as const,
       },
     },
     {
@@ -54,6 +56,7 @@ export function FilterPresets({
       filters: {
         ...currentFilters,
         sports: ["NBA"],
+        eventTimeRange: "all" as const,
       },
     },
     {

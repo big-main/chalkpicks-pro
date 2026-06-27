@@ -131,39 +131,33 @@ export default function SubscriptionDashboard() {
                 </div>
               </div>
               <Badge className="bg-white text-slate-900 text-lg px-4 py-2">
-                {subscription?.status === "active" ? "✓ Active" : "Inactive"}
+                {subscription?.isActive ? "✓ Active" : "Inactive"}
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="relative">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {subscription?.currentPeriodStart && (
+              {subscription?.expiresAt && (
                 <div className="bg-white/10 rounded-lg p-4">
-                  <p className="text-white/70 text-sm mb-1">Billing Period Start</p>
+                  <p className="text-white/70 text-sm mb-1">Expires At</p>
                   <p className="text-white font-semibold">
-                    {new Date(subscription.currentPeriodStart).toLocaleDateString()}
+                    {new Date(subscription.expiresAt).toLocaleDateString()}
                   </p>
                 </div>
               )}
-              {subscription?.currentPeriodEnd && (
+              {subscription?.tier && (
                 <div className="bg-white/10 rounded-lg p-4">
-                  <p className="text-white/70 text-sm mb-1">Billing Period End</p>
-                  <p className="text-white font-semibold">
-                    {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+                  <p className="text-white/70 text-sm mb-1">Tier</p>
+                  <p className="text-white font-semibold capitalize">
+                    {subscription.tier}
                   </p>
                 </div>
               )}
-              {subscription?.priceId && (
+              {subscription?.accountBalance && (
                 <div className="bg-white/10 rounded-lg p-4">
-                  <p className="text-white/70 text-sm mb-1">Price</p>
+                  <p className="text-white/70 text-sm mb-1">Account Balance</p>
                   <p className="text-white font-semibold">
-                    {currentTier === "daily"
-                      ? "$9.99/day"
-                      : currentTier === "monthly"
-                        ? "$29.99/month"
-                        : currentTier === "yearly"
-                          ? "$299.99/year"
-                          : "Free"}
+                    ${subscription.accountBalance.toFixed(2)}
                   </p>
                 </div>
               )}
@@ -238,16 +232,14 @@ export default function SubscriptionDashboard() {
             </CardHeader>
             <CardContent>
               <p className="text-slate-300 mb-4">
-                {subscription?.status === "active"
+                {subscription?.isActive
                   ? "View billing history, update payment method, or cancel your subscription."
                   : "Reactivate your subscription to regain access to premium features."}
               </p>
               <Button
                 onClick={() => {
-                  if (subscription?.customerId) {
-                    // Open Stripe customer portal
-                    window.location.href = `https://billing.stripe.com/login/test_YWNjdF8xSXRyeUNoOFBtbnl0QWsxN1Z6ckhaamVUeTRoTjZjTElnNQ?prefilled_email=${encodeURIComponent(user?.email || '')}`;
-                  }
+                  // Open Stripe customer portal
+                  window.location.href = `https://billing.stripe.com/login/test_YWNjdF8xSXRyeUNoOFBtbnl0QWsxN1Z6ckhaamVUeTRoTjZjTElnNQ?prefilled_email=${encodeURIComponent(user?.email || '')}`;
                 }}
                 className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700"
               >

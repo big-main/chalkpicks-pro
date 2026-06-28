@@ -65,11 +65,20 @@ export function registerStripeWebhook(app: express.Application) {
               expiresAt.setFullYear(expiresAt.getFullYear() + 1);
             }
 
+            // Grant $100 credit bonus if payment is $5 or more
+            const amountPaid = session.amount_total ?? 0;
+            const creditBonus = amountPaid >= 500 ? 100 : 0; // $5 = 500 cents
+
             await db.update(users).set({
               subscriptionTier,
               subscriptionExpiresAt: expiresAt,
               stripeSubscriptionId: session.subscription?.toString() ?? null,
+              ...(creditBonus > 0 ? { accountBalance: creditBonus.toString() } : {}), // Add $100 credit bonus if applicable
             }).where(eq(users.id, userId));
+
+            if (creditBonus > 0) {
+              console.log(`[Webhook] Granted $${creditBonus} credit bonus to user ${userId} (payment: $${(amountPaid / 100).toFixed(2)})`);
+            }
 
             // Record order
             await db.insert(subscriptionOrders).values({

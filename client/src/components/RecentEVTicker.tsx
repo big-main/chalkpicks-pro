@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { TrendingUp, Zap, DollarSign } from "lucide-react";
+import { TrendingUp, Zap, DollarSign, ExternalLink } from "lucide-react";
+import { Link } from "wouter";
 
 // Simulated recent +EV bets (in production, pull from trpc.odds.getEVBets)
 const SAMPLE_EV_BETS = [
@@ -97,15 +98,18 @@ export default function RecentEVTicker() {
       >
         {/* Duplicate bets for infinite scroll effect */}
         {[...bets, ...bets].map((bet, i) => (
-          <div
+          <Link
             key={i}
-            className="flex-shrink-0 flex items-center gap-3 px-4 py-2.5"
+            href={`/ev-finder?sport=${bet.sport.toLowerCase()}&matchup=${encodeURIComponent(bet.matchup)}`}
+            className="flex-shrink-0 flex items-center gap-3 px-4 py-2.5 no-underline transition-all duration-200 hover:scale-[1.02] group"
             style={{
               background: "rgba(20,20,40,0.8)",
               border: "1px solid rgba(0,255,136,0.12)",
               borderRadius: "8px",
               minWidth: "320px",
             }}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
             {/* Sport badge */}
             <div
@@ -142,11 +146,15 @@ export default function RecentEVTicker() {
               </span>
             </div>
 
-            {/* Time */}
+            {/* Time + link indicator */}
             <span className="text-xs" style={{ color: "rgba(100,100,130,0.6)" }}>
               {bet.time}
             </span>
-          </div>
+            <ExternalLink
+              className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ color: "rgba(0,255,136,0.6)" }}
+            />
+          </Link>
         ))}
       </div>
     </section>

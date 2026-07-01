@@ -1,19 +1,29 @@
 import { useState, useEffect, useRef } from "react";
-import { TrendingUp, Zap, DollarSign, ExternalLink } from "lucide-react";
+import { TrendingUp, Zap, ExternalLink, DollarSign } from "lucide-react";
 import { Link } from "wouter";
 
-// Simulated recent +EV bets (in production, pull from trpc.odds.getEVBets)
-const SAMPLE_EV_BETS = [
-  { sport: "NBA", matchup: "Celtics vs Knicks", bet: "Celtics ML", odds: "-145", ev: "+4.2%", book: "DraftKings", time: "2m ago" },
-  { sport: "NFL", matchup: "Chiefs vs Bills", bet: "Over 48.5", odds: "-110", ev: "+6.8%", book: "FanDuel", time: "5m ago" },
-  { sport: "MLB", matchup: "Dodgers vs Padres", bet: "Dodgers -1.5", odds: "+130", ev: "+3.1%", book: "BetMGM", time: "8m ago" },
-  { sport: "NHL", matchup: "Oilers vs Panthers", bet: "Under 5.5", odds: "+105", ev: "+5.4%", book: "Caesars", time: "12m ago" },
-  { sport: "NBA", matchup: "Lakers vs Warriors", bet: "Warriors +3.5", odds: "-105", ev: "+7.1%", book: "PointsBet", time: "15m ago" },
-  { sport: "NFL", matchup: "Eagles vs Cowboys", bet: "Eagles ML", odds: "-160", ev: "+3.9%", book: "BetRivers", time: "18m ago" },
-  { sport: "MLB", matchup: "Yankees vs Red Sox", bet: "Over 8.5", odds: "-115", ev: "+4.7%", book: "DraftKings", time: "22m ago" },
-  { sport: "NBA", matchup: "Bucks vs Heat", bet: "Bucks -4.5", odds: "-110", ev: "+5.3%", book: "FanDuel", time: "25m ago" },
-  { sport: "NHL", matchup: "Rangers vs Bruins", bet: "Rangers ML", odds: "+125", ev: "+6.2%", book: "BetMGM", time: "30m ago" },
-  { sport: "NFL", matchup: "49ers vs Ravens", bet: "Under 44.5", odds: "-105", ev: "+4.0%", book: "Caesars", time: "35m ago" },
+interface EVBet {
+  sport: string;
+  matchup: string;
+  bet: string;
+  odds: string;
+  ev: number;       // EV as decimal percentage e.g. 4.2
+  book: string;
+  time: string;
+  betSize: number;  // Recommended bet size in units (Kelly-derived)
+}
+
+const SAMPLE_EV_BETS: EVBet[] = [
+  { sport: "NBA", matchup: "Celtics vs Knicks",   bet: "Celtics ML",       odds: "-145", ev: 4.2,  book: "DraftKings", time: "2m ago",  betSize: 2.1 },
+  { sport: "NFL", matchup: "Chiefs vs Bills",      bet: "Over 48.5",        odds: "-110", ev: 6.8,  book: "FanDuel",    time: "5m ago",  betSize: 3.4 },
+  { sport: "MLB", matchup: "Dodgers vs Padres",    bet: "Dodgers -1.5",     odds: "+130", ev: 3.1,  book: "BetMGM",     time: "8m ago",  betSize: 1.6 },
+  { sport: "NHL", matchup: "Oilers vs Panthers",   bet: "Under 5.5",        odds: "+105", ev: 5.4,  book: "Caesars",    time: "12m ago", betSize: 2.7 },
+  { sport: "NBA", matchup: "Lakers vs Warriors",   bet: "Warriors +3.5",    odds: "-105", ev: 7.1,  book: "PointsBet",  time: "15m ago", betSize: 3.6 },
+  { sport: "NFL", matchup: "Eagles vs Cowboys",    bet: "Eagles ML",        odds: "-160", ev: 3.9,  book: "BetRivers",  time: "18m ago", betSize: 2.0 },
+  { sport: "MLB", matchup: "Yankees vs Red Sox",   bet: "Over 8.5",         odds: "-115", ev: 4.7,  book: "DraftKings", time: "22m ago", betSize: 2.4 },
+  { sport: "NBA", matchup: "Bucks vs Heat",        bet: "Bucks -4.5",       odds: "-110", ev: 5.3,  book: "FanDuel",    time: "25m ago", betSize: 2.7 },
+  { sport: "NHL", matchup: "Rangers vs Bruins",    bet: "Rangers ML",       odds: "+125", ev: 6.2,  book: "BetMGM",     time: "30m ago", betSize: 3.1 },
+  { sport: "NFL", matchup: "49ers vs Ravens",      bet: "Under 44.5",       odds: "-105", ev: 4.0,  book: "Caesars",    time: "35m ago", betSize: 2.0 },
 ];
 
 function getSportColor(sport: string): string {
@@ -22,8 +32,20 @@ function getSportColor(sport: string): string {
     case "NFL": return "#00d4ff";
     case "MLB": return "#00ff88";
     case "NHL": return "#a855f7";
-    default: return "#00ff88";
+    default:    return "#00ff88";
   }
+}
+
+function getEVColor(ev: number): string {
+  if (ev >= 6) return "#00ff88";
+  if (ev >= 4) return "#f0c040";
+  return "#ff9f40";
+}
+
+function getBetSizeLabel(units: number): string {
+  if (units >= 3) return "Strong";
+  if (units >= 2) return "Moderate";
+  return "Light";
 }
 
 export default function RecentEVTicker() {
@@ -41,9 +63,7 @@ export default function RecentEVTicker() {
     const animate = () => {
       if (!isPaused) {
         scrollPos += 0.5;
-        if (scrollPos >= el.scrollWidth / 2) {
-          scrollPos = 0;
-        }
+        if (scrollPos >= el.scrollWidth / 2) scrollPos = 0;
         el.scrollLeft = scrollPos;
       }
       animationId = requestAnimationFrame(animate);
@@ -62,6 +82,7 @@ export default function RecentEVTicker() {
         borderBottom: "1px solid rgba(0,255,136,0.08)",
       }}
     >
+      {/* Header */}
       <div className="container mb-3">
         <div className="flex items-center gap-2">
           <div
@@ -89,71 +110,134 @@ export default function RecentEVTicker() {
         </div>
       </div>
 
+      {/* Scrolling cards */}
       <div
         ref={scrollRef}
-        className="flex gap-3 overflow-hidden cursor-pointer"
+        className="flex gap-3 overflow-hidden"
         style={{ scrollBehavior: "auto" }}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Duplicate bets for infinite scroll effect */}
         {[...bets, ...bets].map((bet, i) => (
           <Link
             key={i}
             href={`/ev-finder?sport=${bet.sport.toLowerCase()}&matchup=${encodeURIComponent(bet.matchup)}`}
-            className="flex-shrink-0 flex items-center gap-3 px-4 py-2.5 no-underline transition-all duration-200 hover:scale-[1.02] group"
+            className="flex-shrink-0 no-underline transition-all duration-200 hover:scale-[1.02] group"
             style={{
-              background: "rgba(20,20,40,0.8)",
+              background: "rgba(20,20,40,0.9)",
               border: "1px solid rgba(0,255,136,0.12)",
-              borderRadius: "8px",
-              minWidth: "320px",
+              borderRadius: "10px",
+              minWidth: "360px",
+              display: "block",
             }}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
-            {/* Sport badge */}
+            {/* Top row: sport + matchup + link icon */}
             <div
-              className="text-xs font-bold px-2 py-0.5"
-              style={{
-                background: `${getSportColor(bet.sport)}20`,
-                color: getSportColor(bet.sport),
-                borderRadius: "3px",
-                fontFamily: "'Rajdhani', sans-serif",
-                letterSpacing: "0.05em",
-              }}
+              className="flex items-center justify-between px-3 pt-2.5 pb-1.5"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
             >
-              {bet.sport}
+              <div className="flex items-center gap-2">
+                <span
+                  className="text-xs font-bold px-2 py-0.5"
+                  style={{
+                    background: `${getSportColor(bet.sport)}20`,
+                    color: getSportColor(bet.sport),
+                    borderRadius: "3px",
+                    fontFamily: "'Rajdhani', sans-serif",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {bet.sport}
+                </span>
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: "rgba(200,200,220,0.95)", fontFamily: "'Rajdhani', sans-serif" }}
+                >
+                  {bet.matchup}
+                </span>
+              </div>
+              <ExternalLink
+                className="w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity ml-2 flex-shrink-0"
+                style={{ color: "#00ff88" }}
+              />
             </div>
 
-            {/* Bet info */}
-            <div className="flex flex-col">
-              <span className="text-xs font-medium" style={{ color: "rgba(200,200,220,0.9)" }}>
-                {bet.matchup}
-              </span>
-              <span className="text-xs" style={{ color: "rgba(140,140,170,0.7)" }}>
-                {bet.bet} ({bet.odds}) · {bet.book}
-              </span>
-            </div>
+            {/* Bottom row: bet info + EV + bet size */}
+            <div className="flex items-center gap-3 px-3 py-2">
+              {/* Bet details */}
+              <div className="flex-1 min-w-0">
+                <div
+                  className="text-sm font-bold truncate"
+                  style={{ color: "white", fontFamily: "'Rajdhani', sans-serif" }}
+                >
+                  {bet.bet}
+                </div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span
+                    className="text-xs font-mono"
+                    style={{ color: "rgba(160,160,190,0.8)" }}
+                  >
+                    {bet.odds}
+                  </span>
+                  <span style={{ color: "rgba(100,100,130,0.5)", fontSize: "10px" }}>·</span>
+                  <span className="text-xs" style={{ color: "rgba(120,120,150,0.7)" }}>
+                    {bet.book}
+                  </span>
+                  <span style={{ color: "rgba(100,100,130,0.5)", fontSize: "10px" }}>·</span>
+                  <span className="text-xs" style={{ color: "rgba(100,100,130,0.6)" }}>
+                    {bet.time}
+                  </span>
+                </div>
+              </div>
 
-            {/* EV badge */}
-            <div className="ml-auto flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" style={{ color: "#00ff88" }} />
-              <span
-                className="text-sm font-bold"
-                style={{ color: "#00ff88", fontFamily: "'Rajdhani', sans-serif" }}
-              >
-                {bet.ev}
-              </span>
-            </div>
+              {/* Divider */}
+              <div style={{ width: "1px", height: "32px", background: "rgba(255,255,255,0.06)" }} />
 
-            {/* Time + link indicator */}
-            <span className="text-xs" style={{ color: "rgba(100,100,130,0.6)" }}>
-              {bet.time}
-            </span>
-            <ExternalLink
-              className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity"
-              style={{ color: "rgba(0,255,136,0.6)" }}
-            />
+              {/* EV % */}
+              <div className="text-center flex-shrink-0">
+                <div className="flex items-center gap-0.5">
+                  <TrendingUp className="w-3 h-3" style={{ color: getEVColor(bet.ev) }} />
+                  <span
+                    className="text-base font-black"
+                    style={{
+                      color: getEVColor(bet.ev),
+                      fontFamily: "'Rajdhani', sans-serif",
+                      lineHeight: 1,
+                    }}
+                  >
+                    +{bet.ev.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="text-xs mt-0.5" style={{ color: "rgba(120,120,150,0.7)" }}>
+                  EV Edge
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div style={{ width: "1px", height: "32px", background: "rgba(255,255,255,0.06)" }} />
+
+              {/* Recommended bet size */}
+              <div className="text-center flex-shrink-0">
+                <div className="flex items-center gap-0.5">
+                  <DollarSign className="w-3 h-3" style={{ color: "#00d4ff" }} />
+                  <span
+                    className="text-base font-black"
+                    style={{
+                      color: "#00d4ff",
+                      fontFamily: "'Rajdhani', sans-serif",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {bet.betSize.toFixed(1)}u
+                  </span>
+                </div>
+                <div className="text-xs mt-0.5" style={{ color: "rgba(120,120,150,0.7)" }}>
+                  {getBetSizeLabel(bet.betSize)}
+                </div>
+              </div>
+            </div>
           </Link>
         ))}
       </div>

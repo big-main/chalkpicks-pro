@@ -12,6 +12,7 @@ import {
   Calculator, CloudLightning, Layers, Eye, Flame
 } from "lucide-react";
 import NeonCard from "@/components/NeonCard";
+import RecentEVTicker from "@/components/RecentEVTicker";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
@@ -282,6 +283,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── RECENT +EV BETS FOUND ── */}
+      <RecentEVTicker />
 
       {/* ── PERFORMANCE CHART ────────────────────────────────── */}
       <section

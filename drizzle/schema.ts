@@ -1,6 +1,7 @@
 import {
   boolean,
   decimal,
+  index,
   int,
   json,
   mysqlEnum,
@@ -118,7 +119,10 @@ export const games = mysqlTable("games", {
   rawOddsData: json("rawOddsData"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
+}, (table) => ([
+  index("idx_games_sport_status").on(table.sportKey, table.status),
+  index("idx_games_time").on(table.gameTime),
+]));
 
 export type Game = typeof games.$inferSelect;
 
@@ -143,7 +147,11 @@ export const picks = mysqlTable("picks", {
   isFeatured: boolean("isFeatured").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
+}, (table) => ([
+  index("idx_picks_date_active").on(table.pickDate, table.isActive),
+  index("idx_picks_sport").on(table.sportKey),
+  index("idx_picks_result").on(table.result),
+]));
 
 export type Pick = typeof picks.$inferSelect;
 export type InsertPick = typeof picks.$inferInsert;
@@ -197,7 +205,10 @@ export const userBets = mysqlTable("user_bets", {
   betPlacedTime: timestamp("betPlacedTime"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
+}, (table) => ([
+  index("idx_user_bets_userId").on(table.userId),
+  index("idx_user_bets_result").on(table.userId, table.result),
+]));
 
 export type UserBet = typeof userBets.$inferSelect;
 export type InsertUserBet = typeof userBets.$inferInsert;

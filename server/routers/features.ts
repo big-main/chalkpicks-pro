@@ -13,6 +13,20 @@ import { eq } from "drizzle-orm";
  * - yearly: Annual Elite ($199.99) - Full access + VIP features
  */
 
+/**
+ * Access tier restrictions (Edge Terminal):
+ * - free: Basic picks only
+ * - recreational: Standard tools + daily picks
+ * - serious: All tools + advanced analytics
+ * - professional: Everything + priority support + custom AI
+ */
+const ACCESS_TIER_FEATURES = {
+  free: ["picks", "home", "signup", "login"],
+  recreational: ["picks", "home", "signup", "login", "liveStats", "leaderboard"],
+  serious: ["picks", "home", "signup", "login", "liveStats", "leaderboard", "evFinder", "tools", "backtesting", "kalshi", "clvTracker", "arbitrage", "parlay_builder", "bankroll_tracker"],
+  professional: ["picks", "home", "signup", "login", "liveStats", "leaderboard", "evFinder", "tools", "backtesting", "kalshi", "clvTracker", "arbitrage", "parlay_builder", "bankroll_tracker", "vipDiscord", "strategySessions"],
+} as const;
+
 const FEATURE_TIERS = {
   // Free features
   picks: ["free", "daily", "monthly", "yearly"],
@@ -42,6 +56,70 @@ const FEATURE_TIERS = {
 type FeatureName = keyof typeof FEATURE_TIERS;
 
 /**
+ * Unified access check logic used by all procedures
+ */
+function checkFeatureAccess(
+  subscriptionTier: string,
+  subscriptionExpiresAt: Date | null,
+  accessTier: string | null,
+  applicationStatus: string | null,
+  feature: FeatureName
+): { hasAccess: boolean; currentTier: string; isActive: boolean; reason?: string } {
+  // Check if subscription is active
+  const isActive = subscriptionTier !== "free" && (
+    !subscriptionExpiresAt || subscriptionExpiresAt > new Date()
+  );
+  const currentTier = isActive ? subscriptionTier : "free";
+
+  // Check subscription-based access
+  const allowedTiers = FEATURE_TIERS[feature];
+  const hasSubscriptionAccess = (allowedTiers as readonly string[]).includes(currentTier);
+
+  // Check Edge Terminal access tier (only for approved users)
+  const userAccessTier = (accessTier || "free") as keyof typeof ACCESS_TIER_FEATURES;
+  const accessTierFeatures = ACCESS_TIER_FEATURES[userAccessTier] || ACCESS_TIER_FEATURES.free;
+  const hasAccessTierAccess = (accessTierFeatures as readonly string[]).includes(feature);
+
+  // Access logic:
+  // 1. Must have subscription-level access (payment gate)
+  // 2. If user has applied and been approved, their accessTier determines additional feature gates
+  // 3. Users who haven't applied yet get access based on subscription only (no Edge Terminal restriction)
+  const isApproved = applicationStatus === "approved";
+  const hasApplied = applicationStatus === "pending" || applicationStatus === "approved" || applicationStatus === "rejected";
+
+  let hasAccess: boolean;
+  let reason: string | undefined;
+
+  if (!hasSubscriptionAccess) {
+    hasAccess = false;
+    reason = `Requires ${allowedTiers[0]} subscription or higher`;
+  } else if (hasApplied && !isApproved) {
+    // Applied but not yet approved — restrict to free-tier features only
+    const freeFeatures = ACCESS_TIER_FEATURES.free;
+    hasAccess = (freeFeatures as readonly string[]).includes(feature);
+    if (!hasAccess) reason = "Application pending review";
+  } else if (isApproved && !hasAccessTierAccess) {
+    // Approved but access tier doesn't include this feature
+    hasAccess = false;
+    reason = `Requires ${getRequiredAccessTier(feature)} access tier or higher`;
+  } else {
+    hasAccess = true;
+  }
+
+  return { hasAccess, currentTier, isActive, reason };
+}
+
+/**
+ * Get the minimum access tier required for a feature
+ */
+function getRequiredAccessTier(feature: string): string {
+  for (const [tier, features] of Object.entries(ACCESS_TIER_FEATURES)) {
+    if ((features as readonly string[]).includes(feature)) return tier;
+  }
+  return "professional";
+}
+
+/**
  * Check if user has access to a feature based on subscription tier
  */
 export const featureRouter = router({
@@ -64,6 +142,8 @@ export const featureRouter = router({
       const user = await db.select({
         subscriptionTier: users.subscriptionTier,
         subscriptionExpiresAt: users.subscriptionExpiresAt,
+        accessTier: users.accessTier,
+        applicationStatus: users.applicationStatus,
       }).from(users).where(eq(users.id, ctx.user.id)).limit(1);
 
       const u = user[0];
@@ -76,22 +156,21 @@ export const featureRouter = router({
         };
       }
 
-      // Check if subscription is active
-      const isSubscriptionActive = u.subscriptionTier !== "free" && (
-        !u.subscriptionExpiresAt || u.subscriptionExpiresAt > new Date()
+      const result = checkFeatureAccess(
+        u.subscriptionTier,
+        u.subscriptionExpiresAt,
+        u.accessTier,
+        u.applicationStatus,
+        input.feature
       );
 
-      const currentTier = isSubscriptionActive ? u.subscriptionTier : "free";
-      const allowedTiers = FEATURE_TIERS[input.feature];
-      const hasAccess = allowedTiers.includes(currentTier as any);
-
       return {
-        hasAccess,
-        tier: currentTier,
-        requiredTier: allowedTiers[0],
-        message: hasAccess
+        hasAccess: result.hasAccess,
+        tier: result.currentTier,
+        requiredTier: FEATURE_TIERS[input.feature][0],
+        message: result.hasAccess
           ? "Access granted"
-          : `This feature requires ${allowedTiers.join(" or ")} subscription`,
+          : result.reason || `This feature requires ${FEATURE_TIERS[input.feature].join(" or ")} subscription`,
       };
     }),
 
@@ -101,28 +180,19 @@ export const featureRouter = router({
     if (!db) {
       return {
         tier: "free",
+        accessTier: "free",
         isActive: false,
-        features: {
-          picks: true,
-          home: true,
-          signup: true,
-          login: true,
-          liveStats: false,
-          leaderboard: false,
-          evFinder: false,
-          tools: false,
-          backtesting: false,
-          kalshi: false,
-          clvTracker: false,
-          vipDiscord: false,
-          strategySessions: false,
-        },
+        features: Object.fromEntries(
+          Object.keys(FEATURE_TIERS).map(f => [f, ["free", "daily", "monthly", "yearly"].includes("free") && (FEATURE_TIERS[f as FeatureName] as readonly string[]).includes("free")])
+        ),
       };
     }
 
     const user = await db.select({
       subscriptionTier: users.subscriptionTier,
       subscriptionExpiresAt: users.subscriptionExpiresAt,
+      accessTier: users.accessTier,
+      applicationStatus: users.applicationStatus,
     }).from(users).where(eq(users.id, ctx.user.id)).limit(1);
 
     const u = user[0];
@@ -130,20 +200,27 @@ export const featureRouter = router({
       throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
     }
 
+    // Build feature access map using unified logic
+    const features: Record<string, boolean> = {};
+    for (const feature of Object.keys(FEATURE_TIERS) as FeatureName[]) {
+      const result = checkFeatureAccess(
+        u.subscriptionTier,
+        u.subscriptionExpiresAt,
+        u.accessTier,
+        u.applicationStatus,
+        feature
+      );
+      features[feature] = result.hasAccess;
+    }
+
     const isActive = u.subscriptionTier !== "free" && (
       !u.subscriptionExpiresAt || u.subscriptionExpiresAt > new Date()
     );
 
-    const currentTier = isActive ? u.subscriptionTier : "free";
-
-    // Build feature access map
-    const features: Record<FeatureName, boolean> = {} as any;
-    for (const [feature, tiers] of Object.entries(FEATURE_TIERS)) {
-      features[feature as FeatureName] = [...(tiers as readonly string[])].includes(currentTier);
-    }
-
     return {
-      tier: currentTier,
+      tier: isActive ? u.subscriptionTier : "free",
+      accessTier: u.accessTier || "free",
+      applicationStatus: u.applicationStatus || "not_applied",
       isActive,
       features,
     };
@@ -157,6 +234,7 @@ export const featureRouter = router({
     .query(({ input }) => {
       const allowedTiers = FEATURE_TIERS[input.feature];
       const requiredTier = allowedTiers[0];
+      const requiredAccessTier = getRequiredAccessTier(input.feature);
 
       const tierInfo: Record<string, any> = {
         daily: {
@@ -182,8 +260,9 @@ export const featureRouter = router({
       return {
         feature: input.feature,
         requiredTier,
+        requiredAccessTier,
         tierInfo: tierInfo[requiredTier],
-        message: `Upgrade to ${tierInfo[requiredTier].name} to access ${input.feature}`,
+        message: `Upgrade to ${tierInfo[requiredTier]?.name || requiredTier} to access ${input.feature}`,
       };
     }),
 });

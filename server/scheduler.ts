@@ -1,8 +1,10 @@
 import { getDb } from "./db";
-import { picks, users, subscriptionOrders } from "../drizzle/schema";
+import { picks, users, subscriptionOrders, pickFeedback } from "../drizzle/schema";
 import { invokeLLM } from "./_core/llm";
-import { eq, and, gte, lte } from "drizzle-orm";
+import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 import { sendDailyPicksToAllUsers, sendDailyDigestToAllUsers } from "./notificationService";
+import { resolveGameResults, syncGameScores } from "./services/gameResultsResolver";
+import { fetchOdds } from "./services/dataService";
 
 const DAILY_MATCHUPS = [
   { sportKey: "nfl", homeTeam: "Kansas City Chiefs", awayTeam: "Las Vegas Raiders", pickType: "spread" as const },
@@ -82,16 +84,46 @@ async function getCityCoords(city: string): Promise<[number, number]> {
   return COORDS[city] ?? [0, 0];
 }
 
+async function getOddsContext(sportKey: string, homeTeam: string, awayTeam: string): Promise<string> {
+  try {
+    const odds = await fetchOdds(sportKey);
+    // Find the matching event
+    const event = odds.find(e =>
+      (e.homeTeam?.toLowerCase().includes(homeTeam.toLowerCase().split(' ').pop() || '___') ||
+       homeTeam.toLowerCase().includes(e.homeTeam?.toLowerCase().split(' ').pop() || '___'))
+    );
+    if (!event || !event.bookmakers?.length) return '';
+    // Summarize odds from multiple sportsbooks
+    const bookLines: string[] = [];
+    for (const book of event.bookmakers.slice(0, 6)) {
+      const h2h = book.markets?.find((m: any) => m.key === 'h2h');
+      const spreads = book.markets?.find((m: any) => m.key === 'spreads');
+      const totals = book.markets?.find((m: any) => m.key === 'totals');
+      let line = `${book.title}: `;
+      if (h2h?.outcomes) line += `ML [${h2h.outcomes.map((o: any) => `${o.name} ${o.price > 0 ? '+' : ''}${o.price}`).join(', ')}]`;
+      if (spreads?.outcomes) line += ` | Spread [${spreads.outcomes.map((o: any) => `${o.name} ${o.point > 0 ? '+' : ''}${o.point} (${o.price > 0 ? '+' : ''}${o.price})`).join(', ')}]`;
+      if (totals?.outcomes) line += ` | Total [${totals.outcomes.map((o: any) => `${o.name} ${o.point} (${o.price > 0 ? '+' : ''}${o.price})`).join(', ')}]`;
+      bookLines.push(line);
+    }
+    if (bookLines.length === 0) return '';
+    return `\nReal-Time Odds from ${bookLines.length} sportsbooks:\n${bookLines.join('\n')}\nUse these real odds to identify edge and value. Compare lines across books for sharp money indicators.`;
+  } catch {
+    return '';
+  }
+}
+
 async function generatePickForMatchup(matchup: typeof DAILY_MATCHUPS[0], date: string) {
   try {
     const weatherContext = await getWeatherContext(matchup.sportKey, matchup.homeTeam);
     const weatherSection = weatherContext ? `\nWeather Conditions: ${weatherContext}\nConsider weather impact on totals, passing game, and scoring.` : '';
+    const feedbackContext = await getFeedbackContext();
+    const oddsContext = await getOddsContext(matchup.sportKey, matchup.homeTeam, matchup.awayTeam);
     const prompt = `You are an expert sports betting analyst. Generate a betting pick for this matchup:
 Sport: ${matchup.sportKey.toUpperCase()}
 Home Team: ${matchup.homeTeam}
 Away Team: ${matchup.awayTeam}
 Bet Type: ${matchup.pickType}
-Date: ${date}${weatherSection}
+Date: ${date}${weatherSection}${oddsContext}${feedbackContext}
 
 Respond with JSON only:
 {
@@ -241,17 +273,60 @@ function scheduleDaily(hourUTC: number, fn: () => Promise<void>, label: string) 
   console.log(`[Scheduler] ${label} scheduled at ${hourUTC}:00 UTC daily`);
 }
 
+/**
+ * Get feedback summary to inform AI pick generation
+ */
+async function getFeedbackContext(): Promise<string> {
+  const db = await getDb();
+  if (!db) return '';
+  try {
+    const recentFeedback = await db.select({
+      rating: pickFeedback.rating,
+      sentiment: pickFeedback.sentiment,
+      comment: pickFeedback.comment,
+    }).from(pickFeedback).orderBy(desc(pickFeedback.createdAt)).limit(20);
+    if (recentFeedback.length === 0) return '';
+    const avgRating = recentFeedback.reduce((s, f) => s + f.rating, 0) / recentFeedback.length;
+    const negativeComments = recentFeedback.filter(f => f.sentiment === 'negative').map(f => f.comment).filter(Boolean).slice(0, 3);
+    let context = `\nUser Feedback Context (avg rating: ${avgRating.toFixed(1)}/5):`;
+    if (negativeComments.length > 0) {
+      context += `\nCommon complaints: ${negativeComments.join('; ')}`;
+      context += `\nAdjust picks to address these concerns.`;
+    }
+    if (avgRating < 3) {
+      context += `\nUsers are unsatisfied. Be more conservative with confidence scores and provide more detailed analysis.`;
+    }
+    return context;
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Run game results resolution job
+ */
+async function runGameResultsJob() {
+  console.log('[Scheduler] Running game results resolution...');
+  await syncGameScores();
+  const results = await resolveGameResults();
+  console.log(`[Scheduler] Game results: ${results.resolved} resolved (${results.wins}W/${results.losses}L/${results.pushes}P)`);
+}
+
 export function startScheduler() {
   // Run picks generation immediately on startup (5s delay)
   setTimeout(() => {
     runDailyPicksJob().catch(console.error);
   }, 5000);
-
+  // Run game results resolution on startup (10s delay)
+  setTimeout(() => {
+    runGameResultsJob().catch(console.error);
+  }, 10000);
   // Schedule daily picks generation at 6:00 UTC (2am EST)
   scheduleDaily(6, runDailyPicksJob, "Daily Picks Generation");
-
+  // Schedule game results resolution at 8:00 UTC and 20:00 UTC
+  scheduleDaily(8, runGameResultsJob, "Game Results Resolution (Morning)");
+  scheduleDaily(20, runGameResultsJob, "Game Results Resolution (Evening)");
   // Schedule daily digest emails at 13:00 UTC (8am EST)
   scheduleDaily(13, sendDailyDigestToAllUsers, "Daily Digest Emails");
-
   console.log("[Scheduler] All scheduled jobs started");
 }

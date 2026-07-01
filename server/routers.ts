@@ -24,6 +24,8 @@ import { referralRouter } from "./routers/referral";
 import { featureRouter } from "./routers/features";
 import { arbitrageRouter } from "./routers/arbitrage";
 import { toolsRouter } from "./routers/tools";
+import { adminRouter } from "./routers/admin";
+import { betsExportPdfRouter } from "./routers/betsExportPdf";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import { users } from "../drizzle/schema";
@@ -120,10 +122,16 @@ export const appRouter = router({
         else if (input.weeklyBetSize === "100_500") accessTier = "serious";
         else if (input.weeklyBetSize === "1000_5000" || input.weeklyBetSize === "over_5000") accessTier = "professional";
         
-        // Update user with onboarding data
-        // TODO: Update user with onboarding data in database
-        // This requires proper database integration
-        
+                // Update user with onboarding data in database
+        await database.update(users).set({
+          experienceLevel: input.experienceLevel,
+          bettingFrequency: input.bettingFrequency,
+          weeklyBetSize: input.weeklyBetSize,
+          onboardingIntent: input.onboardingIntent,
+          accessTier,
+          applicationStatus: "pending",
+          onboardingCompletedAt: new Date(),
+        }).where(eq(users.id, ctx.user.id as number));
         return { success: true, accessTier };
       }),
   }),
@@ -146,6 +154,8 @@ export const appRouter = router({
   features: featureRouter,
   arbitrage: arbitrageRouter,
   tools: toolsRouter,
+  admin: adminRouter,
+  betsReport: betsExportPdfRouter,
 });
 
 export type AppRouter = typeof appRouter;

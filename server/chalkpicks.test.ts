@@ -274,7 +274,7 @@ describe("stats", () => {
     expect(Array.isArray(result)).toBe(true);
     // ESPN athletes API may return 404 in test environments
     expect(result.length).toBeGreaterThanOrEqual(0);
-  });
+  }, 15000);
 
   it("returns all games", async () => {
     const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "daily", subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) }));

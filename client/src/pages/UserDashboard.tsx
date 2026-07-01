@@ -28,7 +28,7 @@ function ExportCSVButton() {
     { result: "all", limit: 5000, offset: 0 },
     { enabled: false }
   );
-  const handleExport = async () => {
+  const handleExportCSV = async () => {
     const result = await refetch();
     const bets = result.data?.bets ?? [];
     if (!bets.length) { toast.error("No bets to export"); return; }
@@ -55,12 +55,38 @@ function ExportCSVButton() {
     URL.revokeObjectURL(url);
     toast.success(`Exported ${bets.length} bets!`);
   };
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const handleExportPDF = async () => {
+    setPdfLoading(true);
+    try {
+      const result = await (trpc as any).betsReport.exportReport.query({ format: "html", dateRange: "all" });
+      if (result?.html) {
+        const printWindow = window.open("", "_blank");
+        if (printWindow) {
+          printWindow.document.write(result.html);
+          printWindow.document.close();
+          setTimeout(() => printWindow.print(), 500);
+        }
+        toast.success("PDF report opened — use Print to save as PDF");
+      }
+    } catch {
+      toast.error("Failed to generate report");
+    } finally {
+      setPdfLoading(false);
+    }
+  };
   if (!isAuthenticated) return null;
   return (
-    <Button variant="outline" className="h-9 text-sm font-bold" onClick={handleExport} disabled={isFetching}>
-      <Download className="w-4 h-4 mr-1.5" />
-      {isFetching ? "Exporting..." : "Export CSV"}
-    </Button>
+    <div className="flex gap-2">
+      <Button variant="outline" className="h-9 text-sm font-bold" onClick={handleExportCSV} disabled={isFetching}>
+        <Download className="w-4 h-4 mr-1.5" />
+        {isFetching ? "Exporting..." : "Export CSV"}
+      </Button>
+      <Button variant="outline" className="h-9 text-sm font-bold" onClick={handleExportPDF} disabled={pdfLoading}>
+        <Download className="w-4 h-4 mr-1.5" />
+        {pdfLoading ? "Generating..." : "Export PDF"}
+      </Button>
+    </div>
   );
 }
 

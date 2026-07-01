@@ -126,7 +126,7 @@ export const picksRouter = router({
       conditions.push(gte(picks.pickDate, sevenDaysAgoStr));
 
       const [pickList, countResult] = await Promise.all([
-        db.select().from(picks).where(and(...conditions)).orderBy(desc(picks.isFeatured), desc(picks.confidenceScore)).limit(input.limit).offset(offset),
+        db.select().from(picks).where(and(...conditions)).orderBy(desc(picks.isFeatured), desc(picks.edgeScore), desc(picks.confidenceScore)).limit(input.limit).offset(offset),
         db.select({ count: sql<number>`count(*)` }).from(picks).where(and(...conditions)),
       ]);
 

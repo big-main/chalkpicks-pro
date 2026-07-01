@@ -20,6 +20,73 @@ import {
 } from "lucide-react";
 import { FeatureGate } from "@/components/FeatureGate";
 
+function AnalyticsDashboard() {
+  const analytics = trpc.kalshi.getAnalyticsSummary.useQuery();
+  const comparison = trpc.kalshi.compareWithSportsbooks.useQuery();
+  const data = analytics.data as any;
+  const compData = comparison.data as any;
+  return (
+    <Card className="bg-gradient-to-r from-slate-800 to-slate-900 border-slate-700 mt-8">
+      <CardHeader>
+        <CardTitle className="text-white flex items-center gap-2">
+          <BarChart3 className="w-5 h-5 text-cyan-400" />
+          Market Analytics Dashboard
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-slate-800/50 rounded-lg p-4">
+            <p className="text-slate-400 text-xs uppercase">Total Markets</p>
+            <p className="text-2xl font-bold text-white">{data?.totalMarkets ?? "-"}</p>
+          </div>
+          <div className="bg-slate-800/50 rounded-lg p-4">
+            <p className="text-slate-400 text-xs uppercase">Avg Volume</p>
+            <p className="text-2xl font-bold text-cyan-400">${data?.avgVolume ? `${(data.avgVolume / 1000).toFixed(0)}K` : "-"}</p>
+          </div>
+          <div className="bg-slate-800/50 rounded-lg p-4">
+            <p className="text-slate-400 text-xs uppercase">Edge Opportunities</p>
+            <p className="text-2xl font-bold text-green-400">{data?.edgeOpportunities ?? "-"}</p>
+          </div>
+          <div className="bg-slate-800/50 rounded-lg p-4">
+            <p className="text-slate-400 text-xs uppercase">Comparisons</p>
+            <p className="text-2xl font-bold text-amber-400">{compData?.comparisons?.length ?? "-"}</p>
+          </div>
+        </div>
+        {data?.topMovers?.length > 0 && (
+          <div>
+            <h4 className="text-sm font-semibold text-slate-300 mb-2">Top Movers</h4>
+            <div className="space-y-2">
+              {(data.topMovers as any[]).slice(0, 3).map((m: any, i: number) => (
+                <div key={i} className="flex justify-between items-center bg-slate-800/30 rounded px-3 py-2">
+                  <span className="text-white text-sm">{m.title || m.ticker}</span>
+                  <Badge variant="outline" className="text-cyan-400 border-cyan-400/30">
+                    {m.volume ? `$${(m.volume / 1000).toFixed(0)}K vol` : "Active"}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {compData?.comparisons?.length > 0 && (
+          <div className="mt-4">
+            <h4 className="text-sm font-semibold text-slate-300 mb-2">Kalshi vs Sportsbook Comparison</h4>
+            <div className="space-y-2">
+              {(compData.comparisons as any[]).slice(0, 3).map((c: any, i: number) => (
+                <div key={i} className="flex justify-between items-center bg-slate-800/30 rounded px-3 py-2">
+                  <span className="text-white text-sm">{c.matchup || c.event}</span>
+                  <span className={`text-sm font-bold ${c.discrepancy > 5 ? 'text-green-400' : 'text-slate-400'}`}>
+                    {c.discrepancy ? `${c.discrepancy.toFixed(1)}% edge` : c.recommendation || ""}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function KalshiMarketsContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("sports");
@@ -291,34 +358,8 @@ function KalshiMarketsContent() {
           ))}
         </Tabs>
 
-        {/* Analytics Footer */}
-        <Card className="bg-gradient-to-r from-slate-800 to-slate-900 border-slate-700 mt-8">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-cyan-400" />
-              Market Analytics
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <p className="text-slate-400 text-sm mb-2">Most Traded</p>
-                <p className="text-white font-semibold">Presidential Election 2024</p>
-                <p className="text-xs text-slate-500 mt-1">$1.2M volume</p>
-              </div>
-              <div>
-                <p className="text-slate-400 text-sm mb-2">Highest Volatility</p>
-                <p className="text-white font-semibold">Bitcoin $100K by EOY</p>
-                <p className="text-xs text-slate-500 mt-1">±15% daily swing</p>
-              </div>
-              <div>
-                <p className="text-slate-400 text-sm mb-2">AI Consensus</p>
-                <p className="text-white font-semibold">87.2% Accuracy</p>
-                <p className="text-xs text-slate-500 mt-1">Last 30 days</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Market Analytics Dashboard */}
+        <AnalyticsDashboard />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../_core/trpc";
 import { kalshiService } from "../_core/kalshi";
+import { compareMarkets, getMarketAnalyticsSummary } from "../services/marketComparison";
 
 export const kalshiRouter = router({
   /**
@@ -101,5 +102,19 @@ export const kalshiRouter = router({
     }
 
     return alerts.sort((a, b) => b.confidence_score - a.confidence_score);
+  }),
+
+  /**
+   * Compare Kalshi markets with traditional sportsbook odds
+   */
+  compareWithSportsbooks: publicProcedure.query(async () => {
+    return compareMarkets();
+  }),
+
+  /**
+   * Get market analytics summary
+   */
+  getAnalyticsSummary: publicProcedure.query(async () => {
+    return getMarketAnalyticsSummary();
   }),
 });

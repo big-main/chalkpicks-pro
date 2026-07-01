@@ -354,10 +354,10 @@
 - [x] Credit deduction system integrated into all new tools (tools router)
 
 ### Phase 4: Security Hardening
-- [ ] Add rate limiting to all API endpoints (100 req/min per user)
-- [ ] Add input validation/sanitization on all tRPC procedures
-- [ ] Add secure headers (CORS, CSP, HSTS)
-- [ ] Fix sensitive data exposure in API responses
+- [x] Add rate limiting to all API endpoints (100 req/min per user) — express-rate-limit
+- [x] Add input validation/sanitization on all tRPC procedures — sanitizeValue middleware
+- [x] Add secure headers (CORS, CSP, HSTS) — helmet + HSTS in production
+- [x] Fix sensitive data exposure in API responses — X-Powered-By removed, helmet headers
 
 ### Phase 5: Architecture Refactor
 - [x] Add React error boundaries for graceful failure

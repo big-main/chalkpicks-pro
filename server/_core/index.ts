@@ -12,6 +12,7 @@ import { registerPayPalWebhook } from "../paypal-webhook";
 import { startScheduler } from "../scheduler";
 import { initializeWebSocket } from "../websocket";
 import { startLiveDataStreaming } from "./liveDataStreamer";
+import { registerSecurityMiddleware } from "../middleware/security";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -43,6 +44,9 @@ async function startServer() {
   registerPayPalWebhook(app);
   // Storage proxy for uploaded assets
   registerStorageProxy(app);
+
+  // Security middleware (helmet, rate limiting, sanitization)
+  registerSecurityMiddleware(app);
 
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));

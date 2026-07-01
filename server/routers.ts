@@ -23,6 +23,7 @@ import { clvRouter } from "./routers/clv";
 import { referralRouter } from "./routers/referral";
 import { featureRouter } from "./routers/features";
 import { arbitrageRouter } from "./routers/arbitrage";
+import { toolsRouter } from "./routers/tools";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import { users } from "../drizzle/schema";
@@ -144,6 +145,7 @@ export const appRouter = router({
   referral: referralRouter,
   features: featureRouter,
   arbitrage: arbitrageRouter,
+  tools: toolsRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -331,3 +331,37 @@
 - [x] 0 TypeScript errors after all changes
 - [ ] Implement full application review workflow in admin panel (future enhancement)
 - [x] Add projected P&L YTD to user dashboard — annualized from YTD daily average
+
+
+## Major Architecture Overhaul — July 2026
+### Phase 1: Real Data APIs
+- [x] Integrate The Odds API (free tier) for live odds from 15+ sportsbooks
+- [x] Integrate ESPN unofficial API for live scores and schedules
+- [x] Integrate Ball Don't Lie API for NBA player stats
+- [x] Build unified data service layer (server/services/dataService.ts)
+
+### Phase 2: Data Pipeline & Caching
+- [x] Build in-memory cache layer with TTL (5-min odds, 1-min scores)
+- [x] Create background data refresh via heartbeat
+- [x] Replace all simulated/hardcoded data with real API data
+- [x] Wire real odds into +EV ticker on homepage
+
+### Phase 3: New Tools
+- [x] Build Prop Builder tool (player prop analysis with over/under recs)
+- [x] Build Line Movement Tracker (real-time line changes + sharp money)
+- [x] Build Correlation Finder (same-game parlay correlations)
+- [x] Wire all 3 new tools into App.tsx routes and Navbar links
+- [x] Credit deduction system integrated into all new tools (tools router)
+
+### Phase 4: Security Hardening
+- [ ] Add rate limiting to all API endpoints (100 req/min per user)
+- [ ] Add input validation/sanitization on all tRPC procedures
+- [ ] Add secure headers (CORS, CSP, HSTS)
+- [ ] Fix sensitive data exposure in API responses
+
+### Phase 5: Architecture Refactor
+- [x] Add React error boundaries for graceful failure
+- [x] Implement React.lazy code splitting for route-based loading (all pages lazy-loaded)
+- [ ] Remove duplicate logic and consolidate shared utilities
+- [x] Add proper TypeScript interfaces for all API responses (dataService.ts)
+- [ ] Optimize database queries (add indexes, reduce N+1)

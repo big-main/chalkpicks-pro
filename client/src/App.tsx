@@ -42,6 +42,9 @@ const Sportsbooks = lazy(() => import("@/pages/Sportsbooks"));
 const Sponsors = lazy(() => import("@/pages/Sponsors"));
 const AdminPanel = lazy(() => import("@/pages/AdminPanel"));
 const CreditDashboard = lazy(() => import("@/pages/CreditDashboard"));
+const PropBuilder = lazy(() => import("@/pages/PropBuilder"));
+const LineMovement = lazy(() => import("@/pages/LineMovement"));
+const CorrelationFinder = lazy(() => import("@/pages/CorrelationFinder"));
 
 function PageLoader() {
   return (
@@ -96,6 +99,9 @@ function Router() {
         <Route path="/sponsors" component={Sponsors} />
         <Route path="/admin" component={AdminPanel} />
         <Route path="/credits" component={CreditDashboard} />
+        <Route path="/prop-builder" component={PropBuilder} />
+        <Route path="/line-movement" component={LineMovement} />
+        <Route path="/correlation-finder" component={CorrelationFinder} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

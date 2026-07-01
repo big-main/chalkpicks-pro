@@ -183,6 +183,12 @@ export default function Navbar() {
                       <Link href="/subscription-dashboard">Subscription</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link href="/credits" className="flex items-center gap-2">
+                        <Zap className="w-3 h-3" style={{ color: "#00ff88" }} />
+                        Credits
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link href="/account-settings">Account Settings</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>

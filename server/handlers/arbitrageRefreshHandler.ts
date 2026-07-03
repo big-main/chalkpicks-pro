@@ -13,6 +13,7 @@ import type { Request, Response } from "express";
 import { getDb } from "../db";
 import { arbitrageOpportunities } from "../../drizzle/schema";
 import { fetchMultiBookmakerOdds, BookmakerOdds } from "../services/sportsbookOddsScraper";
+import { fetchOddsHarvesterOdds } from "../services/oddsHarvesterClient";
 import { detectAllArbitrages, calculateOptimalBets, classifyRiskLevel } from "../services/arbitrageDetector";
 import { lt } from "drizzle-orm";
 import crypto from "crypto";
@@ -56,7 +57,11 @@ export async function arbitrageRefreshHandler(req: Request, res: Response) {
     // 2. Fetch odds for each sport and detect arbitrage
     for (const sport of SPORTS) {
       try {
-        const bookmakerOdds = await fetchMultiBookmakerOdds(sport);
+        // Primary source: The Odds API (US sportsbooks)
+        const primaryOdds = await fetchMultiBookmakerOdds(sport);
+        // Supplemental source: OddsPortal via OddsHarvester (100+ international bookmakers)
+        const supplementalOdds = await fetchOddsHarvesterOdds(sport);
+        const bookmakerOdds = [...primaryOdds, ...supplementalOdds];
         if (!bookmakerOdds.length) continue;
 
         // Group by event
@@ -125,7 +130,7 @@ export async function arbitrageRefreshHandler(req: Request, res: Response) {
                 guaranteedProfit: String(bets.profit),
                 isActive: true,
                 expiresAt,
-                source: "heartbeat-cron",
+                source: supplementalOdds.some(o => o.eventId === eventId) ? "heartbeat-cron+oddsportal" : "heartbeat-cron",
               });
               totalInserted++;
             } catch (insertErr: any) {

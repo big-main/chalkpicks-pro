@@ -295,6 +295,34 @@ function getLLMCacheKey(payload: Record<string, unknown>): string {
   return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
 }
 
+// ── Qwen / Ollama health check ──────────────────────────────────────────────
+// Cached health state to avoid pinging Ollama on every request.
+// Re-checks every 30s. Falls back to Forge automatically when Ollama is down.
+let _ollamaHealthy: boolean | null = null;
+let _ollamaLastCheck = 0;
+const OLLAMA_HEALTH_TTL_MS = 30_000;
+
+async function checkOllamaHealth(): Promise<boolean> {
+  const now = Date.now();
+  if (_ollamaHealthy !== null && now - _ollamaLastCheck < OLLAMA_HEALTH_TTL_MS) {
+    return _ollamaHealthy;
+  }
+  try {
+    const baseUrl = ENV.ollamaApiUrl.replace(/\/v1$/, "");
+    const res = await fetch(`${baseUrl}/api/tags`, {
+      signal: AbortSignal.timeout(2000), // 2s timeout — fast fail
+    });
+    _ollamaHealthy = res.ok;
+  } catch {
+    _ollamaHealthy = false;
+  }
+  _ollamaLastCheck = now;
+  if (!_ollamaHealthy) {
+    console.warn("[LLM] Ollama unreachable — falling back to Forge (Gemini)");
+  }
+  return _ollamaHealthy;
+}
+
 /**
  * Resolve which LLM provider/endpoint to use.
  *
@@ -303,26 +331,31 @@ function getLLMCacheKey(payload: Record<string, unknown>): string {
  * 2. JSON schema response_format → Forge (Ollama doesn't support it)
  * 3. Tool/function calling → Forge
  * 4. complexity='high' → Forge
- * 5. Everything else → Qwen2.5 7B on Cloud Computer (FREE)
+ * 5. Ollama health check fails → Forge (auto-fallback)
+ * 6. Everything else → Qwen2.5 7B on Cloud Computer (FREE)
  */
-function resolveProvider(params: InvokeParams): { apiUrl: string; apiKey: string; model: string } {
+async function resolveProvider(params: InvokeParams): Promise<{ apiUrl: string; apiKey: string; model: string }> {
   const hasJsonSchema = !!(params.responseFormat?.type === "json_schema" ||
     params.response_format?.type === "json_schema" ||
     params.outputSchema || params.output_schema);
   const hasTools = !!(params.tools && params.tools.length > 0);
   const forceForge = params.complexity === "high" || !!params.model;
 
-  if (forceForge || hasJsonSchema || hasTools) {
-    const model = params.model ?? "gemini-2.5-flash";
-    return { apiUrl: resolveApiUrl(), apiKey: ENV.forgeApiKey, model };
+  if (!forceForge && !hasJsonSchema && !hasTools) {
+    // Only ping Ollama when we'd actually use it
+    const ollamaUp = await checkOllamaHealth();
+    if (ollamaUp) {
+      return {
+        apiUrl: `${ENV.ollamaApiUrl}/chat/completions`,
+        apiKey: "ollama",
+        model: ENV.ollamaModel,
+      };
+    }
+    // Ollama is down — fall through to Forge
   }
 
-  // Default: Qwen2.5 7B (free local inference on Cloud Computer)
-  return {
-    apiUrl: `${ENV.ollamaApiUrl}/chat/completions`,
-    apiKey: "ollama",
-    model: ENV.ollamaModel,
-  };
+  const model = params.model ?? "gemini-2.5-flash";
+  return { apiUrl: resolveApiUrl(), apiKey: ENV.forgeApiKey, model };
 }
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
@@ -339,7 +372,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     response_format,
   } = params;
 
-  const { apiUrl, apiKey, model } = resolveProvider(params);
+  const { apiUrl, apiKey, model } = await resolveProvider(params);
   const isOllama = apiKey === "ollama";
 
   const payload: Record<string, unknown> = {

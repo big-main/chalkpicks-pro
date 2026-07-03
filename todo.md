@@ -475,3 +475,10 @@
 - [x] Wire OddsComparison route into App.tsx
 - [x] Add "Odds" link to Navbar navigation
 - [x] TypeScript: 0 errors. All components compile successfully.
+
+## Skill + OddsHarvester + Health Check (Jul 3, 2026)
+- [x] Create ollama-local-llm reusable skill — 9-phase deployment workflow, health-check reference
+- [x] Deploy OddsHarvester API on Cloud Computer (35.237.81.82:8090) — PM2 managed, port 8090 open
+- [x] Integrate OddsHarvester into arbitrageRefreshHandler — merged with The Odds API odds for wider coverage
+- [x] Implement Qwen health check in invokeLLM — 2s timeout, 30s TTL cache, auto-fallback to Gemini
+- [x] Update AGENTS.md on Cloud Computer with OddsHarvester service docs

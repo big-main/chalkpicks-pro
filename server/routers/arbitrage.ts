@@ -140,7 +140,7 @@ export const arbitrageRouter = router({
         guaranteedProfit: Number(opp.guaranteedProfit),
         oddsA: Number(opp.oddsA),
         oddsB: Number(opp.oddsB),
-        source: opp.source, // Include source (heartbeat-cron or heartbeat-cron+oddsportal)
+        source: String(opp.source ?? "api"), // Include source (heartbeat-cron or heartbeat-cron+oddsportal)
       }));
     }),
 
@@ -174,7 +174,7 @@ export const arbitrageRouter = router({
         guaranteedProfit: Number(opp[0].guaranteedProfit),
         oddsA: Number(opp[0].oddsA),
         oddsB: Number(opp[0].oddsB),
-        source: opp[0].source, // Include source
+        source: String(opp[0].source ?? "api"), // Include source
       };
     }),
 

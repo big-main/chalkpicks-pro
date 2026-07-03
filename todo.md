@@ -488,3 +488,6 @@
 - [x] Publish checkpoint a25753b3 to production — Qwen health check + OddsHarvester live
 - [x] Implement OddsHarvester caching layer — 5-min TTL, DB-backed, avoids re-scraping during 60–120s scrapes
 - [x] Add arbitrage UI source badge — shows 🌐 OddsPortal vs 🇺🇸 US Books for each opportunity
+
+- [x] Fix TypeScript inference — added explicit type annotation for `source` field in arbitrage router and client component
+- [x] Create `arbitrage-optimization` skill — documents full workflow for Qwen routing, OddsHarvester, caching, and UI badges

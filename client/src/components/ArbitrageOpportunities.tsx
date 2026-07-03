@@ -150,7 +150,7 @@ export function ArbitrageOpportunities() {
           </Card>
         )}
 
-        {data?.opportunities?.map((opp) => (
+        {data?.opportunities?.map((opp: any) => (
           <Card key={opp.id} className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -160,9 +160,11 @@ export function ArbitrageOpportunities() {
                 </div>
                 <div className="flex gap-2 items-center">
                   <Badge className={getRiskColor(opp.riskLevel)}>{opp.riskLevel.toUpperCase()}</Badge>
-                  <Badge variant="outline" className={opp.source?.includes('oddsportal') ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
-                    {opp.source?.includes('oddsportal') ? '🌐 OddsPortal' : '🇺🇾 US Books'}
-                  </Badge>
+                  {opp.source && (
+                    <Badge variant="outline" className={opp.source?.includes('oddsportal') ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
+                      {opp.source?.includes('oddsportal') ? '🌐 OddsPortal' : '🇺🇸 US Books'}
+                    </Badge>
+                  )}
                 </div>
               </div>
             </CardHeader>

@@ -88,6 +88,7 @@ const navLinks = [
   { href: "/sportsbooks", label: "Sportsbooks" },
   { href: "/odds-comparison", label: "Odds" },
   { href: "/bet-calculator", label: "Calc" },
+  { href: "/story-generator", label: "📸 Stories" },
   { href: "/tools", label: "Tools" },
   { href: "/referral", label: "Referral" },
   { href: "/pricing", label: "Pricing" },
@@ -126,15 +127,21 @@ export default function Navbar() {
       <LiveScoresTicker />
       <div className="max-w-[1600px] mx-auto px-4 lg:px-6">
         <div className="flex items-center justify-between h-[72px]">
-          {/* Logo — larger, with glow */}
+          {/* Logo — CP icon on mobile, full horizontal on md+ */}
           <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
+            {/* Mobile: CP icon only */}
+            <img
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/cp-logo-icon-a3mVBRaWZeuoNHa3gFxuBp.webp"
+              alt="ChalkPicks"
+              className="md:hidden h-10 w-10 transition-all duration-300 group-hover:scale-[1.05]"
+              style={{ filter: "drop-shadow(0 0 10px rgba(57,255,20,0.4))" }}
+            />
+            {/* Desktop: full horizontal logo */}
             <img
               src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/cp-logo-navbar-EuWyWqzZKRjh6eatJJ5Sm9.webp"
               alt="ChalkPicks"
-              className="h-12 w-auto max-w-[220px] transition-all duration-300 group-hover:scale-[1.03]"
-              style={{
-                filter: "drop-shadow(0 0 12px rgba(57,255,20,0.25)) drop-shadow(0 0 4px rgba(57,255,20,0.15))",
-              }}
+              className="hidden md:block h-12 w-auto max-w-[220px] transition-all duration-300 group-hover:scale-[1.03]"
+              style={{ filter: "drop-shadow(0 0 12px rgba(57,255,20,0.25)) drop-shadow(0 0 4px rgba(57,255,20,0.15))" }}
             />
           </Link>
 

@@ -506,6 +506,11 @@
 - [x] Routing: Qwen (free/local) → GPT-4o-mini (OpenRouter, $0.15/1M tokens) → Gemini (Forge, last resort)
 
 ## Navbar & Logo Enhancement (Jul 3, 2026)
-- [ ] Upgrade logo to higher quality version
-- [ ] Redesign navbar — less boxy, better flow, more premium feel
-- [ ] Enhance top portion of the site (hero transition from navbar)
+- [x] Upgrade logo — 5 new shield+crown variations generated (green navbar, CP icon, gold premium, minimal white, gold CP icon)
+- [x] Redesign navbar — glass-morphism floating style, pill-shaped links, gold active state, live scores ticker, LLM badge
+- [x] Enhance top portion of the site — animated blur blobs (blue/gold/green), framer-motion staggered hero animations, diagonal brand accents
+
+## Mobile + P&L + Story Generator (Jul 3, 2026)
+- [x] Mobile logo breakpoint — show CP icon on sm screens, full horizontal logo on md+
+- [x] P&L color indicators on Performance page — red/green win/loss rows
+- [x] Branded Instagram story generator — one-click export using AI pick data + gold premium logo

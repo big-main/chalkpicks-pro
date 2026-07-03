@@ -252,10 +252,26 @@ export default function Performance() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(recent?.picks ?? []).map((pick, i) => (
-                    <tr key={pick.id ?? i} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-                      onMouseEnter={e => ((e.currentTarget as HTMLTableRowElement).style.background = "rgba(255,255,255,0.02)")}
-                      onMouseLeave={e => ((e.currentTarget as HTMLTableRowElement).style.background = "transparent")}
+                  {(recent?.picks ?? []).map((pick, i) => {
+                    const rowBg = pick.result === "win"
+                      ? "rgba(57,255,20,0.04)"
+                      : pick.result === "loss"
+                      ? "rgba(230,57,70,0.05)"
+                      : "transparent";
+                    const rowBorder = pick.result === "win"
+                      ? "1px solid rgba(57,255,20,0.08)"
+                      : pick.result === "loss"
+                      ? "1px solid rgba(230,57,70,0.08)"
+                      : "1px solid rgba(255,255,255,0.04)";
+                    const rowHover = pick.result === "win"
+                      ? "rgba(57,255,20,0.08)"
+                      : pick.result === "loss"
+                      ? "rgba(230,57,70,0.09)"
+                      : "rgba(255,255,255,0.02)";
+                    return (
+                    <tr key={pick.id ?? i} style={{ borderBottom: rowBorder, background: rowBg, transition: "background 0.15s" }}
+                      onMouseEnter={e => ((e.currentTarget as HTMLTableRowElement).style.background = rowHover)}
+                      onMouseLeave={e => ((e.currentTarget as HTMLTableRowElement).style.background = rowBg)}
                     >
                       <td style={{ padding: "10px 12px" }}>
                         <span style={{ fontSize: 16 }}>{SPORT_ICONS[(pick.sportKey ?? "").toUpperCase()] ?? "🎯"}</span>{" "}
@@ -280,7 +296,8 @@ export default function Performance() {
                         <ResultBadge result={pick.result ?? "pending"} />
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
               {(recent?.picks ?? []).length === 0 && (

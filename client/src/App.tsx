@@ -52,6 +52,7 @@ const ArbitrageOpportunitiesPage = lazy(() => import("@/pages/ArbitrageOpportuni
 const OddsComparison = lazy(() => import("@/pages/OddsComparison"));
 const Performance = lazy(() => import("@/pages/Performance"));
 const BetCalculator = lazy(() => import("@/pages/BetCalculator"));
+const StoryGenerator = lazy(() => import("@/pages/StoryGenerator"));
 
 function PageLoader() {
   return (
@@ -116,6 +117,7 @@ function Router() {
           <Route path="/odds-comparison" component={OddsComparison} />
           <Route path="/performance" component={Performance} />
           <Route path="/bet-calculator" component={BetCalculator} />
+          <Route path="/story-generator" component={StoryGenerator} />
           <Route path="/404" component={NotFound} />
           <Route component={NotFound} />
         </Switch>

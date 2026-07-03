@@ -28,6 +28,7 @@ import { adminRouter } from "./routers/admin";
 import { betsExportPdfRouter } from "./routers/betsExportPdf";
 import { pushNotificationsRouter } from "./routers/pushNotifications";
 import { ogImageRouter } from "./routers/ogImage";
+import { oddsComparisonRouter } from "./routers/oddsComparison";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import { users } from "../drizzle/schema";
@@ -149,6 +150,7 @@ export const appRouter = router({
   feedback: feedbackRouter,
   paypal: paypalRouter,
   odds: oddsRouter,
+  oddsComparison: oddsComparisonRouter,
   aiPicks: aiPicksRouter,
   promoCode: promoCodeRouter,
   kalshi: kalshiRouter,

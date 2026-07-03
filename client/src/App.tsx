@@ -48,6 +48,7 @@ const CreditDashboard = lazy(() => import("@/pages/CreditDashboard"));
 const PropBuilder = lazy(() => import("@/pages/PropBuilder"));
 const LineMovement = lazy(() => import("@/pages/LineMovement"));
 const CorrelationFinder = lazy(() => import("@/pages/CorrelationFinder"));
+const OddsComparison = lazy(() => import("@/pages/OddsComparison"));
 const Performance = lazy(() => import("@/pages/Performance"));
 const BetCalculator = lazy(() => import("@/pages/BetCalculator"));
 
@@ -110,6 +111,7 @@ function Router() {
           <Route path="/prop-builder" component={PropBuilder} />
           <Route path="/line-movement" component={LineMovement} />
           <Route path="/correlation-finder" component={CorrelationFinder} />
+          <Route path="/odds-comparison" component={OddsComparison} />
           <Route path="/performance" component={Performance} />
           <Route path="/bet-calculator" component={BetCalculator} />
           <Route path="/404" component={NotFound} />

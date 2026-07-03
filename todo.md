@@ -465,3 +465,14 @@
 - [ ] Deploy vLLM locally for on-premise inference (80-90% cost reduction) — NEXT SESSION
 - [ ] Integrate sportsbook-odds-scraper for 10+ sportsbooks data — NEXT SESSION
 - [ ] Schedule SportsArbFinder for real-time arbitrage detection — NEXT SESSION
+
+## Payment Method Prompt + Multi-Source Odds (Jul 3, 2026)
+- [x] Create TrialPrompt component with visual indicator and CTA for free users
+- [x] Wire TrialPrompt into UserDashboard (shows for free tier users only)
+- [x] Create sportsbookOddsScraper service with multi-bookmaker odds fetching
+- [x] Create oddsComparison router with 4 procedures (getMultiBookmakerOdds, getBestLines, detectSteamMoves, getEventOddsComparison)
+- [x] Create MultiSourceOdds component for frontend display (tabbed interface: moneyline/spreads/totals)
+- [x] Create OddsComparison page with sport selection and odds display
+- [x] Wire OddsComparison route into App.tsx
+- [x] Add "Odds" link to Navbar navigation
+- [x] TypeScript: 0 errors. All components compile successfully.

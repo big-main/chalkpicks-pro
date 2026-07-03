@@ -14,6 +14,7 @@ import { Link } from "wouter";
 import { Plus, TrendingUp, TrendingDown, Target, DollarSign, Trophy, CheckCircle2, XCircle, Clock, Trash2, Crown, Download } from "lucide-react";
 import { toast } from "sonner";
 import DashboardMetrics from "@/components/DashboardMetrics";
+import { TrialPrompt } from "@/components/TrialPrompt";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
@@ -184,6 +185,12 @@ export default function UserDashboard() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-16">
+        {/* Trial Prompt for Free Users */}
+        <div className="border-b border-border/50 bg-card/30">
+          <div className="container py-4">
+            <TrialPrompt />
+          </div>
+        </div>
         {/* Edge Terminal Metrics */}
         {summary && (
           <div className="border-b border-border/50 bg-card/30">

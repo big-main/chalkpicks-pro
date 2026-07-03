@@ -5,8 +5,20 @@ Allow: /stats
 Allow: /leaderboard
 Allow: /pricing
 Allow: /backtesting
+Allow: /performance
+Allow: /bet-calculator
+Allow: /ev-finder
+Allow: /prop-builder
+Allow: /line-movement
+Allow: /correlation-finder
+Allow: /kalshi
+Allow: /clv-tracker
+Allow: /arbitrage
+Allow: /sportsbooks
+Allow: /tools
 
 Disallow: /dashboard
+Disallow: /admin
 Disallow: /api/
 Disallow: /payment/
 

@@ -14,6 +14,7 @@ import { Slider } from "@/components/ui/slider";
 import { Link } from "wouter";
 import { Brain, Lock, Filter, RefreshCw, Zap, Sparkles, ArrowUpDown, SlidersHorizontal, X, ChevronDown, Bell, BellOff, Crown } from "lucide-react";
 import { toast } from "sonner";
+import SharePickCard from "@/components/SharePickCard";
 
 const PICK_TYPE_LABELS: Record<string, string> = {
   moneyline: "Moneyline",
@@ -223,6 +224,9 @@ function PickCard({ pick, isPremiumUser, rank }: { pick: any; isPremiumUser: boo
               ))}
             </div>
           )}
+          <div className="mt-3 flex justify-end" onClick={e => e.preventDefault()}>
+            <SharePickCard pick={pick} />
+          </div>
         </CardContent>
       </Card>
     </Link>

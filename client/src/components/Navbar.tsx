@@ -59,6 +59,7 @@ const navLinks = [
   { href: "/line-movement", label: "Lines" },
   { href: "/correlation-finder", label: "Corr" },
   { href: "/sportsbooks", label: "Sportsbooks" },
+  { href: "/bet-calculator", label: "Calc" },
   { href: "/tools", label: "Tools" },
   { href: "/referral", label: "Referral" },
   { href: "/pricing", label: "Pricing" },

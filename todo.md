@@ -394,3 +394,16 @@
 - [x] SEO: improved title, richer keyword meta, FAQ schema (4 Q&A), updated OG/Twitter tags
 - [x] Sitemap updated with all new pages (Performance, Prop Builder, Line Movement, Correlation Finder)
 - [x] Fonts updated: Space Grotesk + Inter + JetBrains Mono in index.html
+
+## Share Pick Card + Bet Calculator + SEO Submissions (2026-07-03)
+- [x] Create SharePickCard component (Twitter/X share + copy link for any pick card)
+- [x] Wire SharePickCard into PickCard in Picks.tsx (share button on each card)
+- [x] Create free Bet Calculator page (/bet-calculator) — odds converter, parlay calc, Kelly Criterion
+- [x] Add BetCalculator route to App.tsx
+- [x] Add Bet Calculator link to Navbar navLinks ("Calc")
+- [x] Update sitemap.xml with bet-calculator and all current pages (19 total), add lastmod dates
+- [x] Update robots.txt to allow all public pages (performance, bet-calculator, ev-finder, etc.)
+- [x] Add sitemap link tag to index.html head
+- [x] Ping IndexNow API for Bing/Yandex instant indexing (HTTP 202 success)
+- [x] Create IndexNow key verification file (chalkpicks2026indexnow.txt)
+- [x] Create directory submission guide (references/directory-submissions.md)

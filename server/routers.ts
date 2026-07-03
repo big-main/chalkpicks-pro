@@ -27,6 +27,7 @@ import { toolsRouter } from "./routers/tools";
 import { adminRouter } from "./routers/admin";
 import { betsExportPdfRouter } from "./routers/betsExportPdf";
 import { pushNotificationsRouter } from "./routers/pushNotifications";
+import { ogImageRouter } from "./routers/ogImage";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import { users } from "../drizzle/schema";
@@ -46,6 +47,7 @@ async function issueSessionCookie(req: Request, res: Response, userId: number, n
 
 export const appRouter = router({
   system: systemRouter,
+  ogImage: ogImageRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
 

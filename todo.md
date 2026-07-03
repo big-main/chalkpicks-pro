@@ -459,3 +459,9 @@
 - [ ] Deploy vLLM locally for on-premise inference (80-90% cost reduction)
 - [ ] Integrate sportsbook-odds-scraper for 10+ sportsbooks data
 - [ ] Schedule SportsArbFinder for real-time arbitrage detection
+- [x] Create dynamic OG image endpoint for pick sharing (sharp-based SVG → PNG generation, integrated into ogImage router)
+- [ ] Set up Bing Webmaster Tools submission — NEXT SESSION
+- [ ] Integrate lmcache for LLM response caching (40-60% API savings) — NEXT SESSION
+- [ ] Deploy vLLM locally for on-premise inference (80-90% cost reduction) — NEXT SESSION
+- [ ] Integrate sportsbook-odds-scraper for 10+ sportsbooks data — NEXT SESSION
+- [ ] Schedule SportsArbFinder for real-time arbitrage detection — NEXT SESSION

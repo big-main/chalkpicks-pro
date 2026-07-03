@@ -51,22 +51,27 @@ function LlmStatusBadge() {
     staleTime: 15_000,
   });
   if (!data) return null;
-  const isQwen = data.provider === "qwen";
+  const providerConfig: Record<string, { label: string; color: string; title: string }> = {
+    qwen: { label: "Qwen", color: "#39ff14", title: "Qwen 2.5 7B (Local — Free)" },
+    "gpt-4o-mini": { label: "GPT-4o", color: "#0ea5e9", title: "GPT-4o-mini (OpenRouter)" },
+    gemini: { label: "Gemini", color: "#f0b800", title: "Gemini Flash (Forge)" },
+  };
+  const cfg = providerConfig[data.provider] ?? providerConfig.gemini;
   return (
     <div
       className="hidden md:flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase"
       style={{
-        background: isQwen ? "rgba(57,255,20,0.08)" : "rgba(255,180,0,0.08)",
-        border: `1px solid ${isQwen ? "rgba(57,255,20,0.25)" : "rgba(255,180,0,0.25)"}`,
-        color: isQwen ? "#39ff14" : "#ffb400",
+        background: `${cfg.color}12`,
+        border: `1px solid ${cfg.color}40`,
+        color: cfg.color,
       }}
-      title={`AI Engine: ${isQwen ? "Qwen 2.5 7B (Local)" : "Gemini Flash (Cloud)"}`}
+      title={`AI Engine: ${cfg.title}`}
     >
       <Cpu className="w-3 h-3" />
-      <span>{isQwen ? "Qwen" : "Gemini"}</span>
+      <span>{cfg.label}</span>
       <span
         className="w-1.5 h-1.5 rounded-full animate-pulse"
-        style={{ background: isQwen ? "#39ff14" : "#ffb400" }}
+        style={{ background: cfg.color }}
       />
     </div>
   );

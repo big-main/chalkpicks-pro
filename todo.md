@@ -499,3 +499,8 @@
 - [x] Redesign website theme to match ChalkPicks brand — dark bg (#0d0f14), metallic gold (#d4a017/#f0b800), neon green (#39ff14), Oswald font, 92+ color refs updated across 16 files
 - [x] Update Instagram automation skill with ChalkPicks visual brand guidelines — full brand palette, composition templates, AI prompt patterns
 - [x] Create reusable skill documenting the full process — updated chalkpicks-analytics §7-9 (LLM routing, OddsHarvester, brand identity)
+
+## LLM Provider Update (Jul 3, 2026)
+- [x] Replace Gemini with GPT-4o-mini (OpenRouter) as primary fallback when Qwen is down
+- [x] Update LLM status badge to show "GPT-4o" (blue) when using OpenRouter fallback
+- [x] Routing: Qwen (free/local) → GPT-4o-mini (OpenRouter, $0.15/1M tokens) → Gemini (Forge, last resort)

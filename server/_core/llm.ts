@@ -327,11 +327,11 @@ async function checkOllamaHealth(): Promise<boolean> {
  * Resolve which LLM provider/endpoint to use.
  *
  * Routing priority (Qwen-first to maximize free usage):
- * 1. Explicit model override → Forge
- * 2. JSON schema response_format → Forge (Ollama doesn't support it)
- * 3. Tool/function calling → Forge
- * 4. complexity='high' → Forge
- * 5. Ollama health check fails → Forge (auto-fallback)
+ * 1. Explicit model override → OpenRouter (GPT-4o-mini)
+ * 2. JSON schema response_format → OpenRouter GPT-4o-mini (Ollama doesn't support it)
+ * 3. Tool/function calling → OpenRouter GPT-4o-mini
+ * 4. complexity='high' → OpenRouter GPT-4o-mini
+ * 5. Ollama health check fails → OpenRouter GPT-4o-mini (auto-fallback)
  * 6. Everything else → Qwen2.5 7B on Cloud Computer (FREE)
  */
 async function resolveProvider(params: InvokeParams): Promise<{ apiUrl: string; apiKey: string; model: string }> {
@@ -339,9 +339,9 @@ async function resolveProvider(params: InvokeParams): Promise<{ apiUrl: string; 
     params.response_format?.type === "json_schema" ||
     params.outputSchema || params.output_schema);
   const hasTools = !!(params.tools && params.tools.length > 0);
-  const forceForge = params.complexity === "high" || !!params.model;
+  const forceGpt = params.complexity === "high" || !!params.model;
 
-  if (!forceForge && !hasJsonSchema && !hasTools) {
+  if (!forceGpt && !hasJsonSchema && !hasTools) {
     // Only ping Ollama when we'd actually use it
     const ollamaUp = await checkOllamaHealth();
     if (ollamaUp) {
@@ -351,9 +351,16 @@ async function resolveProvider(params: InvokeParams): Promise<{ apiUrl: string; 
         model: ENV.ollamaModel,
       };
     }
-    // Ollama is down — fall through to Forge
+    // Ollama is down — fall through to GPT-4o-mini
   }
 
+  // Use OpenRouter GPT-4o-mini as the fallback (replaces Gemini)
+  if (ENV.openRouterApiKey) {
+    const model = params.model ?? ENV.openRouterModel;
+    return { apiUrl: ENV.openRouterApiUrl, apiKey: ENV.openRouterApiKey, model };
+  }
+
+  // Final fallback: Forge (only if OpenRouter key is missing)
   const model = params.model ?? "gemini-2.5-flash";
   return { apiUrl: resolveApiUrl(), apiKey: ENV.forgeApiKey, model };
 }
@@ -362,12 +369,15 @@ async function resolveProvider(params: InvokeParams): Promise<{ apiUrl: string; 
  * Get the current LLM provider status for the UI status badge.
  * Returns which provider is active and health state.
  */
-export function getLlmStatus(): { provider: "qwen" | "gemini"; healthy: boolean; lastCheck: number } {
-  return {
-    provider: _ollamaHealthy === true ? "qwen" : "gemini",
-    healthy: _ollamaHealthy === true,
-    lastCheck: _ollamaLastCheck,
-  };
+export function getLlmStatus(): { provider: "qwen" | "gpt-4o-mini" | "gemini"; healthy: boolean; lastCheck: number } {
+  if (_ollamaHealthy === true) {
+    return { provider: "qwen", healthy: true, lastCheck: _ollamaLastCheck };
+  }
+  // OpenRouter GPT-4o-mini is the primary fallback
+  if (ENV.openRouterApiKey) {
+    return { provider: "gpt-4o-mini", healthy: true, lastCheck: _ollamaLastCheck };
+  }
+  return { provider: "gemini", healthy: true, lastCheck: _ollamaLastCheck };
 }
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
@@ -404,10 +414,9 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.tool_choice = normalizedToolChoice;
   }
 
-  // Forge-specific params (Ollama doesn't support thinking/budget_tokens)
+  // Non-Ollama params (max_tokens for GPT-4o-mini and Forge)
   if (!isOllama) {
-    payload.max_tokens = 32768;
-    payload.thinking = { budget_tokens: 128 };
+    payload.max_tokens = 16384;
   }
 
   const normalizedResponseFormat = normalizeResponseFormat({

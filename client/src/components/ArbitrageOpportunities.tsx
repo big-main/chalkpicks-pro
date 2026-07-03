@@ -158,7 +158,12 @@ export function ArbitrageOpportunities() {
                   <CardTitle className="text-lg">{opp.eventName}</CardTitle>
                   <CardDescription>{opp.sport.toUpperCase()} • {opp.marketType}</CardDescription>
                 </div>
-                <Badge className={getRiskColor(opp.riskLevel)}>{opp.riskLevel.toUpperCase()}</Badge>
+                <div className="flex gap-2 items-center">
+                  <Badge className={getRiskColor(opp.riskLevel)}>{opp.riskLevel.toUpperCase()}</Badge>
+                  <Badge variant="outline" className={opp.source?.includes('oddsportal') ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
+                    {opp.source?.includes('oddsportal') ? '🌐 OddsPortal' : '🇺🇾 US Books'}
+                  </Badge>
+                </div>
               </div>
             </CardHeader>
 

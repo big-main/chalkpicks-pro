@@ -532,6 +532,22 @@ export const userArbitrageTrades = mysqlTable("user_arbitrage_trades", {
 export type UserArbitrageTrade = typeof userArbitrageTrades.$inferSelect;
 export type InsertUserArbitrageTrade = typeof userArbitrageTrades.$inferInsert;
 
+// ─── OddsHarvester Cache ─────────────────────────────────────────────────────
+// Caches the last successful OddsHarvester scrape per sport to avoid re-scraping
+// if the next cron run hits the API while a scrape is in progress (60–120s).
+export const oddsHarvesterCache = mysqlTable("odds_harvester_cache", {
+  id: int("id").autoincrement().primaryKey(),
+  sport: varchar("sport", { length: 32 }).notNull().unique(), // e.g., "basketball"
+  data: json("data").notNull(), // Serialized BookmakerOdds[] array
+  scrapedAt: timestamp("scrapedAt").notNull(),
+  expiresAt: timestamp("expiresAt").notNull(), // TTL: 5 minutes (matches cron interval)
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type OddsHarvesterCache = typeof oddsHarvesterCache.$inferSelect;
+export type InsertOddsHarvesterCache = typeof oddsHarvesterCache.$inferInsert;
+
 // ─── Push Subscriptions ───────────────────────────────────────────────────────
 export const pushSubscriptions = mysqlTable("push_subscriptions", {
   id: int("id").autoincrement().primaryKey(),

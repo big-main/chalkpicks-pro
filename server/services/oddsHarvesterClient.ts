@@ -9,6 +9,9 @@
 
 import { ENV } from "../_core/env.js";
 import { BookmakerOdds, Market, Outcome } from "./sportsbookOddsScraper.js";
+import { getDb } from "../db.js";
+import { oddsHarvesterCache } from "../../drizzle/schema.js";
+import { eq } from "drizzle-orm";
 
 // OddsPortal sport key → The Odds API sport key mapping (for unified event matching)
 const OH_SPORT_MAP: Record<string, string> = {
@@ -80,6 +83,9 @@ export async function isOddsHarvesterHealthy(): Promise<boolean> {
 /**
  * Fetch supplemental odds from OddsPortal via OddsHarvester API.
  * Returns standardized BookmakerOdds[] compatible with the existing arbitrage detector.
+ *
+ * Caching strategy: If a scrape is in progress (60–120s), return the last cached result
+ * instead of waiting or hitting the API again. Cache TTL matches the 5-min cron interval.
  */
 export async function fetchOddsHarvesterOdds(
   sport: string,
@@ -88,6 +94,28 @@ export async function fetchOddsHarvesterOdds(
   const ohSport = CP_TO_OH_SPORT[sport];
   if (!ohSport) {
     return []; // Sport not supported by OddsPortal
+  }
+
+  // Check cache first
+  try {
+    const db = await getDb();
+    if (db) {
+      const cached = await db
+        .select()
+        .from(oddsHarvesterCache)
+        .where(eq(oddsHarvesterCache.sport, sport))
+        .limit(1);
+
+      if (cached.length > 0) {
+        const row = cached[0];
+        if (row && row.expiresAt > new Date()) {
+          console.log(`[OddsHarvester] Cache hit for ${sport}`);
+          return (row.data as BookmakerOdds[]) || [];
+        }
+      }
+    }
+  } catch (cacheErr) {
+    console.warn("[OddsHarvester] Cache lookup failed:", cacheErr);
   }
 
   const healthy = await isOddsHarvesterHealthy();
@@ -108,8 +136,30 @@ export async function fetchOddsHarvesterOdds(
 
     const data = await res.json();
     const events: OHEvent[] = data.events || [];
+    const result = normalizeOHEvents(events, sport, ohSport);
 
-    return normalizeOHEvents(events, sport, ohSport);
+    // Store in cache (5-min TTL to match cron interval)
+    try {
+      const db = await getDb();
+      if (db && result.length > 0) {
+        const now = new Date();
+        const expiresAt = new Date(now.getTime() + 5 * 60 * 1000);
+        await db
+          .insert(oddsHarvesterCache)
+          .values({
+            sport,
+            data: result,
+            scrapedAt: now,
+            expiresAt,
+          })
+          .onDuplicateKeyUpdate({ set: { data: result, scrapedAt: now, expiresAt } });
+        console.log(`[OddsHarvester] Cached ${result.length} odds for ${sport}`);
+      }
+    } catch (cacheErr) {
+      console.warn("[OddsHarvester] Cache store failed:", cacheErr);
+    }
+
+    return result;
   } catch (error) {
     console.error("[OddsHarvester] Fetch failed:", error);
     return [];

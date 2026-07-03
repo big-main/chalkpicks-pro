@@ -482,3 +482,9 @@
 - [x] Integrate OddsHarvester into arbitrageRefreshHandler — merged with The Odds API odds for wider coverage
 - [x] Implement Qwen health check in invokeLLM — 2s timeout, 30s TTL cache, auto-fallback to Gemini
 - [x] Update AGENTS.md on Cloud Computer with OddsHarvester service docs
+
+
+## Publish + Caching + UI Badge (Jul 3, 2026)
+- [x] Publish checkpoint a25753b3 to production — Qwen health check + OddsHarvester live
+- [x] Implement OddsHarvester caching layer — 5-min TTL, DB-backed, avoids re-scraping during 60–120s scrapes
+- [x] Add arbitrage UI source badge — shows 🌐 OddsPortal vs 🇺🇸 US Books for each opportunity

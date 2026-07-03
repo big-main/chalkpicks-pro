@@ -31,12 +31,20 @@ export const getUserByEmail = (email: string) => findUser(eq(users.email, email)
 export async function createUser(data: { name: string; email: string; passwordHash: string }) {
   const db = await getDb();
   if (!db) throw new Error("Database unavailable");
+  
+  // Grant 3-day free trial on signup
+  const now = new Date();
+  const trialExpiresAt = new Date(now);
+  trialExpiresAt.setDate(trialExpiresAt.getDate() + 3);
+  
   await db.insert(users).values({
     name: data.name,
     email: data.email,
     passwordHash: data.passwordHash,
     loginMethod: "email",
     lastSignedIn: new Date(),
+    subscriptionTier: "trial",
+    subscriptionExpiresAt: trialExpiresAt,
   });
   const user = await getUserByEmail(data.email);
   if (!user) throw new Error("Failed to retrieve created user");

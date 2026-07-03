@@ -131,12 +131,12 @@ export const subscriptionRouter = router({
     const u = user[0];
     if (!u) return { tier: "free", expiresAt: null, isActive: false, accountBalance: 0 };
 
-    const isActive = u.subscriptionTier !== "free" && (
+    const isActive = (u.subscriptionTier !== "free") && (
       !u.subscriptionExpiresAt || u.subscriptionExpiresAt > new Date()
     );
 
     return {
-      tier: u.subscriptionTier,
+      tier: u.subscriptionTier === "trial" ? "trial" : u.subscriptionTier,
       expiresAt: u.subscriptionExpiresAt,
       isActive,
       accountBalance: parseFloat(u.accountBalance.toString()),

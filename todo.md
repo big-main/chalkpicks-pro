@@ -440,3 +440,12 @@
 - [x] Wire PageMeta into App.tsx Router function (auto-updates document.title and meta description on navigation)
 - [x] Add Organization JSON-LD structured data to index.html (name, logo, social profiles, contact info, address)
 - [x] TypeScript: 0 errors. All components and JSON-LD valid.
+
+## Stripe Integration Verification (2026-07-03)
+- [x] Audit Stripe configuration: API keys (sk_test_*, pk_test_*), webhook secret, subscription products
+- [x] Verify free trial setup: 3-day trial auto-granted on signup (subscriptionTier="trial", expiresAt=now+3days)
+- [x] Test end-to-end subscription flow: signup page live, form displays "no credit card required" messaging
+- [x] Verify webhook handling: /api/stripe/webhook endpoint registered and configured with webhook secret
+- [x] Verify production payment flow: Stripe test keys active, webhook endpoint at https://chalkpicks.live/api/stripe/webhook
+- [x] Subscription tiers live: Daily Pass $9.99 (1 day), Monthly Pro $29.99 (1 month), Annual Elite $199.99 (1 year)
+- [x] Credit bonus system active: $100 credit granted for payments >= $5

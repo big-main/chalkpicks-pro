@@ -71,6 +71,11 @@ const PAGE_META_MAP: Record<string, PageMetaConfig> = {
     description:
       "Find arbitrage opportunities across 15+ sportsbooks. Lock in guaranteed profit by betting both sides at different books.",
   },
+  "/arbitrage-opportunities": {
+    title: "Real-Time Arbitrage Opportunities | ChalkPicks",
+    description:
+      "Detect guaranteed profit arbitrage opportunities across multiple sportsbooks. Real-time odds comparison, optimal bet sizing, and risk analysis.",
+  },
   "/ev-finder": {
     title: "+EV Finder | Positive Expected Value Bets",
     description:
@@ -122,12 +127,14 @@ const PAGE_META_MAP: Record<string, PageMetaConfig> = {
   },
 };
 
-export function PageMeta() {
+export function PageMeta({ pathname }: { pathname?: string } = {}) {
   const [location] = useLocation();
 
   useEffect(() => {
+    // Use provided pathname or current location
+    const currentPath = pathname || location;
     // Strip query strings and trailing slashes for matching
-    const cleanPath = location.split("?")[0].replace(/\/$/, "") || "/";
+    const cleanPath = currentPath.split("?")[0].replace(/\/$/, "") || "/";
 
     // Handle dynamic pick detail routes like /picks/123
     let config =

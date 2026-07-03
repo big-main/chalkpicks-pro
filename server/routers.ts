@@ -23,6 +23,7 @@ import { clvRouter } from "./routers/clv";
 import { referralRouter } from "./routers/referral";
 import { featureRouter } from "./routers/features";
 import { arbitrageRouter } from "./routers/arbitrage";
+import { arbitrageOpportunitiesRouter } from "./routers/arbitrageOpportunities";
 import { toolsRouter } from "./routers/tools";
 import { adminRouter } from "./routers/admin";
 import { betsExportPdfRouter } from "./routers/betsExportPdf";
@@ -158,6 +159,7 @@ export const appRouter = router({
   referral: referralRouter,
   features: featureRouter,
   arbitrage: arbitrageRouter,
+  arbitrageOpportunities: arbitrageOpportunitiesRouter,
   tools: toolsRouter,
   admin: adminRouter,
   betsReport: betsExportPdfRouter,

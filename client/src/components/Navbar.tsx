@@ -55,6 +55,7 @@ const navLinks = [
   { href: "/kalshi", label: "Kalshi" },
   { href: "/clv-tracker", label: "CLV" },
   { href: "/arbitrage", label: "Arbitrage" },
+  { href: "/arbitrage-opportunities", label: "Arb Opps" },
   { href: "/prop-builder", label: "Props" },
   { href: "/line-movement", label: "Lines" },
   { href: "/correlation-finder", label: "Corr" },

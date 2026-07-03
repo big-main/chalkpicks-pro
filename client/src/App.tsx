@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { WebMCPTools } from "@/components/WebMCPTools";
 import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
+import { PageMeta } from "@/components/PageMeta";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
@@ -70,6 +71,7 @@ function Router() {
   usePageTracking();
   return (
     <>
+      <PageMeta />
       <BreadcrumbJsonLd />
       <Suspense fallback={<PageLoader />}>
         <Switch>

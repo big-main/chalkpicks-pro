@@ -433,3 +433,10 @@
 - [x] Add cache headers — middleware in vite.ts: 1yr for versioned assets, 5min for HTML, 1hr for others
 - [x] Inline critical CSS — Tailwind 4 + Vite already optimizes CSS; fonts use display=swap
 - [x] Re-run PageSpeed test (scheduled for 24h later; site HTTP 200, all optimizations live)
+
+## Skill Creation + PageMeta + Organization JSON-LD (2026-07-03)
+- [x] Create webdev-pagespeed-optimization skill using skill-creator (5-phase workflow documented)
+- [x] Build PageMeta component for per-route title and meta description tags (24 routes mapped)
+- [x] Wire PageMeta into App.tsx Router function (auto-updates document.title and meta description on navigation)
+- [x] Add Organization JSON-LD structured data to index.html (name, logo, social profiles, contact info, address)
+- [x] TypeScript: 0 errors. All components and JSON-LD valid.

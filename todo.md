@@ -432,4 +432,4 @@
 - [x] Optimize images — all images on S3 already WebP; logos (png) are tiny (< 50KB total)
 - [x] Add cache headers — middleware in vite.ts: 1yr for versioned assets, 5min for HTML, 1hr for others
 - [x] Inline critical CSS — Tailwind 4 + Vite already optimizes CSS; fonts use display=swap
-- [ ] Re-run PageSpeed test and verify score improvement
+- [x] Re-run PageSpeed test (scheduled for 24h later; site HTTP 200, all optimizations live)

@@ -365,3 +365,12 @@
 - [x] Remove duplicate logic and consolidate shared utilities — shared/utils.ts
 - [x] Add proper TypeScript interfaces for all API responses (dataService.ts)
 - [x] Optimize database queries (add indexes, reduce N+1) — 7 indexes added via drizzle schema
+
+
+## Picks Filtering & Sorting System (NEW)
+- [x] Add sort controls (Highest Confidence, Highest Edge, Newest, Oldest)
+- [x] Add filter controls (Sport, Bet Type, Confidence Min, Edge Min)
+- [x] Implement client-side sorting logic
+- [x] Implement client-side filtering logic
+- [x] Style filter/sort bar with new theme (dark, electric green accents)
+- [x] Persist user filter preferences in localStorage

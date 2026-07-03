@@ -414,3 +414,8 @@
 - [x] Wire WebMCPTools into App.tsx (renders at root, outside ThemeProvider)
 - [x] Add FAQPage JSON-LD structured data to index.html (8 questions targeting key search terms)
 - [x] WebSite + SoftwareApplication JSON-LD already present in index.html (verified)
+
+## Steps 1-2-3: Rich Results + Bet Tracker MCP + GSC (2026-07-03)
+- [x] Validate FAQPage JSON-LD via live HTML parse — 3 blocks valid (WebSite, FAQPage 8q, SoftwareApplication)
+- [x] Add chalkpicks_place_bet_tracker MCP tool (5th tool — records bet via bets.add, handles 401 gracefully)
+- [ ] Submit sitemap to Google Search Console (manual — requires user login at search.google.com/search-console)

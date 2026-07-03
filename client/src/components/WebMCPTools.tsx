@@ -269,11 +269,106 @@ function useGetPerformanceTool() {
   });
 }
 
+// ── Tool 5: Record a bet in the tracker ─────────────────────────────────────
+function usePlaceBetTrackerTool() {
+  useWebMCP({
+    name: "chalkpicks_place_bet_tracker",
+    description:
+      "Record a sports bet in the ChalkPicks bet tracker. Requires the user to be logged in. Stores the bet with stake, odds, sport, description, and bet type so it can be tracked for CLV and ROI analysis.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        description: {
+          type: "string",
+          description: "Short description of the bet, e.g. 'Chiefs -3.5 vs Raiders'",
+        },
+        sportKey: {
+          type: "string",
+          description: "Sport identifier, e.g. 'NFL', 'NBA', 'MLB', 'NHL'",
+        },
+        betType: {
+          type: "string",
+          description:
+            "Type of bet: 'moneyline', 'spread', 'over_under', 'player_prop', 'parlay', or 'other'",
+        },
+        stake: {
+          type: "number",
+          description: "Amount wagered in dollars, e.g. 50",
+        },
+        odds: {
+          type: "number",
+          description: "American odds as a number, e.g. -110 or 150",
+        },
+        betDate: {
+          type: "string",
+          description: "Date of the bet in YYYY-MM-DD format",
+        },
+        notes: {
+          type: "string",
+          description: "Optional notes about the bet",
+        },
+        pickId: {
+          type: "number",
+          description: "Optional ChalkPicks pick ID to link this bet to a specific AI pick",
+        },
+      },
+      required: ["description", "sportKey", "betType", "stake", "odds", "betDate"],
+    } as const,
+    outputSchema: {
+      type: "object",
+      properties: {
+        success: { type: "boolean" },
+        betId: { type: "number" },
+        description: { type: "string" },
+        potentialPayout: { type: "number" },
+        message: { type: "string" },
+      },
+    } as const,
+    handler: async ({ description, sportKey, betType, stake, odds, betDate, notes, pickId }) => {
+      const body = JSON.stringify({
+        "0": {
+          json: { description, sportKey, betType, stake, odds, betDate, notes, pickId },
+        },
+      });
+      const res = await fetch("/api/trpc/bets.add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body,
+      });
+      if (!res.ok) {
+        if (res.status === 401) {
+          return {
+            success: false,
+            betId: 0,
+            description,
+            potentialPayout: 0,
+            message: "You must be logged in to ChalkPicks to record bets. Visit https://chalkpicks.live/login",
+          };
+        }
+        throw new Error(`Failed to record bet: HTTP ${res.status}`);
+      }
+      const json = await res.json();
+      const result = json?.["0"]?.result?.data;
+      const decimalOdds = odds > 0 ? odds / 100 + 1 : 100 / Math.abs(odds) + 1;
+      const potentialPayout = Math.round(stake * decimalOdds * 100) / 100;
+      return {
+        success: true,
+        betId: result?.id ?? 0,
+        description,
+        potentialPayout,
+        message: `Bet recorded! $${stake} on "${description}" at ${odds > 0 ? "+" : ""}${odds}. Potential payout: $${potentialPayout}`,
+      };
+    },
+  });
+}
+
 // ── Main component — renders nothing, just registers tools ──────────────────
 export function WebMCPTools() {
   useGetPicksTool();
   useCalculateParlayTool();
   useConvertOddsTool();
   useGetPerformanceTool();
+  usePlaceBetTrackerTool();
   return null;
 }

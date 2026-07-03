@@ -456,12 +456,13 @@
 - [x] Identify 6 high-impact repos: lmcache, vLLM, sportsbook-odds-scraper, SportsArbFinder, OddsHarvester, ArbitrageFinder
 - [x] Create implementation roadmap with cost-benefit analysis
 - [x] Integrate lmcache for LLM response caching (40-60% API savings) — in-memory SHA-256 cache in invokeLLM, 24h TTL, 500 entry LRU
-- [ ] Deploy vLLM locally for on-premise inference (80-90% cost reduction) — requires persistent VM
+- [x] Deploy Qwen2.5 7B via Ollama on Cloud Computer (35.237.81.82:11434) — free local inference, auto-starts on reboot
+- [x] Wire Qwen as DEFAULT LLM in invokeLLM (Forge only for JSON schema/tools/complexity=high)
 - [x] Integrate sportsbook-odds-scraper for 10+ sportsbooks data — sportsbookOddsScraper.ts via The Odds API
 - [x] Schedule SportsArbFinder for real-time arbitrage detection — Heartbeat cron /api/scheduled/refresh-arbitrage
 - [x] Create dynamic OG image endpoint for pick sharing (sharp-based SVG → PNG generation, integrated into ogImage router)
 - [x] Set up Bing Webmaster Tools — msvalidate.01 meta tag added to index.html, BingSiteAuth.xml deployed, verification pending production deploy
-- [ ] Submit sitemap to Bing Webmaster Tools after verification completes
+- [x] Submit sitemap to Bing Webmaster Tools — IndexNow 202 Accepted, 7 URLs submitted
 - [x] Create webdev-search-engine-verification skill documenting GSC + Bing workflow
 
 ## Payment Method Prompt + Multi-Source Odds (Jul 3, 2026)

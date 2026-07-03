@@ -6,4 +6,7 @@ export const ENV = {
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
   vapidPublicKey: process.env.VAPID_PUBLIC_KEY ?? "",
   vapidPrivateKey: process.env.VAPID_PRIVATE_KEY ?? "",
+  // Qwen2.5 7B on Cloud Computer (35.237.81.82) — free local inference
+  ollamaApiUrl: process.env.OLLAMA_API_URL ?? "http://35.237.81.82:11434/v1",
+  ollamaModel: process.env.OLLAMA_MODEL ?? "qwen2.5:7b",
 };

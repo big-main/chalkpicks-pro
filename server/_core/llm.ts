@@ -55,6 +55,13 @@ export type ToolChoice =
   | ToolChoiceByName
   | ToolChoiceExplicit;
 
+/**
+ * Task complexity hint for cost-optimized routing.
+ * - 'high'  → forces Forge (gemini-2.5-flash) regardless of other params
+ * - omitted → auto-route: Qwen2.5 7B (free) unless JSON schema or tools needed
+ */
+export type TaskComplexity = "high" | "medium" | "low";
+
 export type InvokeParams = {
   messages: Message[];
   tools?: Tool[];
@@ -66,6 +73,10 @@ export type InvokeParams = {
   output_schema?: OutputSchema;
   responseFormat?: ResponseFormat;
   response_format?: ResponseFormat;
+  /** Optional explicit model override (uses Forge endpoint) */
+  model?: string;
+  /** Complexity hint: 'high' forces Forge; omit/low/medium defaults to Qwen */
+  complexity?: TaskComplexity;
 };
 
 export type ToolCall = {
@@ -284,6 +295,36 @@ function getLLMCacheKey(payload: Record<string, unknown>): string {
   return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
 }
 
+/**
+ * Resolve which LLM provider/endpoint to use.
+ *
+ * Routing priority (Qwen-first to maximize free usage):
+ * 1. Explicit model override → Forge
+ * 2. JSON schema response_format → Forge (Ollama doesn't support it)
+ * 3. Tool/function calling → Forge
+ * 4. complexity='high' → Forge
+ * 5. Everything else → Qwen2.5 7B on Cloud Computer (FREE)
+ */
+function resolveProvider(params: InvokeParams): { apiUrl: string; apiKey: string; model: string } {
+  const hasJsonSchema = !!(params.responseFormat?.type === "json_schema" ||
+    params.response_format?.type === "json_schema" ||
+    params.outputSchema || params.output_schema);
+  const hasTools = !!(params.tools && params.tools.length > 0);
+  const forceForge = params.complexity === "high" || !!params.model;
+
+  if (forceForge || hasJsonSchema || hasTools) {
+    const model = params.model ?? "gemini-2.5-flash";
+    return { apiUrl: resolveApiUrl(), apiKey: ENV.forgeApiKey, model };
+  }
+
+  // Default: Qwen2.5 7B (free local inference on Cloud Computer)
+  return {
+    apiUrl: `${ENV.ollamaApiUrl}/chat/completions`,
+    apiKey: "ollama",
+    model: ENV.ollamaModel,
+  };
+}
+
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   assertApiKey();
 
@@ -298,8 +339,11 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     response_format,
   } = params;
 
+  const { apiUrl, apiKey, model } = resolveProvider(params);
+  const isOllama = apiKey === "ollama";
+
   const payload: Record<string, unknown> = {
-    model: "gemini-2.5-flash",
+    model,
     messages: messages.map(normalizeMessage),
   };
 
@@ -315,9 +359,10 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.tool_choice = normalizedToolChoice;
   }
 
-  payload.max_tokens = 32768
-  payload.thinking = {
-    "budget_tokens": 128
+  // Forge-specific params (Ollama doesn't support thinking/budget_tokens)
+  if (!isOllama) {
+    payload.max_tokens = 32768;
+    payload.thinking = { budget_tokens: 128 };
   }
 
   const normalizedResponseFormat = normalizeResponseFormat({
@@ -346,11 +391,11 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     }
   }
 
-  const response = await fetch(resolveApiUrl(), {
+  const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
+      authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify(payload),
   });

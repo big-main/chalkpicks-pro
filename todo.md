@@ -449,3 +449,13 @@
 - [x] Verify production payment flow: Stripe test keys active, webhook endpoint at https://chalkpicks.live/api/stripe/webhook
 - [x] Subscription tiers live: Daily Pass $9.99 (1 day), Monthly Pro $29.99 (1 month), Annual Elite $199.99 (1 year)
 - [x] Credit bonus system active: $100 credit granted for payments >= $5
+
+## Free Trial + GitHub Repos (Jul 3, 2026)
+- [x] Move free trial: activate AFTER payment method insertion (not on signup)
+- [x] Search GitHub for performance, knowledge, data acquisition, credit optimization repos
+- [x] Identify 6 high-impact repos: lmcache, vLLM, sportsbook-odds-scraper, SportsArbFinder, OddsHarvester, ArbitrageFinder
+- [x] Create implementation roadmap with cost-benefit analysis
+- [ ] Integrate lmcache for LLM response caching (40-60% API savings)
+- [ ] Deploy vLLM locally for on-premise inference (80-90% cost reduction)
+- [ ] Integrate sportsbook-odds-scraper for 10+ sportsbooks data
+- [ ] Schedule SportsArbFinder for real-time arbitrage detection

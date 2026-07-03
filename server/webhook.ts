@@ -1,6 +1,6 @@
 import express from "express";
 import Stripe from "stripe";
-import { getDb } from "./db";
+import { getDb, grantTrialAfterPaymentMethod } from "./db";
 import { users, subscriptionOrders } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
@@ -94,6 +94,13 @@ export function registerStripeWebhook(app: express.Application) {
             }).catch(() => {
               // Ignore duplicate key errors — already recorded by activate mutation
             });
+
+            // Grant 3-day trial if user was on free tier (first payment)
+            const userBefore = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+            if (userBefore[0]?.subscriptionTier === "free") {
+              await grantTrialAfterPaymentMethod(userId);
+              console.log(`[Webhook] Granted 3-day trial to user ${userId} after first payment`);
+            }
 
             console.log(`[Webhook] Activated ${tier} for user ${userId}`);
             break;

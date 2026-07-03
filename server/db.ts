@@ -32,23 +32,36 @@ export async function createUser(data: { name: string; email: string; passwordHa
   const db = await getDb();
   if (!db) throw new Error("Database unavailable");
   
-  // Grant 3-day free trial on signup
-  const now = new Date();
-  const trialExpiresAt = new Date(now);
-  trialExpiresAt.setDate(trialExpiresAt.getDate() + 3);
-  
+  // Start with free tier — trial activates AFTER payment method insertion
   await db.insert(users).values({
     name: data.name,
     email: data.email,
     passwordHash: data.passwordHash,
     loginMethod: "email",
     lastSignedIn: new Date(),
-    subscriptionTier: "trial",
-    subscriptionExpiresAt: trialExpiresAt,
+    subscriptionTier: "free",
+    subscriptionExpiresAt: null,
   });
   const user = await getUserByEmail(data.email);
   if (!user) throw new Error("Failed to retrieve created user");
   return user;
+}
+
+// Grant 3-day trial after payment method is added
+export async function grantTrialAfterPaymentMethod(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database unavailable");
+  
+  const now = new Date();
+  const trialExpiresAt = new Date(now);
+  trialExpiresAt.setDate(trialExpiresAt.getDate() + 3);
+  
+  await db.update(users)
+    .set({
+      subscriptionTier: "trial",
+      subscriptionExpiresAt: trialExpiresAt,
+    })
+    .where(eq(users.id, userId));
 }
 
 

@@ -60,6 +60,27 @@ async function startServer() {
       createContext,
     })
   );
+  // Explicit routes for SEO/verification XML files — must come before SPA catch-all
+  const xmlFiles = ['BingSiteAuth.xml', 'sitemap.xml', 'sitemap.xsl', 'chalkpicks2026indexnow.txt'];
+  xmlFiles.forEach(filename => {
+    app.get(`/${filename}`, (req, res) => {
+      import('path').then(({ resolve, join }) => {
+        const publicDir = process.env.NODE_ENV === 'development'
+          ? resolve(process.cwd(), 'client', 'public')
+          : resolve(import.meta.dirname, 'public');
+        const filePath = join(publicDir, filename);
+        const contentType = filename.endsWith('.xml') ? 'application/xml'
+          : filename.endsWith('.xsl') ? 'application/xslt+xml'
+          : 'text/plain';
+        res.set('Content-Type', contentType);
+        res.set('Cache-Control', 'public, max-age=86400');
+        res.sendFile(filePath, (err) => {
+          if (err) res.status(404).send('Not found');
+        });
+      });
+    });
+  });
+
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);

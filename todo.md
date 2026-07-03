@@ -374,3 +374,13 @@
 - [x] Implement client-side filtering logic
 - [x] Style filter/sort bar with new theme (dark, electric green accents)
 - [x] Persist user filter preferences in localStorage
+
+## Feature Batch: Top Picks + Push Notifications + Sportsbook Filter
+- [x] Auto-pin top 3 daily picks (gold border, crown badge) regardless of sort order
+- [x] Add isFeaturedToday flag logic in picks router (top 3 by confidence+edge from today)
+- [x] Push notification system: Web Push API (VAPID) for high-confidence picks (85%+)
+- [x] Notification opt-in button in Picks page (bell icon for subscribers)
+- [x] Server-side push trigger when new pick with confidence >= 85 is generated
+- [x] Store push subscriptions in database (push_subscriptions table)
+- [x] Add sportsbook filter to Picks page (DraftKings, FanDuel, BetMGM, Caesars, etc.)
+- [x] Wire sportsbook filter to bestBook field on picks

@@ -85,6 +85,13 @@
       "when": 1782923877171,
       "tag": "0011_thankful_aqueduct",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1783054201616,
+      "tag": "0012_fearless_ego",
+      "breakpoints": true
     }
   ]
 }

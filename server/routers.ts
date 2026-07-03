@@ -26,6 +26,7 @@ import { arbitrageRouter } from "./routers/arbitrage";
 import { toolsRouter } from "./routers/tools";
 import { adminRouter } from "./routers/admin";
 import { betsExportPdfRouter } from "./routers/betsExportPdf";
+import { pushNotificationsRouter } from "./routers/pushNotifications";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import { users } from "../drizzle/schema";
@@ -156,6 +157,7 @@ export const appRouter = router({
   tools: toolsRouter,
   admin: adminRouter,
   betsReport: betsExportPdfRouter,
+  push: pushNotificationsRouter,
 });
 
 export type AppRouter = typeof appRouter;

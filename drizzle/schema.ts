@@ -531,3 +531,18 @@ export const userArbitrageTrades = mysqlTable("user_arbitrage_trades", {
 
 export type UserArbitrageTrade = typeof userArbitrageTrades.$inferSelect;
 export type InsertUserArbitrageTrade = typeof userArbitrageTrades.$inferInsert;
+
+// ─── Push Subscriptions ───────────────────────────────────────────────────────
+export const pushSubscriptions = mysqlTable("push_subscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  endpoint: text("endpoint").notNull(),
+  p256dh: text("p256dh").notNull(),
+  auth: varchar("auth", { length: 256 }).notNull(),
+  userAgent: varchar("userAgent", { length: 512 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ([
+  index("idx_push_subs_user").on(table.userId),
+]));
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;

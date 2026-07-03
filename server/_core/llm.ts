@@ -267,6 +267,23 @@ const normalizeResponseFormat = ({
   };
 };
 
+// In-memory LRU cache for LLM responses (no Redis dependency required)
+// Key: SHA-256 of serialized payload, Value: { result, expiresAt }
+const _llmCache = new Map<string, { result: InvokeResult; expiresAt: number }>();
+const LLM_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const LLM_CACHE_MAX_SIZE = 500; // max entries
+
+// Params that are safe to cache (no tools, no streaming, deterministic)
+function isCacheable(params: InvokeParams): boolean {
+  if (params.tools && params.tools.length > 0) return false;
+  return true;
+}
+
+function getLLMCacheKey(payload: Record<string, unknown>): string {
+  const { createHash } = require("crypto") as typeof import("crypto");
+  return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
+}
+
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   assertApiKey();
 
@@ -314,6 +331,21 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
+  // Check in-memory cache for deterministic calls (no tools)
+  const cacheable = isCacheable(params);
+  if (cacheable) {
+    const cacheKey = getLLMCacheKey(payload);
+    const cached = _llmCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.result;
+    }
+    // Evict oldest entry if cache is full
+    if (_llmCache.size >= LLM_CACHE_MAX_SIZE) {
+      const firstKey = _llmCache.keys().next().value;
+      if (firstKey) _llmCache.delete(firstKey);
+    }
+  }
+
   const response = await fetch(resolveApiUrl(), {
     method: "POST",
     headers: {
@@ -330,5 +362,13 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     );
   }
 
-  return (await response.json()) as InvokeResult;
+  const result = (await response.json()) as InvokeResult;
+
+  // Store in cache if cacheable
+  if (cacheable) {
+    const cacheKey = getLLMCacheKey(payload);
+    _llmCache.set(cacheKey, { result, expiresAt: Date.now() + LLM_CACHE_TTL_MS });
+  }
+
+  return result;
 }

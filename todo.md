@@ -455,16 +455,14 @@
 - [x] Search GitHub for performance, knowledge, data acquisition, credit optimization repos
 - [x] Identify 6 high-impact repos: lmcache, vLLM, sportsbook-odds-scraper, SportsArbFinder, OddsHarvester, ArbitrageFinder
 - [x] Create implementation roadmap with cost-benefit analysis
-- [ ] Integrate lmcache for LLM response caching (40-60% API savings)
-- [ ] Deploy vLLM locally for on-premise inference (80-90% cost reduction)
-- [ ] Integrate sportsbook-odds-scraper for 10+ sportsbooks data
-- [ ] Schedule SportsArbFinder for real-time arbitrage detection
+- [x] Integrate lmcache for LLM response caching (40-60% API savings) — in-memory SHA-256 cache in invokeLLM, 24h TTL, 500 entry LRU
+- [ ] Deploy vLLM locally for on-premise inference (80-90% cost reduction) — requires persistent VM
+- [x] Integrate sportsbook-odds-scraper for 10+ sportsbooks data — sportsbookOddsScraper.ts via The Odds API
+- [x] Schedule SportsArbFinder for real-time arbitrage detection — Heartbeat cron /api/scheduled/refresh-arbitrage
 - [x] Create dynamic OG image endpoint for pick sharing (sharp-based SVG → PNG generation, integrated into ogImage router)
-- [ ] Set up Bing Webmaster Tools submission — NEXT SESSION
-- [ ] Integrate lmcache for LLM response caching (40-60% API savings) — NEXT SESSION
-- [ ] Deploy vLLM locally for on-premise inference (80-90% cost reduction) — NEXT SESSION
-- [ ] Integrate sportsbook-odds-scraper for 10+ sportsbooks data — NEXT SESSION
-- [ ] Schedule SportsArbFinder for real-time arbitrage detection — NEXT SESSION
+- [x] Set up Bing Webmaster Tools — msvalidate.01 meta tag added to index.html, BingSiteAuth.xml deployed, verification pending production deploy
+- [ ] Submit sitemap to Bing Webmaster Tools after verification completes
+- [x] Create webdev-search-engine-verification skill documenting GSC + Bing workflow
 
 ## Payment Method Prompt + Multi-Source Odds (Jul 3, 2026)
 - [x] Create TrialPrompt component with visual indicator and CTA for free users

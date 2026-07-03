@@ -38,6 +38,7 @@ async function startServer() {
     throw new Error("JWT_SECRET environment variable is required but not set");
   }
   const app = express();
+  app.set("trust proxy", 1); // Trust first proxy (Manus/Cloud Run)
   const server = createServer(app);
   // Register webhooks BEFORE body parsers (needs raw body)
   registerStripeWebhook(app);

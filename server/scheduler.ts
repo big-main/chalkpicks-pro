@@ -5,6 +5,7 @@ import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 import { sendDailyPicksToAllUsers, sendDailyDigestToAllUsers } from "./notificationService";
 import { resolveGameResults, syncGameScores } from "./services/gameResultsResolver";
 import { fetchOdds } from "./services/dataService";
+import { sendHighConfidencePickAlert } from "./services/pushNotifications";
 
 const DAILY_MATCHUPS = [
   { sportKey: "nfl", homeTeam: "Kansas City Chiefs", awayTeam: "Las Vegas Raiders", pickType: "spread" as const },
@@ -235,6 +236,17 @@ export async function runDailyPicksJob() {
         });
         generated++;
         console.log(`[Scheduler] Generated pick: ${pick.recommendation} (${pick.confidenceScore}% confidence)`);
+        // Fire Web Push alert for high-confidence picks (85%+)
+        if (pick.confidenceScore >= 85) {
+          sendHighConfidencePickAlert({
+            id: 0, // placeholder until DB returns the inserted ID
+            recommendation: pick.recommendation,
+            sportKey: pick.sportKey,
+            confidenceScore: pick.confidenceScore,
+            homeTeam: pick.homeTeam,
+            awayTeam: pick.awayTeam,
+          }).catch(err => console.error("[Scheduler] Push alert failed:", err));
+        }
       } catch (err) {
         console.error(`[Scheduler] Failed to insert pick:`, err);
       }

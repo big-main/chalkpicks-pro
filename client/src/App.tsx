@@ -45,6 +45,7 @@ const CreditDashboard = lazy(() => import("@/pages/CreditDashboard"));
 const PropBuilder = lazy(() => import("@/pages/PropBuilder"));
 const LineMovement = lazy(() => import("@/pages/LineMovement"));
 const CorrelationFinder = lazy(() => import("@/pages/CorrelationFinder"));
+const Performance = lazy(() => import("@/pages/Performance"));
 
 function PageLoader() {
   return (
@@ -102,6 +103,7 @@ function Router() {
         <Route path="/prop-builder" component={PropBuilder} />
         <Route path="/line-movement" component={LineMovement} />
         <Route path="/correlation-finder" component={CorrelationFinder} />
+        <Route path="/performance" component={Performance} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

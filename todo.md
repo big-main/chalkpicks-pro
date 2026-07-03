@@ -384,3 +384,13 @@
 - [x] Store push subscriptions in database (push_subscriptions table)
 - [x] Add sportsbook filter to Picks page (DraftKings, FanDuel, BetMGM, Caesars, etc.)
 - [x] Wire sportsbook filter to bestBook field on picks
+
+## Public Performance Page + Push Notifications + SEO
+- [x] Build public Performance/Track Record page (win rate, ROI%, streak, recent settled picks)
+- [x] Add Performance route to App.tsx and Performance link to Navbar
+- [x] Add recentSettled and enhanced performance procedures to picks router
+- [x] Wire VAPID push alert trigger in scheduler (fires for 85%+ confidence picks)
+- [x] Trust proxy set on Express app (fixes rate limiter X-Forwarded-For warning)
+- [x] SEO: improved title, richer keyword meta, FAQ schema (4 Q&A), updated OG/Twitter tags
+- [x] Sitemap updated with all new pages (Performance, Prop Builder, Line Movement, Correlation Finder)
+- [x] Fonts updated: Space Grotesk + Inter + JetBrains Mono in index.html

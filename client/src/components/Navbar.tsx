@@ -47,6 +47,7 @@ function LiveScoresMini() {
 
 const navLinks = [
   { href: "/picks", label: "Picks" },
+  { href: "/performance", label: "Performance" },
   { href: "/stats", label: "Live Stats" },
   { href: "/ev-finder", label: "+EV Finder" },
   { href: "/backtesting", label: "Backtest" },

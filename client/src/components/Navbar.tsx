@@ -110,9 +110,11 @@ export default function Navbar() {
     <nav
       className="fixed top-0 left-0 right-0 z-50"
       style={{
-        background: "rgba(8, 8, 20, 0.92)",
-        backdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(0, 255, 136, 0.12)",
+        background: "rgba(8, 8, 20, 0.95)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderBottom: "1px solid rgba(212,160,23,0.18)",
+        boxShadow: "0 1px 0 rgba(57,255,20,0.04), 0 4px 20px rgba(0,0,0,0.4)",
       }}
     >
       <LiveScoresMini />
@@ -124,7 +126,7 @@ export default function Navbar() {
               src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp"
               alt="ChalkPicks"
               className="h-12 w-auto transition-all group-hover:scale-105"
-              style={{ filter: "drop-shadow(0 0 12px rgba(57,255,20,0.5))" }}
+              style={{ filter: "drop-shadow(0 0 10px rgba(212,160,23,0.4))" }}
             />
           </Link>
 
@@ -139,10 +141,10 @@ export default function Navbar() {
                   fontFamily: "'Exo 2', sans-serif",
                   fontWeight: 500,
                   letterSpacing: "0.03em",
-                  color: location === link.href ? "#39ff14" : "rgba(200,200,220,0.75)",
-                  background: location === link.href ? "rgba(57,255,20,0.08)" : "transparent",
-                  textShadow: location === link.href ? "0 0 8px rgba(57,255,20,0.4)" : "none",
-                  borderBottom: location === link.href ? "1px solid rgba(57,255,20,0.4)" : "1px solid transparent",
+                  color: location === link.href ? "#f0b800" : "rgba(200,200,220,0.75)",
+                  background: location === link.href ? "rgba(212,160,23,0.08)" : "transparent",
+                  textShadow: location === link.href ? "0 0 8px rgba(212,160,23,0.4)" : "none",
+                  borderBottom: location === link.href ? "1px solid rgba(240,184,0,0.5)" : "1px solid transparent",
                 }}
               >
                 {link.label}
@@ -187,7 +189,7 @@ export default function Navbar() {
                       <Avatar className="w-7 h-7">
                         <AvatarFallback
                           className="text-xs font-bold"
-                          style={{ background: "rgba(57,255,20,0.15)", color: "#39ff14", border: "1px solid rgba(57,255,20,0.3)" }}
+                          style={{ background: "rgba(212,160,23,0.15)", color: "#f0b800", border: "1px solid rgba(240,184,0,0.35)" }}
                         >
                           {user?.name?.charAt(0)?.toUpperCase() ?? "U"}
                         </AvatarFallback>
@@ -195,7 +197,7 @@ export default function Navbar() {
                       <span className="hidden sm:block text-sm font-medium max-w-24 truncate">
                         {user?.name ?? "User"}
                       </span>
-                      {isPremium && <Crown className="w-3 h-3 hidden sm:block" style={{ color: "#39ff14" }} />}
+                      {isPremium && <Crown className="w-3 h-3 hidden sm:block" style={{ color: "#f0b800" }} />}
                       <ChevronDown className="w-3 h-3 text-muted-foreground" />
                     </Button>
                   </DropdownMenuTrigger>

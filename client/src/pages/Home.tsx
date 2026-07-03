@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import LiveNewsTicker from "@/components/LiveNewsTicker";
 import LiveScoresTicker from "@/components/LiveScoresTicker";
+import { motion } from "framer-motion";
 import {
   Zap, BarChart3, Shield, Trophy, Brain,
   ArrowRight, CheckCircle2, Star, Target, Lock,
@@ -155,9 +156,54 @@ export default function Home() {
           }}
         />
 
+        {/* Animated blur blobs — broadcast depth effect */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Blue blob — top-left data accent */}
+          <motion.div
+            animate={{ x: [0, 30, 0], y: [0, -20, 0], scale: [1, 1.1, 1] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute"
+            style={{
+              top: "-10%", left: "-5%",
+              width: "45vw", height: "45vw",
+              background: "radial-gradient(ellipse, rgba(59,130,246,0.12) 0%, transparent 70%)",
+              filter: "blur(40px)",
+            }}
+          />
+          {/* Gold blob — bottom-right premium accent */}
+          <motion.div
+            animate={{ x: [0, -25, 0], y: [0, 20, 0], scale: [1, 1.08, 1] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+            className="absolute"
+            style={{
+              bottom: "-15%", right: "-5%",
+              width: "50vw", height: "50vw",
+              background: "radial-gradient(ellipse, rgba(212,160,23,0.1) 0%, transparent 70%)",
+              filter: "blur(50px)",
+            }}
+          />
+          {/* Green blob — center CTA glow */}
+          <motion.div
+            animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+            className="absolute"
+            style={{
+              top: "30%", left: "50%", transform: "translateX(-50%)",
+              width: "30vw", height: "30vw",
+              background: "radial-gradient(ellipse, rgba(57,255,20,0.06) 0%, transparent 70%)",
+              filter: "blur(60px)",
+            }}
+          />
+        </div>
+
         <div className="container relative z-10">
           <div className="max-w-5xl mx-auto text-center">
             {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
             <div
               className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 text-xs font-bold tracking-widest"
               style={{
@@ -170,8 +216,14 @@ export default function Home() {
               <span className="live-dot" />
               NEXT-GEN SPORTS AI — LIVE DATA
             </div>
+            </motion.div>
 
             {/* Headline */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
             <h1
               className="mb-6 leading-none"
               style={{
@@ -190,17 +242,29 @@ export default function Home() {
               <span style={{ color: "#39ff14", textShadow: "0 0 20px rgba(57,255,20,0.5), 0 0 60px rgba(57,255,20,0.2)" }}>
                 BETTING
               </span>
-              <br />IS HERE
+              <br />              IS HERE
             </h1>
+            </motion.div>
 
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
             <p
               className="mb-10 max-w-2xl mx-auto"
               style={{ fontSize: "1.15rem", color: "rgba(200,200,220,0.75)", lineHeight: 1.7 }}
             >
               Real-time odds from 10+ sportsbooks. AI picks with confidence scores. +EV finder, steam move detector, CLV tracker, Kelly criterion tool — features no other platform offers, all in one place.
             </p>
+            </motion.div>
 
             {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
               {isAuthenticated ? (
                 <Link href="/picks">
@@ -255,8 +319,14 @@ export default function Home() {
             <p className="text-xs text-muted-foreground/60 mb-16 uppercase tracking-widest font-bold">
               Daily · Monthly · Yearly Plans — Cancel Anytime
             </p>
+            </motion.div>
 
             {/* Stats bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.5 }}
+            >
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {statsBar.map((stat) => (
                 <NeonCard key={stat.label} variant="premium" className="p-4 text-center">
@@ -280,6 +350,7 @@ export default function Home() {
                 </NeonCard>
               ))}
             </div>
+            </motion.div>
           </div>
         </div>
       </section>

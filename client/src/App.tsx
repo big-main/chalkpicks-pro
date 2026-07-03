@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { WebMCPTools } from "@/components/WebMCPTools";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
@@ -116,6 +117,7 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
+      <WebMCPTools />
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster richColors position="top-right" />

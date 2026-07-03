@@ -407,3 +407,10 @@
 - [x] Ping IndexNow API for Bing/Yandex instant indexing (HTTP 202 success)
 - [x] Create IndexNow key verification file (chalkpicks2026indexnow.txt)
 - [x] Create directory submission guide (references/directory-submissions.md)
+
+## WebMCP + FAQPage JSON-LD (2026-07-03)
+- [x] Install @mcp-b/react-webmcp and zod in client
+- [x] Create WebMCPTools component that registers ChalkPicks tools (get-picks, calculate-parlay, convert-odds, get-performance)
+- [x] Wire WebMCPTools into App.tsx (renders at root, outside ThemeProvider)
+- [x] Add FAQPage JSON-LD structured data to index.html (8 questions targeting key search terms)
+- [x] WebSite + SoftwareApplication JSON-LD already present in index.html (verified)

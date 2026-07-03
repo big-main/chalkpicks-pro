@@ -59,7 +59,7 @@ function PageLoader() {
       <div className="flex flex-col items-center gap-4">
         <div
           className="w-10 h-10 border-2 border-t-transparent rounded-full animate-spin"
-          style={{ borderColor: "#00ff88", borderTopColor: "transparent" }}
+          style={{ borderColor: "#39ff14", borderTopColor: "transparent" }}
         />
         <span className="text-sm" style={{ color: "rgba(200,200,220,0.6)", fontFamily: "'Exo 2', sans-serif" }}>
           Loading...

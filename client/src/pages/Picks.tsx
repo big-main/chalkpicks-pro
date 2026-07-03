@@ -195,7 +195,7 @@ function PickCard({ pick, isPremiumUser, rank }: { pick: any; isPremiumUser: boo
               </div>
             )}
             {pick.bookmakerName && (
-              <div className="text-xs mt-1" style={{ color: "#00d4ff" }}>
+              <div className="text-xs mt-1" style={{ color: "#f0b800" }}>
                 📚 Best at {pick.bookmakerName}
               </div>
             )}
@@ -489,12 +489,12 @@ function FilterBar({
                 <button
                   onClick={() => { const next = { ...filters, result: "win", sortBy: "confidence_desc" as SortOption }; setFilters(next); storeFilters(next); }}
                   className="text-xs px-3 py-1 rounded-full transition-all hover:scale-105"
-                  style={{ background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.25)", color: "#00d4ff" }}
+                  style={{ background: "rgba(212,160,23,0.1)", border: "1px solid rgba(212,160,23,0.25)", color: "#f0b800" }}
                 >✅ Winners Only</button>
                 <button
                   onClick={() => { const next = { ...filters, pickType: "player_prop", sortBy: "edge_desc" as SortOption }; setFilters(next); storeFilters(next); }}
                   className="text-xs px-3 py-1 rounded-full transition-all hover:scale-105"
-                  style={{ background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.25)", color: "#a855f7" }}
+                  style={{ background: "rgba(212,160,23,0.1)", border: "1px solid rgba(212,160,23,0.25)", color: "#d4a017" }}
                 >🏀 Player Props</button>
               </div>
             </div>
@@ -682,7 +682,7 @@ export default function Picks() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2rem", textTransform: "uppercase", color: "white" }}>
-              AI <span style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Picks</span>
+              AI <span style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Picks</span>
             </h1>
             <p className="text-muted-foreground text-sm mt-1">Confidence-scored predictions across all sports</p>
           </div>

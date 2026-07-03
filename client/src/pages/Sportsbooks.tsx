@@ -5,39 +5,39 @@ const SPORTSBOOKS = [
   {
     name: "DraftKings",
     logo: "DK",
-    color: "#00d4ff",
+    color: "#f0b800",
     bonus: "Bet $5, Get $200 in Bonus Bets",
     rating: 4.9,
     features: ["Best mobile app", "Same-game parlays", "Live betting", "Fast payouts"],
     url: "https://www.draftkings.com/r/sb/ChalkPicks",
     badge: "EDITOR'S PICK",
-    badgeColor: "#00ff88",
+    badgeColor: "#39ff14",
     description: "The #1 rated sportsbook in the US. Exceptional app, deep markets, and the best same-game parlay builder.",
     states: "Available in 20+ states",
   },
   {
     name: "FanDuel",
     logo: "FD",
-    color: "#00ff88",
+    color: "#39ff14",
     bonus: "Bet $5, Get $200 in Bonus Bets",
     rating: 4.8,
     features: ["Fastest withdrawals", "No-sweat first bet", "Live streaming", "Great promos"],
     url: "https://www.fanduel.com/join/sportsbook?referral=ChalkPicks",
     badge: "TOP RATED",
-    badgeColor: "#00d4ff",
+    badgeColor: "#f0b800",
     description: "Lightning-fast withdrawals and the most generous welcome bonus. Perfect for new bettors.",
     states: "Available in 18+ states",
   },
   {
     name: "BetMGM",
     logo: "MGM",
-    color: "#a855f7",
+    color: "#d4a017",
     bonus: "First Bet Offer Up to $1,500",
     rating: 4.7,
     features: ["Huge welcome offer", "One Game Parlay", "Early cash out", "Loyalty rewards"],
     url: "https://sports.betmgm.com/en/sports?referral=chalkpicks",
     badge: "BEST BONUS",
-    badgeColor: "#a855f7",
+    badgeColor: "#d4a017",
     description: "The King of Sportsbooks. Largest first-bet insurance offer and a robust loyalty program.",
     states: "Available in 22+ states",
   },
@@ -120,8 +120,8 @@ export default function Sportsbooks() {
         className="fixed inset-0 pointer-events-none"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(0,255,136,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,255,136,0.02) 1px, transparent 1px)
+            linear-gradient(rgba(57,255,20,0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(57,255,20,0.02) 1px, transparent 1px)
           `,
           backgroundSize: "40px 40px",
           zIndex: 0,
@@ -133,7 +133,7 @@ export default function Sportsbooks() {
         <div className="text-center mb-14">
           <div
             className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-bold tracking-widest"
-            style={{ background: "rgba(0,255,136,0.08)", border: "1px solid rgba(0,255,136,0.25)", borderRadius: "4px", color: "#00ff88" }}
+            style={{ background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.25)", borderRadius: "4px", color: "#39ff14" }}
           >
             <Shield className="w-3 h-3" /> TRUSTED SPORTSBOOK PARTNERS
           </div>
@@ -148,7 +148,7 @@ export default function Sportsbooks() {
             }}
           >
             BEST{" "}
-            <span style={{ color: "#00ff88", textShadow: "0 0 20px rgba(0,255,136,0.5)" }}>SPORTSBOOKS</span>
+            <span style={{ color: "#39ff14", textShadow: "0 0 20px rgba(57,255,20,0.5)" }}>SPORTSBOOKS</span>
             {" "}2024
           </h1>
           <p className="mt-3 text-base max-w-2xl mx-auto" style={{ color: "rgba(180,180,210,0.65)" }}>
@@ -166,10 +166,10 @@ export default function Sportsbooks() {
             <div
               key={stat.label}
               className="text-center p-4 rounded"
-              style={{ background: "rgba(0,255,136,0.04)", border: "1px solid rgba(0,255,136,0.1)" }}
+              style={{ background: "rgba(57,255,20,0.04)", border: "1px solid rgba(57,255,20,0.1)" }}
             >
-              <stat.icon className="w-5 h-5 mx-auto mb-1" style={{ color: "#00ff88" }} />
-              <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: "#00ff88" }}>{stat.value}</div>
+              <stat.icon className="w-5 h-5 mx-auto mb-1" style={{ color: "#39ff14" }} />
+              <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: "#39ff14" }}>{stat.value}</div>
               <div className="text-xs" style={{ color: "rgba(140,140,170,0.6)" }}>{stat.label}</div>
             </div>
           ))}
@@ -236,7 +236,7 @@ export default function Sportsbooks() {
                       <Gift className="w-3 h-3" />
                       {book.badge}
                     </div>
-                    <div style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, fontSize: "1rem", color: "#00ff88" }}>
+                    <div style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, fontSize: "1rem", color: "#39ff14" }}>
                       {book.bonus}
                     </div>
                     <p className="text-xs mt-1" style={{ color: "rgba(140,140,170,0.65)" }}>

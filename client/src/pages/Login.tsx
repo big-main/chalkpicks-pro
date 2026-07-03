@@ -9,7 +9,7 @@ import { trpc } from "@/lib/trpc";
 import AuthPageShell from "@/components/AuthPageShell";
 import { Lock } from "lucide-react";
 
-const inputStyle = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", color: "white" };
+const inputStyle = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(212,160,23,0.2)", color: "white" };
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -60,7 +60,7 @@ export default function Login() {
       <div className="text-center mb-8">
         <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", textTransform: "uppercase", color: "white", lineHeight: 1.2 }}>
           Welcome{" "}
-          <span style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          <span style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             Back
           </span>
         </h1>
@@ -69,7 +69,7 @@ export default function Login() {
         </p>
       </div>
 
-      <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
+      <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
         <CardHeader>
           <CardTitle style={{ color: "white", fontSize: "1.5rem" }}>Log In to Your Account</CardTitle>
           <CardDescription style={{ color: "#a8a8b0" }}>Enter your email and password to continue</CardDescription>
@@ -88,7 +88,7 @@ export default function Login() {
             </div>
             {error && <p style={{ color: "#ff4d4d", fontSize: "0.875rem" }}>{error}</p>}
             <Button type="submit" className="w-full" size="lg" disabled={loginMutation.isPending}
-              style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", color: "#080814", fontWeight: 700, height: "2.75rem", fontSize: "1rem" }}>
+              style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", color: "#080814", fontWeight: 700, height: "2.75rem", fontSize: "1rem" }}>
               <Lock className="w-5 h-5 mr-2" />
               {loginMutation.isPending ? "Logging in..." : "Log In"}
             </Button>
@@ -100,7 +100,7 @@ export default function Login() {
         <p style={{ color: "#a8a8b0" }}>
           Don't have an account?{" "}
           <Link href="/signup">
-            <a style={{ color: "#00d4ff", fontWeight: 600, textDecoration: "none" }} className="hover:underline">Sign up here</a>
+            <a style={{ color: "#f0b800", fontWeight: 600, textDecoration: "none" }} className="hover:underline">Sign up here</a>
           </Link>
         </p>
       </div>

@@ -31,72 +31,72 @@ const features = [
     icon: Brain,
     title: "AI Pick Engine",
     desc: "Neural network analyzes thousands of data points — player stats, matchup history, weather, injuries — generating picks with confidence scores.",
-    color: "#00ff88",
+    color: "#39ff14",
     badge: "CORE",
   },
   {
     icon: Percent,
     title: "+EV Finder",
     desc: "Scan real-time odds from 10+ sportsbooks to surface positive expected value bets. Only bet when the math is on your side.",
-    color: "#00d4ff",
+    color: "#f0b800",
     badge: "EXCLUSIVE",
   },
   {
     icon: TrendingUp,
     title: "Steam Move Detector",
     desc: "Detect sudden sharp money line movements the moment they happen. Follow the sharps, not the public.",
-    color: "#a855f7",
+    color: "#d4a017",
     badge: "EXCLUSIVE",
   },
   {
     icon: Eye,
     title: "Public Betting %",
     desc: "See where the public money is going on every game. Fade the public or follow the sharp money — your choice.",
-    color: "#00d4ff",
+    color: "#f0b800",
     badge: "NEW",
   },
   {
     icon: Calculator,
     title: "Kelly Criterion Tool",
     desc: "Mathematically optimal bet sizing based on your edge and bankroll. Never over-bet or under-bet again.",
-    color: "#00ff88",
+    color: "#39ff14",
     badge: "NEW",
   },
   {
     icon: CloudLightning,
     title: "Weather Impact Model",
     desc: "Real weather data integrated into NFL and MLB picks. Wind speed, temperature, and precipitation affect outcomes — we model it.",
-    color: "#a855f7",
+    color: "#d4a017",
     badge: "NEW",
   },
   {
     icon: Layers,
     title: "Parlay Optimizer",
     desc: "AI-powered correlated parlay builder. Finds leg combinations that are statistically linked for higher combined win probability.",
-    color: "#00ff88",
+    color: "#39ff14",
     badge: "NEW",
   },
   {
     icon: BarChart3,
     title: "Advanced Backtesting",
     desc: "Test any strategy against years of historical data. Filter by sport, confidence, bet type, and date range to find your edge.",
-    color: "#00d4ff",
+    color: "#f0b800",
     badge: "CORE",
   },
   {
     icon: Target,
     title: "CLV Tracker",
     desc: "Track your closing line value on every bet. CLV is the #1 predictor of long-term profitability — monitor yours automatically.",
-    color: "#a855f7",
+    color: "#d4a017",
     badge: "NEW",
   },
 ];
 
 const statsBar = [
-  { label: "Win Rate", value: "92%", sub: "Verified 12-month", color: "#00ff88" },
-  { label: "Avg ROI", value: "+18.4%", sub: "Per unit staked", color: "#00d4ff" },
-  { label: "Members", value: "12,847", sub: "Active bettors", color: "#a855f7" },
-  { label: "Picks", value: "847K+", sub: "Generated & tracked", color: "#00ff88" },
+  { label: "Win Rate", value: "92%", sub: "Verified 12-month", color: "#39ff14" },
+  { label: "Avg ROI", value: "+18.4%", sub: "Per unit staked", color: "#f0b800" },
+  { label: "Members", value: "12,847", sub: "Active bettors", color: "#d4a017" },
+  { label: "Picks", value: "847K+", sub: "Generated & tracked", color: "#39ff14" },
 ];
 
 const sportStats = [
@@ -139,10 +139,10 @@ export default function Home() {
         className="relative pt-32 pb-20 overflow-hidden"
         style={{
           background: `
-            radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,255,136,0.07), transparent),
-            radial-gradient(ellipse 60% 40% at 80% 50%, rgba(168,85,247,0.07), transparent),
-            radial-gradient(ellipse 50% 40% at 20% 80%, rgba(0,212,255,0.05), transparent),
-            #080814
+            radial-gradient(ellipse 80% 60% at 50% -10%, rgba(212,160,23,0.06), transparent),
+            radial-gradient(ellipse 60% 40% at 80% 50%, rgba(57,255,20,0.05), transparent),
+            radial-gradient(ellipse 50% 40% at 20% 80%, rgba(212,160,23,0.04), transparent),
+            #0d0f14
           `,
         }}
       >
@@ -150,7 +150,7 @@ export default function Home() {
         <div
           className="absolute inset-0 opacity-100 pointer-events-none"
           style={{
-            backgroundImage: "linear-gradient(rgba(0,255,136,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,136,0.025) 1px, transparent 1px)",
+            backgroundImage: "linear-gradient(rgba(212,160,23,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(212,160,23,0.02) 1px, transparent 1px)",
             backgroundSize: "60px 60px",
           }}
         />
@@ -161,10 +161,10 @@ export default function Home() {
             <div
               className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 text-xs font-bold tracking-widest"
               style={{
-                background: "rgba(0,255,136,0.08)",
-                border: "1px solid rgba(0,255,136,0.3)",
+                background: "rgba(212,160,23,0.1)",
+                border: "1px solid rgba(212,160,23,0.4)",
                 borderRadius: "4px",
-                color: "#00ff88",
+                color: "#f0b800",
               }}
             >
               <span className="live-dot" />
@@ -175,7 +175,7 @@ export default function Home() {
             <h1
               className="mb-6 leading-none"
               style={{
-                fontFamily: "'Rajdhani', sans-serif",
+                fontFamily: "'Oswald', 'Rajdhani', sans-serif",
                 fontWeight: 700,
                 fontSize: "clamp(3.2rem, 8vw, 6rem)",
                 textTransform: "uppercase",
@@ -184,10 +184,10 @@ export default function Home() {
               }}
             >
               THE FUTURE OF<br />
-              <span style={{ color: "#00ff88", textShadow: "0 0 20px rgba(0,255,136,0.5), 0 0 60px rgba(0,255,136,0.2)" }}>
+              <span style={{ background: "linear-gradient(135deg, #d4a017, #f0b800, #d4a017)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                 SPORTS
               </span>{" "}
-              <span style={{ color: "#00d4ff", textShadow: "0 0 20px rgba(0,212,255,0.5), 0 0 60px rgba(0,212,255,0.2)" }}>
+              <span style={{ color: "#39ff14", textShadow: "0 0 20px rgba(57,255,20,0.5), 0 0 60px rgba(57,255,20,0.2)" }}>
                 BETTING
               </span>
               <br />IS HERE
@@ -207,11 +207,11 @@ export default function Home() {
                   <button
                     className="flex items-center gap-2 px-8 py-3.5 text-base font-bold tracking-wider transition-all"
                     style={{
-                      background: "#00ff88",
-                      color: "#080814",
+                      background: "#39ff14",
+                      color: "#0d0f14",
                       borderRadius: "4px",
-                      fontFamily: "'Exo 2', sans-serif",
-                      boxShadow: "0 0 20px rgba(0,255,136,0.35)",
+                      fontFamily: "'Oswald', 'Exo 2', sans-serif",
+                      boxShadow: "0 0 20px rgba(57,255,20,0.4)",
                       border: "none",
                       cursor: "pointer",
                     }}
@@ -223,11 +223,11 @@ export default function Home() {
                 <button
                   className="flex items-center gap-2 px-8 py-3.5 text-base font-bold tracking-wider transition-all"
                   style={{
-                    background: "#00ff88",
-                    color: "#080814",
+                    background: "#39ff14",
+                    color: "#0d0f14",
                     borderRadius: "4px",
-                    fontFamily: "'Exo 2', sans-serif",
-                    boxShadow: "0 0 20px rgba(0,255,136,0.35)",
+                    fontFamily: "'Oswald', 'Exo 2', sans-serif",
+                    boxShadow: "0 0 20px rgba(57,255,20,0.4)",
                     border: "none",
                     cursor: "pointer",
                   }}
@@ -241,10 +241,10 @@ export default function Home() {
                   className="flex items-center gap-2 px-8 py-3.5 text-base font-semibold tracking-wider transition-all"
                   style={{
                     background: "transparent",
-                    color: "#fbbf24",
+                    color: "#f0b800",
                     borderRadius: "4px",
-                    fontFamily: "'Exo 2', sans-serif",
-                    border: "1px solid rgba(251,191,36,0.4)",
+                    fontFamily: "'Oswald', 'Exo 2', sans-serif",
+                    border: "1px solid rgba(212,160,23,0.5)",
                     cursor: "pointer",
                   }}
                 >
@@ -262,7 +262,7 @@ export default function Home() {
                 <NeonCard key={stat.label} variant="premium" className="p-4 text-center">
                   <div
                     style={{
-                      fontFamily: "'Rajdhani', sans-serif",
+                      fontFamily: "'Oswald', 'Rajdhani', sans-serif",
                       fontWeight: 700,
                       fontSize: "2rem",
                       color: stat.color,
@@ -290,7 +290,7 @@ export default function Home() {
       {/* ── PERFORMANCE CHART ────────────────────────────────── */}
       <section
         className="py-16"
-        style={{ borderTop: "1px solid rgba(0,255,136,0.1)", borderBottom: "1px solid rgba(0,255,136,0.1)" }}
+        style={{ borderTop: "1px solid rgba(57,255,20,0.1)", borderBottom: "1px solid rgba(57,255,20,0.1)" }}
       >
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -298,10 +298,10 @@ export default function Home() {
               <div
                 className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-bold tracking-widest"
                 style={{
-                  background: "rgba(0,212,255,0.08)",
-                  border: "1px solid rgba(0,212,255,0.3)",
+                  background: "rgba(212,160,23,0.08)",
+                  border: "1px solid rgba(212,160,23,0.3)",
                   borderRadius: "4px",
-                  color: "#00d4ff",
+                  color: "#f0b800",
                 }}
               >
                 VERIFIED TRACK RECORD
@@ -309,13 +309,13 @@ export default function Home() {
               <h2
                 className="mb-4 leading-none"
                 style={{
-                  fontFamily: "'Rajdhani', sans-serif",
+                  fontFamily: "'Oswald', 'Rajdhani', sans-serif",
                   fontWeight: 700,
                   fontSize: "clamp(2rem, 4vw, 3rem)",
                   textTransform: "uppercase",
                 }}
               >
-                <span style={{ color: "#00ff88", textShadow: "0 0 15px rgba(0,255,136,0.4)" }}>73.1% WIN RATE</span>
+                <span style={{ color: "#39ff14", textShadow: "0 0 15px rgba(57,255,20,0.4)" }}>73.1% WIN RATE</span>
                 <br />
                 <span style={{ color: "white" }}>OVER 12 MONTHS</span>
               </h2>
@@ -325,12 +325,12 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-3">
                 {sportStats.map((s) => (
                   <NeonCard key={s.label} className="p-3">
-                    <div className="text-xs mb-1" style={{ color: "#00d4ff", fontFamily: "'Rajdhani', sans-serif", fontWeight: 600, textTransform: "uppercase" }}>
+                    <div className="text-xs mb-1" style={{ color: "#f0b800", fontFamily: "'Oswald', 'Rajdhani', sans-serif", fontWeight: 600, textTransform: "uppercase" }}>
                       {s.label}
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-bold" style={{ color: "white" }}>{s.winRate}</span>
-                      <span className="text-xs font-bold" style={{ color: "#00ff88" }}>{s.roi}</span>
+                      <span className="text-xs font-bold" style={{ color: "#39ff14" }}>{s.roi}</span>
                     </div>
                     <div className="text-xs mt-0.5" style={{ color: "rgba(140,140,170,0.7)" }}>{s.games} games</div>
                   </NeonCard>
@@ -344,10 +344,10 @@ export default function Home() {
                 <div
                   className="flex items-center gap-1.5 px-2 py-0.5 text-xs font-bold"
                   style={{
-                    background: "rgba(0,255,136,0.1)",
-                    border: "1px solid rgba(0,255,136,0.3)",
+                    background: "rgba(57,255,20,0.1)",
+                    border: "1px solid rgba(57,255,20,0.3)",
                     borderRadius: "4px",
-                    color: "#00ff88",
+                    color: "#39ff14",
                   }}
                 >
                   <span className="live-dot" style={{ width: 6, height: 6 }} />
@@ -358,19 +358,19 @@ export default function Home() {
                 <AreaChart data={performanceData}>
                   <defs>
                     <linearGradient id="roiGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00ff88" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#00ff88" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#39ff14" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#39ff14" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,255,136,0.08)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(57,255,20,0.08)" />
                   <XAxis dataKey="month" tick={{ fill: "rgba(140,140,170,0.8)", fontSize: 12 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "rgba(140,140,170,0.8)", fontSize: 12 }} axisLine={false} tickLine={false} />
                   <Tooltip
-                    contentStyle={{ background: "rgba(12,12,28,0.95)", border: "1px solid rgba(0,255,136,0.2)", borderRadius: "4px" }}
-                    labelStyle={{ color: "#00d4ff" }}
+                    contentStyle={{ background: "rgba(12,12,28,0.95)", border: "1px solid rgba(57,255,20,0.2)", borderRadius: "4px" }}
+                    labelStyle={{ color: "#f0b800" }}
                     formatter={(v: number) => [`${v}%`, "ROI"]}
                   />
-                  <Area type="monotone" dataKey="roi" stroke="#00ff88" strokeWidth={2} fill="url(#roiGrad)" dot={{ fill: "#00ff88", strokeWidth: 0, r: 3 }} />
+                  <Area type="monotone" dataKey="roi" stroke="#39ff14" strokeWidth={2} fill="url(#roiGrad)" dot={{ fill: "#39ff14", strokeWidth: 0, r: 3 }} />
                 </AreaChart>
               </ResponsiveContainer>
             </NeonCard>
@@ -386,18 +386,18 @@ export default function Home() {
               <div
                 className="inline-flex items-center gap-1.5 px-2.5 py-1 mb-2 text-xs font-bold tracking-widest"
                 style={{
-                  background: "rgba(168,85,247,0.1)",
-                  border: "1px solid rgba(168,85,247,0.3)",
+                  background: "rgba(212,160,23,0.1)",
+                  border: "1px solid rgba(212,160,23,0.3)",
                   borderRadius: "4px",
-                  color: "#a855f7",
+                  color: "#d4a017",
                 }}
               >
-                <span className="live-dot" style={{ background: "#a855f7" }} />
+                <span className="live-dot" style={{ background: "#d4a017" }} />
                 UPDATED DAILY AT 6AM UTC
               </div>
               <h2
                 style={{
-                  fontFamily: "'Rajdhani', sans-serif",
+                  fontFamily: "'Oswald', 'Rajdhani', sans-serif",
                   fontWeight: 700,
                   fontSize: "2rem",
                   textTransform: "uppercase",
@@ -405,7 +405,7 @@ export default function Home() {
                 }}
               >
                 TODAY'S{" "}
-                <span style={{ color: "#00ff88", textShadow: "0 0 10px rgba(0,255,136,0.4)" }}>TOP PICKS</span>
+                <span style={{ color: "#39ff14", textShadow: "0 0 10px rgba(57,255,20,0.4)" }}>TOP PICKS</span>
               </h2>
             </div>
             <Link href="/picks">
@@ -413,8 +413,8 @@ export default function Home() {
                 className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all"
                 style={{
                   background: "transparent",
-                  color: "#00d4ff",
-                  border: "1px solid rgba(0,212,255,0.3)",
+                  color: "#f0b800",
+                  border: "1px solid rgba(212,160,23,0.3)",
                   borderRadius: "4px",
                   cursor: "pointer",
                   fontFamily: "'Exo 2', sans-serif",
@@ -433,17 +433,17 @@ export default function Home() {
                     <div
                       className="px-2 py-0.5 text-xs font-bold tracking-wider"
                       style={{
-                        background: pick.tier === "premium" ? "rgba(0,255,136,0.1)" : "rgba(148,163,184,0.1)",
-                        border: `1px solid ${pick.tier === "premium" ? "rgba(0,255,136,0.3)" : "rgba(148,163,184,0.25)"}`,
+                        background: pick.tier === "premium" ? "rgba(57,255,20,0.1)" : "rgba(148,163,184,0.1)",
+                        border: `1px solid ${pick.tier === "premium" ? "rgba(57,255,20,0.3)" : "rgba(148,163,184,0.25)"}`,
                         borderRadius: "3px",
-                        color: pick.tier === "premium" ? "#00ff88" : "#94a3b8",
+                        color: pick.tier === "premium" ? "#39ff14" : "#94a3b8",
                       }}
                     >
                       {pick.tier === "premium" ? "⚡ PREMIUM" : "STANDARD"}
                     </div>
                     <span
                       className="text-xs font-bold tracking-widest"
-                      style={{ color: "#00d4ff", fontFamily: "'Rajdhani', sans-serif" }}
+                      style={{ color: "#f0b800", fontFamily: "'Oswald', 'Rajdhani', sans-serif" }}
                     >
                       {pick.sportKey?.toUpperCase()}
                     </span>
@@ -452,7 +452,7 @@ export default function Home() {
                     <div className="text-xs mb-1" style={{ color: "rgba(140,140,170,0.7)" }}>
                       {pick.awayTeam} @ {pick.homeTeam}
                     </div>
-                    <div className="font-bold text-base" style={{ color: "white", fontFamily: "'Rajdhani', sans-serif", fontSize: "1.05rem" }}>
+                    <div className="font-bold text-base" style={{ color: "white", fontFamily: "'Oswald', 'Rajdhani', sans-serif", fontSize: "1.05rem" }}>
                       {pick.recommendation}
                     </div>
                     <div className="text-sm mt-0.5" style={{ color: "rgba(180,180,210,0.6)" }}>
@@ -462,16 +462,16 @@ export default function Home() {
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
                       <span style={{ color: "rgba(140,140,170,0.7)" }}>Confidence</span>
-                      <span className="font-bold" style={{ color: "#00ff88" }}>{pick.confidenceScore}%</span>
+                      <span className="font-bold" style={{ color: "#39ff14" }}>{pick.confidenceScore}%</span>
                     </div>
                     <div className="h-1" style={{ background: "rgba(255,255,255,0.08)", borderRadius: "2px", overflow: "hidden" }}>
                       <div
                         style={{
                           height: "100%",
                           width: `${pick.confidenceScore}%`,
-                          background: "linear-gradient(90deg, #00ff88, #00d4ff)",
+                          background: "linear-gradient(90deg, #39ff14, #f0b800)",
                           borderRadius: "2px",
-                          boxShadow: "0 0 6px rgba(0,255,136,0.4)",
+                          boxShadow: "0 0 6px rgba(57,255,20,0.4)",
                         }}
                       />
                     </div>
@@ -491,11 +491,11 @@ export default function Home() {
               <button
                 className="flex items-center gap-2 mx-auto px-6 py-2.5 text-sm font-bold tracking-wider transition-all"
                 style={{
-                  background: "#00ff88",
+                  background: "#39ff14",
                   color: "#080814",
                   borderRadius: "4px",
                   fontFamily: "'Exo 2', sans-serif",
-                  boxShadow: "0 0 15px rgba(0,255,136,0.25)",
+                  boxShadow: "0 0 15px rgba(57,255,20,0.25)",
                   border: "none",
                   cursor: "pointer",
                 }}
@@ -510,17 +510,17 @@ export default function Home() {
       {/* ── FEATURES ─────────────────────────────────────────── */}
       <section
         className="py-16"
-        style={{ background: "linear-gradient(180deg, rgba(168,85,247,0.04) 0%, transparent 100%)" }}
+        style={{ background: "linear-gradient(180deg, rgba(212,160,23,0.04) 0%, transparent 100%)" }}
       >
         <div className="container">
           <div className="text-center mb-12">
             <div
               className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-bold tracking-widest"
               style={{
-                background: "rgba(0,255,136,0.08)",
-                border: "1px solid rgba(0,255,136,0.25)",
+                background: "rgba(57,255,20,0.08)",
+                border: "1px solid rgba(57,255,20,0.25)",
                 borderRadius: "4px",
-                color: "#00ff88",
+                color: "#39ff14",
               }}
             >
               WEAPONS IN YOUR ARSENAL
@@ -528,7 +528,7 @@ export default function Home() {
             <h2
               className="mb-3"
               style={{
-                fontFamily: "'Rajdhani', sans-serif",
+                fontFamily: "'Oswald', 'Rajdhani', sans-serif",
                 fontWeight: 700,
                 fontSize: "clamp(2rem, 4vw, 2.8rem)",
                 textTransform: "uppercase",
@@ -536,7 +536,7 @@ export default function Home() {
               }}
             >
               FEATURES NO OTHER PLATFORM{" "}
-              <span style={{ color: "#00ff88", textShadow: "0 0 15px rgba(0,255,136,0.4)" }}>OFFERS</span>
+              <span style={{ color: "#39ff14", textShadow: "0 0 15px rgba(57,255,20,0.4)" }}>OFFERS</span>
             </h2>
             <p style={{ color: "rgba(180,180,210,0.65)", maxWidth: "560px", margin: "0 auto" }}>
               Built by professional bettors and data scientists. Every tool is designed to give you a measurable, mathematical edge.
@@ -578,7 +578,7 @@ export default function Home() {
                 <h3
                   className="mb-2"
                   style={{
-                    fontFamily: "'Rajdhani', sans-serif",
+                    fontFamily: "'Oswald', 'Rajdhani', sans-serif",
                     fontWeight: 600,
                     fontSize: "1.1rem",
                     textTransform: "uppercase",
@@ -600,8 +600,8 @@ export default function Home() {
       <section
         className="py-16"
         style={{
-          borderTop: "1px solid rgba(0,255,136,0.08)",
-          background: "linear-gradient(180deg, rgba(0,212,255,0.03) 0%, transparent 100%)",
+          borderTop: "1px solid rgba(57,255,20,0.08)",
+          background: "linear-gradient(180deg, rgba(212,160,23,0.03) 0%, transparent 100%)",
         }}
       >
         <div className="container">
@@ -612,11 +612,11 @@ export default function Home() {
                 <div className="text-2xl mb-1">{stat.icon}</div>
                 <div
                   style={{
-                    fontFamily: "'Rajdhani', sans-serif",
+                    fontFamily: "'Oswald', 'Rajdhani', sans-serif",
                     fontWeight: 700,
                     fontSize: "1.6rem",
-                    color: "#00ff88",
-                    textShadow: "0 0 8px rgba(0,255,136,0.4)",
+                    color: "#39ff14",
+                    textShadow: "0 0 8px rgba(57,255,20,0.4)",
                   }}
                 >
                   {stat.value}
@@ -633,17 +633,17 @@ export default function Home() {
             <div
               className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-bold tracking-widest"
               style={{
-                background: "rgba(0,212,255,0.08)",
-                border: "1px solid rgba(0,212,255,0.25)",
+                background: "rgba(212,160,23,0.08)",
+                border: "1px solid rgba(212,160,23,0.25)",
                 borderRadius: "4px",
-                color: "#00d4ff",
+                color: "#f0b800",
               }}
             >
               VERIFIED MEMBER RESULTS
             </div>
             <h2
               style={{
-                fontFamily: "'Rajdhani', sans-serif",
+                fontFamily: "'Oswald', 'Rajdhani', sans-serif",
                 fontWeight: 700,
                 fontSize: "2rem",
                 textTransform: "uppercase",
@@ -651,7 +651,7 @@ export default function Home() {
               }}
             >
               WHAT OUR{" "}
-              <span style={{ color: "#00d4ff", textShadow: "0 0 10px rgba(0,212,255,0.4)" }}>MEMBERS SAY</span>
+              <span style={{ color: "#f0b800", textShadow: "0 0 10px rgba(212,160,23,0.4)" }}>MEMBERS SAY</span>
             </h2>
           </div>
 
@@ -662,16 +662,16 @@ export default function Home() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex gap-0.5">
                     {Array.from({ length: t.stars }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4" style={{ fill: "#00ff88", color: "#00ff88" }} />
+                      <Star key={i} className="w-4 h-4" style={{ fill: "#39ff14", color: "#39ff14" }} />
                     ))}
                   </div>
                   <div
                     className="flex items-center gap-1 px-2 py-0.5 text-xs font-bold"
                     style={{
-                      background: "rgba(0,255,136,0.1)",
-                      border: "1px solid rgba(0,255,136,0.3)",
+                      background: "rgba(57,255,20,0.1)",
+                      border: "1px solid rgba(57,255,20,0.3)",
                       borderRadius: "3px",
-                      color: "#00ff88",
+                      color: "#39ff14",
                     }}
                   >
                     <Flame className="w-3 h-3" /> {t.streak}
@@ -690,10 +690,10 @@ export default function Home() {
 
           {/* Live user count */}
           <div className="text-center mt-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2" style={{ background: "rgba(0,255,136,0.05)", border: "1px solid rgba(0,255,136,0.15)", borderRadius: "6px" }}>
+            <div className="inline-flex items-center gap-2 px-4 py-2" style={{ background: "rgba(57,255,20,0.05)", border: "1px solid rgba(57,255,20,0.15)", borderRadius: "6px" }}>
               <span className="live-dot" />
               <span className="text-sm" style={{ color: "rgba(200,200,220,0.8)" }}>
-                <strong style={{ color: "#00ff88" }}>247</strong> members online now
+                <strong style={{ color: "#39ff14" }}>247</strong> members online now
               </span>
             </div>
           </div>
@@ -704,9 +704,9 @@ export default function Home() {
       <section
         className="py-20"
         style={{
-          borderTop: "1px solid rgba(0,255,136,0.1)",
+          borderTop: "1px solid rgba(57,255,20,0.1)",
           background: `
-            radial-gradient(ellipse 80% 60% at 50% 100%, rgba(0,255,136,0.06), transparent),
+            radial-gradient(ellipse 80% 60% at 50% 100%, rgba(57,255,20,0.06), transparent),
             #080814
           `,
         }}
@@ -715,7 +715,7 @@ export default function Home() {
           <h2
             className="mb-5"
             style={{
-              fontFamily: "'Rajdhani', sans-serif",
+              fontFamily: "'Oswald', 'Rajdhani', sans-serif",
               fontWeight: 700,
               fontSize: "clamp(2.5rem, 6vw, 4rem)",
               textTransform: "uppercase",
@@ -723,7 +723,7 @@ export default function Home() {
             }}
           >
             READY TO BET{" "}
-            <span style={{ color: "#00ff88", textShadow: "0 0 20px rgba(0,255,136,0.5)" }}>SMARTER?</span>
+            <span style={{ color: "#39ff14", textShadow: "0 0 20px rgba(57,255,20,0.5)" }}>SMARTER?</span>
           </h2>
           <p style={{ color: "rgba(180,180,210,0.7)", fontSize: "1.1rem", marginBottom: "2rem", maxWidth: "480px", margin: "0 auto 2rem" }}>
             Join 12,847+ members who use ChalkPicks Pro to gain a real, mathematical edge. Choose your plan and start winning.
@@ -734,11 +734,11 @@ export default function Home() {
                 <button
                   className="flex items-center gap-2 px-8 py-3.5 text-base font-bold tracking-wider"
                   style={{
-                    background: "#00ff88",
+                    background: "#39ff14",
                     color: "#080814",
                     borderRadius: "4px",
                     fontFamily: "'Exo 2', sans-serif",
-                    boxShadow: "0 0 20px rgba(0,255,136,0.35)",
+                    boxShadow: "0 0 20px rgba(57,255,20,0.35)",
                     border: "none",
                     cursor: "pointer",
                   }}
@@ -750,11 +750,11 @@ export default function Home() {
               <button
                 className="flex items-center gap-2 px-8 py-3.5 text-base font-bold tracking-wider"
                 style={{
-                  background: "#00ff88",
+                  background: "#39ff14",
                   color: "#080814",
                   borderRadius: "4px",
                   fontFamily: "'Exo 2', sans-serif",
-                  boxShadow: "0 0 20px rgba(0,255,136,0.35)",
+                  boxShadow: "0 0 20px rgba(57,255,20,0.35)",
                   border: "none",
                   cursor: "pointer",
                 }}
@@ -768,10 +768,10 @@ export default function Home() {
                 className="flex items-center gap-2 px-8 py-3.5 text-base font-semibold tracking-wider"
                 style={{
                   background: "transparent",
-                  color: "#00d4ff",
+                  color: "#f0b800",
                   borderRadius: "4px",
                   fontFamily: "'Exo 2', sans-serif",
-                  border: "1px solid rgba(0,212,255,0.4)",
+                  border: "1px solid rgba(212,160,23,0.4)",
                   cursor: "pointer",
                 }}
               >
@@ -781,13 +781,13 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 text-xs" style={{ color: "rgba(140,140,170,0.7)" }}>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#00ff88" }} /> Secure Stripe checkout
+              <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#39ff14" }} /> Secure Stripe checkout
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#00ff88" }} /> Cancel anytime
+              <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#39ff14" }} /> Cancel anytime
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#00ff88" }} /> Verified results
+              <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#39ff14" }} /> Verified results
             </span>
           </div>
         </div>
@@ -797,8 +797,8 @@ export default function Home() {
       <section
         className="py-14"
         style={{
-          borderTop: "1px solid rgba(0,255,136,0.08)",
-          background: "linear-gradient(180deg, transparent 0%, rgba(0,255,136,0.02) 100%)",
+          borderTop: "1px solid rgba(57,255,20,0.08)",
+          background: "linear-gradient(180deg, transparent 0%, rgba(57,255,20,0.02) 100%)",
         }}
       >
         <div className="container">
@@ -806,17 +806,17 @@ export default function Home() {
             <div
               className="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-bold tracking-widest"
               style={{
-                background: "rgba(0,212,255,0.08)",
-                border: "1px solid rgba(0,212,255,0.25)",
+                background: "rgba(212,160,23,0.08)",
+                border: "1px solid rgba(212,160,23,0.25)",
                 borderRadius: "4px",
-                color: "#00d4ff",
+                color: "#f0b800",
               }}
             >
               TRUSTED BY THE BEST
             </div>
             <h2
               style={{
-                fontFamily: "'Rajdhani', sans-serif",
+                fontFamily: "'Oswald', 'Rajdhani', sans-serif",
                 fontWeight: 700,
                 fontSize: "1.6rem",
                 textTransform: "uppercase",
@@ -824,16 +824,16 @@ export default function Home() {
               }}
             >
               AS SEEN ON &{" "}
-              <span style={{ color: "#00ff88", textShadow: "0 0 10px rgba(0,255,136,0.4)" }}>PARTNERED WITH</span>
+              <span style={{ color: "#39ff14", textShadow: "0 0 10px rgba(57,255,20,0.4)" }}>PARTNERED WITH</span>
             </h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {[
               { name: "ESPN", color: "#ff4d4d" },
-              { name: "Action Network", color: "#00d4ff" },
+              { name: "Action Network", color: "#f0b800" },
               { name: "The Athletic", color: "#ffffff" },
-              { name: "Covers.com", color: "#00ff88" },
-              { name: "OddsShark", color: "#a855f7" },
+              { name: "Covers.com", color: "#39ff14" },
+              { name: "OddsShark", color: "#d4a017" },
               { name: "BetMGM", color: "#c9a227" },
             ].map((partner) => (
               <NeonCard key={partner.name} className="p-4 text-center">
@@ -851,19 +851,19 @@ export default function Home() {
             ))}
           </div>
           <p className="text-center mt-4 text-xs" style={{ color: "rgba(120,120,150,0.5)" }}>
-            Interested in sponsoring ChalkPicks Pro? <a href="mailto:sponsors@chalkpicks.live" style={{ color: "#00d4ff", textDecoration: "underline" }}>Contact us</a>
+            Interested in sponsoring ChalkPicks Pro? <a href="mailto:sponsors@chalkpicks.live" style={{ color: "#f0b800", textDecoration: "underline" }}>Contact us</a>
           </p>
         </div>
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────── */}
-      <footer style={{ borderTop: "1px solid rgba(0,255,136,0.1)", padding: "3rem 0 2rem" }}>
+      <footer style={{ borderTop: "1px solid rgba(57,255,20,0.1)", padding: "3rem 0 2rem" }}>
         <div className="container">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             {/* Brand */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp" alt="ChalkPicks" className="h-10 w-auto" style={{ filter: 'drop-shadow(0 0 8px rgba(0,255,136,0.4))' }} />
+                <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp" alt="ChalkPicks" className="h-10 w-auto" style={{ filter: 'drop-shadow(0 0 8px rgba(57,255,20,0.4))' }} />
               </div>
               <p className="text-sm" style={{ color: "rgba(140,140,170,0.7)", lineHeight: 1.6 }}>
                 AI-powered sports betting analytics. Beat the books with data-driven picks.
@@ -871,7 +871,7 @@ export default function Home() {
             </div>
             {/* Links */}
             <div>
-              <h4 className="text-sm font-bold mb-3" style={{ color: "#00ff88", fontFamily: "'Exo 2', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>Platform</h4>
+              <h4 className="text-sm font-bold mb-3" style={{ color: "#39ff14", fontFamily: "'Exo 2', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>Platform</h4>
               <div className="space-y-2">
                 <Link href="/picks" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>AI Picks</Link>
                 <Link href="/stats" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Live Stats</Link>
@@ -880,7 +880,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-bold mb-3" style={{ color: "#00d4ff", fontFamily: "'Exo 2', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>Community</h4>
+              <h4 className="text-sm font-bold mb-3" style={{ color: "#f0b800", fontFamily: "'Exo 2', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>Community</h4>
               <div className="space-y-2">
                 <Link href="/leaderboard" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Leaderboard</Link>
                 <Link href="/pricing" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Pricing</Link>
@@ -889,7 +889,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-bold mb-3" style={{ color: "#a855f7", fontFamily: "'Exo 2', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>Legal</h4>
+              <h4 className="text-sm font-bold mb-3" style={{ color: "#d4a017", fontFamily: "'Exo 2', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>Legal</h4>
               <div className="space-y-2">
                 <span className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Terms of Service</span>
                 <span className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Privacy Policy</span>
@@ -897,7 +897,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-6" style={{ borderTop: "1px solid rgba(0,255,136,0.08)" }}>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-6" style={{ borderTop: "1px solid rgba(57,255,20,0.08)" }}>
             <div className="text-xs" style={{ color: "rgba(120,120,150,0.6)" }}>
               © 2026 ChalkPicks Pro. All rights reserved. Bet responsibly.
             </div>

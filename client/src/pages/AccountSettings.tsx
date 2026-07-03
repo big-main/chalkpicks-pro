@@ -21,10 +21,10 @@ export default function AccountSettings() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: "#080814" }}>
-        <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)" }}>
+        <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)" }}>
           <CardContent className="pt-6">
             <p style={{ color: "#e8e8f0", marginBottom: "1rem" }}>Please log in to access account settings.</p>
-            <Button onClick={() => setLocation("/login")} style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", color: "#080814", fontWeight: 700 }}>
+            <Button onClick={() => setLocation("/login")} style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", color: "#080814", fontWeight: 700 }}>
               Go to Login
             </Button>
           </CardContent>
@@ -73,9 +73,9 @@ export default function AccountSettings() {
                   onClick={() => setActiveTab(tab.id)}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all"
                   style={{
-                    background: activeTab === tab.id ? "rgba(0,212,255,0.1)" : "transparent",
-                    border: activeTab === tab.id ? "1px solid rgba(0,212,255,0.3)" : "1px solid rgba(0,212,255,0.1)",
-                    color: activeTab === tab.id ? "#00d4ff" : "#a8a8b0",
+                    background: activeTab === tab.id ? "rgba(212,160,23,0.1)" : "transparent",
+                    border: activeTab === tab.id ? "1px solid rgba(212,160,23,0.3)" : "1px solid rgba(212,160,23,0.1)",
+                    color: activeTab === tab.id ? "#f0b800" : "#a8a8b0",
                   }}
                 >
                   <tab.icon className="w-4 h-4" />
@@ -89,7 +89,7 @@ export default function AccountSettings() {
           <div className="lg:col-span-3">
             {/* Profile Tab */}
             {activeTab === "profile" && (
-              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)" }}>
+              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)" }}>
                 <CardHeader>
                   <CardTitle style={{ color: "white" }}>Profile Information</CardTitle>
                   <CardDescription style={{ color: "#a8a8b0" }}>
@@ -112,7 +112,7 @@ export default function AccountSettings() {
                       readOnly
                       style={{
                         background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(0,212,255,0.2)",
+                        border: "1px solid rgba(212,160,23,0.2)",
                         color: "#e8e8f0",
                         marginTop: "0.5rem",
                       }}
@@ -128,7 +128,7 @@ export default function AccountSettings() {
                         readOnly
                         style={{
                           background: "rgba(255,255,255,0.05)",
-                          border: "1px solid rgba(0,212,255,0.2)",
+                          border: "1px solid rgba(212,160,23,0.2)",
                           color: "#e8e8f0",
                         }}
                       />
@@ -140,7 +140,7 @@ export default function AccountSettings() {
 
                   <div>
                     <Label style={{ color: "#e8e8f0", fontSize: "0.875rem", fontWeight: 500 }}>Account Type</Label>
-                    <div style={{ marginTop: "0.5rem", padding: "0.75rem", background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "6px", color: "#00d4ff", fontWeight: 600 }}>
+                    <div style={{ marginTop: "0.5rem", padding: "0.75rem", background: "rgba(212,160,23,0.1)", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "6px", color: "#f0b800", fontWeight: 600 }}>
                       {user?.subscriptionTier === "free" ? "No Active Subscription" : `${user?.subscriptionTier?.charAt(0).toUpperCase()}${user?.subscriptionTier?.slice(1)} Subscriber`}
                     </div>
                   </div>
@@ -153,7 +153,7 @@ export default function AccountSettings() {
                       readOnly
                       style={{
                         background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(0,212,255,0.2)",
+                        border: "1px solid rgba(212,160,23,0.2)",
                         color: "#e8e8f0",
                         marginTop: "0.5rem",
                       }}
@@ -165,7 +165,7 @@ export default function AccountSettings() {
 
             {/* Security Tab */}
             {activeTab === "security" && (
-              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)" }}>
+              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)" }}>
                 <CardHeader>
                   <CardTitle style={{ color: "white" }}>Security Settings</CardTitle>
                   <CardDescription style={{ color: "#a8a8b0" }}>
@@ -185,7 +185,7 @@ export default function AccountSettings() {
                     <p style={{ color: "#a8a8b0", fontSize: "0.875rem", marginBottom: "1rem" }}>
                       You're currently using email &amp; password authentication
                     </p>
-                    <div style={{ padding: "1rem", background: "rgba(0,212,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "6px", color: "#00d4ff", fontSize: "0.875rem" }}>
+                    <div style={{ padding: "1rem", background: "rgba(212,160,23,0.05)", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "6px", color: "#f0b800", fontSize: "0.875rem" }}>
                       ✓ Email &amp; Password Authentication
                     </div>
                   </div>
@@ -218,7 +218,7 @@ export default function AccountSettings() {
 
             {/* Notifications Tab */}
             {activeTab === "notifications" && (
-              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)" }}>
+              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)" }}>
                 <CardHeader>
                   <CardTitle style={{ color: "white" }}>Notification Preferences</CardTitle>
                   <CardDescription style={{ color: "#a8a8b0" }}>
@@ -233,7 +233,7 @@ export default function AccountSettings() {
                       { label: "Performance Alerts", desc: "Weekly performance summaries" },
                       { label: "System Notifications", desc: "Important updates and maintenance alerts" },
                     ].map((item, i) => (
-                      <div key={i} className="flex items-center justify-between p-4" style={{ background: "rgba(0,212,255,0.05)", border: "1px solid rgba(0,212,255,0.1)", borderRadius: "6px" }}>
+                      <div key={i} className="flex items-center justify-between p-4" style={{ background: "rgba(212,160,23,0.05)", border: "1px solid rgba(212,160,23,0.1)", borderRadius: "6px" }}>
                         <div>
                           <p style={{ color: "#e8e8f0", fontWeight: 600, fontSize: "0.875rem" }}>{item.label}</p>
                           <p style={{ color: "#a8a8b0", fontSize: "0.75rem", marginTop: "0.25rem" }}>{item.desc}</p>
@@ -243,7 +243,7 @@ export default function AccountSettings() {
                     ))}
                   </div>
 
-                  <Button style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", color: "#080814", fontWeight: 700, width: "100%" }}>
+                  <Button style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", color: "#080814", fontWeight: 700, width: "100%" }}>
                     Save Preferences
                   </Button>
                 </CardContent>

@@ -491,3 +491,11 @@
 
 - [x] Fix TypeScript inference — added explicit type annotation for `source` field in arbitrage router and client component
 - [x] Create `arbitrage-optimization` skill — documents full workflow for Qwen routing, OddsHarvester, caching, and UI badges
+
+
+## New Tasks (Jul 3, 2026 — Batch 2)
+- [x] Add advanced filtering and sorting to arbitrage dashboard — ALREADY EXISTS (ArbitrageFilters.tsx: sports, sportsbooks, profit margin range, guaranteed profit min, event time range, sort by, active-only)
+- [x] Implement LLM status badge showing Qwen vs Gemini fallback state in UI — LlmStatusBadge in Navbar, /api/trpc/system.llmStatus endpoint
+- [x] Redesign website theme to match ChalkPicks brand — dark bg (#0d0f14), metallic gold (#d4a017/#f0b800), neon green (#39ff14), Oswald font, 92+ color refs updated across 16 files
+- [x] Update Instagram automation skill with ChalkPicks visual brand guidelines — full brand palette, composition templates, AI prompt patterns
+- [x] Create reusable skill documenting the full process — updated chalkpicks-analytics §7-9 (LLM routing, OddsHarvester, brand identity)

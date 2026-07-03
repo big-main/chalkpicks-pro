@@ -14,9 +14,9 @@ const PLAN_META: Record<string, {
   badge?: string;
   popular?: boolean;
 }> = {
-  daily:   { icon: Zap,   color: "#00d4ff", glow: "rgba(0,212,255,0.25)",   badge: "Try it out" },
-  monthly: { icon: Crown, color: "#00ff88", glow: "rgba(0,255,136,0.25)",   badge: "Most Popular", popular: true },
-  yearly:  { icon: Star,  color: "#a855f7", glow: "rgba(168,85,247,0.25)",  badge: "Best Value" },
+  daily:   { icon: Zap,   color: "#f0b800", glow: "rgba(212,160,23,0.25)",   badge: "Try it out" },
+  monthly: { icon: Crown, color: "#39ff14", glow: "rgba(57,255,20,0.25)",   badge: "Most Popular", popular: true },
+  yearly:  { icon: Star,  color: "#d4a017", glow: "rgba(212,160,23,0.25)",  badge: "Best Value" },
 };
 
 // ─── Detailed feature comparison ───────────────────────────────────────────────
@@ -234,8 +234,8 @@ export default function Pricing() {
         className="fixed inset-0 pointer-events-none"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(0,255,136,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,255,136,0.025) 1px, transparent 1px)
+            linear-gradient(rgba(57,255,20,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(57,255,20,0.025) 1px, transparent 1px)
           `,
           backgroundSize: "40px 40px",
           zIndex: 0,
@@ -248,7 +248,7 @@ export default function Pricing() {
         <div className="text-center mb-14">
           <div
             className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-bold tracking-widest"
-            style={{ background: "rgba(0,255,136,0.08)", border: "1px solid rgba(0,255,136,0.25)", borderRadius: "4px", color: "#00ff88" }}
+            style={{ background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.25)", borderRadius: "4px", color: "#39ff14" }}
           >
             <Shield className="w-3 h-3" /> SECURE CHECKOUT · CANCEL ANYTIME
           </div>
@@ -263,7 +263,7 @@ export default function Pricing() {
             }}
           >
             PICK YOUR{" "}
-            <span style={{ color: "#00ff88", textShadow: "0 0 20px rgba(0,255,136,0.5)" }}>EDGE</span>
+            <span style={{ color: "#39ff14", textShadow: "0 0 20px rgba(57,255,20,0.5)" }}>EDGE</span>
           </h1>
           <p className="mt-3 text-base max-w-xl mx-auto" style={{ color: "rgba(180,180,210,0.65)" }}>
             Join thousands of sharp bettors using AI-powered analytics, real-time odds, and professional tools to beat the books.
@@ -273,12 +273,12 @@ export default function Pricing() {
           {isAuthenticated && isActive && (
             <div
               className="inline-flex items-center gap-2 mt-5 px-4 py-2 text-sm font-bold"
-              style={{ background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.3)", borderRadius: "6px", color: "#00ff88" }}
+              style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.3)", borderRadius: "6px", color: "#39ff14" }}
             >
               <Check className="w-4 h-4" />
               You're on the <strong>{currentTier.charAt(0).toUpperCase() + currentTier.slice(1)}</strong> plan
               {mySubscription?.expiresAt && (
-                <span style={{ color: "rgba(0,255,136,0.7)", fontWeight: 400 }}>
+                <span style={{ color: "rgba(57,255,20,0.7)", fontWeight: 400 }}>
                   · expires {new Date(mySubscription.expiresAt).toLocaleDateString()}
                 </span>
               )}
@@ -288,10 +288,10 @@ export default function Pricing() {
 
         {/* Promo code section */}
         <div className="max-w-md mx-auto mb-10">
-          <NeonCard className="p-5" style={{ borderColor: promoApplied ? "rgba(0,255,136,0.4)" : "rgba(0,212,255,0.2)" }}>
+          <NeonCard className="p-5" style={{ borderColor: promoApplied ? "rgba(57,255,20,0.4)" : "rgba(212,160,23,0.2)" }}>
             <div className="flex items-center gap-2 mb-3">
-              <Tag className="w-4 h-4" style={{ color: "#00d4ff" }} />
-              <span className="text-sm font-bold tracking-wider" style={{ color: "#00d4ff", fontFamily: "'Exo 2', sans-serif" }}>
+              <Tag className="w-4 h-4" style={{ color: "#f0b800" }} />
+              <span className="text-sm font-bold tracking-wider" style={{ color: "#f0b800", fontFamily: "'Exo 2', sans-serif" }}>
                 PROMO CODE
               </span>
             </div>
@@ -302,16 +302,16 @@ export default function Pricing() {
                 onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoApplied(false); setPromoError(""); }}
                 placeholder="Enter code (e.g. LAUNCH50)"
                 className="flex-1 px-3 py-2 text-sm rounded"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", color: "white", outline: "none" }}
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(212,160,23,0.2)", color: "white", outline: "none" }}
               />
               <button
                 onClick={handleApplyPromo}
                 disabled={promoValidating || !promoCode.trim()}
                 className="px-4 py-2 text-sm font-bold rounded transition-all"
                 style={{
-                  background: promoApplied ? "rgba(0,255,136,0.15)" : "rgba(0,212,255,0.12)",
-                  border: `1px solid ${promoApplied ? "rgba(0,255,136,0.4)" : "rgba(0,212,255,0.3)"}`,
-                  color: promoApplied ? "#00ff88" : "#00d4ff",
+                  background: promoApplied ? "rgba(57,255,20,0.15)" : "rgba(212,160,23,0.12)",
+                  border: `1px solid ${promoApplied ? "rgba(57,255,20,0.4)" : "rgba(212,160,23,0.3)"}`,
+                  color: promoApplied ? "#39ff14" : "#f0b800",
                   cursor: promoValidating ? "wait" : "pointer",
                   opacity: !promoCode.trim() ? 0.5 : 1,
                 }}
@@ -320,7 +320,7 @@ export default function Pricing() {
               </button>
             </div>
             {promoApplied && (
-              <p className="mt-2 text-xs font-bold" style={{ color: "#00ff88" }}>
+              <p className="mt-2 text-xs font-bold" style={{ color: "#39ff14" }}>
                 ✓ {promoDiscountType === "percentage" ? `${promoDiscount}% off` : `$${promoDiscount} off`} applied! Discount will be reflected at checkout.
               </p>
             )}
@@ -348,7 +348,7 @@ export default function Pricing() {
                 {isPopular && (
                   <div
                     className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 text-[11px] font-bold tracking-widest z-10 whitespace-nowrap"
-                    style={{ background: "#00ff88", color: "#080814", borderRadius: "20px", boxShadow: "0 0 15px rgba(0,255,136,0.5)", fontFamily: "'Exo 2', sans-serif" }}
+                    style={{ background: "#39ff14", color: "#080814", borderRadius: "20px", boxShadow: "0 0 15px rgba(57,255,20,0.5)", fontFamily: "'Exo 2', sans-serif" }}
                   >
                     ★ MOST POPULAR
                   </div>
@@ -357,7 +357,7 @@ export default function Pricing() {
                 <NeonCard
                   className="flex flex-col flex-1 p-7"
                   style={{
-                    borderColor: isPopular ? "rgba(0,255,136,0.4)" : isCurrent ? `${meta.color}50` : "rgba(0,255,136,0.12)",
+                    borderColor: isPopular ? "rgba(57,255,20,0.4)" : isCurrent ? `${meta.color}50` : "rgba(57,255,20,0.12)",
                     boxShadow: isPopular ? `0 0 30px ${meta.glow}` : isCurrent ? `0 0 20px ${meta.glow}` : "none",
                   }}
                 >
@@ -383,7 +383,7 @@ export default function Pricing() {
                           ${originalPrice.toFixed(2)}
                         </span>
                       )}
-                      <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "3rem", color: hasDiscount ? "#00ff88" : meta.color, textShadow: `0 0 15px ${meta.glow}`, lineHeight: 1 }}>
+                      <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "3rem", color: hasDiscount ? "#39ff14" : meta.color, textShadow: `0 0 15px ${meta.glow}`, lineHeight: 1 }}>
                         ${finalPrice.toFixed(2)}
                       </span>
                       <span className="mb-1.5 text-sm" style={{ color: "rgba(140,140,170,0.6)" }}>
@@ -391,12 +391,12 @@ export default function Pricing() {
                       </span>
                     </div>
                     {hasDiscount && (
-                      <div className="text-xs mt-1 font-bold" style={{ color: "#00ff88" }}>
+                      <div className="text-xs mt-1 font-bold" style={{ color: "#39ff14" }}>
                         🎉 PROMO APPLIED — You save ${(originalPrice - finalPrice).toFixed(2)}!
                       </div>
                     )}
                     {plan.key === "yearly" && !hasDiscount && (
-                      <div className="text-xs mt-1" style={{ color: "#a855f7" }}>= ${(originalPrice / 12).toFixed(2)}/mo · Save $16/mo vs monthly</div>
+                      <div className="text-xs mt-1" style={{ color: "#d4a017" }}>= ${(originalPrice / 12).toFixed(2)}/mo · Save $16/mo vs monthly</div>
                     )}
                     {plan.key === "monthly" && !hasDiscount && (
                       <div className="text-xs mt-1" style={{ color: "rgba(140,140,170,0.5)" }}>Billed monthly · cancel anytime</div>
@@ -460,7 +460,7 @@ export default function Pricing() {
             { icon: Star,   label: "Powered by Stripe" },
           ].map((badge) => (
             <div key={badge.label} className="flex items-center gap-2 text-sm" style={{ color: "rgba(140,140,170,0.6)" }}>
-              <badge.icon className="w-4 h-4" style={{ color: "rgba(0,255,136,0.5)" }} />
+              <badge.icon className="w-4 h-4" style={{ color: "rgba(57,255,20,0.5)" }} />
               {badge.label}
             </div>
           ))}
@@ -471,7 +471,7 @@ export default function Pricing() {
           <button
             onClick={() => setShowComparison(!showComparison)}
             className="text-sm font-bold tracking-wider px-5 py-2.5 transition-all flex items-center justify-center gap-2 mx-auto"
-            style={{ background: "rgba(0,212,255,0.08)", border: "1px solid rgba(0,212,255,0.25)", borderRadius: "5px", color: "#00d4ff", cursor: "pointer", fontFamily: "'Exo 2', sans-serif" }}
+            style={{ background: "rgba(212,160,23,0.08)", border: "1px solid rgba(212,160,23,0.25)", borderRadius: "5px", color: "#f0b800", cursor: "pointer", fontFamily: "'Exo 2', sans-serif" }}
           >
             {showComparison ? "▲ HIDE" : "▼ SHOW"} DETAILED FEATURE COMPARISON
             <ArrowRight className="w-4 h-4" style={{ transform: showComparison ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.3s" }} />
@@ -490,12 +490,12 @@ export default function Pricing() {
               <div className="space-y-8">
                 {FEATURE_CATEGORIES.map((category, catIdx) => (
                   <div key={catIdx}>
-                    <h4 style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 600, fontSize: "0.85rem", textTransform: "uppercase", color: "#00ff88", letterSpacing: "0.1em", marginBottom: "1rem" }}>
+                    <h4 style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 600, fontSize: "0.85rem", textTransform: "uppercase", color: "#39ff14", letterSpacing: "0.1em", marginBottom: "1rem" }}>
                       {category.category}
                     </h4>
                     <div className="space-y-3">
                       {category.features.map((feature, fIdx) => (
-                        <div key={fIdx} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start p-3 rounded" style={{ background: "rgba(0,255,136,0.02)", borderLeft: "2px solid rgba(0,255,136,0.1)" }}>
+                        <div key={fIdx} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start p-3 rounded" style={{ background: "rgba(57,255,20,0.02)", borderLeft: "2px solid rgba(57,255,20,0.1)" }}>
                           <div className="md:col-span-2">
                             <div className="font-semibold text-sm" style={{ color: "rgba(200,200,220,0.9)" }}>
                               {feature.name}
@@ -505,13 +505,13 @@ export default function Pricing() {
                             </div>
                           </div>
                           <div className="flex justify-center">
-                            <CheckMark value={feature.daily} color="#00d4ff" />
+                            <CheckMark value={feature.daily} color="#f0b800" />
                           </div>
                           <div className="flex justify-center">
-                            <CheckMark value={feature.monthly} color="#00ff88" />
+                            <CheckMark value={feature.monthly} color="#39ff14" />
                           </div>
                           <div className="flex justify-center">
-                            <CheckMark value={feature.yearly} color="#a855f7" />
+                            <CheckMark value={feature.yearly} color="#d4a017" />
                           </div>
                         </div>
                       ))}
@@ -521,23 +521,23 @@ export default function Pricing() {
               </div>
 
               {/* Legend */}
-              <div className="mt-8 pt-6 border-t" style={{ borderColor: "rgba(0,255,136,0.1)" }}>
+              <div className="mt-8 pt-6 border-t" style={{ borderColor: "rgba(57,255,20,0.1)" }}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center rounded" style={{ background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.3)" }}>
-                      <Check className="w-3 h-3" style={{ color: "#00d4ff" }} />
+                    <div className="w-6 h-6 flex items-center justify-center rounded" style={{ background: "rgba(212,160,23,0.1)", border: "1px solid rgba(212,160,23,0.3)" }}>
+                      <Check className="w-3 h-3" style={{ color: "#f0b800" }} />
                     </div>
                     <span style={{ color: "rgba(140,140,170,0.7)" }}>Daily Pass ($9.99/day)</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center rounded" style={{ background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.3)" }}>
-                      <Check className="w-3 h-3" style={{ color: "#00ff88" }} />
+                    <div className="w-6 h-6 flex items-center justify-center rounded" style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.3)" }}>
+                      <Check className="w-3 h-3" style={{ color: "#39ff14" }} />
                     </div>
                     <span style={{ color: "rgba(140,140,170,0.7)" }}>Monthly Pro ($29.99/mo)</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center rounded" style={{ background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.3)" }}>
-                      <Check className="w-3 h-3" style={{ color: "#a855f7" }} />
+                    <div className="w-6 h-6 flex items-center justify-center rounded" style={{ background: "rgba(212,160,23,0.1)", border: "1px solid rgba(212,160,23,0.3)" }}>
+                      <Check className="w-3 h-3" style={{ color: "#d4a017" }} />
                     </div>
                     <span style={{ color: "rgba(140,140,170,0.7)" }}>Annual Elite ($199.99/yr)</span>
                   </div>
@@ -549,9 +549,9 @@ export default function Pricing() {
 
         {/* Guarantee card */}
         <div className="max-w-2xl mx-auto text-center">
-          <NeonCard className="p-8" style={{ borderColor: "rgba(168,85,247,0.2)" }}>
-            <div className="w-12 h-12 flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.3)", borderRadius: "8px" }}>
-              <Shield className="w-6 h-6" style={{ color: "#a855f7" }} />
+          <NeonCard className="p-8" style={{ borderColor: "rgba(212,160,23,0.2)" }}>
+            <div className="w-12 h-12 flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(212,160,23,0.1)", border: "1px solid rgba(212,160,23,0.3)", borderRadius: "8px" }}>
+              <Shield className="w-6 h-6" style={{ color: "#d4a017" }} />
             </div>
             <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", textTransform: "uppercase", color: "white", marginBottom: "0.75rem" }}>
               MONEY-BACK GUARANTEE

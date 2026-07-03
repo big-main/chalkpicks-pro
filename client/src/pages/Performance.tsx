@@ -12,7 +12,7 @@ const SPORT_ICONS: Record<string, string> = {
 
 const PICK_TYPE_COLORS: Record<string, string> = {
   Moneyline: "#00ff87",
-  Spread: "#00d4ff",
+  Spread: "#f0b800",
   "Over/Under": "#ff6b35",
   "Player Prop": "#ffd700",
 };
@@ -137,7 +137,7 @@ export default function Performance() {
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16, marginBottom: 48 }}>
             <StatCard label="Win Rate" value={`${perf?.overall.winRate ?? 92}%`} sub="All-time settled picks" color="#00ff87" icon="🎯" />
-            <StatCard label="Total Picks" value={(perf?.overall.totalPicks ?? 1241).toLocaleString()} sub="Picks generated" color="#00d4ff" icon="📊" />
+            <StatCard label="Total Picks" value={(perf?.overall.totalPicks ?? 1241).toLocaleString()} sub="Picks generated" color="#f0b800" icon="📊" />
             <StatCard label="Wins" value={(perf?.overall.wins ?? 1104).toLocaleString()} color="#00ff87" icon="✅" />
             <StatCard label="Losses" value={(perf?.overall.losses ?? 96).toLocaleString()} color="#ff6b35" icon="❌" />
             <StatCard label="Current Streak" value={`${perf?.overall.currentStreak ?? 7}W`} sub="Active win streak" color="#ffd700" icon="🔥" />
@@ -181,10 +181,10 @@ export default function Performance() {
                 <XAxis type="number" domain={[0, 100]} stroke="rgba(200,200,220,0.4)" tick={{ fontSize: 11 }} tickFormatter={(v: number) => `${v}%`} />
                 <YAxis type="category" dataKey="sport" stroke="rgba(200,200,220,0.4)" tick={{ fontSize: 12 }} width={55} />
                 <Tooltip
-                  contentStyle={{ background: "#1a1a2e", border: "1px solid rgba(0,212,255,0.2)", borderRadius: 8, fontSize: 12 }}
+                  contentStyle={{ background: "#1a1a2e", border: "1px solid rgba(212,160,23,0.2)", borderRadius: 8, fontSize: 12 }}
                   formatter={(v: number) => [`${v}%`, "Win Rate"]}
                 />
-                <Bar dataKey="winRate" fill="#00d4ff" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="winRate" fill="#f0b800" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -294,7 +294,7 @@ export default function Performance() {
 
         {/* Bottom CTA */}
         <div style={{
-          background: "linear-gradient(135deg, rgba(0,255,135,0.05) 0%, rgba(0,212,255,0.05) 100%)",
+          background: "linear-gradient(135deg, rgba(0,255,135,0.05) 0%, rgba(212,160,23,0.05) 100%)",
           border: "1px solid rgba(0,255,135,0.15)",
           borderRadius: 16,
           padding: "48px 32px",

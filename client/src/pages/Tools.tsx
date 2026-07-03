@@ -24,13 +24,13 @@ const TabButton = ({ active, onClick, children }: { active: boolean; onClick: ()
     onClick={onClick}
     className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold tracking-wider transition-all"
     style={{
-      background: active ? "rgba(0,255,136,0.12)" : "transparent",
-      color: active ? "#00ff88" : "rgba(160,160,190,0.7)",
-      border: `1px solid ${active ? "rgba(0,255,136,0.35)" : "rgba(0,255,136,0.1)"}`,
+      background: active ? "rgba(57,255,20,0.12)" : "transparent",
+      color: active ? "#39ff14" : "rgba(160,160,190,0.7)",
+      border: `1px solid ${active ? "rgba(57,255,20,0.35)" : "rgba(57,255,20,0.1)"}`,
       borderRadius: "4px",
       fontFamily: "'Exo 2', sans-serif",
       cursor: "pointer",
-      textShadow: active ? "0 0 8px rgba(0,255,136,0.4)" : "none",
+      textShadow: active ? "0 0 8px rgba(57,255,20,0.4)" : "none",
     }}
   >
     {children}
@@ -60,28 +60,28 @@ function KellyTool() {
         </h3>
         <div className="space-y-5">
           <div>
-            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#00d4ff" }}>BANKROLL ($)</label>
+            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#f0b800" }}>BANKROLL ($)</label>
             <input
               type="number"
               value={bankroll}
               onChange={(e) => setBankroll(Number(e.target.value))}
               className="w-full px-3 py-2.5 text-sm font-medium"
-              style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(0,255,136,0.2)", borderRadius: "4px", color: "white", outline: "none" }}
+              style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(57,255,20,0.2)", borderRadius: "4px", color: "white", outline: "none" }}
             />
           </div>
           <div>
-            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#00d4ff" }}>AMERICAN ODDS (e.g. -110, +150)</label>
+            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#f0b800" }}>AMERICAN ODDS (e.g. -110, +150)</label>
             <input
               type="number"
               value={odds}
               onChange={(e) => setOdds(Number(e.target.value))}
               className="w-full px-3 py-2.5 text-sm font-medium"
-              style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(0,255,136,0.2)", borderRadius: "4px", color: "white", outline: "none" }}
+              style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(57,255,20,0.2)", borderRadius: "4px", color: "white", outline: "none" }}
             />
           </div>
           <div>
-            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#00d4ff" }}>
-              YOUR WIN PROBABILITY: <span style={{ color: "#00ff88" }}>{winProb}%</span>
+            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#f0b800" }}>
+              YOUR WIN PROBABILITY: <span style={{ color: "#39ff14" }}>{winProb}%</span>
             </label>
             <input
               type="range"
@@ -90,15 +90,15 @@ function KellyTool() {
               value={winProb}
               onChange={(e) => setWinProb(Number(e.target.value))}
               className="w-full"
-              style={{ accentColor: "#00ff88" }}
+              style={{ accentColor: "#39ff14" }}
             />
             <div className="flex justify-between text-xs mt-1" style={{ color: "rgba(140,140,170,0.5)" }}>
               <span>1%</span><span>50%</span><span>99%</span>
             </div>
           </div>
           <div>
-            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#00d4ff" }}>
-              KELLY FRACTION: <span style={{ color: "#a855f7" }}>{fraction}%</span>
+            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#f0b800" }}>
+              KELLY FRACTION: <span style={{ color: "#d4a017" }}>{fraction}%</span>
               <span className="ml-2 text-[10px] font-normal" style={{ color: "rgba(140,140,170,0.5)" }}>(50% = Half Kelly, recommended)</span>
             </label>
             <input
@@ -109,7 +109,7 @@ function KellyTool() {
               value={fraction}
               onChange={(e) => setFraction(Number(e.target.value))}
               className="w-full"
-              style={{ accentColor: "#a855f7" }}
+              style={{ accentColor: "#d4a017" }}
             />
           </div>
         </div>
@@ -121,7 +121,7 @@ function KellyTool() {
           <>
             <NeonCard
               className="p-6"
-              style={{ borderColor: data.isPositiveEV ? "rgba(0,255,136,0.3)" : "rgba(255,77,143,0.3)" }}
+              style={{ borderColor: data.isPositiveEV ? "rgba(57,255,20,0.3)" : "rgba(255,77,143,0.3)" }}
             >
               <div className="text-center mb-4">
                 <div
@@ -129,8 +129,8 @@ function KellyTool() {
                     fontFamily: "'Rajdhani', sans-serif",
                     fontWeight: 700,
                     fontSize: "3rem",
-                    color: data.isPositiveEV ? "#00ff88" : "#ff4d8f",
-                    textShadow: `0 0 15px ${data.isPositiveEV ? "rgba(0,255,136,0.4)" : "rgba(255,77,143,0.4)"}`,
+                    color: data.isPositiveEV ? "#39ff14" : "#ff4d8f",
+                    textShadow: `0 0 15px ${data.isPositiveEV ? "rgba(57,255,20,0.4)" : "rgba(255,77,143,0.4)"}`,
                   }}
                 >
                   ${data.betAmount.toFixed(2)}
@@ -140,10 +140,10 @@ function KellyTool() {
               <div
                 className="text-center py-2 px-4 text-sm font-bold tracking-wider"
                 style={{
-                  background: data.isPositiveEV ? "rgba(0,255,136,0.1)" : "rgba(255,77,143,0.1)",
-                  border: `1px solid ${data.isPositiveEV ? "rgba(0,255,136,0.3)" : "rgba(255,77,143,0.3)"}`,
+                  background: data.isPositiveEV ? "rgba(57,255,20,0.1)" : "rgba(255,77,143,0.1)",
+                  border: `1px solid ${data.isPositiveEV ? "rgba(57,255,20,0.3)" : "rgba(255,77,143,0.3)"}`,
                   borderRadius: "4px",
-                  color: data.isPositiveEV ? "#00ff88" : "#ff4d8f",
+                  color: data.isPositiveEV ? "#39ff14" : "#ff4d8f",
                 }}
               >
                 {data.recommendation}
@@ -152,12 +152,12 @@ function KellyTool() {
 
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: "Expected Value", value: `${data.ev > 0 ? "+" : ""}${data.ev}%`, color: data.ev > 0 ? "#00ff88" : "#ff4d8f" },
-                { label: "Your Edge", value: `${data.edge > 0 ? "+" : ""}${data.edge}%`, color: data.edge > 0 ? "#00d4ff" : "#ff4d8f" },
-                { label: "Kelly %", value: `${data.fractionalKelly}%`, color: "#a855f7" },
-                { label: "Potential Profit", value: `$${data.potentialProfit.toFixed(2)}`, color: "#00ff88" },
-                { label: "Implied Prob", value: `${data.impliedProbability}%`, color: "#00d4ff" },
-                { label: "Your Prob", value: `${winProb}%`, color: "#00ff88" },
+                { label: "Expected Value", value: `${data.ev > 0 ? "+" : ""}${data.ev}%`, color: data.ev > 0 ? "#39ff14" : "#ff4d8f" },
+                { label: "Your Edge", value: `${data.edge > 0 ? "+" : ""}${data.edge}%`, color: data.edge > 0 ? "#f0b800" : "#ff4d8f" },
+                { label: "Kelly %", value: `${data.fractionalKelly}%`, color: "#d4a017" },
+                { label: "Potential Profit", value: `$${data.potentialProfit.toFixed(2)}`, color: "#39ff14" },
+                { label: "Implied Prob", value: `${data.impliedProbability}%`, color: "#f0b800" },
+                { label: "Your Prob", value: `${winProb}%`, color: "#39ff14" },
               ].map((s) => (
                 <NeonCard key={s.label} className="p-3 text-center">
                   <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: s.color }}>
@@ -213,14 +213,14 @@ function ParlayOptimizer() {
                   type="checkbox"
                   checked={correlationBoost}
                   onChange={(e) => setCorrelationBoost(e.target.checked)}
-                  style={{ accentColor: "#a855f7" }}
+                  style={{ accentColor: "#d4a017" }}
                 />
-                <span style={{ color: "#a855f7" }}>Correlation Boost</span>
+                <span style={{ color: "#d4a017" }}>Correlation Boost</span>
               </label>
               <button
                 onClick={addLeg}
                 className="px-3 py-1 text-xs font-bold"
-                style={{ background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.3)", borderRadius: "4px", color: "#00ff88", cursor: "pointer" }}
+                style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.3)", borderRadius: "4px", color: "#39ff14", cursor: "pointer" }}
               >
                 + ADD LEG
               </button>
@@ -228,9 +228,9 @@ function ParlayOptimizer() {
           </div>
           <div className="space-y-3">
             {legs.map((leg, i) => (
-              <div key={i} className="p-3" style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(0,255,136,0.1)", borderRadius: "4px" }}>
+              <div key={i} className="p-3" style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(57,255,20,0.1)", borderRadius: "4px" }}>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-bold" style={{ color: "#00d4ff" }}>LEG {i + 1}</span>
+                  <span className="text-xs font-bold" style={{ color: "#f0b800" }}>LEG {i + 1}</span>
                   {legs.length > 2 && (
                     <button onClick={() => removeLeg(i)} className="ml-auto text-xs" style={{ color: "#ff4d8f", cursor: "pointer", background: "none", border: "none" }}>✕</button>
                   )}
@@ -241,7 +241,7 @@ function ParlayOptimizer() {
                     onChange={(e) => updateLeg(i, "description", e.target.value)}
                     placeholder="Description"
                     className="col-span-3 px-2 py-1.5 text-xs"
-                    style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(0,255,136,0.15)", borderRadius: "3px", color: "white", outline: "none" }}
+                    style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(57,255,20,0.15)", borderRadius: "3px", color: "white", outline: "none" }}
                   />
                   <div>
                     <div className="text-[10px] mb-1" style={{ color: "rgba(140,140,170,0.6)" }}>ODDS</div>
@@ -250,7 +250,7 @@ function ParlayOptimizer() {
                       value={leg.odds}
                       onChange={(e) => updateLeg(i, "odds", Number(e.target.value))}
                       className="w-full px-2 py-1.5 text-xs"
-                      style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(0,255,136,0.15)", borderRadius: "3px", color: "white", outline: "none" }}
+                      style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(57,255,20,0.15)", borderRadius: "3px", color: "white", outline: "none" }}
                     />
                   </div>
                   <div className="col-span-2">
@@ -262,7 +262,7 @@ function ParlayOptimizer() {
                       value={leg.winProbability}
                       onChange={(e) => updateLeg(i, "winProbability", Number(e.target.value))}
                       className="w-full"
-                      style={{ accentColor: "#00ff88" }}
+                      style={{ accentColor: "#39ff14" }}
                     />
                   </div>
                 </div>
@@ -277,19 +277,19 @@ function ParlayOptimizer() {
         <div className="space-y-4">
           <NeonCard
             className="p-6 text-center"
-            style={{ borderColor: data.ev > 0 ? "rgba(0,255,136,0.3)" : "rgba(255,77,143,0.25)" }}
+            style={{ borderColor: data.ev > 0 ? "rgba(57,255,20,0.3)" : "rgba(255,77,143,0.25)" }}
           >
-            <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", color: data.combinedOdds > 0 ? "#00ff88" : "white" }}>
+            <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", color: data.combinedOdds > 0 ? "#39ff14" : "white" }}>
               {data.combinedOdds > 0 ? "+" : ""}{data.combinedOdds}
             </div>
             <div className="text-sm mb-3" style={{ color: "rgba(180,180,210,0.6)" }}>Combined Parlay Odds</div>
             <div
               className="py-2 px-4 text-sm font-bold tracking-wider"
               style={{
-                background: data.ev > 0 ? "rgba(0,255,136,0.1)" : "rgba(255,77,143,0.1)",
-                border: `1px solid ${data.ev > 0 ? "rgba(0,255,136,0.3)" : "rgba(255,77,143,0.3)"}`,
+                background: data.ev > 0 ? "rgba(57,255,20,0.1)" : "rgba(255,77,143,0.1)",
+                border: `1px solid ${data.ev > 0 ? "rgba(57,255,20,0.3)" : "rgba(255,77,143,0.3)"}`,
                 borderRadius: "4px",
-                color: data.ev > 0 ? "#00ff88" : "#ff4d8f",
+                color: data.ev > 0 ? "#39ff14" : "#ff4d8f",
               }}
             >
               {data.recommendation}
@@ -298,9 +298,9 @@ function ParlayOptimizer() {
 
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "Hit Probability", value: `${data.combinedProbability}%`, color: "#00d4ff" },
-              { label: "Expected Value", value: `${data.ev > 0 ? "+" : ""}${data.ev}%`, color: data.ev > 0 ? "#00ff88" : "#ff4d8f" },
-              { label: "Adjusted EV", value: `${data.adjustedEV > 0 ? "+" : ""}${data.adjustedEV}%`, color: "#a855f7" },
+              { label: "Hit Probability", value: `${data.combinedProbability}%`, color: "#f0b800" },
+              { label: "Expected Value", value: `${data.ev > 0 ? "+" : ""}${data.ev}%`, color: data.ev > 0 ? "#39ff14" : "#ff4d8f" },
+              { label: "Adjusted EV", value: `${data.adjustedEV > 0 ? "+" : ""}${data.adjustedEV}%`, color: "#d4a017" },
               { label: "Book Vig", value: `${data.vig.toFixed(1)}%`, color: "#ff4d8f" },
             ].map((s) => (
               <NeonCard key={s.label} className="p-3 text-center">
@@ -311,15 +311,15 @@ function ParlayOptimizer() {
           </div>
 
           <NeonCard className="p-4">
-            <div className="text-xs font-bold tracking-wider mb-3" style={{ color: "#00d4ff" }}>LEG BREAKDOWN</div>
+            <div className="text-xs font-bold tracking-wider mb-3" style={{ color: "#f0b800" }}>LEG BREAKDOWN</div>
             <div className="space-y-2">
               {data.legs.map((leg, i) => (
-                <div key={i} className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid rgba(0,255,136,0.06)" }}>
+                <div key={i} className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid rgba(57,255,20,0.06)" }}>
                   <span className="text-sm" style={{ color: "rgba(200,200,220,0.8)" }}>{leg.description}</span>
                   <div className="flex items-center gap-3 text-xs">
                     <span style={{ color: "white" }}>{leg.odds > 0 ? "+" : ""}{leg.odds}</span>
-                    <span style={{ color: "#a855f7" }}>{leg.impliedProbability}% impl</span>
-                    <span style={{ color: leg.edge > 0 ? "#00ff88" : "#ff4d8f" }}>
+                    <span style={{ color: "#d4a017" }}>{leg.impliedProbability}% impl</span>
+                    <span style={{ color: leg.edge > 0 ? "#39ff14" : "#ff4d8f" }}>
                       {leg.edge > 0 ? "+" : ""}{leg.edge}% edge
                     </span>
                   </div>
@@ -355,9 +355,9 @@ function SteamMoves() {
             onClick={() => setSport(s.key)}
             className="px-3 py-1.5 text-xs font-bold tracking-wider transition-all"
             style={{
-              background: sport === s.key ? "#00ff88" : "rgba(0,255,136,0.06)",
-              color: sport === s.key ? "#080814" : "rgba(0,255,136,0.8)",
-              border: `1px solid ${sport === s.key ? "#00ff88" : "rgba(0,255,136,0.2)"}`,
+              background: sport === s.key ? "#39ff14" : "rgba(57,255,20,0.06)",
+              color: sport === s.key ? "#080814" : "rgba(57,255,20,0.8)",
+              border: `1px solid ${sport === s.key ? "#39ff14" : "rgba(57,255,20,0.2)"}`,
               borderRadius: "4px",
               cursor: "pointer",
               fontFamily: "'Exo 2', sans-serif",
@@ -369,7 +369,7 @@ function SteamMoves() {
         <button
           onClick={() => refetch()}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold ml-auto"
-          style={{ background: "rgba(168,85,247,0.1)", color: "#a855f7", border: "1px solid rgba(168,85,247,0.3)", borderRadius: "4px", cursor: "pointer" }}
+          style={{ background: "rgba(212,160,23,0.1)", color: "#d4a017", border: "1px solid rgba(212,160,23,0.3)", borderRadius: "4px", cursor: "pointer" }}
         >
           <RefreshCw className={`w-3 h-3 ${isLoading ? "animate-spin" : ""}`} />
           REFRESH
@@ -381,16 +381,16 @@ function SteamMoves() {
           <NeonCard
             key={i}
             className="p-5"
-            style={{ borderColor: move.sharpAction ? "rgba(0,255,136,0.25)" : "rgba(0,212,255,0.15)" }}
+            style={{ borderColor: move.sharpAction ? "rgba(57,255,20,0.25)" : "rgba(212,160,23,0.15)" }}
           >
             <div className="flex flex-col lg:flex-row lg:items-center gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="px-2 py-0.5 text-[10px] font-bold tracking-widest" style={{ background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.25)", borderRadius: "3px", color: "#00d4ff" }}>
+                  <span className="px-2 py-0.5 text-[10px] font-bold tracking-widest" style={{ background: "rgba(212,160,23,0.1)", border: "1px solid rgba(212,160,23,0.25)", borderRadius: "3px", color: "#f0b800" }}>
                     {move.sport?.split("_")[1]?.toUpperCase()}
                   </span>
                   {move.sharpAction && (
-                    <span className="px-2 py-0.5 text-[10px] font-bold tracking-widest" style={{ background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.3)", borderRadius: "3px", color: "#00ff88" }}>
+                    <span className="px-2 py-0.5 text-[10px] font-bold tracking-widest" style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.3)", borderRadius: "3px", color: "#39ff14" }}>
                       ⚡ SHARP ACTION
                     </span>
                   )}
@@ -399,7 +399,7 @@ function SteamMoves() {
                 <div className="font-bold" style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "1.05rem", color: "white" }}>
                   {move.homeTeam} vs {move.awayTeam}
                 </div>
-                <div className="text-sm mt-0.5" style={{ color: "#00ff88" }}>
+                <div className="text-sm mt-0.5" style={{ color: "#39ff14" }}>
                   Sharp side: <strong>{move.team}</strong>
                 </div>
               </div>
@@ -413,33 +413,33 @@ function SteamMoves() {
                 </div>
                 <div className="text-center">
                   <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>CURRENT</div>
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#00d4ff" }}>
+                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#f0b800" }}>
                     {move.currentOdds > 0 ? "+" : ""}{move.currentOdds}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>MOVEMENT</div>
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: move.movement > 0 ? "#00ff88" : "#ff4d8f" }}>
+                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: move.movement > 0 ? "#39ff14" : "#ff4d8f" }}>
                     {move.movement > 0 ? "+" : ""}{move.movement}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>PUBLIC BETS</div>
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#a855f7" }}>
+                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#d4a017" }}>
                     {move.pctBets}%
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>SHARP $</div>
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#00ff88" }}>
+                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#39ff14" }}>
                     {move.pctMoney}%
                   </div>
                 </div>
                 <div
                   className="px-3 py-2 text-center"
-                  style={{ background: "rgba(0,255,136,0.08)", border: "1px solid rgba(0,255,136,0.25)", borderRadius: "4px", minWidth: "60px" }}
+                  style={{ background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.25)", borderRadius: "4px", minWidth: "60px" }}
                 >
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: "#00ff88" }}>
+                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: "#39ff14" }}>
                     {move.confidence}%
                   </div>
                   <div className="text-[10px]" style={{ color: "rgba(140,140,170,0.6)" }}>CONF</div>
@@ -485,9 +485,9 @@ function PublicBetting() {
             onClick={() => setSport(s.key)}
             className="px-3 py-1.5 text-xs font-bold tracking-wider"
             style={{
-              background: sport === s.key ? "#00d4ff" : "rgba(0,212,255,0.06)",
-              color: sport === s.key ? "#080814" : "rgba(0,212,255,0.8)",
-              border: `1px solid ${sport === s.key ? "#00d4ff" : "rgba(0,212,255,0.2)"}`,
+              background: sport === s.key ? "#f0b800" : "rgba(212,160,23,0.06)",
+              color: sport === s.key ? "#080814" : "rgba(212,160,23,0.8)",
+              border: `1px solid ${sport === s.key ? "#f0b800" : "rgba(212,160,23,0.2)"}`,
               borderRadius: "4px",
               cursor: "pointer",
               fontFamily: "'Exo 2', sans-serif",
@@ -499,7 +499,7 @@ function PublicBetting() {
         <button
           onClick={() => refetch()}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold ml-auto"
-          style={{ background: "rgba(168,85,247,0.1)", color: "#a855f7", border: "1px solid rgba(168,85,247,0.3)", borderRadius: "4px", cursor: "pointer" }}
+          style={{ background: "rgba(212,160,23,0.1)", color: "#d4a017", border: "1px solid rgba(212,160,23,0.3)", borderRadius: "4px", cursor: "pointer" }}
         >
           <RefreshCw className={`w-3 h-3 ${isLoading ? "animate-spin" : ""}`} />
           REFRESH
@@ -508,7 +508,7 @@ function PublicBetting() {
 
       <div className="space-y-3">
         {(data?.games ?? []).map((game, i) => (
-          <NeonCard key={i} className="p-5" style={{ borderColor: game.isSharpFade ? "rgba(255,77,143,0.25)" : "rgba(0,255,136,0.12)" }}>
+          <NeonCard key={i} className="p-5" style={{ borderColor: game.isSharpFade ? "rgba(255,77,143,0.25)" : "rgba(57,255,20,0.12)" }}>
             <div className="flex items-center justify-between mb-3">
               <div>
                 <div className="font-bold" style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "1.05rem", color: "white" }}>
@@ -539,23 +539,23 @@ function PublicBetting() {
                       <span style={{ color: "rgba(140,140,170,0.6)" }}>
                         {side.odds > 0 ? "+" : ""}{side.odds}
                       </span>
-                      <span style={{ color: "#00d4ff" }}>{side.publicPct}% public</span>
-                      <span style={{ color: "#00ff88" }}>{side.moneyPct}% $$$</span>
+                      <span style={{ color: "#f0b800" }}>{side.publicPct}% public</span>
+                      <span style={{ color: "#39ff14" }}>{side.moneyPct}% $$$</span>
                     </div>
                   </div>
                   <div className="relative h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
                     <div
                       className="absolute left-0 top-0 h-full transition-all duration-500"
-                      style={{ width: `${side.publicPct}%`, background: "rgba(0,212,255,0.5)", borderRadius: "2px" }}
+                      style={{ width: `${side.publicPct}%`, background: "rgba(212,160,23,0.5)", borderRadius: "2px" }}
                     />
                     <div
                       className="absolute left-0 top-0 h-1 transition-all duration-500"
-                      style={{ width: `${side.moneyPct}%`, background: "#00ff88", borderRadius: "2px", boxShadow: "0 0 4px rgba(0,255,136,0.5)" }}
+                      style={{ width: `${side.moneyPct}%`, background: "#39ff14", borderRadius: "2px", boxShadow: "0 0 4px rgba(57,255,20,0.5)" }}
                     />
                   </div>
                   <div className="flex justify-between text-[10px] mt-0.5" style={{ color: "rgba(100,100,130,0.6)" }}>
-                    <span style={{ color: "rgba(0,212,255,0.5)" }}>■ Public bets</span>
-                    <span style={{ color: "rgba(0,255,136,0.5)" }}>■ Sharp money</span>
+                    <span style={{ color: "rgba(212,160,23,0.5)" }}>■ Public bets</span>
+                    <span style={{ color: "rgba(57,255,20,0.5)" }}>■ Sharp money</span>
                   </div>
                 </div>
               ))}
@@ -569,9 +569,9 @@ function PublicBetting() {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 const TOOLS = [
-  { id: "kelly", label: "Kelly Criterion", icon: Calculator, color: "#00ff88" },
-  { id: "parlay", label: "Parlay Optimizer", icon: Layers, color: "#a855f7" },
-  { id: "steam", label: "Steam Moves", icon: TrendingUp, color: "#00d4ff" },
+  { id: "kelly", label: "Kelly Criterion", icon: Calculator, color: "#39ff14" },
+  { id: "parlay", label: "Parlay Optimizer", icon: Layers, color: "#d4a017" },
+  { id: "steam", label: "Steam Moves", icon: TrendingUp, color: "#f0b800" },
   { id: "public", label: "Public Betting %", icon: Eye, color: "#ff4d8f" },
 ];
 
@@ -593,13 +593,13 @@ export default function Tools() {
         <div className="mb-8">
           <div
             className="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-bold tracking-widest"
-            style={{ background: "rgba(168,85,247,0.08)", border: "1px solid rgba(168,85,247,0.25)", borderRadius: "4px", color: "#a855f7" }}
+            style={{ background: "rgba(212,160,23,0.08)", border: "1px solid rgba(212,160,23,0.25)", borderRadius: "4px", color: "#d4a017" }}
           >
             <Zap className="w-3 h-3" /> POWER TOOLS
           </div>
           <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", textTransform: "uppercase", color: "white" }}>
             BETTING{" "}
-            <span style={{ color: "#a855f7", textShadow: "0 0 15px rgba(168,85,247,0.4)" }}>ARSENAL</span>
+            <span style={{ color: "#d4a017", textShadow: "0 0 15px rgba(212,160,23,0.4)" }}>ARSENAL</span>
           </h1>
           <p style={{ color: "rgba(180,180,210,0.65)", marginTop: "0.5rem" }}>
             Professional-grade tools used by sharp bettors. Mathematically precise, real-time data.
@@ -616,7 +616,7 @@ export default function Tools() {
               style={{
                 background: activeTool === tool.id ? `${tool.color}15` : "rgba(12,12,28,0.85)",
                 color: activeTool === tool.id ? tool.color : "rgba(160,160,190,0.7)",
-                border: `1px solid ${activeTool === tool.id ? `${tool.color}40` : "rgba(0,255,136,0.1)"}`,
+                border: `1px solid ${activeTool === tool.id ? `${tool.color}40` : "rgba(57,255,20,0.1)"}`,
                 borderRadius: "4px",
                 fontFamily: "'Exo 2', sans-serif",
                 cursor: "pointer",

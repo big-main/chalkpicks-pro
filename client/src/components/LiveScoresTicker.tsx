@@ -18,9 +18,9 @@ export default function LiveScoresTicker() {
   const displayGames = realtimeScores?.scores || games;
 
   const sportColors: Record<string, string> = {
-    nfl: "#00ff88",
-    nba: "#00d4ff",
-    mlb: "#a855f7",
+    nfl: "#39ff14",
+    nba: "#f0b800",
+    mlb: "#d4a017",
     nhl: "#ff6b6b",
   };
 
@@ -50,7 +50,7 @@ export default function LiveScoresTicker() {
               {s.toUpperCase()}
             </button>
           ))}
-          <span className="ml-auto text-[9px] font-medium" style={{ color: isConnected ? "#00ff88" : "rgba(140,140,170,0.5)" }}>
+          <span className="ml-auto text-[9px] font-medium" style={{ color: isConnected ? "#39ff14" : "rgba(140,140,170,0.5)" }}>
             {isConnected ? "🔴 LIVE" : "Auto-updates every 60s"}
           </span>
         </div>
@@ -62,10 +62,10 @@ export default function LiveScoresTicker() {
               <div
                 key={i}
                 className="animate-pulse rounded px-3 py-2 min-w-[180px]"
-                style={{ background: "rgba(0,255,136,0.03)", border: "1px solid rgba(0,255,136,0.06)" }}
+                style={{ background: "rgba(57,255,20,0.03)", border: "1px solid rgba(57,255,20,0.06)" }}
               >
-                <div className="h-3 w-20 rounded" style={{ background: "rgba(0,255,136,0.08)" }} />
-                <div className="h-3 w-16 rounded mt-1" style={{ background: "rgba(0,255,136,0.05)" }} />
+                <div className="h-3 w-20 rounded" style={{ background: "rgba(57,255,20,0.08)" }} />
+                <div className="h-3 w-16 rounded mt-1" style={{ background: "rgba(57,255,20,0.05)" }} />
               </div>
             ))}
           </div>
@@ -76,16 +76,16 @@ export default function LiveScoresTicker() {
                 key={game.id}
                 className="shrink-0 rounded px-3 py-2 min-w-[200px] transition-all"
                 style={{
-                  background: game.status === "live" ? "rgba(0,255,136,0.04)" : "rgba(12,12,28,0.6)",
-                  border: `1px solid ${game.status === "live" ? "rgba(0,255,136,0.2)" : "rgba(0,255,136,0.06)"}`,
+                  background: game.status === "live" ? "rgba(57,255,20,0.04)" : "rgba(12,12,28,0.6)",
+                  border: `1px solid ${game.status === "live" ? "rgba(57,255,20,0.2)" : "rgba(57,255,20,0.06)"}`,
                 }}
               >
                 <div className="flex items-center justify-between mb-1">
                   <span
                     className="text-[9px] font-bold tracking-wider px-1 py-0.5 rounded"
                     style={{
-                      color: game.status === "live" ? "#00ff88" : game.status === "final" ? "rgba(140,140,170,0.7)" : "#00d4ff",
-                      background: game.status === "live" ? "rgba(0,255,136,0.1)" : "transparent",
+                      color: game.status === "live" ? "#39ff14" : game.status === "final" ? "rgba(140,140,170,0.7)" : "#f0b800",
+                      background: game.status === "live" ? "rgba(57,255,20,0.1)" : "transparent",
                     }}
                   >
                     {game.status === "live" ? "LIVE" : game.status === "final" ? "FINAL" : "UPCOMING"}

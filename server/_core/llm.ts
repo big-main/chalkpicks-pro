@@ -358,6 +358,18 @@ async function resolveProvider(params: InvokeParams): Promise<{ apiUrl: string; 
   return { apiUrl: resolveApiUrl(), apiKey: ENV.forgeApiKey, model };
 }
 
+/**
+ * Get the current LLM provider status for the UI status badge.
+ * Returns which provider is active and health state.
+ */
+export function getLlmStatus(): { provider: "qwen" | "gemini"; healthy: boolean; lastCheck: number } {
+  return {
+    provider: _ollamaHealthy === true ? "qwen" : "gemini",
+    healthy: _ollamaHealthy === true,
+    lastCheck: _ollamaLastCheck,
+  };
+}
+
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   assertApiKey();
 

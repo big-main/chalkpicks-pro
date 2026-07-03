@@ -175,7 +175,7 @@ function ParlayCalculator() {
               className="bg-[#111118] border-[#2a2a3a] text-white font-mono focus:border-[#00ff87]"
             />
             {legs.length > 2 && (
-              <Button onClick={() => removeLeg(leg.id)} variant="ghost" size="sm" className="text-red-400 hover:text-red-300 shrink-0">
+              <Button onClick={() => removeLeg(leg.id)} variant="ghost" size="sm" className="text-brand-red hover:text-red-300 shrink-0">
                 <Trash2 className="w-4 h-4" />
               </Button>
             )}
@@ -214,7 +214,7 @@ function ParlayCalculator() {
           </div>
           <div className="bg-[#111118] border border-[#2a2a3a] rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">Win Probability</p>
-            <p className="text-lg font-bold font-mono text-yellow-400">{impliedProb?.toFixed(1)}%</p>
+            <p className="text-lg font-bold font-mono text-brand-gold">{impliedProb?.toFixed(1)}%</p>
           </div>
         </div>
       )}
@@ -323,13 +323,13 @@ function KellyCalculator() {
           </div>
           <div className="bg-[#111118] border border-[#2a2a3a] rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">Expected Value</p>
-            <p className={`text-xl font-bold font-mono ${ev > 0 ? "text-[#ff6b35]" : "text-red-400"}`}>
+            <p className={`text-xl font-bold font-mono ${ev > 0 ? "text-[#ff6b35]" : "text-brand-red"}`}>
               {ev > 0 ? "+" : ""}{ev.toFixed(1)}%
             </p>
           </div>
           <div className="bg-[#111118] border border-[#2a2a3a] rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">Edge</p>
-            <p className={`text-sm font-semibold ${kellyFraction > 0 ? "text-[#00ff87]" : "text-red-400"}`}>
+            <p className={`text-sm font-semibold ${kellyFraction > 0 ? "text-[#00ff87]" : "text-brand-red"}`}>
               {recommendation}
             </p>
           </div>
@@ -337,8 +337,8 @@ function KellyCalculator() {
       )}
 
       {kellyFraction <= 0 && odds && winProb && (
-        <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-3 text-center">
-          <p className="text-red-400 font-semibold">No edge detected — the implied probability exceeds your win estimate. Skip this bet.</p>
+        <div className="bg-red-900/20 border border-brand-red/30 rounded-lg p-3 text-center">
+          <p className="text-brand-red font-semibold">No edge detected — the implied probability exceeds your win estimate. Skip this bet.</p>
         </div>
       )}
     </div>

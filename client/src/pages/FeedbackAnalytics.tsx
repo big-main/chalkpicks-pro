@@ -91,11 +91,11 @@ export default function FeedbackAnalytics() {
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">Positive Sentiment</p>
-                    <p className="text-3xl font-bold text-green-400">
+                    <p className="text-3xl font-bold text-brand-green">
                       {analytics && (analytics.sentimentBreakdown as any).positive ? Math.round(((analytics.sentimentBreakdown as any).positive / analytics.totalFeedback) * 100) : 0}%
                     </p>
                   </div>
-                  <TrendingUp className="w-8 h-8 text-green-400 opacity-50" />
+                  <TrendingUp className="w-8 h-8 text-brand-green opacity-50" />
                 </div>
               </CardContent>
             </Card>
@@ -146,7 +146,7 @@ export default function FeedbackAnalytics() {
             <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-green-400" />
+                  <TrendingUp className="w-5 h-5 text-brand-green" />
                   Top Rated Picks
                 </CardTitle>
               </CardHeader>
@@ -181,7 +181,7 @@ export default function FeedbackAnalytics() {
             <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <TrendingDown className="w-5 h-5 text-red-400" />
+                  <TrendingDown className="w-5 h-5 text-brand-red" />
                   Picks Needing Improvement
                 </CardTitle>
               </CardHeader>
@@ -198,7 +198,7 @@ export default function FeedbackAnalytics() {
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`w-3 h-3 ${i < Math.round((pick as any).avgRating) ? "fill-red-400 text-red-400" : "text-muted-foreground"}`}
+                              className={`w-3 h-3 ${i < Math.round((pick as any).avgRating) ? "fill-red-400 text-brand-red" : "text-muted-foreground"}`}
                             />
                           ))}
                         </div>

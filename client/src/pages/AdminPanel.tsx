@@ -439,7 +439,7 @@ export default function AdminPanel() {
                 className="flex items-center gap-1.5 px-2 py-1 text-xs font-bold"
                 style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.3)", borderRadius: "4px", color: "#39ff14" }}
               >
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
                 SCHEDULER ACTIVE
               </div>
             </div>

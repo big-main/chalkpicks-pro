@@ -110,7 +110,7 @@ export default function PayPalPricing() {
                   <div className="space-y-3">
                     {plan.features.map((feature, i) => (
                       <div key={i} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <Check className="w-5 h-5 text-brand-green flex-shrink-0 mt-0.5" />
                         <span className="text-sm text-foreground">{feature}</span>
                       </div>
                     ))}

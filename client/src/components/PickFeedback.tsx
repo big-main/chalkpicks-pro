@@ -78,8 +78,8 @@ export default function PickFeedback({ pickId, isAuthenticated }: PickFeedbackPr
               </div>
             </div>
             <div className="text-right text-xs">
-              <div className="text-green-400">{stats.positiveCount} positive</div>
-              <div className="text-red-400">{stats.negativeCount} negative</div>
+              <div className="text-brand-green">{stats.positiveCount} positive</div>
+              <div className="text-brand-red">{stats.negativeCount} negative</div>
             </div>
           </div>
         </Card>
@@ -209,9 +209,9 @@ export default function PickFeedback({ pickId, isAuthenticated }: PickFeedbackPr
                       <span
                         className={`text-xs px-1.5 py-0.5 rounded ${
                           fb.sentiment === "positive"
-                            ? "bg-green-400/20 text-green-400"
+                            ? "bg-brand-green/20 text-brand-green"
                             : fb.sentiment === "negative"
-                              ? "bg-red-400/20 text-red-400"
+                              ? "bg-brand-red/20 text-brand-red"
                               : "bg-gray-400/20 text-gray-400"
                         }`}
                       >
@@ -220,7 +220,7 @@ export default function PickFeedback({ pickId, isAuthenticated }: PickFeedbackPr
                     </div>
                     {fb.comment && <p className="text-xs text-foreground/80 line-clamp-2">{fb.comment}</p>}
                   </div>
-                  {fb.wasHelpful && <ThumbsUp className="w-3 h-3 text-green-400 flex-shrink-0 mt-1" />}
+                  {fb.wasHelpful && <ThumbsUp className="w-3 h-3 text-brand-green flex-shrink-0 mt-1" />}
                 </div>
               </Card>
             ))}

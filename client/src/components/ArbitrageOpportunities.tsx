@@ -60,7 +60,7 @@ export function ArbitrageOpportunities() {
                   <p className="text-sm text-gray-600">Avg Arbitrage</p>
                   <p className="text-2xl font-bold">{stats.data.averageArbitragePercent.toFixed(1)}%</p>
                 </div>
-                <TrendingUp className="w-8 h-8 text-green-500" />
+                <TrendingUp className="w-8 h-8 text-brand-green" />
               </div>
             </CardContent>
           </Card>

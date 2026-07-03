@@ -57,8 +57,8 @@ function confidenceColor(score: number): string {
 
 function resultBadge(result: string) {
   if (result === "win") return <span className="text-xs font-bold text-[#00ff87] bg-[#00ff87]/10 border border-[#00ff87]/30 px-2 py-0.5 rounded">WIN ✓</span>;
-  if (result === "loss") return <span className="text-xs font-bold text-red-400 bg-red-400/10 border border-red-400/30 px-2 py-0.5 rounded">LOSS</span>;
-  if (result === "push") return <span className="text-xs font-bold text-yellow-400 bg-yellow-400/10 border border-yellow-400/30 px-2 py-0.5 rounded">PUSH</span>;
+  if (result === "loss") return <span className="text-xs font-bold text-brand-red bg-brand-red/10 border border-brand-red/30 px-2 py-0.5 rounded">LOSS</span>;
+  if (result === "push") return <span className="text-xs font-bold text-brand-gold bg-brand-gold/10 border border-brand-gold/30 px-2 py-0.5 rounded">PUSH</span>;
   return <span className="text-xs font-bold text-gray-400 bg-gray-400/10 border border-gray-400/30 px-2 py-0.5 rounded">PENDING</span>;
 }
 

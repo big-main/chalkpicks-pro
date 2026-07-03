@@ -504,3 +504,8 @@
 - [x] Replace Gemini with GPT-4o-mini (OpenRouter) as primary fallback when Qwen is down
 - [x] Update LLM status badge to show "GPT-4o" (blue) when using OpenRouter fallback
 - [x] Routing: Qwen (free/local) → GPT-4o-mini (OpenRouter, $0.15/1M tokens) → Gemini (Forge, last resort)
+
+## Navbar & Logo Enhancement (Jul 3, 2026)
+- [ ] Upgrade logo to higher quality version
+- [ ] Redesign navbar — less boxy, better flow, more premium feel
+- [ ] Enhance top portion of the site (hero transition from navbar)

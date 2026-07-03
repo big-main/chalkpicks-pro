@@ -57,7 +57,7 @@ export default function Referral() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Referral Program</h1>
-          <p className="text-cyan-400">Earn commissions by referring friends</p>
+          <p className="text-brand-blue">Earn commissions by referring friends</p>
         </div>
 
         {/* Stats Grid */}
@@ -66,26 +66,26 @@ export default function Referral() {
             <Card className="bg-slate-800 border-slate-700">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <Users className="w-4 h-4 text-green-400" />
+                  <Users className="w-4 h-4 text-brand-green" />
                   Total Referrals
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-white">{stats.data.totalReferrals}</div>
-                <p className="text-xs text-green-400">{stats.data.activeReferrals} active</p>
+                <p className="text-xs text-brand-green">{stats.data.activeReferrals} active</p>
               </CardContent>
             </Card>
 
             <Card className="bg-slate-800 border-slate-700">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <Gift className="w-4 h-4 text-cyan-400" />
+                  <Gift className="w-4 h-4 text-brand-blue" />
                   Total Earned
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-white">${stats.data.totalCommission.toFixed(2)}</div>
-                <p className="text-xs text-cyan-400">${stats.data.earnedCommission.toFixed(2)} claimed</p>
+                <p className="text-xs text-brand-blue">${stats.data.earnedCommission.toFixed(2)} claimed</p>
               </CardContent>
             </Card>
 
@@ -124,7 +124,7 @@ export default function Referral() {
             {!showGenerateForm ? (
               <Button
                 onClick={() => setShowGenerateForm(true)}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                className="bg-brand-green/80 hover:bg-brand-green text-white"
               >
                 <Share2 className="w-4 h-4 mr-2" />
                 Create New Code
@@ -150,7 +150,7 @@ export default function Referral() {
                       })
                     }
                     disabled={generateCode.isPending}
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className="bg-brand-green/80 hover:bg-brand-green text-white"
                   >
                     {generateCode.isPending ? "Generating..." : "Generate"}
                   </Button>
@@ -232,7 +232,7 @@ export default function Referral() {
                         <span
                           className={`px-2 py-1 rounded text-xs font-medium ${
                             ref.status === "active"
-                              ? "bg-green-900 text-green-300"
+                              ? "bg-brand-green/10 text-brand-green"
                               : ref.status === "pending"
                               ? "bg-yellow-900 text-yellow-300"
                               : "bg-red-900 text-red-300"
@@ -283,7 +283,7 @@ export default function Referral() {
                       <Button
                         onClick={() => claimReward.mutate({ rewardId: reward.id })}
                         disabled={claimReward.isPending}
-                        className="w-full bg-green-600 hover:bg-green-700 text-white"
+                        className="w-full bg-brand-green/80 hover:bg-brand-green text-white"
                       >
                         {claimReward.isPending ? "Claiming..." : "Claim Reward"}
                       </Button>

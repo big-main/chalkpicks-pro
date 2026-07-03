@@ -90,28 +90,28 @@ export default function OddsComparison() {
               {/* Key Features */}
               <Card className="bg-card/50 border-border/50 p-4">
                 <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-amber-400" />
+                  <BarChart3 className="w-4 h-4 text-brand-gold" />
                   Features
                 </h3>
                 <div className="space-y-2 text-xs text-muted-foreground">
                   <div className="flex items-start gap-2">
-                    <span className="text-amber-400 mt-1">✓</span>
+                    <span className="text-brand-gold mt-1">✓</span>
                     <span>Real-time odds from 10+ sportsbooks</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-amber-400 mt-1">✓</span>
+                    <span className="text-brand-gold mt-1">✓</span>
                     <span>Best line highlighting across books</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-amber-400 mt-1">✓</span>
+                    <span className="text-brand-gold mt-1">✓</span>
                     <span>Steam move detection</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-amber-400 mt-1">✓</span>
+                    <span className="text-brand-gold mt-1">✓</span>
                     <span>Implied probability calculations</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-amber-400 mt-1">✓</span>
+                    <span className="text-brand-gold mt-1">✓</span>
                     <span>Moneyline, spread, and total odds</span>
                   </div>
                 </div>

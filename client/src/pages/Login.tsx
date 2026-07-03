@@ -114,7 +114,7 @@ export default function Login() {
             value={elevateEmail}
             onChange={(e) => setElevateEmail(e.target.value)}
           />
-          <button type="submit" className="text-[10px] bg-green-500 text-black px-2 py-1 rounded font-bold">Elevate</button>
+          <button type="submit" className="text-[10px] bg-brand-green text-black px-2 py-1 rounded font-bold">Elevate</button>
         </form>
       </div>
     </AuthPageShell>

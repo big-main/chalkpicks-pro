@@ -9,7 +9,7 @@ const NeonCard = ({ children, className = "", style = {} }: { children: React.Re
     className={className}
     style={{
       background: "rgba(12, 12, 28, 0.85)",
-      border: "1px solid rgba(0, 255, 136, 0.12)",
+      border: "1px solid rgba(57, 255, 20, 0.12)",
       borderRadius: "6px",
       backdropFilter: "blur(12px)",
       ...style,

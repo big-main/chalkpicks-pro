@@ -101,7 +101,7 @@ const NeonCard = ({
     className={className}
     style={{
       background: "rgba(12, 12, 28, 0.9)",
-      border: "1px solid rgba(0, 255, 136, 0.12)",
+      border: "1px solid rgba(57, 255, 20, 0.12)",
       borderRadius: "8px",
       backdropFilter: "blur(12px)",
       transition: "all 0.25s",

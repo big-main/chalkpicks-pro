@@ -31,13 +31,13 @@ export default function DashboardMetrics({
       <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
-            <Target className="w-4 h-4 text-green-400" />
+            <Target className="w-4 h-4 text-brand-green" />
             Win Rate
           </CardTitle>
           <CardDescription className="text-xs text-slate-500">Verified, timestamped</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold text-green-400">{actualWinRate}%</div>
+          <div className="text-3xl font-bold text-brand-green">{actualWinRate}%</div>
           <p className="text-xs text-slate-400 mt-1">{winningBets} of {totalBets} bets</p>
         </CardContent>
       </Card>
@@ -47,16 +47,16 @@ export default function DashboardMetrics({
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
             {projectedPLYTD >= 0 ? (
-              <TrendingUp className="w-4 h-4 text-cyan-400" />
+              <TrendingUp className="w-4 h-4 text-brand-blue" />
             ) : (
-              <TrendingDown className="w-4 h-4 text-red-400" />
+              <TrendingDown className="w-4 h-4 text-brand-red" />
             )}
             Projected P&L YTD
           </CardTitle>
           <CardDescription className="text-xs text-slate-500">At your current bet size</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className={`text-3xl font-bold ${projectedPLYTD >= 0 ? "text-cyan-400" : "text-red-400"}`}>
+          <div className={`text-3xl font-bold ${projectedPLYTD >= 0 ? "text-brand-blue" : "text-brand-red"}`}>
             {projectedPLYTD >= 0 ? "+" : "-"}${Math.abs(projectedPLYTD).toFixed(0)}
           </div>
           <p className="text-xs text-slate-400 mt-1">{projectedPLYTD >= 0 ? "Positive" : "Negative"} edge</p>

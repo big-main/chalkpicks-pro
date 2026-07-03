@@ -141,13 +141,13 @@ export default function Onboarding() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold text-white">ChalkPicks Onboarding</h1>
-            <span className="text-cyan-400 font-mono">
+            <span className="text-brand-blue font-mono">
               {currentStep + 1} / {questions.length}
             </span>
           </div>
           <div className="w-full bg-slate-700 rounded-full h-2">
             <div
-              className="bg-gradient-to-r from-green-400 to-cyan-400 h-2 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-brand-green to-brand-blue h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
             />
           </div>
@@ -164,7 +164,7 @@ export default function Onboarding() {
               <RadioGroup value={answers[question.id] || ""} onValueChange={(value) => setAnswers({ ...answers, [question.id]: value })}>
                 <div className="space-y-3">
                   {question.options?.map((option) => (
-                    <div key={option.value} className="flex items-center space-x-3 p-3 rounded border border-slate-600 hover:border-cyan-400 cursor-pointer transition">
+                    <div key={option.value} className="flex items-center space-x-3 p-3 rounded border border-slate-600 hover:border-brand-blue cursor-pointer transition">
                       <RadioGroupItem value={option.value} id={option.value} />
                       <Label htmlFor={option.value} className="text-slate-300 cursor-pointer flex-1">
                         {option.label}
@@ -190,7 +190,7 @@ export default function Onboarding() {
                 placeholder="Enter your contact information"
                 value={answers[question.id] || ""}
                 onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded focus:border-cyan-400 outline-none"
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded focus:border-brand-blue outline-none"
               />
             )}
           </CardContent>
@@ -211,7 +211,7 @@ export default function Onboarding() {
           <Button
             onClick={handleNext}
             disabled={!canProceed() || completeOnboarding.isPending}
-            className="bg-gradient-to-r from-green-500 to-cyan-500 text-white hover:from-green-600 hover:to-cyan-600"
+            className="bg-gradient-to-r from-brand-green to-brand-blue text-white hover:from-brand-green/80 hover:to-brand-blue"
           >
             {isLastStep ? (
               <>
@@ -229,7 +229,7 @@ export default function Onboarding() {
 
         {/* Info */}
         {currentStep === 0 && (
-          <div className="mt-8 p-4 bg-slate-700/50 border border-cyan-400/30 rounded text-slate-300 text-sm">
+          <div className="mt-8 p-4 bg-slate-700/50 border border-brand-blue/30 rounded text-slate-300 text-sm">
             <p className="font-mono">// Age verification is required for legal compliance. Real-money sports betting is regulated state-by-state.</p>
           </div>
         )}

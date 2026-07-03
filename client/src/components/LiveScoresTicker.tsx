@@ -29,7 +29,7 @@ export default function LiveScoresTicker() {
       className="w-full py-2 overflow-x-auto"
       style={{
         background: "rgba(8, 8, 20, 0.6)",
-        borderBottom: "1px solid rgba(0, 255, 136, 0.06)",
+        borderBottom: "1px solid rgba(57, 255, 20, 0.06)",
       }}
     >
       <div className="container">

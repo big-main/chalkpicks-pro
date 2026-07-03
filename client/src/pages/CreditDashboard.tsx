@@ -58,7 +58,7 @@ export default function CreditDashboard() {
 
         {/* Credit Balance Card */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-emerald-500 to-emerald-600 border-0">
+          <Card className="bg-gradient-to-br from-brand-green to-brand-green/80 border-0">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <Zap className="w-5 h-5" />
@@ -67,7 +67,7 @@ export default function CreditDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold text-white mb-2">${accountBalance.toFixed(2)}</div>
-              <p className="text-emerald-100 text-sm">Ready to use on any tool</p>
+              <p className="text-brand-green/70 text-sm">Ready to use on any tool</p>
             </CardContent>
           </Card>
 
@@ -80,7 +80,7 @@ export default function CreditDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white mb-2 capitalize">{subscriptionTier}</div>
-              <Badge className={subscription?.isActive ? "bg-emerald-400" : "bg-slate-400"}>
+              <Badge className={subscription?.isActive ? "bg-brand-green" : "bg-slate-400"}>
                 {subscriptionStatus}
               </Badge>
             </CardContent>
@@ -116,7 +116,7 @@ export default function CreditDashboard() {
                 <Card
                   key={tier}
                   className={`cursor-pointer transition-all ${
-                    selectedTier === tier ? "ring-2 ring-emerald-500" : ""
+                    selectedTier === tier ? "ring-2 ring-brand-green" : ""
                   }`}
                   onClick={() => setSelectedTier(tier as "daily" | "monthly" | "yearly")}
                 >
@@ -126,7 +126,7 @@ export default function CreditDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold mb-2">${price}</div>
-                    <div className="text-sm text-emerald-600 font-semibold">+ $100 bonus credits</div>
+                    <div className="text-sm text-brand-green font-semibold">+ $100 bonus credits</div>
                   </CardContent>
                 </Card>
               ))}
@@ -140,7 +140,7 @@ export default function CreditDashboard() {
                 });
               }}
               disabled={createCheckout.isPending}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 text-lg"
+              className="w-full bg-brand-green/80 hover:bg-brand-green text-white py-6 text-lg"
             >
               {createCheckout.isPending ? "Processing..." : `Purchase ${selectedTier} Pass`}
             </Button>

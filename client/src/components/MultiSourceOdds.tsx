@@ -48,9 +48,9 @@ export function MultiSourceOdds({ sport, eventId }: MultiSourceOddsProps) {
 
   if (error) {
     return (
-      <Card className="bg-card/50 border-border/50 border-red-500/30">
+      <Card className="bg-card/50 border-border/50 border-brand-red/30">
         <CardHeader>
-          <CardTitle className="text-lg text-red-500">Odds Data Unavailable</CardTitle>
+          <CardTitle className="text-lg text-brand-red">Odds Data Unavailable</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
@@ -80,7 +80,7 @@ export function MultiSourceOdds({ sport, eventId }: MultiSourceOddsProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Zap className="w-5 h-5 text-amber-400" />
+              <Zap className="w-5 h-5 text-brand-gold" />
               Real-Time Odds Comparison
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
@@ -129,7 +129,7 @@ export function MultiSourceOdds({ sport, eventId }: MultiSourceOddsProps) {
                             {h2hMarket.outcomes.map((outcome) => (
                               <div key={outcome.name} className="flex items-center justify-between text-xs">
                                 <span className="text-gray-300 truncate">{outcome.name}</span>
-                                <span className="font-mono font-semibold text-amber-400">
+                                <span className="font-mono font-semibold text-brand-gold">
                                   {outcome.price > 0 ? "+" : ""}{outcome.price}
                                 </span>
                               </div>
@@ -163,14 +163,14 @@ export function MultiSourceOdds({ sport, eventId }: MultiSourceOddsProps) {
         {bestLinesData?.bestLines && bestLinesData.bestLines.length > 0 && (
           <div className="mt-6 pt-6 border-t border-border/30">
             <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-green-400" />
+              <TrendingUp className="w-4 h-4 text-brand-green" />
               Best Lines Across Books
             </h4>
             <div className="grid grid-cols-1 gap-2">
               {bestLinesData.bestLines.slice(0, 3).map((event, idx) => (
                 <div key={idx} className="flex items-center justify-between text-xs p-2 bg-background/20 rounded border border-border/20">
                   <span className="text-gray-300">{event.event}</span>
-                  <span className="font-mono text-amber-400">
+                  <span className="font-mono text-brand-gold">
                     {event.moneyline?.home?.odds ? `${event.moneyline.home.odds > 0 ? "+" : ""}${event.moneyline.home.odds}` : "N/A"}
                   </span>
                 </div>

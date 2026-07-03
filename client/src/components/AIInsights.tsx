@@ -43,9 +43,9 @@ export function AIInsights({ sport, matchup, odds, pickType }: AIInsightsProps) 
 
   if (error) {
     return (
-      <Card className="border-red-500/30 bg-gradient-to-br from-slate-900 to-slate-800">
+      <Card className="border-brand-red/30 bg-gradient-to-br from-slate-900 to-slate-800">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-red-400">
+          <CardTitle className="flex items-center gap-2 text-brand-red">
             <AlertCircle className="w-5 h-5" />
             Analysis Error
           </CardTitle>
@@ -110,10 +110,10 @@ export function EVCalculator({
 
   const recommendationColors: Record<string, string> = {
     STRONG_BUY: "text-neon-green",
-    BUY: "text-cyan-400",
-    HOLD: "text-yellow-400",
+    BUY: "text-brand-blue",
+    HOLD: "text-brand-gold",
     SELL: "text-orange-400",
-    STRONG_SELL: "text-red-400",
+    STRONG_SELL: "text-brand-red",
   };
 
   return (
@@ -121,7 +121,7 @@ export function EVCalculator({
       <div className="flex justify-between items-center">
         <span className="text-sm text-slate-400">Expected Value:</span>
         <span
-          className={`font-bold ${isPositive ? "text-neon-green" : "text-red-400"}`}
+          className={`font-bold ${isPositive ? "text-neon-green" : "text-brand-red"}`}
         >
           {isPositive ? "+" : ""}{evPercent}%
         </span>

@@ -32,8 +32,8 @@ export default function LiveNewsTicker() {
       <div
         className="w-full overflow-hidden py-1.5"
         style={{
-          background: "rgba(0, 255, 136, 0.03)",
-          borderBottom: "1px solid rgba(0, 255, 136, 0.08)",
+          background: "rgba(57, 255, 20, 0.03)",
+          borderBottom: "1px solid rgba(57, 255, 20, 0.08)",
         }}
       >
         <div className="container flex items-center gap-3">
@@ -58,8 +58,8 @@ export default function LiveNewsTicker() {
     <div
       className="w-full overflow-hidden py-1.5"
       style={{
-        background: "rgba(0, 255, 136, 0.03)",
-        borderBottom: "1px solid rgba(0, 255, 136, 0.08)",
+        background: "rgba(57, 255, 20, 0.03)",
+        borderBottom: "1px solid rgba(57, 255, 20, 0.08)",
       }}
     >
       <div className="container flex items-center gap-3">

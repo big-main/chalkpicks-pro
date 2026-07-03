@@ -418,4 +418,9 @@
 ## Steps 1-2-3: Rich Results + Bet Tracker MCP + GSC (2026-07-03)
 - [x] Validate FAQPage JSON-LD via live HTML parse — 3 blocks valid (WebSite, FAQPage 8q, SoftwareApplication)
 - [x] Add chalkpicks_place_bet_tracker MCP tool (5th tool — records bet via bets.add, handles 401 gracefully)
-- [ ] Submit sitemap to Google Search Console (manual — requires user login at search.google.com/search-console)
+- [x] Submit sitemap to Google Search Console — submitted Jul 3 2026, Status=Success, 19 pages discovered, ownership auto-verified via DNS
+
+## BreadcrumbList JSON-LD Structured Data (2026-07-03)
+- [x] Create BreadcrumbJsonLd React component that injects per-page BreadcrumbList JSON-LD into document head
+- [x] Wire BreadcrumbJsonLd into Router in App.tsx — auto-injects correct breadcrumb trail for all 25 mapped routes on every navigation
+- [x] TypeScript: 0 errors. BreadcrumbList JSON-LD injected client-side via useEffect on every route change

@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { WebMCPTools } from "@/components/WebMCPTools";
+import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
@@ -68,49 +69,52 @@ function PageLoader() {
 function Router() {
   usePageTracking();
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/picks" component={Picks} />
-        <Route path="/picks/:id" component={PickDetail} />
-        <Route path="/stats" component={Stats} />
-        <Route path="/backtesting" component={Backtesting} />
-        <Route path="/dashboard" component={UserDashboard} />
-        <Route path="/leaderboard" component={Leaderboard} />
-        <Route path="/pricing" component={Pricing} />
-        <Route path="/pricing-paypal" component={PayPalPricing} />
-        <Route path="/payment/success" component={PaymentSuccess} />
-        <Route path="/matchup-analysis" component={MatchupAnalysis} />
-        <Route path="/subscription-management" component={SubscriptionManagement} />
-        <Route path="/feedback-analytics" component={FeedbackAnalytics} />
-        <Route path="/notifications" component={Notifications} />
-        <Route path="/ev-finder" component={EVFinder} />
-        <Route path="/tools" component={Tools} />
-        <Route path="/signup" component={SignUp} />
-        <Route path="/login" component={Login} />
-        <Route path="/account-settings" component={AccountSettings} />
-        <Route path="/subscription-dashboard" component={SubscriptionDashboard} />
-        <Route path="/admin/promos" component={AdminPromos} />
-        <Route path="/kalshi" component={KalshiMarkets} />
-        <Route path="/clv-tracker" component={CLVTracker} />
-        <Route path="/parlay-builder" component={ParlayBuilder} />
-        <Route path="/bankroll-tracker" component={BankrollTracker} />
-        <Route path="/referral" component={Referral} />
-        <Route path="/onboarding" component={Onboarding} />
-        <Route path="/arbitrage" component={ArbitrageFinder} />
-        <Route path="/sportsbooks" component={Sportsbooks} />
-        <Route path="/sponsors" component={Sponsors} />
-        <Route path="/admin" component={AdminPanel} />
-        <Route path="/credits" component={CreditDashboard} />
-        <Route path="/prop-builder" component={PropBuilder} />
-        <Route path="/line-movement" component={LineMovement} />
-        <Route path="/correlation-finder" component={CorrelationFinder} />
-        <Route path="/performance" component={Performance} />
-        <Route path="/bet-calculator" component={BetCalculator} />
-        <Route path="/404" component={NotFound} />
-        <Route component={NotFound} />
-      </Switch>
-    </Suspense>
+    <>
+      <BreadcrumbJsonLd />
+      <Suspense fallback={<PageLoader />}>
+        <Switch>
+          <Route path="/" component={Home} />
+          <Route path="/picks" component={Picks} />
+          <Route path="/picks/:id" component={PickDetail} />
+          <Route path="/stats" component={Stats} />
+          <Route path="/backtesting" component={Backtesting} />
+          <Route path="/dashboard" component={UserDashboard} />
+          <Route path="/leaderboard" component={Leaderboard} />
+          <Route path="/pricing" component={Pricing} />
+          <Route path="/pricing-paypal" component={PayPalPricing} />
+          <Route path="/payment/success" component={PaymentSuccess} />
+          <Route path="/matchup-analysis" component={MatchupAnalysis} />
+          <Route path="/subscription-management" component={SubscriptionManagement} />
+          <Route path="/feedback-analytics" component={FeedbackAnalytics} />
+          <Route path="/notifications" component={Notifications} />
+          <Route path="/ev-finder" component={EVFinder} />
+          <Route path="/tools" component={Tools} />
+          <Route path="/signup" component={SignUp} />
+          <Route path="/login" component={Login} />
+          <Route path="/account-settings" component={AccountSettings} />
+          <Route path="/subscription-dashboard" component={SubscriptionDashboard} />
+          <Route path="/admin/promos" component={AdminPromos} />
+          <Route path="/kalshi" component={KalshiMarkets} />
+          <Route path="/clv-tracker" component={CLVTracker} />
+          <Route path="/parlay-builder" component={ParlayBuilder} />
+          <Route path="/bankroll-tracker" component={BankrollTracker} />
+          <Route path="/referral" component={Referral} />
+          <Route path="/onboarding" component={Onboarding} />
+          <Route path="/arbitrage" component={ArbitrageFinder} />
+          <Route path="/sportsbooks" component={Sportsbooks} />
+          <Route path="/sponsors" component={Sponsors} />
+          <Route path="/admin" component={AdminPanel} />
+          <Route path="/credits" component={CreditDashboard} />
+          <Route path="/prop-builder" component={PropBuilder} />
+          <Route path="/line-movement" component={LineMovement} />
+          <Route path="/correlation-finder" component={CorrelationFinder} />
+          <Route path="/performance" component={Performance} />
+          <Route path="/bet-calculator" component={BetCalculator} />
+          <Route path="/404" component={NotFound} />
+          <Route component={NotFound} />
+        </Switch>
+      </Suspense>
+    </>
   );
 }
 

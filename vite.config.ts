@@ -22,11 +22,37 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        manualChunks: {
-          "vendor-react": ["react", "react-dom"],
-          "vendor-charts": ["recharts"],
-          "vendor-trpc": ["@trpc/client", "@trpc/react-query", "@tanstack/react-query", "superjson"],
-          "vendor-ui": ["lucide-react", "wouter", "sonner", "clsx", "tailwind-merge"],
+        manualChunks(id) {
+          // Core vendor chunks (loaded on every page)
+          if (id.includes("node_modules/react") || id.includes("node_modules/react-dom")) {
+            return "vendor-react";
+          }
+          if (
+            id.includes("node_modules/@trpc") ||
+            id.includes("node_modules/@tanstack/react-query") ||
+            id.includes("node_modules/superjson")
+          ) {
+            return "vendor-trpc";
+          }
+          if (
+            id.includes("node_modules/lucide-react") ||
+            id.includes("node_modules/wouter") ||
+            id.includes("node_modules/sonner") ||
+            id.includes("node_modules/clsx") ||
+            id.includes("node_modules/tailwind-merge")
+          ) {
+            return "vendor-ui";
+          }
+          // Feature-specific chunks (deferred to lazy-loaded pages)
+          if (id.includes("node_modules/recharts")) {
+            return "vendor-charts";
+          }
+          if (id.includes("node_modules/date-fns")) {
+            return "vendor-dates";
+          }
+          if (id.includes("node_modules/zod")) {
+            return "vendor-validation";
+          }
         },
       },
     },

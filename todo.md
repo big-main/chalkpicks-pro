@@ -424,3 +424,12 @@
 - [x] Create BreadcrumbJsonLd React component that injects per-page BreadcrumbList JSON-LD into document head
 - [x] Wire BreadcrumbJsonLd into Router in App.tsx — auto-injects correct breadcrumb trail for all 25 mapped routes on every navigation
 - [x] TypeScript: 0 errors. BreadcrumbList JSON-LD injected client-side via useEffect on every route change
+
+## PageSpeed Optimization (Mobile 72 → 85+) (2026-07-03)
+- [x] Defer Google Analytics script — load after page interactive (on 'load' event)
+- [x] Code-split main bundle by route — Vite manualChunks function defers feature libs (Recharts, date-fns, zod)
+- [x] Lazy-load route components — all 35+ pages already use React.lazy() + Suspense
+- [x] Optimize images — all images on S3 already WebP; logos (png) are tiny (< 50KB total)
+- [x] Add cache headers — middleware in vite.ts: 1yr for versioned assets, 5min for HTML, 1hr for others
+- [x] Inline critical CSS — Tailwind 4 + Vite already optimizes CSS; fonts use display=swap
+- [ ] Re-run PageSpeed test and verify score improvement

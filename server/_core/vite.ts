@@ -58,10 +58,28 @@ export function serveStatic(app: Express) {
     );
   }
 
+  // Cache middleware: versioned assets get long-term cache, HTML gets short cache
+  app.use((req, res, next) => {
+    // Versioned assets (contain hash in filename) get 1 year cache
+    if (/\.[a-f0-9]{8}\.(js|css|woff2?|png|jpg|webp|svg)$/.test(req.path)) {
+      res.set("Cache-Control", "public, max-age=31536000, immutable");
+    }
+    // HTML and JSON get short cache (5 minutes)
+    else if (/\.(html|json)$/.test(req.path) || !req.path.includes(".")) {
+      res.set("Cache-Control", "public, max-age=300, must-revalidate");
+    }
+    // Other assets get moderate cache (1 hour)
+    else {
+      res.set("Cache-Control", "public, max-age=3600");
+    }
+    next();
+  });
+
   app.use(express.static(distPath));
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
+    res.set("Cache-Control", "public, max-age=300, must-revalidate");
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }

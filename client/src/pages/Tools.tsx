@@ -6,14 +6,8 @@ import { Calculator, Layers, CloudLightning, TrendingUp, RefreshCw, Info, Zap, E
 
 const NeonCard = ({ children, className = "", style = {} }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) => (
   <div
-    className={className}
-    style={{
-      background: "rgba(12, 12, 28, 0.85)",
-      border: "1px solid rgba(57, 255, 20, 0.12)",
-      borderRadius: "6px",
-      backdropFilter: "blur(12px)",
-      ...style,
-    }}
+    className={`glass-card-static ${className}`}
+    style={style}
   >
     {children}
   </div>
@@ -22,16 +16,11 @@ const NeonCard = ({ children, className = "", style = {} }: { children: React.Re
 const TabButton = ({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) => (
   <button
     onClick={onClick}
-    className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold tracking-wider transition-all"
-    style={{
-      background: active ? "rgba(57,255,20,0.12)" : "transparent",
-      color: active ? "#39ff14" : "rgba(160,160,190,0.7)",
-      border: `1px solid ${active ? "rgba(57,255,20,0.35)" : "rgba(57,255,20,0.1)"}`,
-      borderRadius: "4px",
-      fontFamily: "'Exo 2', sans-serif",
-      cursor: "pointer",
-      textShadow: active ? "0 0 8px rgba(57,255,20,0.4)" : "none",
-    }}
+    className={`flex items-center gap-2 px-4 py-2.5 text-sm font-condensed tracking-wide transition-all rounded-lg ${
+      active
+        ? "bg-[rgba(57,255,20,0.1)] text-[#39ff14] border border-[rgba(57,255,20,0.35)] shadow-[0_0_12px_rgba(57,255,20,0.15)]"
+        : "bg-transparent text-muted-foreground border border-border hover:border-[rgba(57,255,20,0.2)] hover:text-foreground"
+    }`}
   >
     {children}
   </button>
@@ -55,33 +44,31 @@ function KellyTool() {
     <div className="grid lg:grid-cols-2 gap-6">
       {/* Inputs */}
       <NeonCard className="p-6">
-        <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", textTransform: "uppercase", color: "white", marginBottom: "1.5rem" }}>
-          INPUT PARAMETERS
+        <h3 className="font-condensed text-lg uppercase text-foreground mb-6">
+          Input Parameters
         </h3>
         <div className="space-y-5">
           <div>
-            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#f0b800" }}>BANKROLL ($)</label>
+            <label className="block text-xs font-bold tracking-wider mb-2 text-gold-gradient">BANKROLL ($)</label>
             <input
               type="number"
               value={bankroll}
               onChange={(e) => setBankroll(Number(e.target.value))}
-              className="w-full px-3 py-2.5 text-sm font-medium"
-              style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(57,255,20,0.2)", borderRadius: "4px", color: "white", outline: "none" }}
+              className="w-full px-3 py-2.5 text-sm font-medium bg-[rgba(0,0,0,0.3)] border border-border rounded-lg text-foreground outline-none focus:border-[rgba(57,255,20,0.4)] transition-colors"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#f0b800" }}>AMERICAN ODDS (e.g. -110, +150)</label>
+            <label className="block text-xs font-bold tracking-wider mb-2 text-gold-gradient">AMERICAN ODDS (e.g. -110, +150)</label>
             <input
               type="number"
               value={odds}
               onChange={(e) => setOdds(Number(e.target.value))}
-              className="w-full px-3 py-2.5 text-sm font-medium"
-              style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(57,255,20,0.2)", borderRadius: "4px", color: "white", outline: "none" }}
+              className="w-full px-3 py-2.5 text-sm font-medium bg-[rgba(0,0,0,0.3)] border border-border rounded-lg text-foreground outline-none focus:border-[rgba(57,255,20,0.4)] transition-colors"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#f0b800" }}>
-              YOUR WIN PROBABILITY: <span style={{ color: "#39ff14" }}>{winProb}%</span>
+            <label className="block text-xs font-bold tracking-wider mb-2 text-[var(--gold)]">
+              YOUR WIN PROBABILITY: <span className="text-[#39ff14]">{winProb}%</span>
             </label>
             <input
               type="range"
@@ -97,9 +84,9 @@ function KellyTool() {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-bold tracking-wider mb-2" style={{ color: "#f0b800" }}>
-              KELLY FRACTION: <span style={{ color: "#d4a017" }}>{fraction}%</span>
-              <span className="ml-2 text-[10px] font-normal" style={{ color: "rgba(140,140,170,0.5)" }}>(50% = Half Kelly, recommended)</span>
+            <label className="block text-xs font-bold tracking-wider mb-2 text-[var(--gold)]">
+              KELLY FRACTION: <span className="text-[var(--gold-bright)]">{fraction}%</span>
+              <span className="ml-2 text-[10px] font-normal text-muted-foreground">(50% = Half Kelly, recommended)</span>
             </label>
             <input
               type="range"
@@ -126,7 +113,6 @@ function KellyTool() {
               <div className="text-center mb-4">
                 <div
                   style={{
-                    fontFamily: "'Rajdhani', sans-serif",
                     fontWeight: 700,
                     fontSize: "3rem",
                     color: data.isPositiveEV ? "#39ff14" : "#ff4d8f",
@@ -160,7 +146,7 @@ function KellyTool() {
                 { label: "Your Prob", value: `${winProb}%`, color: "#39ff14" },
               ].map((s) => (
                 <NeonCard key={s.label} className="p-3 text-center">
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: s.color }}>
+                  <div style={{ fontWeight: 700, fontSize: "1.3rem", color: s.color }}>
                     {s.value}
                   </div>
                   <div className="text-xs" style={{ color: "rgba(140,140,170,0.6)" }}>{s.label}</div>
@@ -204,7 +190,7 @@ function ParlayOptimizer() {
       <div className="space-y-4">
         <NeonCard className="p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.1rem", textTransform: "uppercase", color: "white" }}>
+            <h3 style={{ fontWeight: 700, fontSize: "1.1rem", textTransform: "uppercase", color: "white" }}>
               PARLAY LEGS ({legs.length}/8)
             </h3>
             <div className="flex items-center gap-3">
@@ -279,7 +265,7 @@ function ParlayOptimizer() {
             className="p-6 text-center"
             style={{ borderColor: data.ev > 0 ? "rgba(57,255,20,0.3)" : "rgba(255,77,143,0.25)" }}
           >
-            <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", color: data.combinedOdds > 0 ? "#39ff14" : "white" }}>
+            <div style={{ fontWeight: 700, fontSize: "2.5rem", color: data.combinedOdds > 0 ? "#39ff14" : "white" }}>
               {data.combinedOdds > 0 ? "+" : ""}{data.combinedOdds}
             </div>
             <div className="text-sm mb-3" style={{ color: "rgba(180,180,210,0.6)" }}>Combined Parlay Odds</div>
@@ -304,7 +290,7 @@ function ParlayOptimizer() {
               { label: "Book Vig", value: `${data.vig.toFixed(1)}%`, color: "#ff4d8f" },
             ].map((s) => (
               <NeonCard key={s.label} className="p-3 text-center">
-                <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.4rem", color: s.color }}>{s.value}</div>
+                <div style={{ fontWeight: 700, fontSize: "1.4rem", color: s.color }}>{s.value}</div>
                 <div className="text-xs" style={{ color: "rgba(140,140,170,0.6)" }}>{s.label}</div>
               </NeonCard>
             ))}
@@ -360,7 +346,7 @@ function SteamMoves() {
               border: `1px solid ${sport === s.key ? "#39ff14" : "rgba(57,255,20,0.2)"}`,
               borderRadius: "4px",
               cursor: "pointer",
-              fontFamily: "'Exo 2', sans-serif",
+
             }}
           >
             {s.label}
@@ -396,7 +382,7 @@ function SteamMoves() {
                   )}
                   <span className="text-xs ml-auto" style={{ color: "rgba(140,140,170,0.5)" }}>{move.steamTime}</span>
                 </div>
-                <div className="font-bold" style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "1.05rem", color: "white" }}>
+                <div className="font-bold" style={{ fontSize: "1.05rem", color: "white" }}>
                   {move.homeTeam} vs {move.awayTeam}
                 </div>
                 <div className="text-sm mt-0.5" style={{ color: "#39ff14" }}>
@@ -407,31 +393,31 @@ function SteamMoves() {
               <div className="flex items-center gap-4 flex-wrap">
                 <div className="text-center">
                   <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>OPENING</div>
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "rgba(200,200,220,0.8)" }}>
+                  <div style={{ fontWeight: 700, fontSize: "1.2rem", color: "rgba(200,200,220,0.8)" }}>
                     {move.openingOdds > 0 ? "+" : ""}{move.openingOdds}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>CURRENT</div>
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#f0b800" }}>
+                  <div style={{ fontWeight: 700, fontSize: "1.2rem", color: "#f0b800" }}>
                     {move.currentOdds > 0 ? "+" : ""}{move.currentOdds}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>MOVEMENT</div>
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: move.movement > 0 ? "#39ff14" : "#ff4d8f" }}>
+                  <div style={{ fontWeight: 700, fontSize: "1.2rem", color: move.movement > 0 ? "#39ff14" : "#ff4d8f" }}>
                     {move.movement > 0 ? "+" : ""}{move.movement}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>PUBLIC BETS</div>
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#d4a017" }}>
+                  <div style={{ fontWeight: 700, fontSize: "1.2rem", color: "#d4a017" }}>
                     {move.pctBets}%
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>SHARP $</div>
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#39ff14" }}>
+                  <div style={{ fontWeight: 700, fontSize: "1.2rem", color: "#39ff14" }}>
                     {move.pctMoney}%
                   </div>
                 </div>
@@ -439,7 +425,7 @@ function SteamMoves() {
                   className="px-3 py-2 text-center"
                   style={{ background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.25)", borderRadius: "4px", minWidth: "60px" }}
                 >
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: "#39ff14" }}>
+                  <div style={{ fontWeight: 700, fontSize: "1.3rem", color: "#39ff14" }}>
                     {move.confidence}%
                   </div>
                   <div className="text-[10px]" style={{ color: "rgba(140,140,170,0.6)" }}>CONF</div>
@@ -490,7 +476,6 @@ function PublicBetting() {
               border: `1px solid ${sport === s.key ? "#f0b800" : "rgba(212,160,23,0.2)"}`,
               borderRadius: "4px",
               cursor: "pointer",
-              fontFamily: "'Exo 2', sans-serif",
             }}
           >
             {s.label}
@@ -511,7 +496,7 @@ function PublicBetting() {
           <NeonCard key={i} className="p-5" style={{ borderColor: game.isSharpFade ? "rgba(255,77,143,0.25)" : "rgba(57,255,20,0.12)" }}>
             <div className="flex items-center justify-between mb-3">
               <div>
-                <div className="font-bold" style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "1.05rem", color: "white" }}>
+                <div className="font-bold" style={{ fontSize: "1.05rem", color: "white" }}>
                   {game.awayTeam} @ {game.homeTeam}
                 </div>
                 <div className="text-xs" style={{ color: "rgba(140,140,170,0.5)" }}>{game.commenceTime}</div>
@@ -586,22 +571,21 @@ export default function Tools() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "#080814", color: "#e8e8f0" }}>
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <div className="container pt-24 pb-16">
         {/* Header */}
         <div className="mb-8">
           <div
-            className="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-bold tracking-widest"
-            style={{ background: "rgba(212,160,23,0.08)", border: "1px solid rgba(212,160,23,0.25)", borderRadius: "4px", color: "#d4a017" }}
+            className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-xs font-bold tracking-widest rounded-full bg-[rgba(212,160,23,0.08)] border border-[rgba(212,160,23,0.25)] text-[var(--gold)]"
           >
             <Zap className="w-3 h-3" /> POWER TOOLS
           </div>
-          <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", textTransform: "uppercase", color: "white" }}>
-            BETTING{" "}
-            <span style={{ color: "#d4a017", textShadow: "0 0 15px rgba(212,160,23,0.4)" }}>ARSENAL</span>
+          <h1 className="font-display text-4xl md:text-5xl text-foreground">
+            Betting{" "}
+            <span className="text-gold-gradient">Arsenal</span>
           </h1>
-          <p style={{ color: "rgba(180,180,210,0.65)", marginTop: "0.5rem" }}>
+          <p className="text-muted-foreground mt-2 text-lg">
             Professional-grade tools used by sharp bettors. Mathematically precise, real-time data.
           </p>
         </div>
@@ -612,15 +596,13 @@ export default function Tools() {
             <button
               key={tool.id}
               onClick={() => setActiveTool(tool.id)}
-              className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold tracking-wider transition-all"
+              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-condensed tracking-wide transition-all rounded-xl ${
+                activeTool === tool.id
+                  ? "glass-card-static border-[rgba(57,255,20,0.3)] shadow-[0_0_15px_rgba(57,255,20,0.1)]"
+                  : "bg-transparent border border-border hover:border-[rgba(255,255,255,0.15)]"
+              }`}
               style={{
-                background: activeTool === tool.id ? `${tool.color}15` : "rgba(12,12,28,0.85)",
                 color: activeTool === tool.id ? tool.color : "rgba(160,160,190,0.7)",
-                border: `1px solid ${activeTool === tool.id ? `${tool.color}40` : "rgba(57,255,20,0.1)"}`,
-                borderRadius: "4px",
-                fontFamily: "'Exo 2', sans-serif",
-                cursor: "pointer",
-                textShadow: activeTool === tool.id ? `0 0 8px ${tool.color}60` : "none",
               }}
             >
               <tool.icon className="w-4 h-4" />

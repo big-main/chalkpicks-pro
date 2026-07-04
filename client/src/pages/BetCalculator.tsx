@@ -355,7 +355,7 @@ export default function BetCalculator() {
           <Badge className="mb-4 bg-[#00ff87]/10 text-[#00ff87] border-[#00ff87]/30 text-xs font-semibold px-3 py-1">
             FREE TOOL — NO SIGNUP REQUIRED
           </Badge>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">
             Sports Betting <span className="text-[#00ff87]">Calculator</span>
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-6">
@@ -448,7 +448,7 @@ export default function BetCalculator() {
 
         {/* CTA */}
         <div className="mt-12 bg-gradient-to-r from-[#00ff87]/10 to-[#ff6b35]/10 border border-[#00ff87]/20 rounded-2xl p-8 text-center">
-          <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+          <h2 className="text-2xl font-bold mb-2">
             Want AI to find the +EV bets for you?
           </h2>
           <p className="text-gray-400 mb-6">ChalkPicks scans 15+ sportsbooks in real time to surface the highest-edge picks with confidence scores, edge analysis, and line movement alerts.</p>

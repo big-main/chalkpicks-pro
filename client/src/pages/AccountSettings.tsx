@@ -20,11 +20,11 @@ export default function AccountSettings() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#080814" }}>
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)" }}>
           <CardContent className="pt-6">
             <p style={{ color: "#e8e8f0", marginBottom: "1rem" }}>Please log in to access account settings.</p>
-            <Button onClick={() => setLocation("/login")} style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", color: "#080814", fontWeight: 700 }}>
+            <Button onClick={() => setLocation("/login")} className="btn-premium">
               Go to Login
             </Button>
           </CardContent>
@@ -50,12 +50,12 @@ export default function AccountSettings() {
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: "#080814" }}>
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <div className="container pt-24 pb-16">
         {/* Header */}
         <div className="mb-8">
-          <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2rem", textTransform: "uppercase", color: "white" }}>
+          <h1 style={{ fontWeight: 700, fontSize: "2rem", textTransform: "uppercase", color: "white" }}>
             Account Settings
           </h1>
           <p style={{ color: "#a8a8b0", marginTop: "0.5rem" }}>
@@ -243,7 +243,7 @@ export default function AccountSettings() {
                     ))}
                   </div>
 
-                  <Button style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", color: "#080814", fontWeight: 700, width: "100%" }}>
+                  <Button className="btn-premium w-full">
                     Save Preferences
                   </Button>
                 </CardContent>

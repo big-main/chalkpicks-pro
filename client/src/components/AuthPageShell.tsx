@@ -10,26 +10,28 @@ interface AuthPageShellProps {
 
 export default function AuthPageShell({ children, rightLink }: AuthPageShellProps) {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#080814" }}>
-      <div className="border-b" style={{ borderColor: "rgba(212,160,23,0.1)" }}>
+    <div className="min-h-screen flex flex-col bg-background text-foreground relative overflow-hidden">
+      {/* Ambient background glow */}
+      <div className="absolute inset-0 bg-mesh pointer-events-none" />
+
+      {/* Top bar */}
+      <div className="relative z-10 border-b border-border/50 backdrop-blur-sm">
         <div className="container h-16 flex items-center justify-between">
           <Link href="/">
             <a className="flex items-center gap-2 group">
               <img
                 src={LOGO_URL}
                 alt="ChalkPicks"
-                className="h-10 w-auto transition-all group-hover:scale-105"
-                style={{ filter: "drop-shadow(0 0 10px rgba(57,255,20,0.4))" }}
+                className="h-12 w-auto transition-all group-hover:scale-105 drop-shadow-[0_0_12px_rgba(57,255,20,0.3)]"
               />
             </a>
           </Link>
           <Link href={rightLink.href}>
             <a>
               <Button
-                variant={rightLink.variant === "outline" ? "outline" : undefined}
-                style={rightLink.variant !== "outline"
-                  ? { background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", color: "#080814", fontWeight: 700 }
-                  : { borderColor: "rgba(212,160,23,0.3)", color: "#f0b800" }}
+                className={rightLink.variant === "outline"
+                  ? "btn-outline-premium text-sm"
+                  : "btn-premium text-sm"}
               >
                 {rightLink.label}
               </Button>
@@ -38,14 +40,16 @@ export default function AuthPageShell({ children, rightLink }: AuthPageShellProp
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-4">
+      {/* Main content */}
+      <div className="relative z-10 flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           {children}
         </div>
       </div>
 
-      <div style={{ borderTop: "1px solid rgba(212,160,23,0.1)", padding: "2rem", textAlign: "center" }}>
-        <p style={{ color: "#666", fontSize: "0.875rem" }}>
+      {/* Footer */}
+      <div className="relative z-10 border-t border-border/30 py-6 text-center">
+        <p className="text-muted-foreground text-sm">
           © 2026 ChalkPicks. All rights reserved.
         </p>
       </div>

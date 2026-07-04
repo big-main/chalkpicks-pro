@@ -52,7 +52,7 @@ export default function SignUp() {
   return (
     <AuthPageShell rightLink={{ href: "/login", label: "Log In", variant: "outline" }}>
       <div className="text-center mb-8">
-        <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", textTransform: "uppercase", color: "white", lineHeight: 1.2 }}>
+        <h1 style={{ fontWeight: 700, fontSize: "2.5rem", textTransform: "uppercase", color: "white", lineHeight: 1.2 }}>
           Join the{" "}
           <span style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             Future
@@ -100,8 +100,7 @@ export default function SignUp() {
                 onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" style={inputStyle} />
             </div>
             {error && <p style={{ color: "#ff4d4d", fontSize: "0.875rem" }}>{error}</p>}
-            <Button type="submit" className="w-full" size="lg" disabled={registerMutation.isPending}
-              style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", color: "#080814", fontWeight: 700, height: "2.75rem", fontSize: "1rem" }}>
+            <Button type="submit" className="btn-premium w-full h-11 text-base" size="lg" disabled={registerMutation.isPending}>
               {registerMutation.isPending ? "Creating account..." : "Create Account"}
             </Button>
             <p style={{ color: "#666", fontSize: "0.75rem", textAlign: "center" }}>

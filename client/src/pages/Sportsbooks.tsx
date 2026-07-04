@@ -112,7 +112,7 @@ const DISCLAIMER = "ChalkPicks may earn a commission when you sign up through ou
 
 export default function Sportsbooks() {
   return (
-    <div className="min-h-screen" style={{ background: "#080814", color: "#e8e8f0" }}>
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
       {/* Background grid */}
@@ -139,7 +139,6 @@ export default function Sportsbooks() {
           </div>
           <h1
             style={{
-              fontFamily: "'Rajdhani', sans-serif",
               fontWeight: 700,
               fontSize: "clamp(2rem, 5vw, 3.5rem)",
               textTransform: "uppercase",
@@ -169,7 +168,7 @@ export default function Sportsbooks() {
               style={{ background: "rgba(57,255,20,0.04)", border: "1px solid rgba(57,255,20,0.1)" }}
             >
               <stat.icon className="w-5 h-5 mx-auto mb-1" style={{ color: "#39ff14" }} />
-              <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: "#39ff14" }}>{stat.value}</div>
+              <div style={{ fontWeight: 700, fontSize: "1.3rem", color: "#39ff14" }}>{stat.value}</div>
               <div className="text-xs" style={{ color: "rgba(140,140,170,0.6)" }}>{stat.label}</div>
             </div>
           ))}
@@ -210,12 +209,12 @@ export default function Sportsbooks() {
                   <div className="flex items-center gap-4 md:w-48 flex-shrink-0">
                     <div
                       className="w-14 h-14 flex items-center justify-center rounded-lg text-sm font-black"
-                      style={{ background: `${book.color}15`, border: `2px solid ${book.color}40`, color: book.color, fontFamily: "'Rajdhani', sans-serif", letterSpacing: "0.05em" }}
+                      style={{ background: `${book.color}15`, border: `2px solid ${book.color}40`, color: book.color, letterSpacing: "0.05em" }}
                     >
                       {book.logo}
                     </div>
                     <div>
-                      <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "white" }}>
+                      <div style={{ fontWeight: 700, fontSize: "1.1rem", color: "white" }}>
                         {book.name}
                       </div>
                       <div className="flex items-center gap-1 mt-0.5">
@@ -236,7 +235,7 @@ export default function Sportsbooks() {
                       <Gift className="w-3 h-3" />
                       {book.badge}
                     </div>
-                    <div style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, fontSize: "1rem", color: "#39ff14" }}>
+                    <div style={{ fontWeight: 700, fontSize: "1rem", color: "#39ff14" }}>
                       {book.bonus}
                     </div>
                     <p className="text-xs mt-1" style={{ color: "rgba(140,140,170,0.65)" }}>
@@ -265,7 +264,6 @@ export default function Sportsbooks() {
                       style={{
                         background: book.color,
                         color: "#080814",
-                        fontFamily: "'Exo 2', sans-serif",
                         boxShadow: `0 0 15px ${book.color}40`,
                         textDecoration: "none",
                       }}

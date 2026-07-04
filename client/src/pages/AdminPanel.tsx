@@ -47,9 +47,9 @@ export default function AdminPanel() {
   // Redirect non-admins
   if (!isAuthenticated || user?.role !== "admin") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: "#080814" }}>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
         <Shield className="w-16 h-16 mb-4" style={{ color: "#ff4444" }} />
-        <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2rem", color: "white" }}>
+        <h1 style={{ fontWeight: 700, fontSize: "2rem", color: "white" }}>
           Access Denied
         </h1>
         <p style={{ color: "rgba(200,200,220,0.6)", marginTop: "0.5rem" }}>
@@ -57,8 +57,7 @@ export default function AdminPanel() {
         </p>
         <Link href="/">
           <button
-            className="mt-6 px-6 py-2.5 font-bold"
-            style={{ background: "#39ff14", color: "#080814", borderRadius: "6px", border: "none", cursor: "pointer" }}
+            className="mt-6 btn-premium"
           >
             Go Home
           </button>
@@ -75,7 +74,7 @@ export default function AdminPanel() {
   ] as const;
 
   return (
-    <div className="min-h-screen" style={{ background: "#080814", color: "#e8e8f0" }}>
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
       <div className="container py-8">
@@ -84,10 +83,10 @@ export default function AdminPanel() {
           <div className="flex items-center gap-4">
             <img src={LOGO_URL} alt="ChalkPicks" className="h-10 w-auto" style={{ filter: "drop-shadow(0 0 8px rgba(57,255,20,0.4))" }} />
             <div>
-              <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.75rem", textTransform: "uppercase", color: "white" }}>
+              <h1 style={{ fontWeight: 700, fontSize: "1.75rem", textTransform: "uppercase", color: "white" }}>
                 Admin Panel
               </h1>
-              <p style={{ color: "rgba(57,255,20,0.8)", fontSize: "0.8rem", fontFamily: "'Exo 2', sans-serif", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              <p style={{ color: "rgba(57,255,20,0.8)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>
                 ChalkPicks Control Center
               </p>
             </div>
@@ -97,7 +96,7 @@ export default function AdminPanel() {
             style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.3)", borderRadius: "6px" }}
           >
             <Shield className="w-4 h-4" style={{ color: "#39ff14" }} />
-            <span style={{ color: "#39ff14", fontSize: "0.8rem", fontWeight: 700, fontFamily: "'Exo 2', sans-serif" }}>
+            <span style={{ color: "#39ff14", fontSize: "0.8rem", fontWeight: 700 }}>
               ADMIN: {user?.name || user?.email}
             </span>
           </div>
@@ -118,7 +117,6 @@ export default function AdminPanel() {
                   border: active ? "1px solid rgba(57,255,20,0.3)" : "1px solid transparent",
                   borderRadius: "6px",
                   color: active ? "#39ff14" : "rgba(200,200,220,0.6)",
-                  fontFamily: "'Exo 2', sans-serif",
                   cursor: "pointer",
                 }}
               >
@@ -144,12 +142,12 @@ export default function AdminPanel() {
                 return (
                   <div key={stat.label} style={statCard(stat.color)}>
                     <div className="flex items-center justify-between mb-2">
-                      <span style={{ color: "rgba(180,180,210,0.7)", fontSize: "0.8rem", fontFamily: "'Exo 2', sans-serif", textTransform: "uppercase" }}>
+                      <span style={{ color: "rgba(180,180,210,0.7)", fontSize: "0.8rem", textTransform: "uppercase" }}>
                         {stat.label}
                       </span>
                       <Icon className="w-4 h-4" style={{ color: stat.color }} />
                     </div>
-                    <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2rem", color: stat.color }}>
+                    <div style={{ fontWeight: 700, fontSize: "2rem", color: stat.color }}>
                       {stat.value}
                     </div>
                     <div style={{ color: "rgba(140,140,170,0.7)", fontSize: "0.75rem" }}>{stat.sub}</div>
@@ -162,7 +160,7 @@ export default function AdminPanel() {
             <div className="grid lg:grid-cols-2 gap-6">
               {/* Elevate to Admin */}
               <div style={cardStyle}>
-                <h3 style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, color: "#39ff14", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
+                <h3 style={{ fontWeight: 700, color: "#39ff14", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
                   <Shield className="w-4 h-4 inline mr-2" />
                   Elevate User to Admin
                 </h3>
@@ -206,7 +204,7 @@ export default function AdminPanel() {
 
               {/* Platform Links */}
               <div style={cardStyle}>
-                <h3 style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, color: "#f0b800", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
+                <h3 style={{ fontWeight: 700, color: "#f0b800", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
                   <Settings className="w-4 h-4 inline mr-2" />
                   Quick Links
                 </h3>
@@ -229,7 +227,6 @@ export default function AdminPanel() {
                         borderRadius: "6px",
                         color: link.color,
                         textDecoration: "none",
-                        fontFamily: "'Exo 2', sans-serif",
                       }}
                     >
                       <Eye className="w-3 h-3" />
@@ -242,7 +239,7 @@ export default function AdminPanel() {
 
             {/* Recent Picks */}
             <div style={cardStyle}>
-              <h3 style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, color: "#d4a017", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
+              <h3 style={{ fontWeight: 700, color: "#d4a017", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
                 <Activity className="w-4 h-4 inline mr-2" />
                 Recent AI Picks
               </h3>
@@ -298,7 +295,7 @@ export default function AdminPanel() {
         {activeTab === "users" && (
           <div style={cardStyle}>
             <div className="flex items-center justify-between mb-4">
-              <h3 style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, color: "#39ff14", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
+              <h3 style={{ fontWeight: 700, color: "#39ff14", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
                 <Users className="w-4 h-4 inline mr-2" />
                 User Management
               </h3>
@@ -356,7 +353,7 @@ export default function AdminPanel() {
         {activeTab === "subscriptions" && (
           <div className="space-y-4">
             <div style={cardStyle}>
-              <h3 style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, color: "#f0b800", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
+              <h3 style={{ fontWeight: 700, color: "#f0b800", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
                 <Crown className="w-4 h-4 inline mr-2" />
                 Subscription Tiers
               </h3>
@@ -371,10 +368,10 @@ export default function AdminPanel() {
                     className="p-4"
                     style={{ background: `${plan.color}08`, border: `1px solid ${plan.color}25`, borderRadius: "8px" }}
                   >
-                    <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.1rem", color: plan.color, textTransform: "uppercase" }}>
+                    <div style={{ fontWeight: 700, fontSize: "1.1rem", color: plan.color, textTransform: "uppercase" }}>
                       {plan.tier}
                     </div>
-                    <div style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, fontSize: "1.5rem", color: "white", margin: "0.5rem 0" }}>
+                    <div style={{ fontWeight: 700, fontSize: "1.5rem", color: "white", margin: "0.5rem 0" }}>
                       {plan.price}
                     </div>
                     <ul className="space-y-1">
@@ -391,7 +388,7 @@ export default function AdminPanel() {
             </div>
 
             <div style={cardStyle}>
-              <h3 style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, color: "#fbbf24", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
+              <h3 style={{ fontWeight: 700, color: "#fbbf24", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
                 <DollarSign className="w-4 h-4 inline mr-2" />
                 Stripe Management
               </h3>
@@ -431,7 +428,7 @@ export default function AdminPanel() {
         {activeTab === "picks" && (
           <div style={cardStyle}>
             <div className="flex items-center justify-between mb-4">
-              <h3 style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, color: "#d4a017", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
+              <h3 style={{ fontWeight: 700, color: "#d4a017", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
                 <Activity className="w-4 h-4 inline mr-2" />
                 AI Picks Engine
               </h3>

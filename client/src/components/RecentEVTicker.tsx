@@ -92,7 +92,6 @@ export default function RecentEVTicker() {
               border: "1px solid rgba(57,255,20,0.3)",
               borderRadius: "4px",
               color: "#39ff14",
-              fontFamily: "'Rajdhani', sans-serif",
             }}
           >
             <Zap className="w-3 h-3" />
@@ -100,7 +99,7 @@ export default function RecentEVTicker() {
           </div>
           <span
             className="text-sm font-semibold"
-            style={{ color: "rgba(220,220,240,0.9)", fontFamily: "'Rajdhani', sans-serif" }}
+            style={{ color: "rgba(220,220,240,0.9)" }}
           >
             Recent +EV Bets Found
           </span>
@@ -145,7 +144,6 @@ export default function RecentEVTicker() {
                     background: `${getSportColor(bet.sport)}20`,
                     color: getSportColor(bet.sport),
                     borderRadius: "3px",
-                    fontFamily: "'Rajdhani', sans-serif",
                     letterSpacing: "0.05em",
                   }}
                 >
@@ -153,7 +151,7 @@ export default function RecentEVTicker() {
                 </span>
                 <span
                   className="text-xs font-semibold"
-                  style={{ color: "rgba(200,200,220,0.95)", fontFamily: "'Rajdhani', sans-serif" }}
+                  style={{ color: "rgba(200,200,220,0.95)" }}
                 >
                   {bet.matchup}
                 </span>
@@ -170,7 +168,7 @@ export default function RecentEVTicker() {
               <div className="flex-1 min-w-0">
                 <div
                   className="text-sm font-bold truncate"
-                  style={{ color: "white", fontFamily: "'Rajdhani', sans-serif" }}
+                  style={{ color: "white" }}
                 >
                   {bet.bet}
                 </div>
@@ -203,7 +201,6 @@ export default function RecentEVTicker() {
                     className="text-base font-black"
                     style={{
                       color: getEVColor(bet.ev),
-                      fontFamily: "'Rajdhani', sans-serif",
                       lineHeight: 1,
                     }}
                   >
@@ -226,7 +223,6 @@ export default function RecentEVTicker() {
                     className="text-base font-black"
                     style={{
                       color: "#f0b800",
-                      fontFamily: "'Rajdhani', sans-serif",
                       lineHeight: 1,
                     }}
                   >

@@ -116,7 +116,7 @@ export default function SharePickCard({ pick, className = "" }: SharePickCardPro
             {/* Card Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a3a] bg-[#0a0a14]">
               <div className="flex items-center gap-2">
-                <span className="text-[#00ff87] font-bold text-sm" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                <span className="text-[#00ff87] font-bold text-sm">
                   ⚡ ChalkPicks
                 </span>
                 <Badge className="bg-[#1a1a2a] text-gray-400 border-[#2a2a3a] text-xs">
@@ -138,7 +138,7 @@ export default function SharePickCard({ pick, className = "" }: SharePickCardPro
 
             {/* Recommendation */}
             <div className="px-4 py-3 text-center">
-              <p className="text-white font-bold text-lg leading-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <p className="text-white font-bold text-lg leading-tight">
                 {pick.recommendation}
               </p>
               {pick.odds && (

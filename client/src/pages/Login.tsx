@@ -58,21 +58,19 @@ export default function Login() {
   return (
     <AuthPageShell rightLink={{ href: "/signup", label: "Sign Up" }}>
       <div className="text-center mb-8">
-        <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", textTransform: "uppercase", color: "white", lineHeight: 1.2 }}>
+        <h1 className="font-display text-4xl text-foreground">
           Welcome{" "}
-          <span style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            Back
-          </span>
+          <span className="text-gold-gradient">Back</span>
         </h1>
-        <p style={{ color: "#a8a8b0", fontSize: "1rem", marginTop: "1rem" }}>
+        <p className="text-muted-foreground mt-4">
           Access your picks, stats, and advanced betting tools
         </p>
       </div>
 
-      <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
+      <Card className="glass-card-static mb-8">
         <CardHeader>
-          <CardTitle style={{ color: "white", fontSize: "1.5rem" }}>Log In to Your Account</CardTitle>
-          <CardDescription style={{ color: "#a8a8b0" }}>Enter your email and password to continue</CardDescription>
+          <CardTitle className="text-foreground text-xl font-condensed">Log In to Your Account</CardTitle>
+          <CardDescription className="text-muted-foreground">Enter your email and password to continue</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -87,8 +85,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" style={inputStyle} />
             </div>
             {error && <p style={{ color: "#ff4d4d", fontSize: "0.875rem" }}>{error}</p>}
-            <Button type="submit" className="w-full" size="lg" disabled={loginMutation.isPending}
-              style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", color: "#080814", fontWeight: 700, height: "2.75rem", fontSize: "1rem" }}>
+            <Button type="submit" className="btn-premium w-full h-11 text-base" size="lg" disabled={loginMutation.isPending}>
               <Lock className="w-5 h-5 mr-2" />
               {loginMutation.isPending ? "Logging in..." : "Log In"}
             </Button>

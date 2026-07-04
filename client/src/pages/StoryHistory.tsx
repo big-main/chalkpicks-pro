@@ -76,7 +76,7 @@ export default function StoryHistory() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0f", color: "white", fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <div style={{
         background: "linear-gradient(135deg, #0a0a0f 0%, #0d1520 50%, #0a0a0f 100%)",

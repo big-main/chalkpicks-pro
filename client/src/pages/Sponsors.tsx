@@ -95,7 +95,7 @@ const AD_PLACEMENTS = [
 
 export default function Sponsors() {
   return (
-    <div className="min-h-screen" style={{ background: "#080814", color: "#e8e8f0" }}>
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
       <div
@@ -121,7 +121,6 @@ export default function Sponsors() {
           </div>
           <h1
             style={{
-              fontFamily: "'Rajdhani', sans-serif",
               fontWeight: 700,
               fontSize: "clamp(2rem, 5vw, 3.5rem)",
               textTransform: "uppercase",
@@ -141,7 +140,6 @@ export default function Sponsors() {
             style={{
               background: "#39ff14",
               color: "#080814",
-              fontFamily: "'Exo 2', sans-serif",
               boxShadow: "0 0 20px rgba(57,255,20,0.4)",
               textDecoration: "none",
             }}
@@ -160,7 +158,7 @@ export default function Sponsors() {
               style={{ background: "rgba(12,12,28,0.9)", border: `1px solid ${stat.color}20` }}
             >
               <stat.icon className="w-6 h-6 mx-auto mb-2" style={{ color: stat.color }} />
-              <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.5rem", color: stat.color }}>
+              <div style={{ fontWeight: 700, fontSize: "1.5rem", color: stat.color }}>
                 {stat.value}
               </div>
               <div className="text-xs mt-1" style={{ color: "rgba(140,140,170,0.6)" }}>{stat.label}</div>
@@ -172,7 +170,7 @@ export default function Sponsors() {
         <div className="mb-16">
           <h2
             className="text-center mb-8"
-            style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.8rem", textTransform: "uppercase", color: "white" }}
+            style={{ fontWeight: 700, fontSize: "1.8rem", textTransform: "uppercase", color: "white" }}
           >
             SPONSORSHIP PACKAGES
           </h2>
@@ -191,16 +189,16 @@ export default function Sponsors() {
                 {tier.popular && (
                   <div
                     className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 text-[11px] font-bold tracking-widest whitespace-nowrap"
-                    style={{ background: tier.color, color: "#080814", borderRadius: "20px", fontFamily: "'Exo 2', sans-serif" }}
+                    style={{ background: tier.color, color: "#080814", borderRadius: "20px" }}
                   >
                     ★ MOST POPULAR
                   </div>
                 )}
                 <div className="mb-4">
-                  <div className="text-xs font-bold tracking-widest mb-1" style={{ color: tier.color, fontFamily: "'Exo 2', sans-serif" }}>
+                  <div className="text-xs font-bold tracking-widest mb-1" style={{ color: tier.color }}>
                     {tier.name.toUpperCase()}
                   </div>
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2rem", color: tier.color }}>
+                  <div style={{ fontWeight: 700, fontSize: "2rem", color: tier.color }}>
                     {tier.price}
                   </div>
                 </div>
@@ -219,7 +217,6 @@ export default function Sponsors() {
                     background: tier.popular ? tier.color : `${tier.color}18`,
                     color: tier.popular ? "#080814" : tier.color,
                     border: `1px solid ${tier.color}50`,
-                    fontFamily: "'Exo 2', sans-serif",
                     textDecoration: "none",
                   }}
                 >
@@ -235,7 +232,7 @@ export default function Sponsors() {
         <div className="max-w-4xl mx-auto mb-16">
           <h2
             className="text-center mb-8"
-            style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.8rem", textTransform: "uppercase", color: "white" }}
+            style={{ fontWeight: 700, fontSize: "1.8rem", textTransform: "uppercase", color: "white" }}
           >
             À LA CARTE AD PLACEMENTS
           </h2>
@@ -247,7 +244,7 @@ export default function Sponsors() {
                 style={{ background: "rgba(12,12,28,0.9)", border: "1px solid rgba(57,255,20,0.1)" }}
               >
                 <div className="flex-1">
-                  <div className="font-bold" style={{ color: "white", fontFamily: "'Rajdhani', sans-serif", fontSize: "1.05rem" }}>
+                  <div className="font-bold" style={{ color: "white", fontSize: "1.05rem" }}>
                     {ad.name}
                   </div>
                   <div className="text-xs mt-1 flex flex-wrap gap-3" style={{ color: "rgba(140,140,170,0.65)" }}>
@@ -257,7 +254,7 @@ export default function Sponsors() {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: "#39ff14" }}>
+                  <div style={{ fontWeight: 700, fontSize: "1.3rem", color: "#39ff14" }}>
                     {ad.price}
                   </div>
                   <a
@@ -267,7 +264,6 @@ export default function Sponsors() {
                       background: "rgba(57,255,20,0.1)",
                       border: "1px solid rgba(57,255,20,0.3)",
                       color: "#39ff14",
-                      fontFamily: "'Exo 2', sans-serif",
                       textDecoration: "none",
                     }}
                   >
@@ -286,7 +282,7 @@ export default function Sponsors() {
         >
           <Zap className="w-10 h-10 mx-auto mb-4" style={{ color: "#39ff14" }} />
           <h3
-            style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.5rem", textTransform: "uppercase", color: "white", marginBottom: "0.75rem" }}
+            style={{ fontWeight: 700, fontSize: "1.5rem", textTransform: "uppercase", color: "white", marginBottom: "0.75rem" }}
           >
             READY TO PARTNER?
           </h3>
@@ -300,7 +296,6 @@ export default function Sponsors() {
               style={{
                 background: "#39ff14",
                 color: "#080814",
-                fontFamily: "'Exo 2', sans-serif",
                 boxShadow: "0 0 20px rgba(57,255,20,0.4)",
                 textDecoration: "none",
               }}

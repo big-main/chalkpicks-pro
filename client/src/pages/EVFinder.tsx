@@ -41,17 +41,7 @@ function formatOdds(american: number): string {
 }
 
 const NeonCard = ({ children, className = "", style = {} }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) => (
-  <div
-    className={className}
-    style={{
-      background: "rgba(12, 12, 28, 0.85)",
-      border: "1px solid rgba(57, 255, 20, 0.12)",
-      borderRadius: "6px",
-      backdropFilter: "blur(12px)",
-      transition: "all 0.25s",
-      ...style,
-    }}
-  >
+  <div className={`glass-card-static ${className}`} style={style}>
     {children}
   </div>
 );
@@ -94,23 +84,18 @@ export default function EVFinder() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "#080814", color: "#e8e8f0" }}>
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <div className="container pt-24 pb-16">
         {/* Header */}
         <div className="mb-8">
-          <div
-            className="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-bold tracking-widest"
-            style={{ background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.25)", borderRadius: "4px", color: "#39ff14" }}
-          >
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-xs font-bold tracking-widest rounded-full bg-[rgba(57,255,20,0.06)] border border-[rgba(57,255,20,0.2)] text-[#39ff14]">
             <span className="live-dot" /> LIVE ODDS SCANNING
           </div>
-          <h1
-            style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", textTransform: "uppercase", color: "white" }}
-          >
-            <span style={{ color: "#39ff14", textShadow: "0 0 15px rgba(57,255,20,0.4)" }}>+EV</span> FINDER
+          <h1 className="font-display text-4xl md:text-5xl text-foreground">
+            <span className="text-emerald-gradient">+EV</span> Finder
           </h1>
-          <p style={{ color: "rgba(180,180,210,0.65)", marginTop: "0.5rem" }}>
+          <p className="text-muted-foreground mt-2 text-lg max-w-2xl">
             Positive expected value bets identified by comparing true probability against sportsbook odds. Only bet when the math is in your favor.
           </p>
         </div>
@@ -137,7 +122,6 @@ export default function EVFinder() {
                   border: `1px solid ${sport === s.key ? "#39ff14" : "rgba(57,255,20,0.2)"}`,
                   borderRadius: "4px",
                   cursor: "pointer",
-                  fontFamily: "'Exo 2', sans-serif",
                 }}
               >
                 {s.label}
@@ -149,30 +133,18 @@ export default function EVFinder() {
               <button
                 key={m.value}
                 onClick={() => setMinEV(m.value)}
-                className="px-3 py-1.5 text-xs font-bold tracking-wider transition-all"
-                style={{
-                  background: minEV === m.value ? "rgba(212,160,23,0.15)" : "transparent",
-                  color: minEV === m.value ? "#f0b800" : "rgba(140,140,170,0.7)",
-                  border: `1px solid ${minEV === m.value ? "rgba(212,160,23,0.4)" : "rgba(140,140,170,0.2)"}`,
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontFamily: "'Exo 2', sans-serif",
-                }}
+                className={`px-3 py-1.5 text-xs font-bold tracking-wider transition-all rounded-lg ${
+                  minEV === m.value
+                    ? "bg-[rgba(212,160,23,0.12)] text-[var(--gold-bright)] border border-[rgba(212,160,23,0.35)]"
+                    : "bg-transparent text-muted-foreground border border-border hover:border-[rgba(212,160,23,0.2)]"
+                }`}
               >
                 {m.label}
               </button>
             ))}
             <button
               onClick={handleRefresh}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider ml-2 transition-all"
-              style={{
-                background: "rgba(212,160,23,0.1)",
-                color: "#d4a017",
-                border: "1px solid rgba(212,160,23,0.3)",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontFamily: "'Exo 2', sans-serif",
-              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider ml-2 transition-all rounded-lg bg-[rgba(212,160,23,0.08)] text-[var(--gold)] border border-[rgba(212,160,23,0.25)] hover:bg-[rgba(212,160,23,0.15)]"
             >
               <RefreshCw className={`w-3 h-3 ${isLoading ? "animate-spin" : ""}`} />
               REFRESH
@@ -190,7 +162,7 @@ export default function EVFinder() {
               { label: "Last Updated", value: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), color: "#39ff14" },
             ].map((s) => (
               <NeonCard key={s.label} className="p-4 text-center">
-                <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.6rem", color: s.color, textShadow: `0 0 8px ${s.color}50` }}>
+                <div style={{ fontWeight: 700, fontSize: "1.6rem", color: s.color, textShadow: `0 0 8px ${s.color}50` }}>
                   {s.value}
                 </div>
                 <div className="text-xs mt-0.5" style={{ color: "rgba(140,140,170,0.7)" }}>{s.label}</div>
@@ -208,7 +180,7 @@ export default function EVFinder() {
         ) : opportunities.length === 0 ? (
           <NeonCard className="p-12 text-center">
             <TrendingUp className="w-10 h-10 mx-auto mb-4" style={{ color: "rgba(57,255,20,0.3)" }} />
-            <p className="font-bold mb-2" style={{ color: "white", fontFamily: "'Rajdhani', sans-serif", fontSize: "1.2rem" }}>
+            <p className="font-bold mb-2" style={{ color: "white", fontSize: "1.2rem" }}>
               NO +EV OPPORTUNITIES RIGHT NOW
             </p>
             <p className="text-sm" style={{ color: "rgba(140,140,170,0.6)" }}>
@@ -242,7 +214,7 @@ export default function EVFinder() {
                       </span>
                       <span className="text-xs" style={{ color: "rgba(140,140,170,0.6)" }}>{opp.commenceTime}</span>
                     </div>
-                    <div className="font-bold" style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "1.1rem", color: "white" }}>
+                    <div className="font-bold" style={{ fontSize: "1.1rem", color: "white" }}>
                       {opp.homeTeam} vs {opp.awayTeam}
                     </div>
                     <div className="text-sm mt-0.5" style={{ color: "rgba(180,180,210,0.7)" }}>
@@ -254,21 +226,21 @@ export default function EVFinder() {
                   <div className="flex items-center gap-4 flex-wrap">
                     <div className="text-center">
                       <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>BOOK ODDS</div>
-                      <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: "white" }}>
+                      <div style={{ fontWeight: 700, fontSize: "1.3rem", color: "white" }}>
                         {formatOdds(opp.bookOdds)}
                       </div>
                       <div className="text-xs" style={{ color: "rgba(140,140,170,0.5)" }}>{opp.bookmaker}</div>
                     </div>
                     <div className="text-center">
                       <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>TRUE ODDS</div>
-                      <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: "#f0b800" }}>
+                      <div style={{ fontWeight: 700, fontSize: "1.3rem", color: "#f0b800" }}>
                         {formatOdds(opp.trueOdds)}
                       </div>
                       <div className="text-xs" style={{ color: "rgba(140,140,170,0.5)" }}>No-vig</div>
                     </div>
                     <div className="text-center">
                       <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>TRUE PROB</div>
-                      <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: "#d4a017" }}>
+                      <div style={{ fontWeight: 700, fontSize: "1.3rem", color: "#d4a017" }}>
                         {(opp.trueProb * 100).toFixed(1)}%
                       </div>
                     </div>
@@ -283,12 +255,11 @@ export default function EVFinder() {
                       }}
                     >
                       <div
+                        className="font-display"
                         style={{
-                          fontFamily: "'Rajdhani', sans-serif",
                           fontWeight: 700,
                           fontSize: "1.5rem",
                           color: opp.ev >= 10 ? "#39ff14" : opp.ev >= 5 ? "#f0b800" : "#39ff14",
-                          textShadow: `0 0 8px ${opp.ev >= 5 ? "rgba(57,255,20,0.4)" : "rgba(57,255,20,0.2)"}`,
                         }}
                       >
                         +{opp.ev.toFixed(1)}%
@@ -309,7 +280,7 @@ export default function EVFinder() {
             style={{ borderColor: "rgba(57,255,20,0.25)", background: "rgba(57,255,20,0.03)" }}
           >
             <Lock className="w-8 h-8 mx-auto mb-3" style={{ color: "#39ff14" }} />
-            <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.4rem", color: "white", textTransform: "uppercase" }}>
+            <h3 style={{ fontWeight: 700, fontSize: "1.4rem", color: "white", textTransform: "uppercase" }}>
               UNLOCK FULL +EV SCANNER
             </h3>
             <p className="text-sm mt-2 mb-5" style={{ color: "rgba(180,180,210,0.65)" }}>
@@ -317,16 +288,7 @@ export default function EVFinder() {
             </p>
             <button
               onClick={() => (window.location.href = "/login")}
-              className="flex items-center gap-2 mx-auto px-6 py-2.5 text-sm font-bold tracking-wider"
-              style={{
-                background: "#39ff14",
-                color: "#080814",
-                borderRadius: "4px",
-                fontFamily: "'Exo 2', sans-serif",
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 0 15px rgba(57,255,20,0.3)",
-              }}
+              className="btn-premium mx-auto"
             >
               GET PREMIUM ACCESS <ArrowRight className="w-4 h-4" />
             </button>

@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { WebMCPTools } from "@/components/WebMCPTools";
 import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
+import { StructuredData } from "@/components/StructuredData";
 import { PageMeta } from "@/components/PageMeta";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -83,6 +84,7 @@ function Router() {
     <>
       <PageMeta />
       <BreadcrumbJsonLd />
+      <StructuredData />
       <Suspense fallback={<PageLoader />}>
         <Switch>
           <Route path="/" component={Home} />

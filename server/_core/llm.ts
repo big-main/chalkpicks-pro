@@ -291,8 +291,15 @@ function isCacheable(params: InvokeParams): boolean {
 }
 
 function getLLMCacheKey(payload: Record<string, unknown>): string {
-  const { createHash } = require("crypto") as typeof import("crypto");
-  return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
+  // Use a simple hash function that works in ESM context
+  const str = JSON.stringify(payload);
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash).toString(36);
 }
 
 // ── Qwen / Ollama health check ──────────────────────────────────────────────

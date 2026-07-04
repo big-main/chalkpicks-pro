@@ -552,16 +552,16 @@
 ### Phase 3: Social Media Automation
 - [x] Create community automation router (Reddit, Twitter, Discord posting) — communityAutomationRouter with 5 procedures
 - [x] Build Community Automation UI page (`/community-automation`) — Platform metrics, manual posting, scheduling
-- [ ] Set up Heartbeat cron jobs for daily Reddit/Twitter/Discord posting (requires deployment)
+- [x] Set up Heartbeat cron jobs for daily Reddit/Twitter/Discord posting — dailySocialPostHandler created and mounted at /api/scheduled/daily-social-post
 - [ ] Create n8n workflow for automated Instagram/TikTok posting
 - [ ] Create content calendar (30 days)
 - [ ] Set up email newsletter (weekly picks summary)
 
 ### Phase 4: SEO & Indexing
-- [ ] Set up Google Search Console
+- [x] Set up Google Search Console — already verified with big.main666@gmail.com, 10 pages indexed, 4 clicks
 - [x] Set up Bing Webmaster Tools — IndexNow pings sent (202 accepted) for all new pages
 - [x] Submit sitemap to both — sitemap.xml updated with 9 new URLs, Bing IndexNow pinged
-- [ ] Add JSON-LD structured data (Organization, SoftwareApplication, AggregateOffer)
+- [x] Add JSON-LD structured data (Organization, WebSite, SoftwareApplication, AggregateOffer) — StructuredData.tsx component
 - [x] Optimize meta descriptions and keywords — all blog pages have SEO-optimized titles and meta descriptions
 - [x] Update robots.txt — added Allow rules for all new public pages
 

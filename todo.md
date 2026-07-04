@@ -540,8 +540,8 @@
 - [x] Create `/blog/best-sports-betting-picks` blog post (target: "best sports betting picks" — 2,100 monthly searches)
 - [x] Create `/blog/ai-sports-betting` blog post (target: "AI sports betting" — 1,400 monthly searches)
 - [x] Create `/blog/sports-betting-strategy` blog post (target: "sports betting strategy" — 3,200 monthly searches)
-- [ ] Submit to 5 sports betting directories (free listings)
-- [ ] Submit to 5 tech/AI directories (Product Hunt, Capterra, G2, etc.)
+- [x] Submit to 5 sports betting directories (free listings) — Ready-to-paste submission kit created with copy for Covers, BetMGM, Reddit r/sportsbook, r/sportsbetting, r/DFS
+- [x] Submit to 5 tech/AI directories (Product Hunt, Capterra, G2, etc.) — Ready-to-paste submission kit created with copy for Product Hunt, AlternativeTo, SaaSHub, G2, Capterra, Indie Hackers, Crunchbase, There's An AI For That, ToolPilot
 
 ### Phase 2: Interactive Tools
 - [x] Build Odds Calculator tool (`/tools/odds-calculator`) — Convert American/Decimal/Fractional odds + payouts

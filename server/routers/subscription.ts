@@ -12,7 +12,7 @@ export const PLANS = {
   daily: {
     name: "Daily Pass",
     priceId: "price_daily",
-    amountCents: 999,
+    amountCents: 499,
     description: "Full access for 24 hours",
     features: ["All premium picks today", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"],
     badge: "Try it out",
@@ -20,7 +20,7 @@ export const PLANS = {
   monthly: {
     name: "Monthly Pro",
     priceId: "price_monthly",
-    amountCents: 2999,
+    amountCents: 1499,
     description: "Best value for serious bettors",
     features: ["All premium picks daily", "AI picks generator", "Backtesting engine", "Bet tracker & analytics", "Leaderboard access", "Priority email support", "Daily pick alerts"],
     badge: "Most Popular",
@@ -29,7 +29,7 @@ export const PLANS = {
   yearly: {
     name: "Annual Elite",
     priceId: "price_yearly",
-    amountCents: 19999,
+    amountCents: 9999,
     description: "Maximum savings for pros",
     features: ["Everything in Monthly", "Early access to new features", "Advanced backtesting", "Custom AI pick generation", "VIP Discord access", "1-on-1 strategy sessions"],
     badge: "Best Value",

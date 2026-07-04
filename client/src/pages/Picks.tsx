@@ -677,14 +677,14 @@ export default function Picks() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container pt-24 pb-12">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2rem", textTransform: "uppercase", color: "white" }}>
-              AI <span style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Picks</span>
+            <h1 className="font-display text-3xl text-white">
+              AI <span className="text-emerald-gradient">Picks</span>
             </h1>
-            <p className="text-muted-foreground text-sm mt-1">Confidence-scored predictions across all sports</p>
+            <p className="text-white/45 text-sm mt-1.5">Confidence-scored predictions across all sports</p>
           </div>
           <div className="flex items-center gap-3">
             <PushNotificationButton isPremiumUser={isPremiumUser} />

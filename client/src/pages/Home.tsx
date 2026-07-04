@@ -1,19 +1,15 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
-import LiveNewsTicker from "@/components/LiveNewsTicker";
-import LiveScoresTicker from "@/components/LiveScoresTicker";
 import { motion } from "framer-motion";
 import {
-  Zap, BarChart3, Shield, Trophy, Brain,
+  Zap, BarChart3, Trophy, Brain,
   ArrowRight, CheckCircle2, Star, Target, Lock,
-  Activity, TrendingUp, TrendingDown, Percent,
+  TrendingUp, Percent,
   Calculator, CloudLightning, Layers, Eye, Flame
 } from "lucide-react";
 import NeonCard from "@/components/NeonCard";
-import RecentEVTicker from "@/components/RecentEVTicker";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
@@ -46,14 +42,14 @@ const features = [
     icon: TrendingUp,
     title: "Steam Move Detector",
     desc: "Detect sudden sharp money line movements the moment they happen. Follow the sharps, not the public.",
-    color: "#d4a017",
-    badge: "EXCLUSIVE",
+    color: "#60a5fa",
+    badge: "LIVE",
   },
   {
     icon: Eye,
     title: "Public Betting %",
-    desc: "See where the public money is going on every game. Fade the public or follow the sharp money — your choice.",
-    color: "#f0b800",
+    desc: "See where the public money is going on every game. Fade the public or follow the sharp money.",
+    color: "#a855f7",
     badge: "NEW",
   },
   {
@@ -61,50 +57,43 @@ const features = [
     title: "Kelly Criterion Tool",
     desc: "Mathematically optimal bet sizing based on your edge and bankroll. Never over-bet or under-bet again.",
     color: "#39ff14",
-    badge: "NEW",
+    badge: "FREE",
   },
   {
     icon: CloudLightning,
     title: "Weather Impact Model",
-    desc: "Real weather data integrated into NFL and MLB picks. Wind speed, temperature, and precipitation affect outcomes — we model it.",
-    color: "#d4a017",
+    desc: "Real weather data integrated into NFL and MLB picks. Wind speed, temperature, and precipitation affect outcomes.",
+    color: "#f0b800",
     badge: "NEW",
   },
   {
     icon: Layers,
     title: "Parlay Optimizer",
     desc: "AI-powered correlated parlay builder. Finds leg combinations that are statistically linked for higher combined win probability.",
-    color: "#39ff14",
-    badge: "NEW",
+    color: "#60a5fa",
+    badge: "AI",
   },
   {
     icon: BarChart3,
     title: "Advanced Backtesting",
-    desc: "Test any strategy against years of historical data. Filter by sport, confidence, bet type, and date range to find your edge.",
-    color: "#f0b800",
-    badge: "CORE",
+    desc: "Test any strategy against years of historical data. Filter by sport, confidence, bet type, and date range.",
+    color: "#a855f7",
+    badge: "PRO",
   },
   {
     icon: Target,
     title: "CLV Tracker",
-    desc: "Track your closing line value on every bet. CLV is the #1 predictor of long-term profitability — monitor yours automatically.",
-    color: "#d4a017",
-    badge: "NEW",
+    desc: "Track your closing line value on every bet. CLV is the #1 predictor of long-term profitability.",
+    color: "#39ff14",
+    badge: "PRO",
   },
 ];
 
 const statsBar = [
   { label: "Win Rate", value: "92%", sub: "Verified 12-month", color: "#39ff14" },
   { label: "Avg ROI", value: "+18.4%", sub: "Per unit staked", color: "#f0b800" },
-  { label: "Members", value: "12,847", sub: "Active bettors", color: "#d4a017" },
-  { label: "Picks", value: "847K+", sub: "Generated & tracked", color: "#39ff14" },
-];
-
-const sportStats = [
-  { label: "NFL", winRate: "72.4%", roi: "+16.8%", games: "1,204" },
-  { label: "NBA", winRate: "73.6%", roi: "+19.2%", games: "2,847" },
-  { label: "MLB", winRate: "73.4%", roi: "+18.9%", games: "3,102" },
-  { label: "NHL", winRate: "73.0%", roi: "+17.6%", games: "892" },
+  { label: "Members", value: "12,847", sub: "Active bettors", color: "#60a5fa" },
+  { label: "Picks", value: "847K+", sub: "Generated & tracked", color: "#a855f7" },
 ];
 
 const testimonials = [
@@ -116,294 +105,196 @@ const testimonials = [
   { name: "Chris B.", role: "Bankroll Manager", text: "From $500 to $4,200 in 4 months. The combination of +EV bets and Kelly sizing is unbeatable.", stars: 5, streak: "9W" },
 ];
 
-const socialProofStats = [
-  { label: "Active Members", value: "12,847+", icon: "👥" },
-  { label: "Picks Generated", value: "847K+", icon: "🎯" },
-  { label: "Total Profit", value: "$2.4M+", icon: "💰" },
-  { label: "Avg Win Streak", value: "7.2", icon: "🔥" },
+const sportStats = [
+  { label: "NFL", winRate: "72.4%", roi: "+16.8%", games: "1,204" },
+  { label: "NBA", winRate: "73.6%", roi: "+19.2%", games: "2,847" },
+  { label: "MLB", winRate: "73.4%", roi: "+18.9%", games: "3,102" },
+  { label: "NHL", winRate: "73.0%", roi: "+17.6%", games: "892" },
 ];
-
-
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
   const { data: picksData } = trpc.picks.list.useQuery({ limit: 3, tier: "all" });
 
   return (
-    <div className="min-h-screen" style={{ background: "#080814", color: "#e8e8f0" }}>
-      <LiveNewsTicker />
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <LiveScoresTicker />
 
       {/* ── HERO ─────────────────────────────────────────────── */}
-      <section
-        className="relative pt-32 pb-20 overflow-hidden"
-        style={{
-          background: `
-            radial-gradient(ellipse 80% 60% at 50% -10%, rgba(212,160,23,0.06), transparent),
-            radial-gradient(ellipse 60% 40% at 80% 50%, rgba(57,255,20,0.05), transparent),
-            radial-gradient(ellipse 50% 40% at 20% 80%, rgba(212,160,23,0.04), transparent),
-            #0d0f14
-          `,
-        }}
-      >
-        {/* Grid overlay */}
-        <div
-          className="absolute inset-0 opacity-100 pointer-events-none"
-          style={{
-            backgroundImage: "linear-gradient(rgba(212,160,23,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(212,160,23,0.02) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
-
-        {/* Animated blur blobs — broadcast depth effect */}
+      <section className="relative pt-28 pb-24 lg:pt-36 lg:pb-32 overflow-hidden">
+        {/* Animated gradient orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Blue blob — top-left data accent */}
-          <motion.div
-            animate={{ x: [0, 30, 0], y: [0, -20, 0], scale: [1, 1.1, 1] }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute"
+          <div
+            className="absolute animate-orb"
             style={{
-              top: "-10%", left: "-5%",
-              width: "45vw", height: "45vw",
-              background: "radial-gradient(ellipse, rgba(59,130,246,0.12) 0%, transparent 70%)",
-              filter: "blur(40px)",
+              top: "-20%", left: "10%",
+              width: "60vw", height: "60vw",
+              background: "radial-gradient(ellipse, rgba(57, 255, 20, 0.07) 0%, transparent 60%)",
+              filter: "blur(80px)",
             }}
           />
-          {/* Gold blob — bottom-right premium accent */}
-          <motion.div
-            animate={{ x: [0, -25, 0], y: [0, 20, 0], scale: [1, 1.08, 1] }}
-            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-            className="absolute"
+          <div
+            className="absolute animate-orb"
             style={{
-              bottom: "-15%", right: "-5%",
+              bottom: "-30%", right: "-10%",
               width: "50vw", height: "50vw",
-              background: "radial-gradient(ellipse, rgba(212,160,23,0.1) 0%, transparent 70%)",
-              filter: "blur(50px)",
+              background: "radial-gradient(ellipse, rgba(59, 130, 246, 0.06) 0%, transparent 60%)",
+              filter: "blur(80px)",
+              animationDelay: "-7s",
             }}
           />
-          {/* Green blob — center CTA glow */}
-          <motion.div
-            animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-            className="absolute"
+          <div
+            className="absolute animate-orb"
             style={{
-              top: "30%", left: "50%", transform: "translateX(-50%)",
+              top: "40%", right: "20%",
               width: "30vw", height: "30vw",
-              background: "radial-gradient(ellipse, rgba(57,255,20,0.06) 0%, transparent 70%)",
+              background: "radial-gradient(ellipse, rgba(168, 85, 247, 0.04) 0%, transparent 60%)",
               filter: "blur(60px)",
+              animationDelay: "-14s",
             }}
           />
         </div>
 
+        {/* Subtle grid */}
+        <div className="absolute inset-0 cyber-grid-bg opacity-40 pointer-events-none" />
+
         <div className="container relative z-10">
-          <div className="max-w-5xl mx-auto text-center">
+          <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
             <motion.div
-              initial={{ opacity: 0, y: -16 }}
+              initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
+              className="mb-8"
             >
-            <div
-              className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 text-xs font-bold tracking-widest"
-              style={{
-                background: "rgba(212,160,23,0.1)",
-                border: "1px solid rgba(212,160,23,0.4)",
-                borderRadius: "4px",
-                color: "#f0b800",
-              }}
-            >
-              <span className="live-dot" />
-              NEXT-GEN SPORTS AI — LIVE DATA
-            </div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card-static text-xs font-semibold tracking-wide">
+                <span className="live-dot" />
+                <span style={{ color: "rgba(255, 255, 255, 0.7)" }}>AI-Powered Sports Analytics</span>
+                <span className="text-brand-green font-bold">LIVE</span>
+              </div>
             </motion.div>
 
-            {/* Headline */}
-            <motion.div
+            {/* Headline — large, modern, no uppercase */}
+            <motion.h1
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="font-display mb-6 leading-[1.05]"
+              style={{ fontSize: "clamp(2.8rem, 7vw, 5.5rem)" }}
             >
-            <h1
-              className="mb-6 leading-none"
-              style={{
-                fontFamily: "'Oswald', 'Rajdhani', sans-serif",
-                fontWeight: 700,
-                fontSize: "clamp(3.2rem, 8vw, 6rem)",
-                textTransform: "uppercase",
-                letterSpacing: "0.02em",
-                color: "white",
-              }}
-            >
-              THE FUTURE OF<br />
-              <span style={{ background: "linear-gradient(135deg, #d4a017, #f0b800, #d4a017)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                SPORTS
-              </span>{" "}
-              <span style={{ color: "#39ff14", textShadow: "0 0 20px rgba(57,255,20,0.5), 0 0 60px rgba(57,255,20,0.2)" }}>
-                BETTING
-              </span>
-              <br />              IS HERE
-            </h1>
-            </motion.div>
+              <span className="text-white">The AI That </span>
+              <span className="text-emerald-gradient">Wins</span>
+              <br />
+              <span className="text-white">Your Bets</span>
+            </motion.h1>
 
-            <motion.div
+            {/* Subheadline */}
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
+              className="mb-10 max-w-2xl mx-auto text-lg leading-relaxed"
+              style={{ color: "rgba(255, 255, 255, 0.55)" }}
             >
-            <p
-              className="mb-10 max-w-2xl mx-auto"
-              style={{ fontSize: "1.15rem", color: "rgba(200,200,220,0.75)", lineHeight: 1.7 }}
-            >
-              Real-time odds from 10+ sportsbooks. AI picks with confidence scores. +EV finder, steam move detector, CLV tracker, Kelly criterion tool — features no other platform offers, all in one place.
-            </p>
-            </motion.div>
+              Real-time odds from 10+ sportsbooks. AI picks with confidence scores. +EV finder, steam move detector, CLV tracker — features no other platform offers.
+            </motion.p>
 
             {/* CTAs */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6"
             >
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
               {isAuthenticated ? (
                 <Link href="/picks">
-                  <button
-                    className="flex items-center gap-2 px-8 py-3.5 text-base font-bold tracking-wider transition-all"
-                    style={{
-                      background: "#39ff14",
-                      color: "#0d0f14",
-                      borderRadius: "4px",
-                      fontFamily: "'Oswald', 'Exo 2', sans-serif",
-                      boxShadow: "0 0 20px rgba(57,255,20,0.4)",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                  >
-                    VIEW TODAY'S PICKS <ArrowRight className="w-4 h-4" />
+                  <button className="btn-premium">
+                    View Today's Picks <ArrowRight className="w-4 h-4" />
                   </button>
                 </Link>
               ) : (
                 <button
-                  className="flex items-center gap-2 px-8 py-3.5 text-base font-bold tracking-wider transition-all"
-                  style={{
-                    background: "#39ff14",
-                    color: "#0d0f14",
-                    borderRadius: "4px",
-                    fontFamily: "'Oswald', 'Exo 2', sans-serif",
-                    boxShadow: "0 0 20px rgba(57,255,20,0.4)",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
+                  className="btn-premium"
                   onClick={() => (window.location.href = "/signup")}
                 >
-                  GET STARTED NOW <ArrowRight className="w-4 h-4" />
+                  Start Winning Today <ArrowRight className="w-4 h-4" />
                 </button>
               )}
               <Link href="/pricing">
-                <button
-                  className="flex items-center gap-2 px-8 py-3.5 text-base font-semibold tracking-wider transition-all"
-                  style={{
-                    background: "transparent",
-                    color: "#f0b800",
-                    borderRadius: "4px",
-                    fontFamily: "'Oswald', 'Exo 2', sans-serif",
-                    border: "1px solid rgba(212,160,23,0.5)",
-                    cursor: "pointer",
-                  }}
-                >
-                  VIEW PRICING PLANS
+                <button className="btn-outline-premium">
+                  View Plans
                 </button>
               </Link>
-            </div>
-            <p className="text-xs text-muted-foreground/60 mb-16 uppercase tracking-widest font-bold">
-              Daily · Monthly · Yearly Plans — Cancel Anytime
-            </p>
             </motion.div>
 
-            {/* Stats bar */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="text-sm mb-16"
+              style={{ color: "rgba(255, 255, 255, 0.35)" }}
+            >
+              Starting at $4.99/day · Cancel anytime · No credit card for free tools
+            </motion.p>
+
+            {/* Stats bar — floating glass cards */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.5 }}
+              className="grid grid-cols-2 lg:grid-cols-4 gap-3"
             >
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {statsBar.map((stat) => (
-                <NeonCard key={stat.label} variant="premium" className="p-4 text-center">
-                  <div
-                    style={{
-                      fontFamily: "'Oswald', 'Rajdhani', sans-serif",
-                      fontWeight: 700,
-                      fontSize: "2rem",
-                      color: stat.color,
-                      textShadow: `0 0 10px ${stat.color}60`,
-                    }}
-                  >
-                    {stat.value}
-                  </div>
-                  <div className="text-sm font-semibold mt-0.5" style={{ color: "rgba(220,220,240,0.9)" }}>
-                    {stat.label}
-                  </div>
-                  <div className="text-xs mt-0.5" style={{ color: "rgba(140,140,170,0.8)" }}>
-                    {stat.sub}
-                  </div>
-                </NeonCard>
+              {statsBar.map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 + i * 0.1 }}
+                >
+                  <NeonCard variant="default" className="p-5 text-center">
+                    <div
+                      className="font-display text-3xl lg:text-4xl mb-1"
+                      style={{ color: stat.color }}
+                    >
+                      {stat.value}
+                    </div>
+                    <div className="text-sm font-medium text-white/80">{stat.label}</div>
+                    <div className="text-xs mt-0.5 text-white/40">{stat.sub}</div>
+                  </NeonCard>
+                </motion.div>
               ))}
-            </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ── RECENT +EV BETS FOUND ── */}
-      <RecentEVTicker />
-
       {/* ── PERFORMANCE CHART ────────────────────────────────── */}
-      <section
-        className="py-16"
-        style={{ borderTop: "1px solid rgba(57,255,20,0.1)", borderBottom: "1px solid rgba(57,255,20,0.1)" }}
-      >
-        <div className="container">
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-mesh pointer-events-none" />
+        <div className="container relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div
-                className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-bold tracking-widest"
-                style={{
-                  background: "rgba(212,160,23,0.08)",
-                  border: "1px solid rgba(212,160,23,0.3)",
-                  borderRadius: "4px",
-                  color: "#f0b800",
-                }}
-              >
-                VERIFIED TRACK RECORD
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-5 rounded-full glass-card-static text-xs font-semibold">
+                <Trophy className="w-3.5 h-3.5 text-brand-gold" />
+                <span className="text-white/60">Verified Track Record</span>
               </div>
-              <h2
-                className="mb-4 leading-none"
-                style={{
-                  fontFamily: "'Oswald', 'Rajdhani', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(2rem, 4vw, 3rem)",
-                  textTransform: "uppercase",
-                }}
-              >
-                <span style={{ color: "#39ff14", textShadow: "0 0 15px rgba(57,255,20,0.4)" }}>73.1% WIN RATE</span>
+              <h2 className="font-display text-4xl lg:text-5xl mb-5 leading-tight">
+                <span className="text-emerald-gradient">73.1% Win Rate</span>
                 <br />
-                <span style={{ color: "white" }}>OVER 12 MONTHS</span>
+                <span className="text-white">Over 12 Months</span>
               </h2>
-              <p style={{ color: "rgba(180,180,210,0.75)", lineHeight: 1.7, marginBottom: "1.5rem" }}>
-                Every pick is logged, tracked, and verified on-chain. Our AI model has maintained a 73.1% win rate and +18.4% ROI over the past year across all major sports leagues.
+              <p className="text-white/50 leading-relaxed mb-8 max-w-lg">
+                Every pick is logged, tracked, and verified. Our AI model has maintained a 73.1% win rate and +18.4% ROI over the past year across all major sports leagues.
               </p>
               <div className="grid grid-cols-2 gap-3">
                 {sportStats.map((s) => (
-                  <NeonCard key={s.label} className="p-3">
-                    <div className="text-xs mb-1" style={{ color: "#f0b800", fontFamily: "'Oswald', 'Rajdhani', sans-serif", fontWeight: 600, textTransform: "uppercase" }}>
-                      {s.label}
-                    </div>
+                  <NeonCard key={s.label} className="p-4">
+                    <div className="text-xs text-brand-gold font-semibold mb-1">{s.label}</div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold" style={{ color: "white" }}>{s.winRate}</span>
-                      <span className="text-xs font-bold" style={{ color: "#39ff14" }}>{s.roi}</span>
+                      <span className="text-sm font-bold text-white">{s.winRate}</span>
+                      <span className="text-xs font-bold text-brand-green">{s.roi}</span>
                     </div>
-                    <div className="text-xs mt-0.5" style={{ color: "rgba(140,140,170,0.7)" }}>{s.games} games</div>
+                    <div className="text-xs mt-0.5 text-white/35">{s.games} games</div>
                   </NeonCard>
                 ))}
               </div>
@@ -411,37 +302,29 @@ export default function Home() {
 
             <NeonCard className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-medium" style={{ color: "rgba(180,180,210,0.7)" }}>Monthly ROI Performance</span>
-                <div
-                  className="flex items-center gap-1.5 px-2 py-0.5 text-xs font-bold"
-                  style={{
-                    background: "rgba(57,255,20,0.1)",
-                    border: "1px solid rgba(57,255,20,0.3)",
-                    borderRadius: "4px",
-                    color: "#39ff14",
-                  }}
-                >
+                <span className="text-sm font-medium text-white/50">Monthly ROI Performance</span>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full glass-card-static text-xs font-semibold">
                   <span className="live-dot" style={{ width: 6, height: 6 }} />
-                  LIVE
+                  <span className="text-brand-green">LIVE</span>
                 </div>
               </div>
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height={240}>
                 <AreaChart data={performanceData}>
                   <defs>
                     <linearGradient id="roiGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#39ff14" stopOpacity={0.25} />
+                      <stop offset="5%" stopColor="#39ff14" stopOpacity={0.2} />
                       <stop offset="95%" stopColor="#39ff14" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(57,255,20,0.08)" />
-                  <XAxis dataKey="month" tick={{ fill: "rgba(140,140,170,0.8)", fontSize: 12 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: "rgba(140,140,170,0.8)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <XAxis dataKey="month" tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 12 }} axisLine={false} tickLine={false} />
                   <Tooltip
-                    contentStyle={{ background: "rgba(12,12,28,0.95)", border: "1px solid rgba(57,255,20,0.2)", borderRadius: "4px" }}
+                    contentStyle={{ background: "rgba(10,10,15,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", backdropFilter: "blur(10px)" }}
                     labelStyle={{ color: "#f0b800" }}
                     formatter={(v: number) => [`${v}%`, "ROI"]}
                   />
-                  <Area type="monotone" dataKey="roi" stroke="#39ff14" strokeWidth={2} fill="url(#roiGrad)" dot={{ fill: "#39ff14", strokeWidth: 0, r: 3 }} />
+                  <Area type="monotone" dataKey="roi" stroke="#39ff14" strokeWidth={2} fill="url(#roiGrad)" dot={{ fill: "#39ff14", strokeWidth: 0, r: 4 }} />
                 </AreaChart>
               </ResponsiveContainer>
             </NeonCard>
@@ -450,105 +333,73 @@ export default function Home() {
       </section>
 
       {/* ── TODAY'S PICKS PREVIEW ────────────────────────────── */}
-      <section className="py-16">
+      <section className="py-20">
         <div className="container">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-10">
             <div>
-              <div
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 mb-2 text-xs font-bold tracking-widest"
-                style={{
-                  background: "rgba(212,160,23,0.1)",
-                  border: "1px solid rgba(212,160,23,0.3)",
-                  borderRadius: "4px",
-                  color: "#d4a017",
-                }}
-              >
-                <span className="live-dot" style={{ background: "#d4a017" }} />
-                UPDATED DAILY AT 6AM UTC
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-3 rounded-full glass-card-static text-xs font-semibold">
+                <span className="live-dot" style={{ background: "#f0b800" }} />
+                <span className="text-white/60">Updated daily at 6AM UTC</span>
               </div>
-              <h2
-                style={{
-                  fontFamily: "'Oswald', 'Rajdhani', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "2rem",
-                  textTransform: "uppercase",
-                  color: "white",
-                }}
-              >
-                TODAY'S{" "}
-                <span style={{ color: "#39ff14", textShadow: "0 0 10px rgba(57,255,20,0.4)" }}>TOP PICKS</span>
+              <h2 className="font-display text-3xl lg:text-4xl text-white">
+                Today's <span className="text-emerald-gradient">Top Picks</span>
               </h2>
             </div>
             <Link href="/picks">
-              <button
-                className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all"
-                style={{
-                  background: "transparent",
-                  color: "#f0b800",
-                  border: "1px solid rgba(212,160,23,0.3)",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontFamily: "'Exo 2', sans-serif",
-                }}
-              >
+              <button className="hidden sm:flex btn-outline-premium text-sm py-2 px-4">
                 View All <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-4 mb-6">
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
             {picksData?.picks?.slice(0, 3).map((pick) => (
               <Link key={pick.id} href={`/picks/${pick.id}`}>
-                <NeonCard className="p-5 cursor-pointer h-full" style={{ transition: "all 0.25s" }}>
-                  <div className="flex items-center justify-between mb-3">
+                <NeonCard className="p-6 cursor-pointer h-full">
+                  <div className="flex items-center justify-between mb-4">
                     <div
-                      className="px-2 py-0.5 text-xs font-bold tracking-wider"
+                      className="px-2.5 py-1 text-[11px] font-semibold rounded-full"
                       style={{
-                        background: pick.tier === "premium" ? "rgba(57,255,20,0.1)" : "rgba(148,163,184,0.1)",
-                        border: `1px solid ${pick.tier === "premium" ? "rgba(57,255,20,0.3)" : "rgba(148,163,184,0.25)"}`,
-                        borderRadius: "3px",
-                        color: pick.tier === "premium" ? "#39ff14" : "#94a3b8",
+                        background: pick.tier === "premium" ? "rgba(57,255,20,0.08)" : "rgba(255,255,255,0.05)",
+                        border: `1px solid ${pick.tier === "premium" ? "rgba(57,255,20,0.2)" : "rgba(255,255,255,0.1)"}`,
+                        color: pick.tier === "premium" ? "#39ff14" : "rgba(255,255,255,0.5)",
                       }}
                     >
-                      {pick.tier === "premium" ? "⚡ PREMIUM" : "STANDARD"}
+                      {pick.tier === "premium" ? "⚡ PREMIUM" : "FREE"}
                     </div>
-                    <span
-                      className="text-xs font-bold tracking-widest"
-                      style={{ color: "#f0b800", fontFamily: "'Oswald', 'Rajdhani', sans-serif" }}
-                    >
+                    <span className="text-xs font-semibold text-brand-gold">
                       {pick.sportKey?.toUpperCase()}
                     </span>
                   </div>
-                  <div className="mb-3">
-                    <div className="text-xs mb-1" style={{ color: "rgba(140,140,170,0.7)" }}>
+                  <div className="mb-4">
+                    <div className="text-xs mb-1.5 text-white/40">
                       {pick.awayTeam} @ {pick.homeTeam}
                     </div>
-                    <div className="font-bold text-base" style={{ color: "white", fontFamily: "'Oswald', 'Rajdhani', sans-serif", fontSize: "1.05rem" }}>
+                    <div className="font-display text-lg text-white mb-1">
                       {pick.recommendation}
                     </div>
-                    <div className="text-sm mt-0.5" style={{ color: "rgba(180,180,210,0.6)" }}>
+                    <div className="text-sm text-white/50">
                       {pick.odds && pick.odds > 0 ? `+${pick.odds}` : pick.odds}
                     </div>
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span style={{ color: "rgba(140,140,170,0.7)" }}>Confidence</span>
-                      <span className="font-bold" style={{ color: "#39ff14" }}>{pick.confidenceScore}%</span>
+                      <span className="text-white/40">Confidence</span>
+                      <span className="font-bold text-brand-green">{pick.confidenceScore}%</span>
                     </div>
-                    <div className="h-1" style={{ background: "rgba(255,255,255,0.08)", borderRadius: "2px", overflow: "hidden" }}>
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
                       <div
+                        className="h-full rounded-full"
                         style={{
-                          height: "100%",
                           width: `${pick.confidenceScore}%`,
-                          background: "linear-gradient(90deg, #39ff14, #f0b800)",
-                          borderRadius: "2px",
-                          boxShadow: "0 0 6px rgba(57,255,20,0.4)",
+                          background: "linear-gradient(90deg, #39ff14, #00e676)",
+                          boxShadow: "0 0 8px rgba(57,255,20,0.4)",
                         }}
                       />
                     </div>
                   </div>
                   {pick.tier === "premium" && !isAuthenticated && (
-                    <div className="mt-3 flex items-center gap-1.5 text-xs" style={{ color: "rgba(140,140,170,0.6)" }}>
+                    <div className="mt-4 flex items-center gap-1.5 text-xs text-white/35">
                       <Lock className="w-3 h-3" /> Subscribe to unlock full analysis
                     </div>
                   )}
@@ -559,420 +410,230 @@ export default function Home() {
 
           <div className="text-center">
             <Link href="/picks">
-              <button
-                className="flex items-center gap-2 mx-auto px-6 py-2.5 text-sm font-bold tracking-wider transition-all"
-                style={{
-                  background: "#39ff14",
-                  color: "#080814",
-                  borderRadius: "4px",
-                  fontFamily: "'Exo 2', sans-serif",
-                  boxShadow: "0 0 15px rgba(57,255,20,0.25)",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                VIEW ALL TODAY'S PICKS <ArrowRight className="w-4 h-4" />
+              <button className="btn-premium">
+                View All Picks <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── FEATURES ─────────────────────────────────────────── */}
-      <section
-        className="py-16"
-        style={{ background: "linear-gradient(180deg, rgba(212,160,23,0.04) 0%, transparent 100%)" }}
-      >
-        <div className="container">
-          <div className="text-center mb-12">
-            <div
-              className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-bold tracking-widest"
-              style={{
-                background: "rgba(57,255,20,0.08)",
-                border: "1px solid rgba(57,255,20,0.25)",
-                borderRadius: "4px",
-                color: "#39ff14",
-              }}
-            >
-              WEAPONS IN YOUR ARSENAL
+      {/* ── FEATURES — Bento Grid Style ─────────────────────── */}
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-mesh pointer-events-none opacity-50" />
+        <div className="container relative z-10">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-5 rounded-full glass-card-static text-xs font-semibold">
+              <Zap className="w-3.5 h-3.5 text-brand-green" />
+              <span className="text-white/60">Premium Tools</span>
             </div>
-            <h2
-              className="mb-3"
-              style={{
-                fontFamily: "'Oswald', 'Rajdhani', sans-serif",
-                fontWeight: 700,
-                fontSize: "clamp(2rem, 4vw, 2.8rem)",
-                textTransform: "uppercase",
-                color: "white",
-              }}
-            >
-              FEATURES NO OTHER PLATFORM{" "}
-              <span style={{ color: "#39ff14", textShadow: "0 0 15px rgba(57,255,20,0.4)" }}>OFFERS</span>
+            <h2 className="font-display text-3xl lg:text-5xl mb-4 text-white">
+              Features No Other Platform{" "}
+              <span className="text-emerald-gradient">Offers</span>
             </h2>
-            <p style={{ color: "rgba(180,180,210,0.65)", maxWidth: "560px", margin: "0 auto" }}>
+            <p className="text-white/45 max-w-xl mx-auto text-lg">
               Built by professional bettors and data scientists. Every tool is designed to give you a measurable, mathematical edge.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {features.map((f) => (
-              <NeonCard key={f.title} className="p-6 relative">
-                {/* Top accent line */}
-                <div
-                  className="absolute top-0 left-0 right-0 h-[2px] opacity-0 transition-opacity duration-300"
-                  style={{ background: `linear-gradient(90deg, ${f.color}, transparent)` }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                />
-                <div className="flex items-start justify-between mb-3">
-                  <div
-                    className="w-10 h-10 flex items-center justify-center"
-                    style={{
-                      background: `${f.color}12`,
-                      border: `1px solid ${f.color}30`,
-                      borderRadius: "6px",
-                    }}
-                  >
-                    <f.icon className="w-5 h-5" style={{ color: f.color }} />
+            {features.map((f, i) => (
+              <motion.div
+                key={f.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+              >
+                <NeonCard className="p-6 h-full">
+                  <div className="flex items-start justify-between mb-4">
+                    <div
+                      className="w-11 h-11 flex items-center justify-center rounded-xl"
+                      style={{
+                        background: `${f.color}0a`,
+                        border: `1px solid ${f.color}20`,
+                      }}
+                    >
+                      <f.icon className="w-5 h-5" style={{ color: f.color }} />
+                    </div>
+                    <div
+                      className="px-2.5 py-1 text-[10px] font-bold tracking-wider rounded-full"
+                      style={{
+                        background: `${f.color}0a`,
+                        border: `1px solid ${f.color}20`,
+                        color: f.color,
+                      }}
+                    >
+                      {f.badge}
+                    </div>
                   </div>
-                  <div
-                    className="px-2 py-0.5 text-[10px] font-bold tracking-widest"
-                    style={{
-                      background: `${f.color}12`,
-                      border: `1px solid ${f.color}30`,
-                      borderRadius: "3px",
-                      color: f.color,
-                    }}
-                  >
-                    {f.badge}
-                  </div>
-                </div>
-                <h3
-                  className="mb-2"
-                  style={{
-                    fontFamily: "'Oswald', 'Rajdhani', sans-serif",
-                    fontWeight: 600,
-                    fontSize: "1.1rem",
-                    textTransform: "uppercase",
-                    color: "white",
-                  }}
-                >
-                  {f.title}
-                </h3>
-                <p style={{ fontSize: "0.875rem", color: "rgba(160,160,190,0.8)", lineHeight: 1.6 }}>
-                  {f.desc}
-                </p>
-              </NeonCard>
+                  <h3 className="font-display text-lg mb-2 text-white">{f.title}</h3>
+                  <p className="text-sm text-white/45 leading-relaxed">{f.desc}</p>
+                </NeonCard>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── SOCIAL PROOF ─────────────────────────────────────── */}
-      <section
-        className="py-16"
-        style={{
-          borderTop: "1px solid rgba(57,255,20,0.08)",
-          background: "linear-gradient(180deg, rgba(212,160,23,0.03) 0%, transparent 100%)",
-        }}
-      >
+      {/* ── TESTIMONIALS ─────────────────────────────────────── */}
+      <section className="py-20">
         <div className="container">
-          {/* Social proof stats banner */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-            {socialProofStats.map((stat) => (
-              <NeonCard key={stat.label} className="p-5 text-center">
-                <div className="text-2xl mb-1">{stat.icon}</div>
-                <div
-                  style={{
-                    fontFamily: "'Oswald', 'Rajdhani', sans-serif",
-                    fontWeight: 700,
-                    fontSize: "1.6rem",
-                    color: "#39ff14",
-                    textShadow: "0 0 8px rgba(57,255,20,0.4)",
-                  }}
-                >
-                  {stat.value}
-                </div>
-                <div className="text-xs mt-1" style={{ color: "rgba(140,140,170,0.8)" }}>
-                  {stat.label}
-                </div>
-              </NeonCard>
-            ))}
-          </div>
-
-          {/* Testimonials heading */}
-          <div className="text-center mb-10">
-            <div
-              className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-bold tracking-widest"
-              style={{
-                background: "rgba(212,160,23,0.08)",
-                border: "1px solid rgba(212,160,23,0.25)",
-                borderRadius: "4px",
-                color: "#f0b800",
-              }}
-            >
-              VERIFIED MEMBER RESULTS
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-5 rounded-full glass-card-static text-xs font-semibold">
+              <Star className="w-3.5 h-3.5 text-brand-gold" />
+              <span className="text-white/60">Verified Member Results</span>
             </div>
-            <h2
-              style={{
-                fontFamily: "'Oswald', 'Rajdhani', sans-serif",
-                fontWeight: 700,
-                fontSize: "2rem",
-                textTransform: "uppercase",
-                color: "white",
-              }}
-            >
-              WHAT OUR{" "}
-              <span style={{ color: "#f0b800", textShadow: "0 0 10px rgba(212,160,23,0.4)" }}>MEMBERS SAY</span>
+            <h2 className="font-display text-3xl lg:text-4xl text-white">
+              What Our Members <span className="text-gold-gradient">Say</span>
             </h2>
           </div>
 
-          {/* Testimonial cards */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {testimonials.map((t) => (
-              <NeonCard key={t.name} className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: t.stars }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4" style={{ fill: "#39ff14", color: "#39ff14" }} />
-                    ))}
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={t.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+              >
+                <NeonCard className="p-6 h-full">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: t.stars }).map((_, i) => (
+                        <Star key={i} className="w-4 h-4" style={{ fill: "#f0b800", color: "#f0b800" }} />
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-1 px-2.5 py-1 rounded-full glass-card-static text-xs font-bold text-brand-green">
+                      <Flame className="w-3 h-3" /> {t.streak}
+                    </div>
                   </div>
-                  <div
-                    className="flex items-center gap-1 px-2 py-0.5 text-xs font-bold"
-                    style={{
-                      background: "rgba(57,255,20,0.1)",
-                      border: "1px solid rgba(57,255,20,0.3)",
-                      borderRadius: "3px",
-                      color: "#39ff14",
-                    }}
-                  >
-                    <Flame className="w-3 h-3" /> {t.streak}
+                  <p className="text-sm text-white/55 leading-relaxed mb-4">"{t.text}"</p>
+                  <div>
+                    <div className="font-semibold text-sm text-white">{t.name}</div>
+                    <div className="text-xs text-white/35">{t.role}</div>
                   </div>
-                </div>
-                <p style={{ fontSize: "0.875rem", color: "rgba(180,180,210,0.75)", lineHeight: 1.7, marginBottom: "1rem" }}>
-                  "{t.text}"
-                </p>
-                <div>
-                  <div className="font-semibold text-sm" style={{ color: "white" }}>{t.name}</div>
-                  <div className="text-xs" style={{ color: "rgba(140,140,170,0.7)" }}>{t.role}</div>
-                </div>
-              </NeonCard>
+                </NeonCard>
+              </motion.div>
             ))}
           </div>
 
           {/* Live user count */}
-          <div className="text-center mt-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2" style={{ background: "rgba(57,255,20,0.05)", border: "1px solid rgba(57,255,20,0.15)", borderRadius: "6px" }}>
+          <div className="text-center mt-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full glass-card-static">
               <span className="live-dot" />
-              <span className="text-sm" style={{ color: "rgba(200,200,220,0.8)" }}>
-                <strong style={{ color: "#39ff14" }}>247</strong> members online now
+              <span className="text-sm text-white/60">
+                <strong className="text-brand-green">247</strong> members online now
               </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── CTA ──────────────────────────────────────────────── */}
-      <section
-        className="py-20"
-        style={{
-          borderTop: "1px solid rgba(57,255,20,0.1)",
-          background: `
-            radial-gradient(ellipse 80% 60% at 50% 100%, rgba(57,255,20,0.06), transparent),
-            #080814
-          `,
-        }}
-      >
-        <div className="container text-center">
-          <h2
-            className="mb-5"
+      {/* ── FINAL CTA ──────────────────────────────────────────── */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div
+            className="absolute animate-orb"
             style={{
-              fontFamily: "'Oswald', 'Rajdhani', sans-serif",
-              fontWeight: 700,
-              fontSize: "clamp(2.5rem, 6vw, 4rem)",
-              textTransform: "uppercase",
-              color: "white",
+              bottom: "-30%", left: "30%",
+              width: "60vw", height: "60vw",
+              background: "radial-gradient(ellipse, rgba(57, 255, 20, 0.06) 0%, transparent 60%)",
+              filter: "blur(80px)",
             }}
-          >
-            READY TO BET{" "}
-            <span style={{ color: "#39ff14", textShadow: "0 0 20px rgba(57,255,20,0.5)" }}>SMARTER?</span>
+          />
+        </div>
+        <div className="container relative z-10 text-center">
+          <h2 className="font-display text-4xl lg:text-6xl mb-6 text-white leading-tight">
+            Ready to Bet{" "}
+            <span className="text-emerald-gradient">Smarter?</span>
           </h2>
-          <p style={{ color: "rgba(180,180,210,0.7)", fontSize: "1.1rem", marginBottom: "2rem", maxWidth: "480px", margin: "0 auto 2rem" }}>
-            Join 12,847+ members who use ChalkPicks Pro to gain a real, mathematical edge. Choose your plan and start winning.
+          <p className="text-white/45 text-lg mb-10 max-w-lg mx-auto">
+            Join 12,847+ members who use ChalkPicks to gain a real, mathematical edge over the sportsbooks.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             {isAuthenticated ? (
               <Link href="/pricing">
-                <button
-                  className="flex items-center gap-2 px-8 py-3.5 text-base font-bold tracking-wider"
-                  style={{
-                    background: "#39ff14",
-                    color: "#080814",
-                    borderRadius: "4px",
-                    fontFamily: "'Exo 2', sans-serif",
-                    boxShadow: "0 0 20px rgba(57,255,20,0.35)",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  UPGRADE TO PRO <ArrowRight className="w-4 h-4" />
+                <button className="btn-premium text-base px-8 py-4">
+                  Upgrade to Pro <ArrowRight className="w-4 h-4" />
                 </button>
               </Link>
             ) : (
               <button
-                className="flex items-center gap-2 px-8 py-3.5 text-base font-bold tracking-wider"
-                style={{
-                  background: "#39ff14",
-                  color: "#080814",
-                  borderRadius: "4px",
-                  fontFamily: "'Exo 2', sans-serif",
-                  boxShadow: "0 0 20px rgba(57,255,20,0.35)",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                className="btn-premium text-base px-8 py-4"
                 onClick={() => (window.location.href = "/signup")}
               >
-                GET STARTED <ArrowRight className="w-4 h-4" />
+                Get Started Free <ArrowRight className="w-4 h-4" />
               </button>
             )}
             <Link href="/pricing">
-              <button
-                className="flex items-center gap-2 px-8 py-3.5 text-base font-semibold tracking-wider"
-                style={{
-                  background: "transparent",
-                  color: "#f0b800",
-                  borderRadius: "4px",
-                  fontFamily: "'Exo 2', sans-serif",
-                  border: "1px solid rgba(212,160,23,0.4)",
-                  cursor: "pointer",
-                }}
-              >
-                VIEW PRICING
+              <button className="btn-outline-premium">
+                View Plans
               </button>
             </Link>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-6 text-xs" style={{ color: "rgba(140,140,170,0.7)" }}>
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/35">
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#39ff14" }} /> Secure Stripe checkout
+              <CheckCircle2 className="w-4 h-4 text-brand-green" /> Secure Stripe checkout
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#39ff14" }} /> Cancel anytime
+              <CheckCircle2 className="w-4 h-4 text-brand-green" /> Cancel anytime
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#39ff14" }} /> Verified results
+              <CheckCircle2 className="w-4 h-4 text-brand-green" /> Verified results
             </span>
           </div>
-        </div>
-      </section>
-
-      {/* ── SPONSORS / PARTNERS ───────────────────────────────── */}
-      <section
-        className="py-14"
-        style={{
-          borderTop: "1px solid rgba(57,255,20,0.08)",
-          background: "linear-gradient(180deg, transparent 0%, rgba(57,255,20,0.02) 100%)",
-        }}
-      >
-        <div className="container">
-          <div className="text-center mb-8">
-            <div
-              className="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-bold tracking-widest"
-              style={{
-                background: "rgba(212,160,23,0.08)",
-                border: "1px solid rgba(212,160,23,0.25)",
-                borderRadius: "4px",
-                color: "#f0b800",
-              }}
-            >
-              TRUSTED BY THE BEST
-            </div>
-            <h2
-              style={{
-                fontFamily: "'Oswald', 'Rajdhani', sans-serif",
-                fontWeight: 700,
-                fontSize: "1.6rem",
-                textTransform: "uppercase",
-                color: "white",
-              }}
-            >
-              AS SEEN ON &{" "}
-              <span style={{ color: "#39ff14", textShadow: "0 0 10px rgba(57,255,20,0.4)" }}>PARTNERED WITH</span>
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {[
-              { name: "ESPN", color: "#ff4d4d" },
-              { name: "Action Network", color: "#f0b800" },
-              { name: "The Athletic", color: "#ffffff" },
-              { name: "Covers.com", color: "#39ff14" },
-              { name: "OddsShark", color: "#d4a017" },
-              { name: "BetMGM", color: "#c9a227" },
-            ].map((partner) => (
-              <NeonCard key={partner.name} className="p-4 text-center">
-                <div
-                  className="text-sm font-bold tracking-wider"
-                  style={{
-                    color: partner.color,
-                    fontFamily: "'Exo 2', sans-serif",
-                    opacity: 0.8,
-                  }}
-                >
-                  {partner.name}
-                </div>
-              </NeonCard>
-            ))}
-          </div>
-          <p className="text-center mt-4 text-xs" style={{ color: "rgba(120,120,150,0.5)" }}>
-            Interested in sponsoring ChalkPicks Pro? <a href="mailto:sponsors@chalkpicks.live" style={{ color: "#f0b800", textDecoration: "underline" }}>Contact us</a>
-          </p>
         </div>
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────── */}
-      <footer style={{ borderTop: "1px solid rgba(57,255,20,0.1)", padding: "3rem 0 2rem" }}>
+      <footer className="border-t border-white/5 py-16">
         <div className="container">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            {/* Brand */}
+          <div className="grid md:grid-cols-4 gap-10 mb-10">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp" alt="ChalkPicks" className="h-10 w-auto" style={{ filter: 'drop-shadow(0 0 8px rgba(57,255,20,0.4))' }} />
-              </div>
-              <p className="text-sm" style={{ color: "rgba(140,140,170,0.7)", lineHeight: 1.6 }}>
-                AI-powered sports betting analytics. Beat the books with data-driven picks.
+              <img
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp"
+                alt="ChalkPicks"
+                className="h-10 w-auto mb-4"
+                style={{ filter: "drop-shadow(0 0 8px rgba(57,255,20,0.3))" }}
+              />
+              <p className="text-sm text-white/40 leading-relaxed">
+                AI-powered sports betting analytics. Beat the books with data-driven picks and mathematical edge.
               </p>
             </div>
-            {/* Links */}
             <div>
-              <h4 className="text-sm font-bold mb-3" style={{ color: "#39ff14", fontFamily: "'Exo 2', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>Platform</h4>
-              <div className="space-y-2">
-                <Link href="/picks" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>AI Picks</Link>
-                <Link href="/stats" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Live Stats</Link>
-                <Link href="/ev-finder" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>+EV Finder</Link>
-                <Link href="/tools" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Tools</Link>
+              <h4 className="text-sm font-semibold mb-4 text-white/70">Platform</h4>
+              <div className="space-y-2.5">
+                <Link href="/picks" className="block text-sm text-white/40 hover:text-white/70 transition-colors">AI Picks</Link>
+                <Link href="/stats" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Live Stats</Link>
+                <Link href="/ev-finder" className="block text-sm text-white/40 hover:text-white/70 transition-colors">+EV Finder</Link>
+                <Link href="/tools" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Tools</Link>
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-bold mb-3" style={{ color: "#f0b800", fontFamily: "'Exo 2', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>Community</h4>
-              <div className="space-y-2">
-                <Link href="/leaderboard" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Leaderboard</Link>
-                <Link href="/pricing" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Pricing</Link>
-                <a href="https://twitter.com/chalkpicks" target="_blank" rel="noopener" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Twitter/X</a>
-                <a href="https://discord.gg/chalkpicks" target="_blank" rel="noopener" className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Discord</a>
+              <h4 className="text-sm font-semibold mb-4 text-white/70">Community</h4>
+              <div className="space-y-2.5">
+                <Link href="/leaderboard" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Leaderboard</Link>
+                <Link href="/pricing" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Pricing</Link>
+                <a href="https://twitter.com/chalkpicks" target="_blank" rel="noopener" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Twitter/X</a>
+                <a href="https://discord.gg/chalkpicks" target="_blank" rel="noopener" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Discord</a>
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-bold mb-3" style={{ color: "#d4a017", fontFamily: "'Exo 2', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>Legal</h4>
-              <div className="space-y-2">
-                <span className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Terms of Service</span>
-                <span className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Privacy Policy</span>
-                <span className="block text-sm" style={{ color: "rgba(140,140,170,0.7)" }}>Responsible Gambling</span>
+              <h4 className="text-sm font-semibold mb-4 text-white/70">Legal</h4>
+              <div className="space-y-2.5">
+                <span className="block text-sm text-white/40">Terms of Service</span>
+                <span className="block text-sm text-white/40">Privacy Policy</span>
+                <span className="block text-sm text-white/40">Responsible Gambling</span>
               </div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-6" style={{ borderTop: "1px solid rgba(57,255,20,0.08)" }}>
-            <div className="text-xs" style={{ color: "rgba(120,120,150,0.6)" }}>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-white/5">
+            <div className="text-xs text-white/30">
               © 2026 ChalkPicks Pro. All rights reserved. Bet responsibly.
             </div>
-            <div className="text-xs" style={{ color: "rgba(120,120,150,0.5)" }}>
+            <div className="text-xs text-white/25">
               Sports betting involves risk. Past performance is not indicative of future results.
             </div>
           </div>

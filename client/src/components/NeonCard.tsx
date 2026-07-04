@@ -6,11 +6,12 @@ interface NeonCardProps {
   style?: React.CSSProperties;
   variant?: "default" | "premium" | "accent" | "gold" | "blue" | "red";
   interactive?: boolean;
+  glow?: boolean;
 }
 
 /**
- * Premium broadcast-style card — ChalkPicks 5-color brand system.
- * dark/gold/green/red/blue — high contrast sports analytics aesthetic.
+ * Premium glassmorphism card — ChalkPicks luxury design system.
+ * Refined glass effect with subtle borders and depth.
  */
 export default function NeonCard({
   children,
@@ -18,64 +19,65 @@ export default function NeonCard({
   style = {},
   variant = "default",
   interactive = true,
+  glow = false,
 }: NeonCardProps) {
   const variantStyles: Record<string, React.CSSProperties> = {
     default: {
-      background: "linear-gradient(145deg, rgba(18,20,30,0.95) 0%, rgba(13,15,20,0.98) 100%)",
-      border: "1px solid rgba(212,160,23,0.15)",
-      boxShadow: "0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)",
+      background: "rgba(255, 255, 255, 0.03)",
+      border: "1px solid rgba(255, 255, 255, 0.08)",
+      boxShadow: "0 4px 30px rgba(0, 0, 0, 0.3)",
     },
     premium: {
-      background: "linear-gradient(145deg, rgba(20,22,32,0.97) 0%, rgba(13,15,20,0.99) 100%)",
-      border: "1px solid rgba(57,255,20,0.3)",
-      boxShadow: "0 4px 32px rgba(57,255,20,0.08), 0 0 0 1px rgba(57,255,20,0.05), inset 0 1px 0 rgba(255,255,255,0.05)",
+      background: "linear-gradient(135deg, rgba(57, 255, 20, 0.03) 0%, rgba(255, 255, 255, 0.02) 100%)",
+      border: "1px solid rgba(57, 255, 20, 0.15)",
+      boxShadow: "0 4px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(57, 255, 20, 0.03)",
     },
     accent: {
-      background: "linear-gradient(145deg, rgba(22,18,10,0.97) 0%, rgba(13,15,20,0.99) 100%)",
-      border: "1px solid rgba(240,184,0,0.3)",
-      boxShadow: "0 4px 32px rgba(212,160,23,0.1), inset 0 1px 0 rgba(240,184,0,0.06)",
+      background: "linear-gradient(135deg, rgba(212, 160, 23, 0.03) 0%, rgba(255, 255, 255, 0.02) 100%)",
+      border: "1px solid rgba(212, 160, 23, 0.15)",
+      boxShadow: "0 4px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 160, 23, 0.03)",
     },
     gold: {
-      background: "linear-gradient(145deg, rgba(24,20,8,0.97) 0%, rgba(13,15,20,0.99) 100%)",
-      border: "1px solid rgba(240,184,0,0.4)",
-      boxShadow: "0 4px 32px rgba(212,160,23,0.15), 0 0 60px rgba(212,160,23,0.05), inset 0 1px 0 rgba(240,184,0,0.08)",
+      background: "linear-gradient(135deg, rgba(212, 160, 23, 0.05) 0%, rgba(240, 184, 0, 0.02) 100%)",
+      border: "1px solid rgba(240, 184, 0, 0.25)",
+      boxShadow: "0 4px 30px rgba(0, 0, 0, 0.3), 0 0 30px rgba(212, 160, 23, 0.05)",
     },
     blue: {
-      background: "linear-gradient(145deg, rgba(10,16,30,0.97) 0%, rgba(13,15,20,0.99) 100%)",
-      border: "1px solid rgba(59,130,246,0.3)",
-      boxShadow: "0 4px 32px rgba(59,130,246,0.1), inset 0 1px 0 rgba(96,165,250,0.06)",
+      background: "linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(255, 255, 255, 0.02) 100%)",
+      border: "1px solid rgba(59, 130, 246, 0.15)",
+      boxShadow: "0 4px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.03)",
     },
     red: {
-      background: "linear-gradient(145deg, rgba(24,8,8,0.97) 0%, rgba(13,15,20,0.99) 100%)",
-      border: "1px solid rgba(255,59,59,0.3)",
-      boxShadow: "0 4px 32px rgba(255,59,59,0.1), inset 0 1px 0 rgba(255,107,107,0.06)",
+      background: "linear-gradient(135deg, rgba(255, 59, 59, 0.03) 0%, rgba(255, 255, 255, 0.02) 100%)",
+      border: "1px solid rgba(255, 59, 59, 0.15)",
+      boxShadow: "0 4px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 59, 59, 0.03)",
     },
   };
 
   const hoverColors: Record<string, { border: string; shadow: string }> = {
     default: {
-      border: "rgba(240,184,0,0.4)",
-      shadow: "0 8px 40px rgba(212,160,23,0.12), 0 0 0 1px rgba(240,184,0,0.08)",
+      border: "rgba(255, 255, 255, 0.15)",
+      shadow: "0 20px 60px rgba(0, 0, 0, 0.4), 0 0 30px rgba(57, 255, 20, 0.03)",
     },
     premium: {
-      border: "rgba(57,255,20,0.55)",
-      shadow: "0 8px 40px rgba(57,255,20,0.15), 0 0 0 1px rgba(57,255,20,0.08)",
+      border: "rgba(57, 255, 20, 0.3)",
+      shadow: "0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(57, 255, 20, 0.08)",
     },
     accent: {
-      border: "rgba(240,184,0,0.55)",
-      shadow: "0 8px 40px rgba(212,160,23,0.18), 0 0 0 1px rgba(240,184,0,0.1)",
+      border: "rgba(212, 160, 23, 0.3)",
+      shadow: "0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(212, 160, 23, 0.08)",
     },
     gold: {
-      border: "rgba(240,184,0,0.65)",
-      shadow: "0 8px 40px rgba(212,160,23,0.25), 0 0 60px rgba(212,160,23,0.08)",
+      border: "rgba(240, 184, 0, 0.45)",
+      shadow: "0 20px 60px rgba(0, 0, 0, 0.4), 0 0 50px rgba(212, 160, 23, 0.12)",
     },
     blue: {
-      border: "rgba(96,165,250,0.55)",
-      shadow: "0 8px 40px rgba(59,130,246,0.18), 0 0 0 1px rgba(96,165,250,0.08)",
+      border: "rgba(96, 165, 250, 0.3)",
+      shadow: "0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(59, 130, 246, 0.08)",
     },
     red: {
-      border: "rgba(255,107,107,0.55)",
-      shadow: "0 8px 40px rgba(255,59,59,0.18), 0 0 0 1px rgba(255,107,107,0.08)",
+      border: "rgba(255, 107, 107, 0.3)",
+      shadow: "0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(255, 59, 59, 0.08)",
     },
   };
 
@@ -87,7 +89,7 @@ export default function NeonCard({
     const el = e.currentTarget as HTMLDivElement;
     el.style.borderColor = hoverStyle.border;
     el.style.boxShadow = hoverStyle.shadow;
-    el.style.transform = "translateY(-2px)";
+    el.style.transform = "translateY(-4px)";
   };
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -100,11 +102,12 @@ export default function NeonCard({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-lg transition-all duration-300 ${className}`}
+      className={`relative overflow-hidden rounded-xl transition-all duration-300 ${className}`}
       style={{
         ...baseStyle,
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
+        backdropFilter: "blur(24px) saturate(1.4)",
+        WebkitBackdropFilter: "blur(24px) saturate(1.4)",
+        ...(glow && { animation: "glowPulse 3s infinite" }),
         ...style,
       }}
       onMouseEnter={interactive ? handleMouseEnter : undefined}

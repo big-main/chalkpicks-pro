@@ -12,9 +12,9 @@ export interface PageMetaConfig {
  */
 const PAGE_META_MAP: Record<string, PageMetaConfig> = {
   "/": {
-    title: "ChalkPicks — AI Sports Betting Picks | +EV Finder, Prop Builder & Free Trial",
+    title: "ChalkPicks | AI Sports Betting Picks & +EV Finder Tool",
     description:
-      "AI-powered sports betting picks with 73%+ win rate. Free +EV finder, prop builder, line movement tracker, and arbitrage alerts. NFL, NBA, MLB & NHL. Try free for 3 days — $9.99/mo.",
+      "AI-powered sports betting picks with 73%+ win rate. +EV finder, prop builder, line movement tracker, and arbitrage alerts across NFL, NBA, MLB & NHL.",
   },
   "/picks": {
     title: "AI Sports Betting Picks | ChalkPicks",

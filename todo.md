@@ -570,3 +570,34 @@
 - [x] Create Stripe revenue dashboard — Stripe dashboard at dashboard.stripe.com (subscriptions auto-tracked via webhook)
 - [x] Set up weekly reporting (traffic, conversions, revenue) — weeklyNewsletterHandler generates weekly stats
 - [x] Monitor search console for ranking keywords — GSC verified, 10 pages indexed, tracking active
+
+
+## Premium Redesign — "Million Dollar App" (Jul 4, 2026)
+
+### Phase 2: Global Styles & Typography
+- [ ] Add premium fonts (Plus Jakarta Sans + Inter) via Google Fonts CDN
+- [ ] Rewrite index.css with premium color system, glassmorphism utilities, gradient animations
+- [ ] Add premium button styles with glow effects
+- [ ] Update NeonCard component with refined glassmorphism
+
+### Phase 3: Navbar Redesign
+- [ ] Make logo 2x larger with enhanced glow
+- [ ] Streamline nav links (reduce clutter, group into dropdowns)
+- [ ] Premium floating nav with enhanced glass effect
+
+### Phase 4: Home Page Redesign
+- [ ] Redesign hero with larger typography and premium feel
+- [ ] Add bento grid features section
+- [ ] Floating stat cards with premium animations
+- [ ] Premium social proof section
+
+### Phase 5: Key Pages
+- [ ] Pricing page: glassmorphism cards with popular tier glow
+- [ ] Performance page: premium data cards
+- [ ] Picks page: premium pick cards with confidence visualizations
+
+## SEO Fixes (Homepage /)
+- [x] Reduce meta keywords from 21 to 7 (max 8)
+- [x] Rewrite title from 76 chars to 54 chars (30-60 range)
+- [x] Rewrite description from 180 chars to 149 chars (50-160 range)
+- [x] Sync PageMeta.tsx with index.html for consistent SPA title/description

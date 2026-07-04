@@ -11,36 +11,8 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
-import { Menu, X, Zap, ChevronDown, Bell, Crown, Activity, Shield, Cpu } from "lucide-react";
+import { Menu, X, Zap, ChevronDown, Bell, Crown, Cpu, ArrowRight } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-
-function LiveScoresTicker() {
-  const { data: games } = trpc.stats.allGames.useQuery(undefined, {
-    refetchInterval: 60_000,
-    staleTime: 30_000,
-  });
-  const liveGames = (games ?? []).filter((g: any) => g.status === 'in_progress' || g.status === 'live').slice(0, 5);
-  if (!liveGames.length) return null;
-  return (
-    <div className="hidden lg:flex items-center gap-4 overflow-x-auto px-6 py-1.5 text-[11px] border-b border-white/[0.04]">
-      <div className="flex items-center gap-1.5 flex-shrink-0 text-brand-green">
-        <Activity className="w-3 h-3 animate-pulse" />
-        <span className="font-bold tracking-[0.2em] text-[10px]" style={{ fontFamily: "'Exo 2', sans-serif" }}>LIVE</span>
-      </div>
-      {liveGames.map((g: any, i: number) => (
-        <div key={i} className="flex items-center gap-1.5 flex-shrink-0 text-white/60">
-          <span className="font-semibold text-white/90">{g.awayTeam}</span>
-          <span className="text-brand-green font-bold">{g.awayScore ?? 0}</span>
-          <span className="text-white/20">@</span>
-          <span className="font-semibold text-white/90">{g.homeTeam}</span>
-          <span className="text-brand-green font-bold">{g.homeScore ?? 0}</span>
-          {g.period && <span className="text-[10px] text-white/30">{g.period}</span>}
-          {i < liveGames.length - 1 && <span className="ml-2 text-brand-green/20">|</span>}
-        </div>
-      ))}
-    </div>
-  );
-}
 
 function LlmStatusBadge() {
   const { data } = trpc.system.llmStatus.useQuery(undefined, {
@@ -56,47 +28,53 @@ function LlmStatusBadge() {
   const cfg = providerConfig[data.provider] ?? providerConfig.gemini;
   return (
     <div
-      className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase"
+      className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase"
       style={{
-        background: `${cfg.color}10`,
-        border: `1px solid ${cfg.color}30`,
+        background: `${cfg.color}08`,
+        border: `1px solid ${cfg.color}20`,
         color: cfg.color,
       }}
       title={`AI Engine: ${cfg.title}`}
     >
       <Cpu className="w-3 h-3" />
       <span>{cfg.label}</span>
-      <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: cfg.color }} />
+      <span className="w-1.5 h-1.5 rounded-full animate-pulse-green" style={{ background: cfg.color }} />
     </div>
   );
 }
 
-const navLinks = [
+// Streamlined nav — primary links visible, secondary in "More" dropdown
+const primaryLinks = [
   { href: "/picks", label: "Picks" },
   { href: "/performance", label: "Performance" },
-  { href: "/stats", label: "Live Stats" },
   { href: "/ev-finder", label: "+EV Finder" },
+  { href: "/arbitrage", label: "Arbitrage" },
+  { href: "/stats", label: "Live Stats" },
+  { href: "/pricing", label: "Pricing" },
+];
+
+const moreLinks = [
   { href: "/backtesting", label: "Backtest" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/kalshi", label: "Kalshi" },
-  { href: "/clv-tracker", label: "CLV" },
-  { href: "/arbitrage", label: "Arbitrage" },
-  { href: "/arbitrage-opportunities", label: "Arb Opps" },
-  { href: "/prop-builder", label: "Props" },
-  { href: "/line-movement", label: "Lines" },
-  { href: "/correlation-finder", label: "Corr" },
+  { href: "/clv-tracker", label: "CLV Tracker" },
+  { href: "/arbitrage-opportunities", label: "Arb Opportunities" },
+  { href: "/prop-builder", label: "Prop Builder" },
+  { href: "/line-movement", label: "Line Movement" },
+  { href: "/correlation-finder", label: "Correlations" },
   { href: "/sportsbooks", label: "Sportsbooks" },
-  { href: "/odds-comparison", label: "Odds" },
-  { href: "/bet-calculator", label: "Calc" },
-  { href: "/tools/odds-calculator", label: "Odds Calc" },
-  { href: "/tools/roi-calculator", label: "ROI" },
+  { href: "/odds-comparison", label: "Odds Compare" },
+  { href: "/bet-calculator", label: "Bet Calculator" },
+  { href: "/tools/odds-calculator", label: "Odds Calculator" },
+  { href: "/tools/roi-calculator", label: "ROI Calculator" },
+  { href: "/tools/bankroll-manager", label: "Bankroll Manager" },
   { href: "/community-automation", label: "Community" },
-  { href: "/story-generator", label: "📸 Stories" },
-  { href: "/story-history", label: "📚 History" },
-  { href: "/tools", label: "Tools" },
+  { href: "/story-generator", label: "Story Generator" },
+  { href: "/story-history", label: "Story History" },
   { href: "/referral", label: "Referral" },
-  { href: "/pricing", label: "Pricing" },
 ];
+
+const allLinks = [...primaryLinks, ...moreLinks];
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -105,7 +83,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -119,67 +97,98 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
       style={{
-        background: scrolled ? "rgba(8, 8, 20, 0.97)" : "rgba(8, 8, 20, 0.85)",
-        backdropFilter: "blur(20px) saturate(1.2)",
-        WebkitBackdropFilter: "blur(20px) saturate(1.2)",
-        borderBottom: scrolled ? "1px solid rgba(57,255,20,0.08)" : "none",
-        boxShadow: scrolled ? "0 8px 32px rgba(0,0,0,0.5)" : "none",
+        background: scrolled
+          ? "rgba(8, 8, 15, 0.92)"
+          : "rgba(8, 8, 15, 0.6)",
+        backdropFilter: "blur(20px) saturate(1.3)",
+        WebkitBackdropFilter: "blur(20px) saturate(1.3)",
+        borderBottom: scrolled
+          ? "1px solid rgba(255, 255, 255, 0.06)"
+          : "1px solid transparent",
+        boxShadow: scrolled
+          ? "0 4px 30px rgba(0, 0, 0, 0.4)"
+          : "none",
       }}
     >
-      <LiveScoresTicker />
-      <div className="max-w-[1600px] mx-auto px-4 lg:px-6">
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-6">
         <div className="flex items-center justify-between h-[72px]">
-          {/* Logo — CP icon on mobile, full horizontal on md+ */}
-          <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
-            {/* Mobile: CP icon only */}
+          {/* Logo — larger, premium feel */}
+          <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
+            {/* Mobile: CP icon */}
             <img
               src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/cp-logo-icon-a3mVBRaWZeuoNHa3gFxuBp.webp"
               alt="ChalkPicks"
-              className="md:hidden h-10 w-10 transition-all duration-300 group-hover:scale-[1.05]"
-              style={{ filter: "drop-shadow(0 0 10px rgba(57,255,20,0.4))" }}
+              className="md:hidden h-11 w-11 transition-all duration-300 group-hover:scale-105"
+              style={{ filter: "drop-shadow(0 0 12px rgba(57, 255, 20, 0.35))" }}
             />
-            {/* Desktop: full horizontal logo */}
+            {/* Desktop: full logo — LARGER */}
             <img
               src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/cp-logo-navbar-EuWyWqzZKRjh6eatJJ5Sm9.webp"
               alt="ChalkPicks"
-              className="hidden md:block h-12 w-auto max-w-[220px] transition-all duration-300 group-hover:scale-[1.03]"
-              style={{ filter: "drop-shadow(0 0 12px rgba(57,255,20,0.25)) drop-shadow(0 0 4px rgba(57,255,20,0.15))" }}
+              className="hidden md:block h-14 w-auto max-w-[240px] transition-all duration-300 group-hover:scale-[1.03]"
+              style={{ filter: "drop-shadow(0 0 16px rgba(57, 255, 20, 0.2))" }}
             />
           </Link>
 
-          {/* Desktop Nav — pill-style links with smooth hover */}
-          <div className="hidden lg:flex items-center gap-0.5 overflow-x-auto scrollbar-hide mx-4">
-            {navLinks.map((link) => {
+          {/* Desktop Nav — clean, minimal, with "More" dropdown */}
+          <div className="hidden lg:flex items-center gap-1 mx-6">
+            {primaryLinks.map((link) => {
               const isActive = location === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="relative px-3 py-1.5 text-[13px] font-medium rounded-full transition-all duration-200 whitespace-nowrap"
+                  className="relative px-3.5 py-2 text-[13px] font-medium rounded-lg transition-all duration-200"
                   style={{
-                    fontFamily: "'Exo 2', sans-serif",
-                    fontWeight: isActive ? 600 : 500,
-                    letterSpacing: "0.02em",
-                    color: isActive ? "#39ff14" : "rgba(200,200,220,0.65)",
-                    background: isActive ? "rgba(57,255,20,0.08)" : "transparent",
-                    textShadow: isActive ? "0 0 12px rgba(57,255,20,0.5)" : "none",
+                    color: isActive ? "#39ff14" : "rgba(255, 255, 255, 0.6)",
+                    background: isActive ? "rgba(57, 255, 20, 0.06)" : "transparent",
                   }}
                 >
                   {link.label}
                   {isActive && (
                     <span
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-[2px] rounded-full"
-                      style={{ background: "#39ff14", boxShadow: "0 0 8px rgba(57,255,20,0.6)" }}
+                      className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-5 h-[2px] rounded-full"
+                      style={{ background: "#39ff14", boxShadow: "0 0 8px rgba(57, 255, 20, 0.6)" }}
                     />
                   )}
                 </Link>
               );
             })}
+
+            {/* More dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="flex items-center gap-1 px-3.5 py-2 text-[13px] font-medium rounded-lg transition-all duration-200 text-white/50 hover:text-white/80 hover:bg-white/5"
+                >
+                  More
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="center"
+                className="w-56 rounded-xl border-white/10 bg-[#0c0c18]/98 shadow-2xl backdrop-blur-xl max-h-[70vh] overflow-y-auto"
+              >
+                {moreLinks.map((link) => (
+                  <DropdownMenuItem key={link.href} asChild className="rounded-lg mx-1">
+                    <Link
+                      href={link.href}
+                      className="w-full"
+                      style={{
+                        color: location === link.href ? "#39ff14" : undefined,
+                      }}
+                    >
+                      {link.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
-          {/* Right side — clean, rounded elements */}
+          {/* Right side */}
           <div className="flex items-center gap-2.5 flex-shrink-0">
             <LlmStatusBadge />
             {isAuthenticated ? (
@@ -190,7 +199,7 @@ export default function Navbar() {
                     variant="ghost"
                     size="icon"
                     className="relative rounded-full w-9 h-9 hover:bg-white/5"
-                    style={{ color: "rgba(200,200,220,0.6)" }}
+                    style={{ color: "rgba(255, 255, 255, 0.5)" }}
                   >
                     <Bell className="w-4 h-4" />
                     {notifCount && notifCount.count > 0 ? (
@@ -201,17 +210,15 @@ export default function Navbar() {
                   </Button>
                 </Link>
 
-                {/* User menu — rounded pill */}
+                {/* User menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
                       className="flex items-center gap-2 pl-1.5 pr-2.5 py-1.5 rounded-full hover:bg-white/5 transition-all"
                     >
-                      <Avatar className="w-8 h-8 ring-1 ring-brand-green/20">
-                        <AvatarFallback
-                          className="text-xs font-bold bg-brand-green/10 text-brand-green"
-                        >
+                      <Avatar className="w-8 h-8 ring-1 ring-white/10">
+                        <AvatarFallback className="text-xs font-bold bg-brand-green/10 text-brand-green">
                           {user?.name?.charAt(0)?.toUpperCase() ?? "U"}
                         </AvatarFallback>
                       </Avatar>
@@ -224,7 +231,7 @@ export default function Navbar() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="w-52 rounded-xl border-white/10 bg-[#0c0c1c]/98 shadow-2xl"
+                    className="w-52 rounded-xl border-white/10 bg-[#0c0c18]/98 shadow-2xl backdrop-blur-xl"
                   >
                     <div className="px-3 py-2.5">
                       <p className="text-xs text-white/40">Signed in as</p>
@@ -260,7 +267,6 @@ export default function Navbar() {
                         <DropdownMenuSeparator className="bg-white/5" />
                         <DropdownMenuItem asChild className="rounded-lg mx-1">
                           <Link href="/admin" className="flex items-center gap-2 text-brand-green">
-                            <Shield className="w-3 h-3" />
                             Admin Panel
                           </Link>
                         </DropdownMenuItem>
@@ -282,33 +288,16 @@ export default function Navbar() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="hidden sm:flex rounded-full text-white/60 hover:text-white hover:bg-white/5"
+                    className="hidden sm:flex rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm"
                   >
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <button
-                    className="hidden sm:flex items-center gap-1.5 px-5 py-2.5 text-sm font-bold tracking-wider rounded-full transition-all duration-200"
-                    style={{
-                      background: "linear-gradient(135deg, #39ff14 0%, #2dd40e 100%)",
-                      color: "#080814",
-                      fontFamily: "'Exo 2', sans-serif",
-                      boxShadow: "0 0 20px rgba(57,255,20,0.25), inset 0 1px 0 rgba(255,255,255,0.2)",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 30px rgba(57,255,20,0.45), 0 0 60px rgba(57,255,20,0.15), inset 0 1px 0 rgba(255,255,255,0.2)";
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px) scale(1.02)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 20px rgba(57,255,20,0.25), inset 0 1px 0 rgba(255,255,255,0.2)";
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0) scale(1)";
-                    }}
-                  >
+                  <button className="hidden sm:flex btn-premium text-sm py-2.5 px-5">
                     <Zap className="w-3.5 h-3.5" />
-                    LAUNCH APP
+                    Get Started
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </Link>
               </>
@@ -319,7 +308,7 @@ export default function Navbar() {
               variant="ghost"
               size="icon"
               className="lg:hidden rounded-full w-9 h-9 hover:bg-white/5"
-              style={{ color: "rgba(200,200,220,0.7)" }}
+              style={{ color: "rgba(255, 255, 255, 0.7)" }}
               onClick={() => setMobileOpen(!mobileOpen)}
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -327,11 +316,11 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile menu — slide-in panel */}
+        {/* Mobile menu */}
         {mobileOpen && (
           <div className="lg:hidden py-4 space-y-0.5 animate-in slide-in-from-top-2 duration-200">
-            <div className="h-px bg-gradient-to-r from-transparent via-brand-green/20 to-transparent mb-3" />
-            {navLinks.map((link) => {
+            <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-3" />
+            {allLinks.map((link) => {
               const isActive = location === link.href;
               return (
                 <Link
@@ -340,8 +329,8 @@ export default function Navbar() {
                   onClick={() => setMobileOpen(false)}
                   className="block px-4 py-2.5 text-sm font-medium rounded-lg transition-all"
                   style={{
-                    color: isActive ? "#39ff14" : "rgba(200,200,220,0.7)",
-                    background: isActive ? "rgba(57,255,20,0.06)" : "transparent",
+                    color: isActive ? "#39ff14" : "rgba(255, 255, 255, 0.65)",
+                    background: isActive ? "rgba(57, 255, 20, 0.06)" : "transparent",
                   }}
                 >
                   {link.label}
@@ -351,16 +340,11 @@ export default function Navbar() {
             {!isAuthenticated && (
               <div className="pt-3 mt-2 border-t border-white/5">
                 <button
-                  className="w-full py-3 text-sm font-bold tracking-wider rounded-full"
-                  style={{
-                    background: "linear-gradient(135deg, #39ff14 0%, #2dd40e 100%)",
-                    color: "#080814",
-                    fontFamily: "'Exo 2', sans-serif",
-                  }}
+                  className="w-full btn-premium justify-center"
                   onClick={() => { setMobileOpen(false); window.location.href = "/signup"; }}
                 >
-                  <Zap className="w-3.5 h-3.5 inline mr-1.5" />
-                  LAUNCH APP
+                  <Zap className="w-3.5 h-3.5" />
+                  Get Started Free
                 </button>
               </div>
             )}

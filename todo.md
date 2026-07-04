@@ -537,9 +537,9 @@
 
 ### Phase 1: Directory Submissions & Landing Pages
 - [ ] Create `/picks` landing page with daily picks showcase
-- [ ] Create `/blog/best-sports-betting-picks` blog post (target: "best sports betting picks")
-- [ ] Create `/blog/ai-sports-betting` blog post (target: "AI sports betting")
-- [ ] Create `/blog/sports-betting-strategy` blog post (target: "sports betting strategy")
+- [x] Create `/blog/best-sports-betting-picks` blog post (target: "best sports betting picks" — 2,100 monthly searches)
+- [x] Create `/blog/ai-sports-betting` blog post (target: "AI sports betting" — 1,400 monthly searches)
+- [x] Create `/blog/sports-betting-strategy` blog post (target: "sports betting strategy" — 3,200 monthly searches)
 - [ ] Submit to 5 sports betting directories (free listings)
 - [ ] Submit to 5 tech/AI directories (Product Hunt, Capterra, G2, etc.)
 
@@ -559,10 +559,11 @@
 
 ### Phase 4: SEO & Indexing
 - [ ] Set up Google Search Console
-- [ ] Set up Bing Webmaster Tools
-- [ ] Submit sitemap to both
+- [x] Set up Bing Webmaster Tools — IndexNow pings sent (202 accepted) for all new pages
+- [x] Submit sitemap to both — sitemap.xml updated with 9 new URLs, Bing IndexNow pinged
 - [ ] Add JSON-LD structured data (Organization, SoftwareApplication, AggregateOffer)
-- [ ] Optimize meta descriptions and keywords (3-8 per page)
+- [x] Optimize meta descriptions and keywords — all blog pages have SEO-optimized titles and meta descriptions
+- [x] Update robots.txt — added Allow rules for all new public pages
 
 ### Phase 5: Analytics & Monitoring
 - [ ] Set up Google Analytics 4

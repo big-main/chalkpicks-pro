@@ -16,6 +16,13 @@ Allow: /clv-tracker
 Allow: /arbitrage
 Allow: /sportsbooks
 Allow: /tools
+Allow: /tools/odds-calculator
+Allow: /tools/roi-calculator
+Allow: /parlay-builder
+Allow: /odds-comparison
+Allow: /blog/best-sports-betting-picks
+Allow: /blog/ai-sports-betting
+Allow: /blog/sports-betting-strategy
 
 Disallow: /dashboard
 Disallow: /admin

@@ -115,4 +115,52 @@
     <priority>0.5</priority>
     <lastmod>2026-07-03</lastmod>
   </url>
+  <url>
+    <loc>https://chalkpicks.live/blog/best-sports-betting-picks</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-07-04</lastmod>
+  </url>
+  <url>
+    <loc>https://chalkpicks.live/blog/ai-sports-betting</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-07-04</lastmod>
+  </url>
+  <url>
+    <loc>https://chalkpicks.live/blog/sports-betting-strategy</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-07-04</lastmod>
+  </url>
+  <url>
+    <loc>https://chalkpicks.live/tools/odds-calculator</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-07-04</lastmod>
+  </url>
+  <url>
+    <loc>https://chalkpicks.live/tools/roi-calculator</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-07-04</lastmod>
+  </url>
+  <url>
+    <loc>https://chalkpicks.live/parlay-builder</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-07-04</lastmod>
+  </url>
+  <url>
+    <loc>https://chalkpicks.live/odds-comparison</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-07-04</lastmod>
+  </url>
+  <url>
+    <loc>https://chalkpicks.live/story-generator</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2026-07-04</lastmod>
+  </url>
 </urlset>

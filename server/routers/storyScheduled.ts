@@ -3,7 +3,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { storyScheduled } from "../../drizzle/schema";
-import { eq, and, gte, lte } from "drizzle-orm";
+import { eq, and, gte, lte, desc } from "drizzle-orm";
 
 export const storyScheduledRouter = router({
   scheduleStory: protectedProcedure
@@ -42,7 +42,7 @@ export const storyScheduledRouter = router({
 
         return {
           success: true,
-          id: result.insertId as number,
+          id: (result as any)[0]?.insertId ?? 0,
           scheduledTime: input.scheduledTime,
         };
       } catch (error) {
@@ -77,7 +77,7 @@ export const storyScheduledRouter = router({
           .select()
           .from(storyScheduled)
           .where(and(...conditions))
-          .orderBy((t: typeof storyScheduled.$inferSelect) => t.scheduledTime)
+          .orderBy(desc(storyScheduled.scheduledTime))
           .limit(input.limit)
           .offset(input.offset);
 
@@ -207,7 +207,7 @@ export const storyScheduledRouter = router({
               lte(storyScheduled.scheduledTime, futureTime)
             )
           )
-          .orderBy((t: typeof storyScheduled.$inferSelect) => t.scheduledTime);
+          .orderBy(desc(storyScheduled.scheduledTime));
 
         return { upcoming };
       } catch (error) {

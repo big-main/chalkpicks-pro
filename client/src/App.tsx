@@ -61,6 +61,8 @@ const CommunityAutomation = lazy(() => import("@/pages/CommunityAutomation"));
 const BlogBestPicks = lazy(() => import("@/pages/BlogBestPicks"));
 const BlogAISportsBetting = lazy(() => import("@/pages/BlogAISportsBetting"));
 const BlogStrategy = lazy(() => import("@/pages/BlogStrategy"));
+const PicksLanding = lazy(() => import("@/pages/PicksLanding"));
+const BankrollManager = lazy(() => import("@/pages/BankrollManager"));
 
 function PageLoader() {
   return (
@@ -131,6 +133,8 @@ function Router() {
           <Route path="/tools/odds-calculator" component={OddsCalculator} />
           <Route path="/tools/roi-calculator" component={ROICalculator} />
           <Route path="/community-automation" component={CommunityAutomation} />
+          <Route path="/daily-picks" component={PicksLanding} />
+          <Route path="/tools/bankroll-manager" component={BankrollManager} />
           <Route path="/blog/best-sports-betting-picks" component={BlogBestPicks} />
           <Route path="/blog/ai-sports-betting" component={BlogAISportsBetting} />
           <Route path="/blog/sports-betting-strategy" component={BlogStrategy} />

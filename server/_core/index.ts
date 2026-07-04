@@ -14,6 +14,7 @@ import { initializeWebSocket } from "../websocket";
 import { startLiveDataStreaming } from "./liveDataStreamer";
 import { arbitrageRefreshHandler } from "../handlers/arbitrageRefreshHandler";
 import { dailySocialPostHandler } from "../handlers/dailySocialPostHandler";
+import { weeklyNewsletterHandler } from "../handlers/weeklyNewsletterHandler";
 import { registerSecurityMiddleware } from "../middleware/security";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -65,6 +66,7 @@ async function startServer() {
   // Scheduled cron handlers — must come before SPA catch-all
   app.post("/api/scheduled/refresh-arbitrage", arbitrageRefreshHandler);
   app.post("/api/scheduled/daily-social-post", dailySocialPostHandler);
+  app.post("/api/scheduled/weekly-newsletter", weeklyNewsletterHandler);
 
   // Explicit routes for SEO/verification XML files — must come before SPA catch-all
   const xmlFiles = ['BingSiteAuth.xml', 'sitemap.xml', 'sitemap.xsl', 'chalkpicks2026indexnow.txt'];

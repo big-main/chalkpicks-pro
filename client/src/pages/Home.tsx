@@ -10,6 +10,8 @@ import {
   Calculator, CloudLightning, Layers, Eye, Flame
 } from "lucide-react";
 import NeonCard from "@/components/NeonCard";
+import { HeroBackground } from "@/components/HeroBackground";
+import { FadeIn, StaggerChildren, StaggerItem, ScaleOnHover } from "@/components/animations";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
@@ -117,7 +119,7 @@ export default function Home() {
   const { data: picksData } = trpc.picks.list.useQuery({ limit: 3, tier: "all" });
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground pb-16 md:pb-0">
       <Navbar />
 
       {/* ── HERO ─────────────────────────────────────────────── */}
@@ -154,6 +156,9 @@ export default function Home() {
             }}
           />
         </div>
+
+        {/* Animated particle mesh background */}
+        <HeroBackground />
 
         {/* Subtle grid */}
         <div className="absolute inset-0 cyber-grid-bg opacity-40 pointer-events-none" />
@@ -273,7 +278,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-mesh pointer-events-none" />
         <div className="container relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
+            <FadeIn direction="left">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-5 rounded-full glass-card-static text-xs font-semibold">
                 <Trophy className="w-3.5 h-3.5 text-brand-gold" />
                 <span className="text-white/60">Verified Track Record</span>
@@ -298,8 +303,9 @@ export default function Home() {
                   </NeonCard>
                 ))}
               </div>
-            </div>
+            </FadeIn>
 
+            <FadeIn direction="right">
             <NeonCard className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-medium text-white/50">Monthly ROI Performance</span>
@@ -328,6 +334,7 @@ export default function Home() {
                 </AreaChart>
               </ResponsiveContainer>
             </NeonCard>
+            </FadeIn>
           </div>
         </div>
       </section>

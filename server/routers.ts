@@ -32,6 +32,8 @@ import { ogImageRouter } from "./routers/ogImage";
 import { oddsComparisonRouter } from "./routers/oddsComparison";
 import { storyGeneratorRouter } from "./routers/storyGenerator";
 import { storyHistoryRouter } from "./routers/storyHistory";
+import { storyScheduledRouter } from "./routers/storyScheduled";
+import { communityAutomationRouter } from "./routers/communityAutomation";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import { users } from "../drizzle/schema";
@@ -168,6 +170,8 @@ export const appRouter = router({
   push: pushNotificationsRouter,
   storyGenerator: storyGeneratorRouter,
   storyHistory: storyHistoryRouter,
+  storyScheduled: storyScheduledRouter,
+  communityAutomation: communityAutomationRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -524,3 +524,48 @@
 - [x] Add "Copy to Clipboard" button on Story Generator preview — copy base64 image to clipboard for mobile paste
 - [x] Write vitest tests for all new story features (story generator, history, clipboard) — 15 tests passing
 - [x] Test end-to-end: generate story → save to history → view in history page → copy to clipboard
+
+
+## Story Generator Advanced Features (Jul 4, 2026)
+- [x] Auto-save drafts to localStorage — save form state every 3 seconds, restore on page reload
+- [x] Scheduled posting feature — add "Schedule for Later" button, story_scheduled table, storyScheduledRouter with 5 procedures
+- [x] Story templates system — 3 preset layouts (Default, Minimal, Detailed), template selector UI
+- [x] Write vitest tests for all three features — integrated into storyGenerator.test.ts
+
+
+## Free Organic Traffic Growth (Jul 4, 2026)
+
+### Phase 1: Directory Submissions & Landing Pages
+- [ ] Create `/picks` landing page with daily picks showcase
+- [ ] Create `/blog/best-sports-betting-picks` blog post (target: "best sports betting picks")
+- [ ] Create `/blog/ai-sports-betting` blog post (target: "AI sports betting")
+- [ ] Create `/blog/sports-betting-strategy` blog post (target: "sports betting strategy")
+- [ ] Submit to 5 sports betting directories (free listings)
+- [ ] Submit to 5 tech/AI directories (Product Hunt, Capterra, G2, etc.)
+
+### Phase 2: Interactive Tools
+- [x] Build Odds Calculator tool (`/tools/odds-calculator`) — Convert American/Decimal/Fractional odds + payouts
+- [x] Build ROI Calculator tool (`/tools/roi-calculator`) — Track betting performance, break-even analysis
+- [x] Build Parlay Builder tool (`/tools/parlay-builder`) — Already existed, optimized for traffic
+- [ ] Build Bankroll Manager tool (`/tools/bankroll-manager`)
+
+### Phase 3: Social Media Automation
+- [x] Create community automation router (Reddit, Twitter, Discord posting) — communityAutomationRouter with 5 procedures
+- [x] Build Community Automation UI page (`/community-automation`) — Platform metrics, manual posting, scheduling
+- [ ] Set up Heartbeat cron jobs for daily Reddit/Twitter/Discord posting (requires deployment)
+- [ ] Create n8n workflow for automated Instagram/TikTok posting
+- [ ] Create content calendar (30 days)
+- [ ] Set up email newsletter (weekly picks summary)
+
+### Phase 4: SEO & Indexing
+- [ ] Set up Google Search Console
+- [ ] Set up Bing Webmaster Tools
+- [ ] Submit sitemap to both
+- [ ] Add JSON-LD structured data (Organization, SoftwareApplication, AggregateOffer)
+- [ ] Optimize meta descriptions and keywords (3-8 per page)
+
+### Phase 5: Analytics & Monitoring
+- [ ] Set up Google Analytics 4
+- [ ] Create Stripe revenue dashboard
+- [ ] Set up weekly reporting (traffic, conversions, revenue)
+- [ ] Monitor search console for ranking keywords

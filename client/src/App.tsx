@@ -54,6 +54,9 @@ const Performance = lazy(() => import("@/pages/Performance"));
 const BetCalculator = lazy(() => import("@/pages/BetCalculator"));
 const StoryGenerator = lazy(() => import("@/pages/StoryGenerator"));
 const StoryHistory = lazy(() => import("@/pages/StoryHistory"));
+const OddsCalculator = lazy(() => import("@/pages/OddsCalculator"));
+const ROICalculator = lazy(() => import("@/pages/ROICalculator"));
+const CommunityAutomation = lazy(() => import("@/pages/CommunityAutomation"));
 
 function PageLoader() {
   return (
@@ -120,6 +123,9 @@ function Router() {
           <Route path="/bet-calculator" component={BetCalculator} />
           <Route path="/story-generator" component={StoryGenerator} />
           <Route path="/story-history" component={StoryHistory} />
+          <Route path="/tools/odds-calculator" component={OddsCalculator} />
+          <Route path="/tools/roi-calculator" component={ROICalculator} />
+          <Route path="/community-automation" component={CommunityAutomation} />
           <Route path="/404" component={NotFound} />
           <Route component={NotFound} />
         </Switch>

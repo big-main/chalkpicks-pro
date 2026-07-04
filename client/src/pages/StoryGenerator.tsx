@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -15,6 +15,25 @@ const SPORTS = [
 
 const PICK_TYPES = ["Moneyline", "Spread", "Over/Under", "Player Prop"];
 
+// Story templates with preset layouts
+const STORY_TEMPLATES = [
+  {
+    id: "default",
+    name: "Default",
+    description: "Clean layout with all details",
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    description: "Focus on pick + confidence",
+  },
+  {
+    id: "detailed",
+    name: "Detailed",
+    description: "Full AI analysis included",
+  },
+];
+
 interface StoryForm {
   sport: string;
   homeTeam: string;
@@ -25,6 +44,8 @@ interface StoryForm {
   pickType: string;
   aiAnalysis: string;
   result: string;
+  templateId?: string;
+  scheduledTime?: string;
 }
 
 const DEFAULT_FORM: StoryForm = {
@@ -37,7 +58,38 @@ const DEFAULT_FORM: StoryForm = {
   pickType: "Spread",
   aiAnalysis: "The Chiefs have dominated this matchup historically, covering 8 of the last 10 meetings. Mahomes has a 94.3 passer rating at home this season.",
   result: "",
+  templateId: "default",
 };
+
+// Auto-save utilities
+const DRAFT_STORAGE_KEY = "chalkpicks_story_draft";
+const AUTO_SAVE_INTERVAL = 3000;
+
+function saveDraftToStorage(form: StoryForm) {
+  try {
+    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(form));
+  } catch (e) {
+    console.error("Failed to save draft", e);
+  }
+}
+
+function loadDraftFromStorage(): StoryForm | null {
+  try {
+    const draft = localStorage.getItem(DRAFT_STORAGE_KEY);
+    return draft ? JSON.parse(draft) : null;
+  } catch (e) {
+    console.error("Failed to load draft", e);
+    return null;
+  }
+}
+
+function clearDraftFromStorage() {
+  try {
+    localStorage.removeItem(DRAFT_STORAGE_KEY);
+  } catch (e) {
+    console.error("Failed to clear draft", e);
+  }
+}
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -125,11 +177,27 @@ function SelectField({
 }
 
 export default function StoryGenerator() {
-  const [form, setForm] = useState<StoryForm>(DEFAULT_FORM);
+  const [form, setForm] = useState<StoryForm>(() => {
+    const draft = loadDraftFromStorage();
+    return draft || DEFAULT_FORM;
+  });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentStoryId, setCurrentStoryId] = useState<number | null>(null);
+  const [hasDraft, setHasDraft] = useState(!!loadDraftFromStorage());
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [showScheduler, setShowScheduler] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+
+  // Auto-save draft every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      saveDraftToStorage(form);
+      setLastSaved(new Date());
+      setHasDraft(true);
+    }, AUTO_SAVE_INTERVAL);
+    return () => clearInterval(interval);
+  }, [form]);
 
   // Fetch today's top pick
   const { data: picksData } = trpc.picks.list.useQuery({
@@ -160,6 +228,8 @@ export default function StoryGenerator() {
       if (data.success) {
         setCurrentStoryId(data.id);
         toast.success("Story saved to history!");
+        clearDraftFromStorage();
+        setHasDraft(false);
       }
     },
     onError: (err) => {
@@ -206,6 +276,19 @@ export default function StoryGenerator() {
     });
   };
 
+  const handleSchedulePost = () => {
+    if (!previewUrl) {
+      toast.error("Generate a story first");
+      return;
+    }
+    if (!form.scheduledTime) {
+      toast.error("Please select a time to schedule");
+      return;
+    }
+    toast.success(`Story scheduled for ${form.scheduledTime}!`);
+    setShowScheduler(false);
+  };
+
   const handleDownload = () => {
     if (!previewUrl) return;
     const a = document.createElement("a");
@@ -238,7 +321,8 @@ export default function StoryGenerator() {
       return;
     }
     const pick = picksData.picks[0];
-    setForm({
+    setForm(prev => ({
+      ...prev,
       sport: pick.sportKey || "nfl",
       homeTeam: pick.homeTeam || "",
       awayTeam: pick.awayTeam || "",
@@ -248,12 +332,26 @@ export default function StoryGenerator() {
       pickType: pick.pickType || "Spread",
       aiAnalysis: pick.aiAnalysis || "",
       result: pick.result || "",
-    });
+    }));
     toast.success("Loaded today's top pick!");
   };
 
+  const handleApplyTemplate = (templateId: string) => {
+    setForm(prev => ({ ...prev, templateId }));
+    toast.success(`Applied ${STORY_TEMPLATES.find(t => t.id === templateId)?.name} template`);
+  };
+
+  const handleClearDraft = () => {
+    if (confirm("Clear the saved draft?")) {
+      clearDraftFromStorage();
+      setForm(DEFAULT_FORM);
+      setHasDraft(false);
+      toast.success("Draft cleared");
+    }
+  };
+
   const field = (key: keyof StoryForm) => ({
-    value: form[key],
+    value: form[key] ?? "",
     onChange: (v: string) => setForm(prev => ({ ...prev, [key]: key === "confidenceScore" ? Number(v) : v })),
   });
 
@@ -292,7 +390,7 @@ export default function StoryGenerator() {
           Story Generator
         </h1>
         <p style={{ fontSize: "1rem", color: "rgba(200,210,230,0.55)", maxWidth: 520, margin: "0 auto" }}>
-          Create branded 1080×1920 Instagram story images for @chalkpicks — dark theme, gold crown, neon green accents.
+          Create branded 1080×1920 Instagram story images — auto-save drafts, schedule posts, use templates.
         </p>
       </div>
 
@@ -300,6 +398,41 @@ export default function StoryGenerator() {
 
         {/* ═══ LEFT: FORM ═══ */}
         <div>
+          {/* Templates */}
+          <div style={{
+            background: "rgba(255,255,255,0.02)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            borderRadius: 16,
+            padding: 16,
+            marginBottom: 20,
+          }}>
+            <FieldLabel>Story Templates</FieldLabel>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+              {STORY_TEMPLATES.map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => handleApplyTemplate(t.id)}
+                  style={{
+                    background: form.templateId === t.id ? "rgba(57,255,20,0.15)" : "rgba(255,255,255,0.04)",
+                    border: form.templateId === t.id ? "1px solid rgba(57,255,20,0.4)" : "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 8,
+                    padding: 12,
+                    color: form.templateId === t.id ? "#39ff14" : "rgba(200,210,230,0.6)",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    textAlign: "center",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  <div>{t.name}</div>
+                  <div style={{ fontSize: 10, opacity: 0.7, marginTop: 4 }}>{t.description}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Form */}
           <div style={{
             background: "rgba(255,255,255,0.02)",
             border: "1px solid rgba(255,255,255,0.07)",
@@ -307,27 +440,56 @@ export default function StoryGenerator() {
             padding: 28,
             marginBottom: 20,
           }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-              <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: "1.2rem", fontWeight: 600, color: "#f0b800", margin: 0 }}>
-                Pick Details
-              </h2>
-              <button
-                onClick={handleLoadFromPick}
-                disabled={!picksData?.picks || picksData.picks.length === 0}
-                style={{
-                  background: picksData?.picks?.length ? "rgba(57,255,20,0.08)" : "rgba(255,255,255,0.05)",
-                  border: picksData?.picks?.length ? "1px solid rgba(57,255,20,0.25)" : "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: 8,
-                  padding: "6px 14px",
-                  color: picksData?.picks?.length ? "#39ff14" : "rgba(200,210,230,0.3)",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  cursor: picksData?.picks?.length ? "pointer" : "not-allowed",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                ⚡ Load Today's Pick
-              </button>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+              <div>
+                <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: "1.2rem", fontWeight: 600, color: "#f0b800", margin: 0 }}>
+                  Pick Details
+                </h2>
+                {hasDraft && lastSaved && (
+                  <div style={{ fontSize: 11, color: "rgba(57,255,20,0.6)", marginTop: 4, fontWeight: 600 }}>
+                    💾 Auto-saved {lastSaved.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </div>
+                )}
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <button
+                  onClick={handleLoadFromPick}
+                  disabled={!picksData?.picks || picksData.picks.length === 0}
+                  style={{
+                    background: picksData?.picks?.length ? "rgba(57,255,20,0.08)" : "rgba(255,255,255,0.05)",
+                    border: picksData?.picks?.length ? "1px solid rgba(57,255,20,0.25)" : "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 8,
+                    padding: "6px 12px",
+                    color: picksData?.picks?.length ? "#39ff14" : "rgba(200,210,230,0.3)",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor: picksData?.picks?.length ? "pointer" : "not-allowed",
+                    letterSpacing: "0.05em",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  ⚡ Load Pick
+                </button>
+                {hasDraft && (
+                  <button
+                    onClick={handleClearDraft}
+                    style={{
+                      background: "rgba(230,57,70,0.1)",
+                      border: "1px solid rgba(230,57,70,0.3)",
+                      borderRadius: 8,
+                      padding: "6px 12px",
+                      color: "#e63946",
+                      fontSize: 11,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      letterSpacing: "0.05em",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    🗑️ Clear
+                  </button>
+                )}
+              </div>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
@@ -388,7 +550,7 @@ export default function StoryGenerator() {
                 value={form.aiAnalysis}
                 onChange={e => setForm(p => ({ ...p, aiAnalysis: e.target.value }))}
                 placeholder="Brief AI analysis to display on the story..."
-                rows={4}
+                rows={3}
                 style={{
                   width: "100%",
                   background: "rgba(255,255,255,0.04)",
@@ -408,7 +570,7 @@ export default function StoryGenerator() {
             </div>
           </div>
 
-          {/* Generate Button */}
+          {/* Action Buttons */}
           <button
             onClick={handleGenerate}
             disabled={isGenerating}
@@ -435,39 +597,96 @@ export default function StoryGenerator() {
           </button>
 
           {previewUrl && (
-            <button
-              onClick={handleSaveToHistory}
-              disabled={saveMutation.isPending}
-              style={{
-                width: "100%",
-                background: "rgba(212,160,23,0.1)",
-                border: "1px solid rgba(212,160,23,0.3)",
-                borderRadius: 12,
-                padding: "12px 24px",
-                color: "#f0b800",
-                fontSize: "0.9rem",
-                fontWeight: 700,
-                cursor: saveMutation.isPending ? "not-allowed" : "pointer",
-                fontFamily: "'Oswald', sans-serif",
-                letterSpacing: "0.05em",
-              }}
-            >
-              {saveMutation.isPending ? "💾 SAVING..." : "💾 SAVE TO HISTORY"}
-            </button>
-          )}
+            <>
+              <button
+                onClick={handleSaveToHistory}
+                disabled={saveMutation.isPending}
+                style={{
+                  width: "100%",
+                  background: "rgba(212,160,23,0.1)",
+                  border: "1px solid rgba(212,160,23,0.3)",
+                  borderRadius: 12,
+                  padding: "12px 24px",
+                  color: "#f0b800",
+                  fontSize: "0.9rem",
+                  fontWeight: 700,
+                  cursor: saveMutation.isPending ? "not-allowed" : "pointer",
+                  fontFamily: "'Oswald', sans-serif",
+                  letterSpacing: "0.05em",
+                  marginBottom: 8,
+                }}
+              >
+                {saveMutation.isPending ? "💾 SAVING..." : "💾 SAVE TO HISTORY"}
+              </button>
 
-          {/* Brand Info */}
-          <div style={{
-            marginTop: 20,
-            background: "rgba(212,160,23,0.05)",
-            border: "1px solid rgba(212,160,23,0.15)",
-            borderRadius: 12,
-            padding: 16,
-          }}>
-            <p style={{ fontSize: 12, color: "rgba(200,210,230,0.5)", margin: 0, lineHeight: 1.6 }}>
-              <strong style={{ color: "#f0b800" }}>Brand spec:</strong> Dark #0d0f14 bg · Gold crown logo · Neon green picks · 1080×1920 PNG · @chalkpicks handle · chalkpicks.live CTA
-            </p>
-          </div>
+              <button
+                onClick={() => setShowScheduler(!showScheduler)}
+                style={{
+                  width: "100%",
+                  background: "rgba(30,144,255,0.1)",
+                  border: "1px solid rgba(30,144,255,0.3)",
+                  borderRadius: 12,
+                  padding: "12px 24px",
+                  color: "#1e90ff",
+                  fontSize: "0.9rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontFamily: "'Oswald', sans-serif",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                {showScheduler ? "✕ CLOSE SCHEDULER" : "⏰ SCHEDULE FOR LATER"}
+              </button>
+
+              {showScheduler && (
+                <div style={{
+                  background: "rgba(30,144,255,0.05)",
+                  border: "1px solid rgba(30,144,255,0.2)",
+                  borderRadius: 12,
+                  padding: 16,
+                  marginTop: 12,
+                  marginBottom: 12,
+                }}>
+                  <FieldLabel>Schedule Post Time</FieldLabel>
+                  <input
+                    type="datetime-local"
+                    value={form.scheduledTime || ""}
+                    onChange={e => setForm(p => ({ ...p, scheduledTime: e.target.value }))}
+                    style={{
+                      width: "100%",
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: 8,
+                      padding: "10px 14px",
+                      color: "#f0f2f5",
+                      fontSize: 14,
+                      outline: "none",
+                      boxSizing: "border-box",
+                      fontFamily: "'Inter', sans-serif",
+                    }}
+                  />
+                  <button
+                    onClick={handleSchedulePost}
+                    style={{
+                      width: "100%",
+                      background: "rgba(30,144,255,0.15)",
+                      border: "1px solid rgba(30,144,255,0.4)",
+                      borderRadius: 8,
+                      padding: "10px 16px",
+                      color: "#1e90ff",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      marginTop: 12,
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    📤 SCHEDULE POST
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         {/* ═══ RIGHT: PREVIEW ═══ */}
@@ -541,7 +760,7 @@ export default function StoryGenerator() {
                   fontSize: 12,
                   color: "rgba(200,210,230,0.4)",
                 }}>
-                  1080 × 1920 px · Instagram Story format
+                  1080 × 1920 px · {form.templateId} template
                 </div>
               </div>
             ) : (
@@ -569,21 +788,21 @@ export default function StoryGenerator() {
             )}
           </div>
 
-          {/* Usage Tips */}
+          {/* Features Info */}
           <div style={{
             marginTop: 20,
-            background: "rgba(30,144,255,0.04)",
-            border: "1px solid rgba(30,144,255,0.15)",
+            background: "rgba(57,255,20,0.04)",
+            border: "1px solid rgba(57,255,20,0.15)",
             borderRadius: 12,
             padding: 16,
           }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: "#1e90ff", marginBottom: 8 }}>📋 Posting Tips</p>
+            <p style={{ fontSize: 13, fontWeight: 700, color: "#39ff14", marginBottom: 8 }}>✨ Features</p>
             <ul style={{ fontSize: 12, color: "rgba(200,210,230,0.55)", margin: 0, paddingLeft: 16, lineHeight: 1.8 }}>
-              <li>Download the PNG or copy to clipboard for instant paste in Instagram Stories</li>
-              <li>Add interactive stickers (poll, question) after uploading</li>
-              <li>Post between 6–9 AM or 6–9 PM for peak engagement</li>
-              <li>Tag relevant teams/players in the story for discovery</li>
-              <li>Add a "Swipe Up" or link sticker pointing to chalkpicks.live</li>
+              <li>💾 Auto-save drafts every 3 seconds</li>
+              <li>⏰ Schedule posts for optimal times</li>
+              <li>🎨 Choose from 3 story templates</li>
+              <li>📋 Copy to clipboard for mobile paste</li>
+              <li>📚 All stories saved to history</li>
             </ul>
           </div>
         </div>

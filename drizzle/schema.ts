@@ -595,3 +595,33 @@ export const storyExports = mysqlTable("story_exports", {
 
 export type StoryExport = typeof storyExports.$inferSelect;
 export type InsertStoryExport = typeof storyExports.$inferInsert;
+
+
+// ─── Scheduled Stories ─────────────────────────────────────────────────────────
+export const storyScheduled = mysqlTable("story_scheduled", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  storyExportId: int("storyExportId"),
+  sport: varchar("sport", { length: 32 }).notNull(),
+  homeTeam: varchar("homeTeam", { length: 128 }).notNull(),
+  awayTeam: varchar("awayTeam", { length: 128 }).notNull(),
+  recommendation: varchar("recommendation", { length: 256 }).notNull(),
+  confidenceScore: int("confidenceScore").notNull(),
+  pickType: varchar("pickType", { length: 64 }).notNull(),
+  aiAnalysis: text("aiAnalysis"),
+  templateId: varchar("templateId", { length: 64 }).default("default").notNull(),
+  scheduledTime: timestamp("scheduledTime").notNull(),
+  status: mysqlEnum("status", ["pending", "posted", "failed", "cancelled"]).default("pending").notNull(),
+  postedAt: timestamp("postedAt"),
+  failureReason: text("failureReason"),
+  instagramPostId: varchar("instagramPostId", { length: 128 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ([
+  index("idx_story_scheduled_user").on(table.userId),
+  index("idx_story_scheduled_time").on(table.scheduledTime),
+  index("idx_story_scheduled_status").on(table.status),
+]));
+
+export type StoryScheduled = typeof storyScheduled.$inferSelect;
+export type InsertStoryScheduled = typeof storyScheduled.$inferInsert;

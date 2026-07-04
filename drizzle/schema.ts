@@ -562,3 +562,36 @@ export const pushSubscriptions = mysqlTable("push_subscriptions", {
 ]));
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;
+
+// ─── Story Exports ───────────────────────────────────────────────────────────
+// Tracks all generated Instagram story images for history and analytics
+export const storyExports = mysqlTable("story_exports", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"),
+  pickId: int("pickId"),
+  sport: varchar("sport", { length: 32 }).notNull(),
+  homeTeam: varchar("homeTeam", { length: 128 }).notNull(),
+  awayTeam: varchar("awayTeam", { length: 128 }).notNull(),
+  recommendation: varchar("recommendation", { length: 256 }).notNull(),
+  odds: int("odds"),
+  confidenceScore: int("confidenceScore").notNull(),
+  pickType: varchar("pickType", { length: 64 }).notNull(),
+  aiAnalysis: text("aiAnalysis"),
+  result: mysqlEnum("result", ["win", "loss", "push", "pending"]).default("pending").notNull(),
+  s3Url: varchar("s3Url", { length: 512 }),
+  s3Key: varchar("s3Key", { length: 512 }),
+  // imageBase64 removed — use S3 URL instead for efficiency
+  generatedAt: timestamp("generatedAt").defaultNow().notNull(),
+  postedToInstagram: boolean("postedToInstagram").default(false).notNull(),
+  postedAt: timestamp("postedAt"),
+  instagramPostId: varchar("instagramPostId", { length: 128 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ([
+  index("idx_story_exports_user").on(table.userId),
+  index("idx_story_exports_pick").on(table.pickId),
+  index("idx_story_exports_date").on(table.generatedAt),
+]));
+
+export type StoryExport = typeof storyExports.$inferSelect;
+export type InsertStoryExport = typeof storyExports.$inferInsert;

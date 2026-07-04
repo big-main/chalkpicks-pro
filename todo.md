@@ -514,3 +514,13 @@
 - [x] Mobile logo breakpoint — show CP icon on sm screens, full horizontal logo on md+
 - [x] P&L color indicators on Performance page — red/green win/loss rows
 - [x] Branded Instagram story generator — one-click export using AI pick data + gold premium logo
+
+
+## Story Generator Enhancements (Jul 4, 2026)
+- [x] Wire "Load Today's Pick" button to trpc.picks.list — fetch top pick from DB and auto-populate form
+- [x] Create story_exports table in schema — track pick_id, generated_at, s3_url, user_id, sport, confidence
+- [x] Build Story History router — getHistory, deleteExport, getExportStats procedures
+- [x] Add Story History UI page — view all generated stories with thumbnail previews, delete option, export count
+- [x] Add "Copy to Clipboard" button on Story Generator preview — copy base64 image to clipboard for mobile paste
+- [x] Write vitest tests for all new story features (story generator, history, clipboard) — 15 tests passing
+- [x] Test end-to-end: generate story → save to history → view in history page → copy to clipboard

@@ -128,14 +128,22 @@ export default function StoryGenerator() {
   const [form, setForm] = useState<StoryForm>(DEFAULT_FORM);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [currentStoryId, setCurrentStoryId] = useState<number | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+
+  // Fetch today's top pick
+  const { data: picksData } = trpc.picks.list.useQuery({
+    limit: 1,
+    page: 1,
+    tier: "all",
+  });
 
   const generateMutation = trpc.storyGenerator.generateStory.useMutation({
     onSuccess: (data) => {
       if (data.success && data.buffer) {
         const url = `data:image/png;base64,${data.buffer}`;
         setPreviewUrl(url);
-        toast.success("Story generated! Click Download to save.");
+        toast.success("Story generated! Click Download or Copy to share.");
       } else {
         toast.error(data.error ?? "Generation failed");
       }
@@ -144,6 +152,18 @@ export default function StoryGenerator() {
     onError: (err) => {
       toast.error(`Error: ${err.message}`);
       setIsGenerating(false);
+    },
+  });
+
+  const saveMutation = trpc.storyHistory.saveStory.useMutation({
+    onSuccess: (data) => {
+      if (data.success) {
+        setCurrentStoryId(data.id);
+        toast.success("Story saved to history!");
+      }
+    },
+    onError: (err) => {
+      toast.error(`Save failed: ${err.message}`);
     },
   });
 
@@ -167,6 +187,25 @@ export default function StoryGenerator() {
     });
   };
 
+  const handleSaveToHistory = () => {
+    if (!previewUrl) {
+      toast.error("Generate a story first");
+      return;
+    }
+    const oddsNum = parseInt(form.odds, 10);
+    saveMutation.mutate({
+      sport: form.sport,
+      homeTeam: form.homeTeam,
+      awayTeam: form.awayTeam,
+      recommendation: form.recommendation,
+      odds: isNaN(oddsNum) ? undefined : oddsNum,
+      confidenceScore: form.confidenceScore,
+      pickType: form.pickType,
+      aiAnalysis: form.aiAnalysis || undefined,
+      result: form.result || undefined,
+    });
+  };
+
   const handleDownload = () => {
     if (!previewUrl) return;
     const a = document.createElement("a");
@@ -176,20 +215,41 @@ export default function StoryGenerator() {
     toast.success("Story downloaded!");
   };
 
+  const handleCopyToClipboard = async () => {
+    if (!previewUrl) {
+      toast.error("Generate a story first");
+      return;
+    }
+    try {
+      const blob = await fetch(previewUrl).then(r => r.blob());
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": blob }),
+      ]);
+      toast.success("Story copied to clipboard! Paste in Instagram Stories.");
+    } catch (err) {
+      toast.error("Failed to copy to clipboard");
+      console.error(err);
+    }
+  };
+
   const handleLoadFromPick = () => {
-    // Pre-fill with today's top pick (mock for now, can be wired to trpc.picks.list)
+    if (!picksData?.picks || picksData.picks.length === 0) {
+      toast.error("No picks available for today");
+      return;
+    }
+    const pick = picksData.picks[0];
     setForm({
-      sport: "nba",
-      homeTeam: "Boston Celtics",
-      awayTeam: "Golden State Warriors",
-      recommendation: "Over 224.5",
-      odds: "-115",
-      confidenceScore: 79,
-      pickType: "Over/Under",
-      aiAnalysis: "Both teams rank top-5 in offensive efficiency. The Celtics-Warriors matchup historically goes over 68% of the time. Warriors pace of play combined with Celtics 3-point volume creates high-scoring environments.",
-      result: "",
+      sport: pick.sportKey || "nfl",
+      homeTeam: pick.homeTeam || "",
+      awayTeam: pick.awayTeam || "",
+      recommendation: pick.recommendation || "",
+      odds: String(pick.odds ?? "-110"),
+      confidenceScore: pick.confidenceScore ?? 75,
+      pickType: pick.pickType || "Spread",
+      aiAnalysis: pick.aiAnalysis || "",
+      result: pick.result || "",
     });
-    toast.info("Loaded today's top pick");
+    toast.success("Loaded today's top pick!");
   };
 
   const field = (key: keyof StoryForm) => ({
@@ -253,15 +313,16 @@ export default function StoryGenerator() {
               </h2>
               <button
                 onClick={handleLoadFromPick}
+                disabled={!picksData?.picks || picksData.picks.length === 0}
                 style={{
-                  background: "rgba(57,255,20,0.08)",
-                  border: "1px solid rgba(57,255,20,0.25)",
+                  background: picksData?.picks?.length ? "rgba(57,255,20,0.08)" : "rgba(255,255,255,0.05)",
+                  border: picksData?.picks?.length ? "1px solid rgba(57,255,20,0.25)" : "1px solid rgba(255,255,255,0.1)",
                   borderRadius: 8,
                   padding: "6px 14px",
-                  color: "#39ff14",
+                  color: picksData?.picks?.length ? "#39ff14" : "rgba(200,210,230,0.3)",
                   fontSize: 12,
                   fontWeight: 700,
-                  cursor: "pointer",
+                  cursor: picksData?.picks?.length ? "pointer" : "not-allowed",
                   letterSpacing: "0.05em",
                 }}
               >
@@ -367,10 +428,33 @@ export default function StoryGenerator() {
               letterSpacing: "0.08em",
               boxShadow: isGenerating ? "none" : "0 0 24px rgba(57,255,20,0.3)",
               transition: "all 0.2s",
+              marginBottom: 12,
             }}
           >
             {isGenerating ? "⏳ GENERATING STORY..." : "🎨 GENERATE STORY IMAGE"}
           </button>
+
+          {previewUrl && (
+            <button
+              onClick={handleSaveToHistory}
+              disabled={saveMutation.isPending}
+              style={{
+                width: "100%",
+                background: "rgba(212,160,23,0.1)",
+                border: "1px solid rgba(212,160,23,0.3)",
+                borderRadius: 12,
+                padding: "12px 24px",
+                color: "#f0b800",
+                fontSize: "0.9rem",
+                fontWeight: 700,
+                cursor: saveMutation.isPending ? "not-allowed" : "pointer",
+                fontFamily: "'Oswald', sans-serif",
+                letterSpacing: "0.05em",
+              }}
+            >
+              {saveMutation.isPending ? "💾 SAVING..." : "💾 SAVE TO HISTORY"}
+            </button>
+          )}
 
           {/* Brand Info */}
           <div style={{
@@ -400,25 +484,40 @@ export default function StoryGenerator() {
                 Preview
               </h2>
               {previewUrl && (
-                <button
-                  onClick={handleDownload}
-                  style={{
-                    background: "rgba(212,160,23,0.1)",
-                    border: "1px solid rgba(212,160,23,0.3)",
-                    borderRadius: 8,
-                    padding: "8px 18px",
-                    color: "#f0b800",
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    letterSpacing: "0.05em",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                  }}
-                >
-                  ⬇️ Download PNG
-                </button>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={handleCopyToClipboard}
+                    style={{
+                      background: "rgba(30,144,255,0.1)",
+                      border: "1px solid rgba(30,144,255,0.3)",
+                      borderRadius: 8,
+                      padding: "8px 14px",
+                      color: "#1e90ff",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    📋 Copy
+                  </button>
+                  <button
+                    onClick={handleDownload}
+                    style={{
+                      background: "rgba(212,160,23,0.1)",
+                      border: "1px solid rgba(212,160,23,0.3)",
+                      borderRadius: 8,
+                      padding: "8px 14px",
+                      color: "#f0b800",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    ⬇️ Download
+                  </button>
+                </div>
               )}
             </div>
 
@@ -480,7 +579,7 @@ export default function StoryGenerator() {
           }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: "#1e90ff", marginBottom: 8 }}>📋 Posting Tips</p>
             <ul style={{ fontSize: 12, color: "rgba(200,210,230,0.55)", margin: 0, paddingLeft: 16, lineHeight: 1.8 }}>
-              <li>Download the PNG and upload directly to Instagram Stories</li>
+              <li>Download the PNG or copy to clipboard for instant paste in Instagram Stories</li>
               <li>Add interactive stickers (poll, question) after uploading</li>
               <li>Post between 6–9 AM or 6–9 PM for peak engagement</li>
               <li>Tag relevant teams/players in the story for discovery</li>

@@ -89,6 +89,7 @@ const navLinks = [
   { href: "/odds-comparison", label: "Odds" },
   { href: "/bet-calculator", label: "Calc" },
   { href: "/story-generator", label: "📸 Stories" },
+  { href: "/story-history", label: "📚 History" },
   { href: "/tools", label: "Tools" },
   { href: "/referral", label: "Referral" },
   { href: "/pricing", label: "Pricing" },

@@ -360,6 +360,16 @@ export default function Pricing() {
                     >
                       ✓ CURRENT PLAN
                     </div>
+                  ) : plan.key === "monthly" ? (
+                    /* Stripe Buy Button for Monthly Pro */
+                    <div className="w-full flex flex-col items-center gap-2">
+                      {/* @ts-ignore — Stripe Buy Button is a custom element */}
+                      <stripe-buy-button
+                        buy-button-id="buy_btn_1Tpyc2JXlShpHPhg0Yi0S3rF"
+                        publishable-key="pk_live_51TovY5JXlShpHPhgNmSSCzFcKNOKMuoR5Ct9AWhVzb1tcXI2Xtjw3usW7jFJWVEIPwAUgCKreTVhGDpryqbwMwr800NvkUfWw4"
+                        style={{ width: "100%" }}
+                      />
+                    </div>
                   ) : (
                     <button
                       onClick={() => handleSubscribe(plan.key)}

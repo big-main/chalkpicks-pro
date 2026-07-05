@@ -646,3 +646,9 @@
 - [x] Mobile-only (disabled on md+ screens)
 - [x] Wire SwipeNavProvider into App.tsx wrapping Router + SocialProofTicker + MobileBottomNav
 - [x] TypeScript: 0 errors
+
+## Stripe Buy Button — Monthly Pro (Jul 5, 2026)
+- [x] Add Stripe Buy Button JS script to index.html head (async load)
+- [x] Replace Monthly Pro CTA button in Pricing.tsx with official stripe-buy-button element
+- [x] Daily Pass and Annual Elite keep existing Stripe checkout session flow
+- [x] TypeScript: 0 errors (custom element suppressed with @ts-ignore)

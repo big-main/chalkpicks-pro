@@ -621,3 +621,18 @@
 - [x] Polish onboarding flow with multi-step wizard and progress indicators
 - [x] Integrate all components into existing pages
 - [x] TypeScript compiles clean, tests pass (113/117 — 3 pre-existing failures)
+
+## Logo Fix & Dropdown Enhancement (Jul 5, 2026)
+- [x] Fix logo: apply mix-blend-mode screen + drop-shadow glow to remove black square and blend with dark bg
+- [x] Make logo bigger: 220px wide desktop, 68px icon on mobile
+- [x] Rebuild Navbar as mega-menu with 4 groups (Analytics, Tools, Calculators, Community)
+- [x] Each mega-menu item has icon, label, and description
+- [x] Mega-menu has colored group headers, animated open/close, and bottom CTA bar
+- [x] User dropdown rebuilt with glassmorphism, avatar, tier badge, organized items, sign out
+- [x] Mobile menu shows all nav groups with icons and active states
+- [x] Add PageTransition component with Framer Motion enter/exit animations
+- [x] Wrap all routes in AnimatePresence for smooth page transitions
+- [x] Rewrite Referral.tsx with premium design (share card, rewards tracker, history table)
+- [x] Referral share card has copy code, copy link, and Twitter share buttons
+- [x] TypeScript compiles clean (0 errors)
+- [x] 114/117 tests pass (2 pre-existing failures: subscription amounts + feedback timeout)

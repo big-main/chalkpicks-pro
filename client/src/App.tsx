@@ -1,4 +1,7 @@
 import { lazy, Suspense } from "react";
+import { AnimatePresence } from "framer-motion";
+import { PageTransition } from "@/components/PageTransition";
+import { useLocation } from "wouter";
 import { WebMCPTools } from "@/components/WebMCPTools";
 import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
 import { StructuredData } from "@/components/StructuredData";
@@ -84,12 +87,15 @@ function PageLoader() {
 
 function Router() {
   usePageTracking();
+  const [location] = useLocation();
   return (
     <>
       <PageMeta />
       <BreadcrumbJsonLd />
       <StructuredData />
       <Suspense fallback={<PageLoader />}>
+        <AnimatePresence mode="wait" initial={false}>
+        <PageTransition key={location}>
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/picks" component={Picks} />
@@ -143,6 +149,8 @@ function Router() {
           <Route path="/404" component={NotFound} />
           <Route component={NotFound} />
         </Switch>
+        </PageTransition>
+        </AnimatePresence>
       </Suspense>
     </>
   );

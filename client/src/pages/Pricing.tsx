@@ -382,6 +382,17 @@ export default function Pricing() {
                         style={{ width: "100%" }}
                       />
                     </div>
+                  ) : plan.key === "yearly" ? (
+                    /* Stripe Buy Button — Annual VIP */
+                    <div className="w-full flex flex-col items-center gap-2">
+                      {/* @ts-ignore — Stripe Buy Button is a custom element */}
+                      <stripe-buy-button
+                        buy-button-id="buy_btn_1TpyjQJXlShpHPhgtdOYAbTc"
+                        publishable-key="pk_live_51TovY5JXlShpHPhgNmSSCzFcKNOKMuoR5Ct9AWhVzb1tcXI2Xtjw3usW7jFJWVEIPwAUgCKreTVhGDpryqbwMwr800NvkUfWw4"
+                        success-url={`${window.location.origin}/account-settings?subscribed=true&plan=yearly`}
+                        style={{ width: "100%" }}
+                      />
+                    </div>
                   ) : (
                     <button
                       onClick={() => handleSubscribe(plan.key)}

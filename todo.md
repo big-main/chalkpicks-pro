@@ -661,3 +661,9 @@
 - [x] Banner shows plan-specific message (Monthly Pro / Daily Pass)
 - [x] Banner auto-dismisses after 8 seconds, URL cleaned up with history.replaceState
 - [x] TypeScript: 0 errors
+
+## Annual VIP Stripe Buy Button (Jul 5, 2026)
+- [x] Add Stripe Buy Button for Annual VIP (buy_btn_1TpyjQJXlShpHPhgtdOYAbTc)
+- [x] All three pricing tiers now use Stripe Buy Buttons (Daily Pass, Monthly Pro, Annual VIP)
+- [x] All three redirect to /account-settings?subscribed=true&plan={tier} on success
+- [x] TypeScript: 0 errors

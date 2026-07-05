@@ -652,3 +652,12 @@
 - [x] Replace Monthly Pro CTA button in Pricing.tsx with official stripe-buy-button element
 - [x] Daily Pass and Annual Elite keep existing Stripe checkout session flow
 - [x] TypeScript: 0 errors (custom element suppressed with @ts-ignore)
+
+## Stripe Buy Buttons — Daily Pass + Post-Purchase (Jul 5, 2026)
+- [x] Add Stripe Buy Button for Daily Pass (buy_btn_1TpyfwJXlShpHPhg27Ns7mB1)
+- [x] Add success-url to both Monthly Pro and Daily Pass buy buttons → /account-settings?subscribed=true&plan={tier}
+- [x] Annual Elite keeps existing Stripe checkout session flow (no buy button ID provided yet)
+- [x] Add post-purchase success banner to AccountSettings page
+- [x] Banner shows plan-specific message (Monthly Pro / Daily Pass)
+- [x] Banner auto-dismisses after 8 seconds, URL cleaned up with history.replaceState
+- [x] TypeScript: 0 errors

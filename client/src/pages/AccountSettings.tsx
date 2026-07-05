@@ -16,6 +16,23 @@ export default function AccountSettings() {
   const { isAuthenticated, user } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
 
+  // Detect post-purchase redirect from Stripe Buy Button
+  const searchParams = new URLSearchParams(window.location.search);
+  const justSubscribed = searchParams.get("subscribed") === "true";
+  const subscribedPlan = searchParams.get("plan") ?? "";
+  const [showSuccessBanner, setShowSuccessBanner] = useState(justSubscribed);
+
+  useEffect(() => {
+    if (justSubscribed) {
+      // Clean up URL without reload
+      const clean = window.location.pathname;
+      window.history.replaceState({}, "", clean);
+      // Auto-dismiss after 8 seconds
+      const t = setTimeout(() => setShowSuccessBanner(false), 8000);
+      return () => clearTimeout(t);
+    }
+  }, [justSubscribed]);
+
   const logoutMutation = trpc.auth.logout.useMutation();
 
   if (!isAuthenticated) {
@@ -53,6 +70,36 @@ export default function AccountSettings() {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <div className="container pt-24 pb-16">
+        {/* Post-purchase success banner */}
+        {showSuccessBanner && (
+          <div
+            className="mb-6 flex items-start gap-4 p-5 rounded-2xl"
+            style={{
+              background: "linear-gradient(135deg, rgba(57,255,20,0.08) 0%, rgba(57,255,20,0.04) 100%)",
+              border: "1px solid rgba(57,255,20,0.3)",
+              boxShadow: "0 0 30px rgba(57,255,20,0.08)",
+            }}
+          >
+            <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(57,255,20,0.15)" }}>
+              <CheckCircle className="w-5 h-5" style={{ color: "#39ff14" }} />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-base" style={{ color: "#39ff14" }}>
+                🎉 Payment Successful — Welcome to ChalkPicks{subscribedPlan === "monthly" ? " Monthly Pro" : subscribedPlan === "daily" ? " Daily Pass" : ""}!
+              </p>
+              <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
+                Your subscription is now active. It may take a moment for your access to update — refresh the page if premium features aren't visible yet.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowSuccessBanner(false)}
+              className="flex-shrink-0 text-white/30 hover:text-white/60 transition-colors text-lg leading-none"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8">
           <h1 style={{ fontWeight: 700, fontSize: "2rem", textTransform: "uppercase", color: "white" }}>

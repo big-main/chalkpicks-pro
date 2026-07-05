@@ -636,3 +636,13 @@
 - [x] Referral share card has copy code, copy link, and Twitter share buttons
 - [x] TypeScript compiles clean (0 errors)
 - [x] 114/117 tests pass (2 pre-existing failures: subscription amounts + feedback timeout)
+
+## Swipe Gesture Navigation (Jul 5, 2026)
+- [x] Create useSwipeNavigation hook — detects horizontal swipe, threshold 55px, velocity 0.18px/ms, cancels on vertical drift >80px
+- [x] Create SwipeNavProvider component — wraps app, shows directional hint overlay during swipe
+- [x] Swipe hint shows target tab name + chevron arrow, colored to match destination tab
+- [x] Hint fades out after swipe completes or touch ends
+- [x] Android haptic feedback via navigator.vibrate(8) on successful swipe
+- [x] Mobile-only (disabled on md+ screens)
+- [x] Wire SwipeNavProvider into App.tsx wrapping Router + SocialProofTicker + MobileBottomNav
+- [x] TypeScript: 0 errors

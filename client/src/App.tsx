@@ -18,6 +18,7 @@ import Home from "./pages/Home";
 import NotFound from "@/pages/NotFound";
 import { SocialProofTicker } from "@/components/SocialProofTicker";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { SwipeNavProvider } from "@/components/SwipeNavProvider";
 
 // Lazy-loaded pages (code splitting)
 const Picks = lazy(() => import("./pages/Picks"));
@@ -163,9 +164,11 @@ function App() {
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster richColors position="top-right" />
-          <Router />
-          <SocialProofTicker />
-          <MobileBottomNav />
+          <SwipeNavProvider>
+            <Router />
+            <SocialProofTicker />
+            <MobileBottomNav />
+          </SwipeNavProvider>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

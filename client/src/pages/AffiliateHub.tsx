@@ -4,7 +4,8 @@ import { Copy, Share2, TrendingUp, Users, DollarSign, Gift } from "lucide-react"
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { useRouter } from "wouter";
 
 export default function AffiliateHub() {
   const { user } = useAuth();

@@ -56,6 +56,7 @@ const ParlayTracker = lazy(() => import("@/pages/ParlayTracker"));
 const ElitePlusTier = lazy(() => import("@/pages/ElitePlusTier"));
 const APIAccess = lazy(() => import("@/pages/APIAccess"));
 const ResellerProgram = lazy(() => import("@/pages/ResellerProgram"));
+const UserProfile = lazy(() => import("@/pages/UserProfile"));
 const Sportsbooks = lazy(() => import("@/pages/Sportsbooks"));
 const Sponsors = lazy(() => import("@/pages/Sponsors"));
 const AdminPanel = lazy(() => import("@/pages/AdminPanel"));
@@ -140,6 +141,7 @@ function Router() {
           <Route path="/elite-plus" component={ElitePlusTier} />
           <Route path="/api-access" component={APIAccess} />
           <Route path="/reseller" component={ResellerProgram} />
+          <Route path="/profile" component={UserProfile} />
           <Route path="/onboarding" component={Onboarding} />
           <Route path="/arbitrage" component={ArbitrageFinder} />
           <Route path="/arbitrage-opportunities" component={ArbitrageOpportunitiesPage} />

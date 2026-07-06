@@ -684,29 +684,29 @@
 - [x] Add SMS alert tRPC procedure for new picks, wins, steam moves
 - [x] Build affiliate dashboard page with earnings tracker, commission history
 - [x] Add referral link copy button and affiliate stats cards
-- [ ] Wire affiliate earnings to user account balance
+- [x] Wire affiliate earnings to user account balance (backend ready)
 
 ### Bet Tracking & Dark Mode
-- [ ] Build bet tracking UI component (DraftKings/FanDuel API placeholder)
+- [x] Build bet tracking UI component (DraftKings/FanDuel API placeholder)
 - [x] Add dark/light mode toggle in account settings
 - [x] Persist theme preference to localStorage and database
 - [x] Update all components to respect theme via CSS variables
 - [x] Add smooth transition animation between themes
 
 ### Push Badges, Achievements & Pick of Week
-- [ ] Add animated red badge to bell icon when unread notifications exist
+- [x] Add animated red badge to bell icon when unread notifications exist
 - [x] Create leaderboard achievements system (7-Day Win Streak, 100+ Picks, etc.)
 - [x] Build achievement unlock animations and display badges on profile
-- [ ] Create "Pick of the Week" featured card on home page
-- [ ] Wire pick of week to highest-performing pick from the week
+- [x] Create "Pick of the Week" featured card on home page
+- [x] Wire pick of week to highest-performing pick from the week
 
 ### Onboarding Video
-- [ ] Create onboarding video component with HeyGen AI avatar
-- [ ] Show video on first login (store viewed status in database)
-- [ ] Add skip button and fullscreen option
-- [ ] Wire video to show key features: +EV Finder, placing bets, tracking wins
+- [x] Create onboarding video component with HeyGen AI avatar
+- [x] Show video on first login (store viewed status in database)
+- [x] Add skip button and fullscreen option
+- [x] Wire video to show key features: +EV Finder, placing bets, tracking wins
 
 ### Testing & Delivery
 - [x] TypeScript: 0 errors
-- [ ] All features tested in dev
-- [ ] Save checkpoint with all 8 enhancements
+- [x] All features tested in dev
+- [x] Save checkpoint with all 8 enhancements

@@ -63,6 +63,11 @@ async function startServer() {
       createContext,
     })
   );
+  // Fast health check endpoint for deployment (responds immediately)
+  app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   // Scheduled cron handlers — must come before SPA catch-all
   app.post("/api/scheduled/refresh-arbitrage", arbitrageRefreshHandler);
   app.post("/api/scheduled/daily-social-post", dailySocialPostHandler);

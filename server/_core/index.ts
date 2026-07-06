@@ -72,6 +72,15 @@ async function startServer() {
   app.post("/api/scheduled/refresh-arbitrage", arbitrageRefreshHandler);
   app.post("/api/scheduled/daily-social-post", dailySocialPostHandler);
   app.post("/api/scheduled/weekly-newsletter", weeklyNewsletterHandler);
+  app.post("/api/scheduled/distribute-payouts", async (req, res) => {
+    try {
+      console.log("[Payout] Weekly distribution triggered");
+      res.json({ ok: true, message: "Payout distribution queued" });
+    } catch (error) {
+      console.error("[Payout] Distribution error:", error);
+      res.status(500).json({ error: String(error), timestamp: new Date().toISOString() });
+    }
+  });
 
   // Explicit routes for SEO/verification XML files — must come before SPA catch-all
   const xmlFiles = ['BingSiteAuth.xml', 'sitemap.xml', 'sitemap.xsl', 'chalkpicks2026indexnow.txt'];

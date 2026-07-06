@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MessageCircle, Send, Users, Heart, Reply2 } from "lucide-react";
+import { MessageCircle, Send, Users, Heart, Share2 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -242,7 +242,7 @@ export default function CommunityChat() {
                             {msg.likes}
                           </button>
                           <button className="flex items-center gap-1 hover:text-blue-400 transition-colors">
-                            <Reply2 className="w-3 h-3" />
+                            <Share2 className="w-3 h-3" />
                             {msg.replies}
                           </button>
                         </div>

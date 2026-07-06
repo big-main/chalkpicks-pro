@@ -1,10 +1,10 @@
-import { useAuth } from "@/lib/auth";
 import { useRouter } from "wouter";
 import { motion } from "framer-motion";
 import { Copy, Share2, TrendingUp, Users, DollarSign, Gift } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function AffiliateHub() {
   const { user } = useAuth();

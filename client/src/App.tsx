@@ -48,6 +48,7 @@ const Referral = lazy(() => import("@/pages/Referral"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const SubscriptionDashboard = lazy(() => import("@/pages/SubscriptionDashboard"));
 const ArbitrageFinder = lazy(() => import("@/pages/ArbitrageFinder"));
+const AffiliateHub = lazy(() => import("@/pages/AffiliateHub"));
 const Sportsbooks = lazy(() => import("@/pages/Sportsbooks"));
 const Sponsors = lazy(() => import("@/pages/Sponsors"));
 const AdminPanel = lazy(() => import("@/pages/AdminPanel"));
@@ -124,6 +125,7 @@ function Router() {
           <Route path="/parlay-builder" component={ParlayBuilder} />
           <Route path="/bankroll-tracker" component={BankrollTracker} />
           <Route path="/referral" component={Referral} />
+          <Route path="/affiliate" component={AffiliateHub} />
           <Route path="/onboarding" component={Onboarding} />
           <Route path="/arbitrage" component={ArbitrageFinder} />
           <Route path="/arbitrage-opportunities" component={ArbitrageOpportunitiesPage} />

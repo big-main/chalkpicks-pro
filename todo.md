@@ -677,3 +677,36 @@
 - [x] Welcome email shows plan name, features, expiration date, and quick-start tips
 - [x] Enable "Allow promotion codes" on all three Buy Buttons in Stripe Dashboard (user action)
 - [x] TypeScript: 0 errors
+
+## Premium Enhancements — Phase 2 (Jul 6, 2026)
+### SMS Notifications & Affiliate Dashboard
+- [ ] Create Twilio SMS integration (server/routers/sms.ts)
+- [ ] Add SMS alert tRPC procedure for new picks, wins, steam moves
+- [ ] Build affiliate dashboard page with earnings tracker, commission history
+- [ ] Add referral link copy button and affiliate stats cards
+- [ ] Wire affiliate earnings to user account balance
+
+### Bet Tracking & Dark Mode
+- [ ] Build bet tracking UI component (DraftKings/FanDuel API placeholder)
+- [ ] Add dark/light mode toggle in account settings
+- [ ] Persist theme preference to localStorage and database
+- [ ] Update all components to respect theme via CSS variables
+- [ ] Add smooth transition animation between themes
+
+### Push Badges, Achievements & Pick of Week
+- [ ] Add animated red badge to bell icon when unread notifications exist
+- [ ] Create leaderboard achievements system (7-Day Win Streak, 100+ Picks, etc.)
+- [ ] Build achievement unlock animations and display badges on profile
+- [ ] Create "Pick of the Week" featured card on home page
+- [ ] Wire pick of week to highest-performing pick from the week
+
+### Onboarding Video
+- [ ] Create onboarding video component with HeyGen AI avatar
+- [ ] Show video on first login (store viewed status in database)
+- [ ] Add skip button and fullscreen option
+- [ ] Wire video to show key features: +EV Finder, placing bets, tracking wins
+
+### Testing & Delivery
+- [ ] TypeScript: 0 errors
+- [ ] All features tested in dev
+- [ ] Save checkpoint with all 8 enhancements

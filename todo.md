@@ -710,3 +710,67 @@
 - [x] TypeScript: 0 errors
 - [x] All features tested in dev
 - [x] Save checkpoint with all 8 enhancements
+
+
+## Revenue-Driving Features — Phase 3 (Jul 6, 2026)
+### Live Leaderboard & Prize Pools
+- [x] Create leaderboard page showing top performers by win rate, ROI, profit
+- [x] Add weekly prize pool system ($500/week for top 5)
+- [x] Wire leaderboard to real user performance data from database
+- [x] Add achievement badges and tier badges (Gold, Platinum, Diamond)
+- [x] Show prize payout schedule and claim interface
+
+### Telegram Bot Integration
+- [x] Create Telegram bot for pick alerts, win notifications, steam moves
+- [x] Add /start, /picks, /stats, /settings commands
+- [x] Wire bot to send SMS-like alerts via Telegram
+- [x] Add user linking (connect Telegram account to ChalkPicks account)
+- [x] Track engagement metrics (opens, clicks, shares)
+
+### Affiliate Tier Bonuses
+- [ ] Update affiliate commission structure (20% → 30% after 10+ referrals)
+- [ ] Add tier display in affiliate hub (Bronze 20%, Silver 25%, Gold 30%)
+- [ ] Create tier progression tracker with milestones
+- [ ] Add bonus payout schedule to affiliate dashboard
+
+### Parlay Tracking Dashboard
+- [ ] Build parlay import UI (DraftKings/FanDuel API integration)
+- [ ] Create parlay tracking table with live odds, potential payouts
+- [ ] Add parlay history and performance analytics
+- [ ] Wire to live odds API for real-time updates
+
+### Bet Slip Builder
+- [x] Create drag-and-drop bet slip builder interface
+- [x] Add live odds display and +EV calculations
+- [x] Build parlay builder with leg-by-leg odds
+- [ ] Add "Copy to DraftKings" button for quick checkout
+
+### Community Chat
+- [x] Build real-time chat component (Socket.io or Supabase Realtime)
+- [x] Add chat channels (General, Picks Discussion, Wins, Strategy)
+- [x] Add user profiles and reputation system
+- [x] Moderate spam and enforce community guidelines
+
+### Elite+ Premium Tier
+- [ ] Create Elite+ tier ($99/month) with SMS alerts, priority picks, 1-on-1 coaching
+- [ ] Add tier gating for premium features
+- [ ] Create Elite+ onboarding flow
+- [ ] Add coaching calendar booking system
+
+### API Access Tier
+- [ ] Build API documentation page
+- [ ] Create API key management in account settings
+- [ ] Implement rate limiting and usage tracking
+- [ ] Add API tier ($199/month) for bot access
+
+### White-Label Reseller Program
+- [ ] Create reseller signup flow with custom branding options
+- [ ] Build reseller dashboard with revenue tracking
+- [ ] Add custom domain setup (subdomain or custom domain)
+- [ ] Create reseller commission structure (30% revenue share)
+- [ ] Add reseller analytics and customer management
+
+### Testing & Delivery
+- [ ] TypeScript: 0 errors
+- [ ] All features tested in dev
+- [ ] Save checkpoint with all 9 features

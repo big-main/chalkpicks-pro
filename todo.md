@@ -667,3 +667,13 @@
 - [x] All three pricing tiers now use Stripe Buy Buttons (Daily Pass, Monthly Pro, Annual VIP)
 - [x] All three redirect to /account-settings?subscribed=true&plan={tier} on success
 - [x] TypeScript: 0 errors
+
+## Webhook Subscription Sync + Promo Codes + Email (Jul 5, 2026)
+- [x] Stripe webhook handler for checkout.session.completed already exists (server/webhook.ts)
+- [x] Webhook extracts plan tier from session metadata and updates subscriptionTier in database
+- [x] Webhook validates Stripe signature using STRIPE_WEBHOOK_SECRET
+- [x] Added sendWelcomeEmail function to server/email.ts with branded HTML template
+- [x] Webhook calls sendWelcomeEmail after successful subscription activation
+- [x] Welcome email shows plan name, features, expiration date, and quick-start tips
+- [x] Enable "Allow promotion codes" on all three Buy Buttons in Stripe Dashboard (user action)
+- [x] TypeScript: 0 errors

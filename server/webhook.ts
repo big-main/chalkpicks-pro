@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { getDb, grantTrialAfterPaymentMethod } from "./db";
 import { users, subscriptionOrders } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { sendWelcomeEmail } from "./email";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
 
@@ -100,6 +101,19 @@ export function registerStripeWebhook(app: express.Application) {
             if (userBefore[0]?.subscriptionTier === "free") {
               await grantTrialAfterPaymentMethod(userId);
               console.log(`[Webhook] Granted 3-day trial to user ${userId} after first payment`);
+            }
+
+            // Send welcome email
+            if (userBefore[0]?.email && userBefore[0]?.name) {
+              const emailSent = await sendWelcomeEmail({
+                email: userBefore[0].email,
+                name: userBefore[0].name,
+                tier,
+                expiresAt,
+              });
+              if (emailSent) {
+                console.log(`[Webhook] Welcome email sent to ${userBefore[0].email}`);
+              }
             }
 
             console.log(`[Webhook] Activated ${tier} for user ${userId}`);

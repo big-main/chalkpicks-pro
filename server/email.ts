@@ -1,11 +1,30 @@
 import { invokeLLM } from "./_core/llm";
+import nodemailer from "nodemailer";
 
 export interface EmailPayload {
   to: string;
   subject: string;
-  type: "daily-picks" | "subscription-confirmation" | "performance-summary" | "alert";
+  type: "daily-picks" | "subscription-confirmation" | "performance-summary" | "alert" | "welcome";
   data?: Record<string, any>;
 }
+
+export interface WelcomeEmailOptions {
+  email: string;
+  name: string;
+  tier: "daily" | "monthly" | "yearly";
+  expiresAt: Date;
+}
+
+// Email configuration — uses environment variables
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: parseInt(process.env.SMTP_PORT || "587"),
+  secure: process.env.SMTP_SECURE === "true",
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 /**
  * Send an email notification to a user
@@ -30,6 +49,9 @@ export async function sendEmail(payload: EmailPayload): Promise<boolean> {
         break;
       case "alert":
         htmlContent = generateAlertEmail(data || {});
+        break;
+      case "welcome":
+        htmlContent = generateWelcomeEmail(data || {});
         break;
     }
 
@@ -237,6 +259,88 @@ function generatePerformanceSummaryEmail(data: Record<string, any>): string {
   `;
 }
 
+function generateWelcomeEmail(data: Record<string, any>): string {
+  const tier = data.tier || "monthly";
+  const tierName = { daily: "Daily Pass", monthly: "Monthly Pro", yearly: "Annual VIP" }[tier];
+  const expiresDate = new Date(data.expiresAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const tierFeatures = {
+    daily: ["Daily AI picks", "Live stats", "Leaderboard access"],
+    monthly: ["All Daily features", "+EV Finder", "Steam detector", "CLV Tracker", "Backtesting", "Kelly Calculator", "Email alerts"],
+    yearly: ["All Monthly features", "Advanced backtesting", "Custom AI picks", "VIP Discord", "1-on-1 sessions"],
+  }[tier];
+
+  return `
+    <html>
+      <head>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #e5e7eb; background: #0f0f0f; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #1a1a1a; border-radius: 8px; }
+          .header { background: linear-gradient(135deg, #39ff14 0%, #00ff87 100%); color: #000; padding: 30px 20px; border-radius: 8px 8px 0 0; text-align: center; }
+          .header h1 { margin: 0; font-size: 28px; font-weight: 700; }
+          .content { padding: 30px 20px; }
+          .tier-badge { display: inline-block; background: #39ff14; color: #000; padding: 8px 16px; border-radius: 4px; font-weight: 600; margin: 10px 0; }
+          .features { list-style: none; padding: 0; margin: 20px 0; }
+          .features li { padding: 8px 0; padding-left: 24px; position: relative; color: #e5e7eb; }
+          .features li:before { content: "✓"; position: absolute; left: 0; color: #39ff14; font-weight: bold; }
+          .cta-button { display: inline-block; background: #39ff14; color: #000; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; margin: 20px 0; }
+          .expires { background: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; padding: 12px; margin: 20px 0; border-radius: 4px; color: #e5e7eb; }
+          .footer { text-align: center; padding: 20px; color: #888; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🎉 Welcome to ChalkPicks!</h1>
+            <p style="margin: 10px 0 0 0; font-size: 16px;">Your subscription is now active</p>
+          </div>
+          
+          <div class="content">
+            <p style="color: #e5e7eb;">Hi ${data.name},</p>
+            
+            <p style="color: #e5e7eb;">Thank you for subscribing to ChalkPicks! Your payment has been processed and your account is now upgraded.</p>
+            
+            <div style="text-align: center;">
+              <span class="tier-badge">${tierName}</span>
+            </div>
+            
+            <h2 style="margin-top: 30px; color: #39ff14;">What's included:</h2>
+            <ul class="features">
+              ${tierFeatures.map((f) => `<li>${f}</li>`).join("")}
+            </ul>
+            
+            <div class="expires">
+              <strong>Subscription expires:</strong> ${expiresDate}
+            </div>
+            
+            <p style="color: #e5e7eb;">Your subscription will automatically renew. You can manage or cancel anytime from account settings.</p>
+            
+            <div style="text-align: center;">
+              <a href="https://chalkpicks.live/account-settings" class="cta-button">Go to Dashboard</a>
+            </div>
+            
+            <h3 style="margin-top: 30px; color: #39ff14;">Quick start tips:</h3>
+            <ul style="color: #e5e7eb;">
+              <li><strong>Check picks:</strong> Visit the Picks page for today's AI picks</li>
+              <li><strong>Explore tools:</strong> Try +EV Finder and Parlay Optimizer</li>
+              <li><strong>Join community:</strong> Connect on the Leaderboard</li>
+              <li><strong>Enable notifications:</strong> Get alerts when new picks drop</li>
+            </ul>
+            
+            <p style="margin-top: 30px; color: #888; font-size: 14px;">
+              Questions? Reply to this email or visit <a href="https://chalkpicks.live/support" style="color: #39ff14; text-decoration: none;">chalkpicks.live/support</a>
+            </p>
+          </div>
+          
+          <div class="footer">
+            <p>© 2026 ChalkPicks. All rights reserved.</p>
+            <p><a href="https://chalkpicks.live" style="color: #39ff14; text-decoration: none;">chalkpicks.live</a></p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
 function generateAlertEmail(data: Record<string, any>): string {
   const title = data.title || "Alert";
   const message = data.message || "";
@@ -265,4 +369,37 @@ function generateAlertEmail(data: Record<string, any>): string {
       </body>
     </html>
   `;
+}
+
+
+/**
+ * Send a welcome email after subscription purchase
+ * Used by webhook handler after checkout.session.completed
+ */
+export async function sendWelcomeEmail(options: WelcomeEmailOptions): Promise<boolean> {
+  try {
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.warn("[Email] SMTP credentials not configured, skipping welcome email");
+      return false;
+    }
+
+    const tierName = { daily: "Daily Pass", monthly: "Monthly Pro", yearly: "Annual VIP" }[options.tier];
+
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to: options.email,
+      subject: `Welcome to ChalkPicks ${tierName}! 🎉`,
+      html: generateWelcomeEmail({
+        name: options.name,
+        tier: options.tier,
+        expiresAt: options.expiresAt,
+      }),
+    });
+
+    console.log(`[Email] Welcome email sent to ${options.email} (message ID: ${info.messageId})`);
+    return true;
+  } catch (error) {
+    console.error("[Email] Failed to send welcome email:", error);
+    return false;
+  }
 }

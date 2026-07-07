@@ -5,11 +5,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useRouter } from "wouter";
+import { useLocation } from "wouter";
 
 export default function AffiliateHub() {
   const { user } = useAuth();
-  const [, setLocation] = useRouter();
+  const [, setLocation] = useLocation();
   const [copied, setCopied] = useState(false);
 
   if (!user) {

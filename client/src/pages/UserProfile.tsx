@@ -4,11 +4,11 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useRouter } from "wouter";
+import { useLocation } from "wouter";
 
 export default function UserProfile() {
   const { user } = useAuth();
-  const [, setLocation] = useRouter();
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
 
   if (!user) {
@@ -108,7 +108,7 @@ export default function UserProfile() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Credits</p>
-                  <p className="text-lg font-semibold text-blue-400">{user.credits || 0}</p>
+                  <p className="text-lg font-semibold text-blue-400">{(user as any).accountBalance || 0}</p>
                 </div>
               </div>
               <Button className="btn-premium mt-4">Upgrade Plan</Button>

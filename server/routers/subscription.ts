@@ -243,7 +243,8 @@ export const subscriptionRouter = router({
       try {
         const session = await stripe.billingPortal.sessions.create({
           customer: u.stripeCustomerId,
-          return_url: input.origin + "/subscriptions",
+          configuration: "bpc_1TqPBuDksqAHyBc35muDhWXS",
+          return_url: input.origin + "/account-settings",
         });
         return { url: session.url };
       } catch (err) {

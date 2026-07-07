@@ -774,3 +774,14 @@
 - [x] TypeScript: 0 errors
 - [x] All features tested in dev
 - [x] Save checkpoint with all 9 features
+
+
+## TypeScript Build Fix (Jul 7, 2026)
+- [x] Fix PageTransition.tsx — add Variants type import from framer-motion
+- [x] Fix AccountSettings.tsx — add missing useEffect import
+- [x] Fix AffiliateHub.tsx — change duplicate useRouter import to useLocation (wouter)
+- [x] Fix UserProfile.tsx — change useRouter to useLocation, fix user.credits to (user as any).accountBalance
+- [x] Fix server/email.ts — add type annotation for tier (as "daily" | "monthly" | "yearly"), add `: string` to map callback
+- [x] Remove leaderboardPayouts.ts and draftkings.ts (deleted files, commented out imports)
+- [x] Restart dev server to clear stale tsc watcher cache
+- [x] TypeScript: 0 errors (verified via tsc --noEmit)

@@ -34,8 +34,9 @@ import { storyGeneratorRouter } from "./routers/storyGenerator";
 import { storyHistoryRouter } from "./routers/storyHistory";
 import { storyScheduledRouter } from "./routers/storyScheduled";
 import { communityAutomationRouter } from "./routers/communityAutomation";
-import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
-import { draftKingsRouter } from "./routers/draftkings";
+// leaderboardPayouts and draftKings routers disabled — schema not yet migrated
+// import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
+// import { draftKingsRouter } from "./routers/draftkings";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import { users } from "../drizzle/schema";
@@ -174,8 +175,6 @@ export const appRouter = router({
   storyHistory: storyHistoryRouter,
   storyScheduled: storyScheduledRouter,
   communityAutomation: communityAutomationRouter,
-  leaderboardPayouts: leaderboardPayoutsRouter,
-  draftKings: draftKingsRouter,
 });
 
 export type AppRouter = typeof appRouter;

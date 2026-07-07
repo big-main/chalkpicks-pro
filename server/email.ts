@@ -260,7 +260,7 @@ function generatePerformanceSummaryEmail(data: Record<string, any>): string {
 }
 
 function generateWelcomeEmail(data: Record<string, any>): string {
-  const tier = data.tier || "monthly";
+  const tier = (data.tier || "monthly") as "daily" | "monthly" | "yearly";
   const tierName = { daily: "Daily Pass", monthly: "Monthly Pro", yearly: "Annual VIP" }[tier];
   const expiresDate = new Date(data.expiresAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   const tierFeatures = {
@@ -305,7 +305,7 @@ function generateWelcomeEmail(data: Record<string, any>): string {
             
             <h2 style="margin-top: 30px; color: #39ff14;">What's included:</h2>
             <ul class="features">
-              ${tierFeatures.map((f) => `<li>${f}</li>`).join("")}
+              ${tierFeatures.map((f: string) => `<li>${f}</li>`).join("")}
             </ul>
             
             <div class="expires">

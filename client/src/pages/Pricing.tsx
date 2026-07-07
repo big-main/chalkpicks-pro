@@ -472,44 +472,11 @@ export default function Pricing() {
                     >
                       ✓ CURRENT PLAN
                     </div>
-                  ) : plan.key === "monthly" ? (
-                    /* Stripe Buy Button — Monthly Pro */
-                    <div className="w-full flex flex-col items-center gap-2">
-                      {/* @ts-ignore — Stripe Buy Button is a custom element */}
-                      <stripe-buy-button
-                        buy-button-id="buy_btn_1Tpyc2JXlShpHPhg0Yi0S3rF"
-                        publishable-key="pk_live_51TovY5JXlShpHPhgNmSSCzFcKNOKMuoR5Ct9AWhVzb1tcXI2Xtjw3usW7jFJWVEIPwAUgCKreTVhGDpryqbwMwr800NvkUfWw4"
-                        success-url={`${window.location.origin}/account-settings?subscribed=true&plan=monthly`}
-                        style={{ width: "100%" }}
-                      />
-                    </div>
-                  ) : plan.key === "daily" ? (
-                    /* Stripe Buy Button — Daily Pass */
-                    <div className="w-full flex flex-col items-center gap-2">
-                      {/* @ts-ignore — Stripe Buy Button is a custom element */}
-                      <stripe-buy-button
-                        buy-button-id="buy_btn_1TpyfwJXlShpHPhg27Ns7mB1"
-                        publishable-key="pk_live_51TovY5JXlShpHPhgNmSSCzFcKNOKMuoR5Ct9AWhVzb1tcXI2Xtjw3usW7jFJWVEIPwAUgCKreTVhGDpryqbwMwr800NvkUfWw4"
-                        success-url={`${window.location.origin}/account-settings?subscribed=true&plan=daily`}
-                        style={{ width: "100%" }}
-                      />
-                    </div>
-                  ) : plan.key === "yearly" ? (
-                    /* Stripe Buy Button — Annual VIP */
-                    <div className="w-full flex flex-col items-center gap-2">
-                      {/* @ts-ignore — Stripe Buy Button is a custom element */}
-                      <stripe-buy-button
-                        buy-button-id="buy_btn_1TpyjQJXlShpHPhgtdOYAbTc"
-                        publishable-key="pk_live_51TovY5JXlShpHPhgNmSSCzFcKNOKMuoR5Ct9AWhVzb1tcXI2Xtjw3usW7jFJWVEIPwAUgCKreTVhGDpryqbwMwr800NvkUfWw4"
-                        success-url={`${window.location.origin}/account-settings?subscribed=true&plan=yearly`}
-                        style={{ width: "100%" }}
-                      />
-                    </div>
                   ) : (
                     <button
-                      onClick={() => handleSubscribe(plan.key)}
+                      onClick={() => handleSubscribe(plan.key as "daily" | "monthly" | "yearly")}
                       disabled={isLoading}
-                      className="w-full py-3.5 text-sm font-bold flex items-center justify-center gap-2 transition-all rounded-xl"
+                      className="w-full py-3.5 text-sm font-bold flex items-center justify-center gap-2 transition-all rounded-xl hover:scale-[1.02] active:scale-[0.98]"
                       style={{
                         background: isPopular ? meta.color : `${meta.color}10`,
                         color: isPopular ? "#0a0a0f" : meta.color,

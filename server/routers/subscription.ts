@@ -12,7 +12,7 @@ export const PLANS = {
   daily: {
     name: "Daily Pass",
     priceId: "price_daily",
-    amountCents: 499,
+    amountCents: 999,
     description: "Full access for 24 hours",
     features: ["All premium picks today", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"],
     badge: "Try it out",
@@ -20,7 +20,7 @@ export const PLANS = {
   monthly: {
     name: "Monthly Pro",
     priceId: "price_monthly",
-    amountCents: 1499,
+    amountCents: 2999,
     description: "Best value for serious bettors",
     features: ["All premium picks daily", "AI picks generator", "Backtesting engine", "Bet tracker & analytics", "Leaderboard access", "Priority email support", "Daily pick alerts"],
     badge: "Most Popular",
@@ -29,7 +29,7 @@ export const PLANS = {
   yearly: {
     name: "Annual Elite",
     priceId: "price_yearly",
-    amountCents: 9999,
+    amountCents: 19999,
     description: "Maximum savings for pros",
     features: ["Everything in Monthly", "Early access to new features", "Advanced backtesting", "Custom AI pick generation", "VIP Discord access", "1-on-1 strategy sessions"],
     badge: "Best Value",
@@ -51,14 +51,16 @@ export const subscriptionRouter = router({
       if (!plan) throw new TRPCError({ code: "BAD_REQUEST" });
 
       const isRecurring = input.tier !== "daily";
-      let finalAmount = plan.amountCents;
-      let promoCodeId: string = "";
 
-      // Validate and apply promo code if provided
+      // Look up Stripe promotion code if user provided one
+      let stripePromotionCodeId: string | undefined;
+      let promoCodeDbId: string = "";
+
       if (input.promoCode) {
-        const { validatePromoCode, getPromoCodeByCode } = await import("../db");
+        // Validate against our DB first
+        const { validatePromoCode, getPromoCodeByCode, incrementPromoCodeUsage } = await import("../db");
         const validation = await validatePromoCode(input.promoCode, input.tier);
-        
+
         if (!validation.valid) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -68,28 +70,35 @@ export const subscriptionRouter = router({
 
         const promo = await getPromoCodeByCode(input.promoCode);
         if (promo) {
-          promoCodeId = promo.id.toString();
-          let discount = 0;
-          if (validation.discountType === "percentage") {
-            discount = Math.round((plan.amountCents * validation.discount!) / 100);
-          } else {
-            discount = Math.round(validation.discount! * 100);
+          promoCodeDbId = promo.id.toString();
+        }
+
+        // Find the Stripe promotion code by code string
+        try {
+          const promoCodes = await stripe.promotionCodes.list({
+            code: input.promoCode.toUpperCase(),
+            active: true,
+            limit: 1,
+          });
+          if (promoCodes.data.length > 0) {
+            stripePromotionCodeId = promoCodes.data[0].id;
           }
-          finalAmount = Math.max(0, plan.amountCents - discount);
+        } catch (err) {
+          console.warn("[Checkout] Failed to look up Stripe promo code:", err);
         }
       }
 
       try {
-        const session = await stripe.checkout.sessions.create({
+        // Build session params
+        const sessionParams: any = {
           mode: isRecurring ? "subscription" : "payment",
           payment_method_types: ["card"],
           customer_email: ctx.user.email ?? undefined,
-          allow_promotion_codes: true,
           line_items: [
             {
               price_data: {
                 currency: "usd",
-                unit_amount: finalAmount,
+                unit_amount: plan.amountCents,
                 product_data: {
                   name: `ChalkPicks Pro — ${plan.name}`,
                   description: plan.description,
@@ -107,12 +116,27 @@ export const subscriptionRouter = router({
             customer_email: ctx.user.email ?? "",
             customer_name: ctx.user.name ?? "",
             tier: input.tier,
-            promoCodeId: promoCodeId,
+            promoCodeId: promoCodeDbId,
+            promoCode: input.promoCode ?? "",
           },
-        });
+        };
+
+        // Apply the Stripe promotion code discount
+        if (stripePromotionCodeId) {
+          // When we have a matching Stripe promo code, apply it directly
+          sessionParams.discounts = [{ promotion_code: stripePromotionCodeId }];
+        } else if (!input.promoCode) {
+          // If no promo code provided, allow users to enter one at Stripe checkout
+          sessionParams.allow_promotion_codes = true;
+        }
+        // If user provided a promo code but it's not in Stripe, we apply it via metadata
+        // and the webhook will handle recording the discount
+
+        const session = await stripe.checkout.sessions.create(sessionParams);
 
         return { url: session.url };
       } catch (err: any) {
+        console.error("[Checkout] Error creating session:", err.message);
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: err.message });
       }
     }),

@@ -792,3 +792,10 @@
 - [x] Make promo code validation work for all tiers (not just one specific tier)
 - [x] Add visual callout/banner promoting CHALK15 discount
 - [x] Seed CHALK15 promo code in database (15% off, all tiers)
+
+## Stripe Checkout Sessions Migration (Jul 7, 2026)
+- [x] Replace Stripe Buy Buttons with Checkout Session CTAs on Pricing page
+- [x] Update createCheckout backend to apply promo code discount via Stripe Coupon
+- [x] Ensure webhook handles checkout.session.completed for subscription activation
+- [x] Wire promo code from frontend state into checkout session creation
+- [x] Test end-to-end flow with CHALK15 promo code

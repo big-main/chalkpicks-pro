@@ -3,7 +3,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import NeonCard from "@/components/NeonCard";
-import { Check, Zap, Crown, Star, Shield, Lock, Tag, Loader2, ArrowRight } from "lucide-react";
+import { Check, Zap, Crown, Star, Shield, Lock, Tag, Loader2, ArrowRight, Sparkles, Gift, Percent } from "lucide-react";
 
 // ─── Plan meta ────────────────────────────────────────────────────────────────
 
@@ -109,7 +109,7 @@ export default function Pricing() {
       setPromoApplied(true);
       setPromoError("");
       setPromoDiscount(promoResult.discount ?? 0);
-      setPromoDiscountType("percentage");
+      setPromoDiscountType((promoResult.discountType as "percentage" | "fixed") ?? "percentage");
       setPromoValidating(false);
     }
   }, [promoResult, promoValidating]);
@@ -193,7 +193,7 @@ export default function Pricing() {
       <div className="relative z-10 container pt-28 pb-20">
 
         {/* Header */}
-        <div className="text-center mb-14">
+        <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-5 rounded-full glass-card-static text-xs font-semibold">
             <Shield className="w-3.5 h-3.5 text-brand-green" />
             <span className="text-white/60">Secure Checkout · Cancel Anytime</span>
@@ -220,43 +220,154 @@ export default function Pricing() {
           )}
         </div>
 
-        {/* Promo code section */}
-        <div className="max-w-md mx-auto mb-12">
-          <NeonCard className="p-5" variant={promoApplied ? "premium" : "default"}>
-            <div className="flex items-center gap-2 mb-3">
-              <Tag className="w-4 h-4 text-brand-gold" />
-              <span className="text-xs font-semibold tracking-wider text-brand-gold">PROMO CODE</span>
+        {/* ═══════════════════════════════════════════════════════════════════════
+            PROMO CODE SECTION — Prominent banner + input
+            ═══════════════════════════════════════════════════════════════════════ */}
+        <div className="max-w-2xl mx-auto mb-14">
+          {/* Promo banner callout */}
+          {!promoApplied && (
+            <div className="relative mb-4 overflow-hidden rounded-xl"
+              style={{
+                background: "linear-gradient(135deg, rgba(57,255,20,0.06) 0%, rgba(212,160,23,0.06) 100%)",
+                border: "1px solid rgba(57,255,20,0.15)",
+              }}
+            >
+              {/* Animated shimmer */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute -inset-full animate-[shimmer_3s_ease-in-out_infinite]"
+                  style={{ background: "linear-gradient(90deg, transparent 0%, rgba(57,255,20,0.03) 50%, transparent 100%)" }}
+                />
+              </div>
+
+              <div className="relative flex items-center justify-between gap-4 px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-xl"
+                    style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.2)" }}
+                  >
+                    <Gift className="w-5 h-5 text-brand-green" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-white">Limited Time Offer</span>
+                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-green/10 text-brand-green border border-brand-green/20">
+                        15% OFF
+                      </span>
+                    </div>
+                    <p className="text-xs text-white/50 mt-0.5">
+                      Use code <span className="font-mono font-bold text-brand-green">CHALK15</span> at checkout for 15% off any plan
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setPromoCode("CHALK15"); }}
+                  className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg transition-all hover:scale-105"
+                  style={{
+                    background: "rgba(57,255,20,0.08)",
+                    border: "1px solid rgba(57,255,20,0.25)",
+                    color: "#39ff14",
+                  }}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Apply Code
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={promoCode}
-                onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoApplied(false); setPromoError(""); }}
-                placeholder="Enter code (e.g. LAUNCH50)"
-                className="flex-1 px-4 py-2.5 text-sm rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-brand-green/40 transition-colors"
-              />
+          )}
+
+          {/* Promo code input card */}
+          <NeonCard className="p-6" variant={promoApplied ? "premium" : "default"}>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 flex items-center justify-center rounded-lg"
+                style={{
+                  background: promoApplied ? "rgba(57,255,20,0.1)" : "rgba(212,160,23,0.08)",
+                  border: `1px solid ${promoApplied ? "rgba(57,255,20,0.25)" : "rgba(212,160,23,0.2)"}`,
+                }}
+              >
+                {promoApplied ? (
+                  <Percent className="w-4 h-4 text-brand-green" />
+                ) : (
+                  <Tag className="w-4 h-4 text-brand-gold" />
+                )}
+              </div>
+              <div>
+                <span className="text-sm font-bold text-white">
+                  {promoApplied ? "Discount Applied!" : "Have a promo code?"}
+                </span>
+                <p className="text-xs text-white/40">
+                  {promoApplied
+                    ? `${promoDiscountType === "percentage" ? `${promoDiscount}%` : `$${promoDiscount}`} off applied to all plans below`
+                    : "Enter your code below to unlock exclusive savings"
+                  }
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={promoCode}
+                  onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoApplied(false); setPromoError(""); }}
+                  placeholder="CHALK15"
+                  className="w-full px-4 py-3 text-sm font-mono font-semibold tracking-wider rounded-xl bg-white/5 border text-white placeholder:text-white/25 outline-none transition-all"
+                  style={{
+                    borderColor: promoApplied ? "rgba(57,255,20,0.4)" : promoError ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.1)",
+                    boxShadow: promoApplied ? "0 0 20px rgba(57,255,20,0.1)" : "none",
+                  }}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleApplyPromo(); }}
+                />
+                {promoApplied && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Check className="w-5 h-5 text-brand-green" />
+                  </div>
+                )}
+              </div>
               <button
                 onClick={handleApplyPromo}
                 disabled={promoValidating || !promoCode.trim()}
-                className="px-5 py-2.5 text-sm font-semibold rounded-lg transition-all"
+                className="px-6 py-3 text-sm font-bold rounded-xl transition-all whitespace-nowrap"
                 style={{
-                  background: promoApplied ? "rgba(57,255,20,0.1)" : "rgba(212,160,23,0.08)",
-                  border: `1px solid ${promoApplied ? "rgba(57,255,20,0.3)" : "rgba(212,160,23,0.2)"}`,
-                  color: promoApplied ? "#39ff14" : "#f0b800",
-                  cursor: promoValidating ? "wait" : "pointer",
-                  opacity: !promoCode.trim() ? 0.5 : 1,
+                  background: promoApplied
+                    ? "rgba(57,255,20,0.15)"
+                    : promoCode.trim()
+                      ? "linear-gradient(135deg, rgba(57,255,20,0.2) 0%, rgba(57,255,20,0.1) 100%)"
+                      : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${promoApplied ? "rgba(57,255,20,0.4)" : promoCode.trim() ? "rgba(57,255,20,0.3)" : "rgba(255,255,255,0.08)"}`,
+                  color: promoApplied ? "#39ff14" : promoCode.trim() ? "#39ff14" : "rgba(255,255,255,0.3)",
+                  cursor: promoValidating ? "wait" : !promoCode.trim() ? "not-allowed" : "pointer",
+                  boxShadow: promoApplied ? "0 0 15px rgba(57,255,20,0.15)" : "none",
                 }}
               >
-                {promoValidating ? "..." : promoApplied ? "✓ Applied" : "Apply"}
+                {promoValidating ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : promoApplied ? (
+                  <span className="flex items-center gap-1.5"><Check className="w-4 h-4" /> Applied</span>
+                ) : (
+                  "Apply"
+                )}
               </button>
             </div>
+
+            {/* Success message */}
             {promoApplied && (
-              <p className="mt-2.5 text-xs font-semibold text-brand-green">
-                ✓ {promoDiscountType === "percentage" ? `${promoDiscount}% off` : `$${promoDiscount} off`} applied! Discount will be reflected at checkout.
-              </p>
+              <div className="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-lg"
+                style={{ background: "rgba(57,255,20,0.05)", border: "1px solid rgba(57,255,20,0.15)" }}
+              >
+                <Sparkles className="w-4 h-4 text-brand-green flex-shrink-0" />
+                <p className="text-xs font-semibold text-brand-green">
+                  {promoDiscountType === "percentage" ? `${promoDiscount}% off` : `$${promoDiscount} off`} all plans!
+                  Discount reflected in prices below.
+                </p>
+              </div>
             )}
+
+            {/* Error message */}
             {promoError && (
-              <p className="mt-2.5 text-xs text-destructive">{promoError}</p>
+              <div className="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-lg"
+                style={{ background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.15)" }}
+              >
+                <span className="text-xs font-semibold text-red-400">{promoError}</span>
+              </div>
             )}
           </NeonCard>
         </div>
@@ -304,7 +415,7 @@ export default function Pricing() {
                     >
                       <Icon className="w-5 h-5" style={{ color: meta.color }} />
                     </div>
-                    <div className="text-[11px] font-semibold tracking-wider mb-1.5" style={{ color: meta.color }}>
+                    <div className="text-[10px] font-bold tracking-wider mb-1.5" style={{ color: meta.color }}>
                       {meta.badge?.toUpperCase()}
                     </div>
                     <h2 className="font-display text-xl text-white">{plan.name}</h2>
@@ -330,8 +441,9 @@ export default function Pricing() {
                       </span>
                     </div>
                     {hasDiscount && (
-                      <div className="text-xs mt-1.5 font-semibold text-brand-green">
-                        🎉 PROMO APPLIED — You save ${(originalPrice - finalPrice).toFixed(2)}!
+                      <div className="text-xs mt-1.5 font-semibold text-brand-green flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        CHALK15 APPLIED — You save ${(originalPrice - finalPrice).toFixed(2)}!
                       </div>
                     )}
                     {plan.key === "yearly" && !hasDiscount && (
@@ -527,6 +639,14 @@ export default function Pricing() {
           </NeonCard>
         </div>
       </div>
+
+      {/* Shimmer animation keyframe */}
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
     </div>
   );
 }

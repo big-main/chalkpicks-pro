@@ -373,7 +373,7 @@ export const promoCodes = mysqlTable("promo_codes", {
   code: varchar("code", { length: 32 }).unique().notNull(),
   discountType: mysqlEnum("discountType", ["percentage", "fixed"]).notNull(),
   discountValue: decimal("discountValue", { precision: 5, scale: 2 }).notNull(),
-  tier: mysqlEnum("tier", ["daily", "monthly", "yearly"]).notNull(),
+  tier: mysqlEnum("tier", ["daily", "monthly", "yearly", "all"]).notNull(),
   maxUses: int("maxUses"),
   currentUses: int("currentUses").default(0).notNull(),
   expiresAt: timestamp("expiresAt"),

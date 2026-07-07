@@ -105,7 +105,7 @@ export async function validatePromoCode(
     return { valid: false, message: "Promo code limit reached" };
   }
 
-  if (promo.tier !== tier) {
+  if (promo.tier !== "all" && promo.tier !== tier) {
     return { valid: false, message: `Code not valid for ${tier} tier` };
   }
 

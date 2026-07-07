@@ -26,8 +26,21 @@ describe("Promo Code System", () => {
 
   it("should reject code for wrong tier", async () => {
     const result = await db.validatePromoCode(testCode, "daily");
+    // testCode is tier='monthly', so daily should be rejected
     expect(result.valid).toBe(false);
     expect(result.message).toContain("not valid");
+  });
+
+  it("should validate CHALK15 (all-tier code) for any tier", async () => {
+    const resultMonthly = await db.validatePromoCode("CHALK15", "monthly");
+    const resultDaily = await db.validatePromoCode("CHALK15", "daily");
+    const resultYearly = await db.validatePromoCode("CHALK15", "yearly");
+    // CHALK15 is tier='all', so it should work for all tiers
+    expect(resultMonthly.valid).toBe(true);
+    expect(resultMonthly.discount).toBe(15);
+    expect(resultMonthly.discountType).toBe("percentage");
+    expect(resultDaily.valid).toBe(true);
+    expect(resultYearly.valid).toBe(true);
   });
 
   it("should reject non-existent code", async () => {

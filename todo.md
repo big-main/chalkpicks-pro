@@ -785,3 +785,10 @@
 - [x] Remove leaderboardPayouts.ts and draftkings.ts (deleted files, commented out imports)
 - [x] Restart dev server to clear stale tsc watcher cache
 - [x] TypeScript: 0 errors (verified via tsc --noEmit)
+
+## Promo Code Enhancement (Jul 7, 2026)
+- [x] Redesign promo code section on Pricing page to be more prominent with CHALK15 highlight
+- [x] Update placeholder text to reference CHALK15 code
+- [x] Make promo code validation work for all tiers (not just one specific tier)
+- [x] Add visual callout/banner promoting CHALK15 discount
+- [x] Seed CHALK15 promo code in database (15% off, all tiers)

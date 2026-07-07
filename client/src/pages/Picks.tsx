@@ -15,6 +15,7 @@ import { Link } from "wouter";
 import { Brain, Lock, Filter, RefreshCw, Zap, Sparkles, ArrowUpDown, SlidersHorizontal, X, ChevronDown, Bell, BellOff, Crown } from "lucide-react";
 import { toast } from "sonner";
 import SharePickCard from "@/components/SharePickCard";
+import PushNotificationBanner from "@/components/PushNotificationBanner";
 
 const PICK_TYPE_LABELS: Record<string, string> = {
   moneyline: "Moneyline",
@@ -678,6 +679,8 @@ export default function Picks() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container pt-24 pb-12">
+        {/* Push notification prompt */}
+        <PushNotificationBanner />
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>

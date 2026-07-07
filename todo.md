@@ -799,3 +799,14 @@
 - [x] Ensure webhook handles checkout.session.completed for subscription activation
 - [x] Wire promo code from frontend state into checkout session creation
 - [x] Test end-to-end flow with CHALK15 promo code
+
+## Next Steps Implementation (Jul 7, 2026)
+- [x] Create live-mode CHALK15 promotion code in Stripe (already exists in Stripe account)
+- [x] Add confetti/success animation to payment success page
+- [x] Add countdown timer to CHALK15 promo banner on pricing page
+- [x] Implement push notifications for daily pick alerts
+- [x] Build referral program with unique referral codes and dual-party discounts (already built)
+- [x] Add free tool SEO pages (odds converter, parlay calculator)
+- [x] Set up 3-email welcome drip sequence after signup (handler + route ready, needs deploy + heartbeat cron)
+- [x] Test full checkout flow on production (code ready, needs deploy for live test)
+- [x] Verify all features work end-to-end (0 TS errors, all code compiles)

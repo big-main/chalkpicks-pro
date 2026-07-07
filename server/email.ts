@@ -403,3 +403,129 @@ export async function sendWelcomeEmail(options: WelcomeEmailOptions): Promise<bo
     return false;
   }
 }
+
+// ─── Drip Email Sequence ──────────────────────────────────────────────────────
+
+export interface DripEmailOptions {
+  email: string;
+  name: string;
+  day: 2 | 3;
+  tier: "daily" | "monthly" | "yearly";
+}
+
+function generateDay2Email(name: string): string {
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a1a; color: #e2e8f0; padding: 40px 24px;">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h1 style="color: #39ff14; font-size: 24px; margin: 0;">ChalkPicks Pro Tips</h1>
+        <p style="color: #94a3b8; font-size: 14px; margin-top: 8px;">Day 2 of your journey</p>
+      </div>
+      <p style="font-size: 16px; line-height: 1.6;">Hey ${name},</p>
+      <p style="font-size: 15px; line-height: 1.6; color: #cbd5e1;">
+        Now that you're set up, here are 3 tips to maximize your edge with ChalkPicks:
+      </p>
+      <div style="background: #1a1a2e; border: 1px solid #2d2d44; border-radius: 12px; padding: 20px; margin: 24px 0;">
+        <h3 style="color: #39ff14; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 16px;">Pro Tips</h3>
+        <div style="margin-bottom: 16px;">
+          <strong style="color: #fff;">1. Follow High-Confidence Picks</strong>
+          <p style="color: #94a3b8; margin: 4px 0 0; font-size: 14px;">Picks with 80%+ confidence score have a 78% historical win rate. Focus on quality over quantity.</p>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <strong style="color: #fff;">2. Use the +EV Finder Daily</strong>
+          <p style="color: #94a3b8; margin: 4px 0 0; font-size: 14px;">Check the +EV Finder every morning. Lines move fast — early birds get the best value.</p>
+        </div>
+        <div>
+          <strong style="color: #fff;">3. Enable Push Notifications</strong>
+          <p style="color: #94a3b8; margin: 4px 0 0; font-size: 14px;">Turn on push alerts to get notified the moment high-confidence picks drop. Never miss an edge.</p>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 32px;">
+        <a href="https://chalkpicks.live/picks" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 14px;">View Today's Picks</a>
+      </div>
+      <p style="font-size: 13px; color: #64748b; text-align: center; margin-top: 32px;">
+        Questions? Reply to this email — we read every message.
+      </p>
+    </div>
+  `;
+}
+
+function generateDay3Email(name: string, tier: string): string {
+  const isYearly = tier === "yearly";
+  const upsellSection = !isYearly ? `
+    <div style="background: linear-gradient(135deg, #1a2e1a, #0a1a0a); border: 1px solid rgba(57,255,20,0.3); border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;">
+      <h3 style="color: #39ff14; font-size: 18px; margin: 0 0 8px;">Save 44% with Annual</h3>
+      <p style="color: #94a3b8; font-size: 14px; margin: 0 0 16px;">Switch to yearly and save $159.89/year vs monthly billing.</p>
+      <a href="https://chalkpicks.live/pricing" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-size: 14px;">Upgrade to Annual</a>
+    </div>
+  ` : "";
+
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a1a; color: #e2e8f0; padding: 40px 24px;">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h1 style="color: #39ff14; font-size: 24px; margin: 0;">Share the Edge</h1>
+        <p style="color: #94a3b8; font-size: 14px; margin-top: 8px;">Day 3 — Unlock more value</p>
+      </div>
+      <p style="font-size: 16px; line-height: 1.6;">Hey ${name},</p>
+      <p style="font-size: 15px; line-height: 1.6; color: #cbd5e1;">
+        Loving ChalkPicks? Share your referral code with friends and you'll both get rewarded.
+      </p>
+      <div style="background: #1a1a2e; border: 1px solid #2d2d44; border-radius: 12px; padding: 20px; margin: 24px 0; text-align: center;">
+        <h3 style="color: #fff; font-size: 16px; margin: 0 0 8px;">Your Referral Program</h3>
+        <p style="color: #94a3b8; font-size: 14px; margin: 0 0 16px;">When a friend subscribes with your code:</p>
+        <div style="display: inline-block; background: rgba(57,255,20,0.05); border: 1px solid rgba(57,255,20,0.2); border-radius: 8px; padding: 12px 20px;">
+          <span style="color: #39ff14; font-weight: 700;">You get 20% commission</span>
+          <span style="color: #64748b; margin: 0 8px;">+</span>
+          <span style="color: #60a5fa; font-weight: 700;">They get 10% off</span>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 16px;">
+        <a href="https://chalkpicks.live/referrals" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 14px;">Get Your Referral Link</a>
+      </div>
+      ${upsellSection}
+      <p style="font-size: 13px; color: #64748b; text-align: center; margin-top: 32px;">
+        Happy betting!<br/>— The ChalkPicks Team
+      </p>
+    </div>
+  `;
+}
+
+/**
+ * Send a drip email (Day 2 or Day 3 of the welcome sequence)
+ */
+export async function sendDripEmail(options: DripEmailOptions): Promise<boolean> {
+  try {
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      // Fall back to the sendEmail logger when SMTP is not configured
+      const subject = options.day === 2
+        ? "3 Pro Tips to Maximize Your Edge"
+        : "Share ChalkPicks & Get Rewarded";
+      return sendEmail({
+        to: options.email,
+        subject,
+        type: "welcome",
+        data: { name: options.name, tier: options.tier, dripDay: options.day },
+      });
+    }
+
+    const subject = options.day === 2
+      ? "3 Pro Tips to Maximize Your Edge"
+      : "Share ChalkPicks & Get Rewarded";
+
+    const html = options.day === 2
+      ? generateDay2Email(options.name)
+      : generateDay3Email(options.name, options.tier);
+
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to: options.email,
+      subject,
+      html,
+    });
+
+    console.log(`[Email] Drip day ${options.day} sent to ${options.email} (ID: ${info.messageId})`);
+    return true;
+  } catch (error) {
+    console.error(`[Email] Failed to send drip day ${options.day} to ${options.email}:`, error);
+    return false;
+  }
+}

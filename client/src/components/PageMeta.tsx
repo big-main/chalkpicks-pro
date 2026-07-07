@@ -106,6 +106,21 @@ const PAGE_META_MAP: Record<string, PageMetaConfig> = {
     description:
       "Free and premium tools: bet calculator, line movement tracker, prop builder, arbitrage finder, CLV tracker, and more.",
   },
+  "/tools/odds-calculator": {
+    title: "Free Odds Converter | American Decimal Fractional",
+    description:
+      "Convert betting odds between American, decimal, and fractional formats instantly. Free odds calculator with implied probability and payout breakdown.",
+  },
+  "/tools/roi-calculator": {
+    title: "Free Betting ROI Calculator | Track Your Profits",
+    description:
+      "Calculate your sports betting return on investment. Track total profit, ROI percentage, and break-even win rate with our free calculator.",
+  },
+  "/tools/parlay-calculator": {
+    title: "Free Parlay Calculator | Multi-Leg Payout Tool",
+    description:
+      "Calculate parlay payouts for 2-15 leg bets instantly. Enter American or decimal odds and see total payout, profit, and implied probability.",
+  },
   "/signup": {
     title: "Sign Up | ChalkPicks Free Trial",
     description:

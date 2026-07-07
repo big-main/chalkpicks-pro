@@ -1,9 +1,119 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import NeonCard from "@/components/NeonCard";
-import { Check, Zap, Crown, Star, Shield, Lock, Tag, Loader2, ArrowRight, Sparkles, Gift, Percent } from "lucide-react";
+import { Check, Zap, Crown, Star, Shield, Lock, Tag, Loader2, ArrowRight, Sparkles, Gift, Percent, Clock } from "lucide-react";
+
+// ─── Countdown timer hook ─────────────────────────────────────────────────────
+
+function useCountdown() {
+  // Offer expires 72 hours from the user's first visit (stored in localStorage)
+  const [endTime] = useState(() => {
+    const stored = localStorage.getItem("chalk15_expires");
+    if (stored) return parseInt(stored);
+    const expires = Date.now() + 72 * 60 * 60 * 1000; // 72 hours
+    localStorage.setItem("chalk15_expires", expires.toString());
+    return expires;
+  });
+
+  const [timeLeft, setTimeLeft] = useState(() => Math.max(0, endTime - Date.now()));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const remaining = Math.max(0, endTime - Date.now());
+      setTimeLeft(remaining);
+      if (remaining <= 0) clearInterval(interval);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [endTime]);
+
+  const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+  return { hours, minutes, seconds, expired: timeLeft <= 0 };
+}
+
+// ─── Promo Banner with Countdown ─────────────────────────────────────────────
+
+function PromoBanner({ onApply }: { onApply: () => void }) {
+  const { hours, minutes, seconds, expired } = useCountdown();
+
+  if (expired) return null;
+
+  const pad = (n: number) => n.toString().padStart(2, "0");
+
+  return (
+    <div className="relative mb-4 overflow-hidden rounded-xl"
+      style={{
+        background: "linear-gradient(135deg, rgba(57,255,20,0.06) 0%, rgba(212,160,23,0.06) 100%)",
+        border: "1px solid rgba(57,255,20,0.15)",
+      }}
+    >
+      {/* Animated shimmer */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -inset-full animate-[shimmer_3s_ease-in-out_infinite]"
+          style={{ background: "linear-gradient(90deg, transparent 0%, rgba(57,255,20,0.03) 50%, transparent 100%)" }}
+        />
+      </div>
+
+      <div className="relative px-6 py-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 flex items-center justify-center rounded-xl"
+              style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.2)" }}
+            >
+              <Gift className="w-5 h-5 text-brand-green" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-white">Limited Time Offer</span>
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-green/10 text-brand-green border border-brand-green/20">
+                  15% OFF
+                </span>
+              </div>
+              <p className="text-xs text-white/50 mt-0.5">
+                Use code <span className="font-mono font-bold text-brand-green">CHALK15</span> at checkout for 15% off any plan
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onApply}
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg transition-all hover:scale-105"
+            style={{
+              background: "rgba(57,255,20,0.08)",
+              border: "1px solid rgba(57,255,20,0.25)",
+              color: "#39ff14",
+            }}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            Apply Code
+          </button>
+        </div>
+
+        {/* Countdown timer */}
+        <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <Clock className="w-3.5 h-3.5 text-brand-gold" />
+          <span className="text-xs text-white/50">Offer expires in:</span>
+          <div className="flex items-center gap-1">
+            <span className="px-1.5 py-0.5 text-xs font-mono font-bold rounded bg-white/5 text-brand-green border border-white/10">
+              {pad(hours)}
+            </span>
+            <span className="text-white/30 text-xs">:</span>
+            <span className="px-1.5 py-0.5 text-xs font-mono font-bold rounded bg-white/5 text-brand-green border border-white/10">
+              {pad(minutes)}
+            </span>
+            <span className="text-white/30 text-xs">:</span>
+            <span className="px-1.5 py-0.5 text-xs font-mono font-bold rounded bg-white/5 text-brand-green border border-white/10">
+              {pad(seconds)}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ─── Plan meta ────────────────────────────────────────────────────────────────
 
@@ -224,55 +334,8 @@ export default function Pricing() {
             PROMO CODE SECTION — Prominent banner + input
             ═══════════════════════════════════════════════════════════════════════ */}
         <div className="max-w-2xl mx-auto mb-14">
-          {/* Promo banner callout */}
-          {!promoApplied && (
-            <div className="relative mb-4 overflow-hidden rounded-xl"
-              style={{
-                background: "linear-gradient(135deg, rgba(57,255,20,0.06) 0%, rgba(212,160,23,0.06) 100%)",
-                border: "1px solid rgba(57,255,20,0.15)",
-              }}
-            >
-              {/* Animated shimmer */}
-              <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -inset-full animate-[shimmer_3s_ease-in-out_infinite]"
-                  style={{ background: "linear-gradient(90deg, transparent 0%, rgba(57,255,20,0.03) 50%, transparent 100%)" }}
-                />
-              </div>
-
-              <div className="relative flex items-center justify-between gap-4 px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-xl"
-                    style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.2)" }}
-                  >
-                    <Gift className="w-5 h-5 text-brand-green" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-white">Limited Time Offer</span>
-                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-green/10 text-brand-green border border-brand-green/20">
-                        15% OFF
-                      </span>
-                    </div>
-                    <p className="text-xs text-white/50 mt-0.5">
-                      Use code <span className="font-mono font-bold text-brand-green">CHALK15</span> at checkout for 15% off any plan
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => { setPromoCode("CHALK15"); }}
-                  className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg transition-all hover:scale-105"
-                  style={{
-                    background: "rgba(57,255,20,0.08)",
-                    border: "1px solid rgba(57,255,20,0.25)",
-                    color: "#39ff14",
-                  }}
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Apply Code
-                </button>
-              </div>
-            </div>
-          )}
+          {/* Promo banner callout with countdown */}
+          {!promoApplied && <PromoBanner onApply={() => setPromoCode("CHALK15")} />}
 
           {/* Promo code input card */}
           <NeonCard className="p-6" variant={promoApplied ? "premium" : "default"}>

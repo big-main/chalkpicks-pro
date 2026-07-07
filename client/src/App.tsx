@@ -78,6 +78,7 @@ const BlogAISportsBetting = lazy(() => import("@/pages/BlogAISportsBetting"));
 const BlogStrategy = lazy(() => import("@/pages/BlogStrategy"));
 const PicksLanding = lazy(() => import("@/pages/PicksLanding"));
 const BankrollManager = lazy(() => import("@/pages/BankrollManager"));
+const ParlayCalculator = lazy(() => import("@/pages/ParlayCalculator"));
 
 function PageLoader() {
   return (
@@ -162,6 +163,7 @@ function Router() {
           <Route path="/community-automation" component={CommunityAutomation} />
           <Route path="/daily-picks" component={PicksLanding} />
           <Route path="/tools/bankroll-manager" component={BankrollManager} />
+          <Route path="/tools/parlay-calculator" component={ParlayCalculator} />
           <Route path="/blog/best-sports-betting-picks" component={BlogBestPicks} />
           <Route path="/blog/ai-sports-betting" component={BlogAISportsBetting} />
           <Route path="/blog/sports-betting-strategy" component={BlogStrategy} />

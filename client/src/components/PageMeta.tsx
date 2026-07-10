@@ -34,7 +34,7 @@ const PAGE_META_MAP: Record<string, PageMetaConfig> = {
   "/pricing": {
     title: "ChalkPicks Pricing | Monthly & Yearly Plans",
     description:
-      "Affordable sports betting analytics plans. Daily Pass $9.99, Monthly Pro $29.99/mo, Yearly $199.99/yr. Full access to all premium tools.",
+      "Affordable sports betting analytics plans. Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr. Full access to all premium tools.",
   },
   "/performance": {
     title: "Pick Performance & Win Rate | ChalkPicks Analytics",

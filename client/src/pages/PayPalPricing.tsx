@@ -155,7 +155,7 @@ export default function PayPalPricing() {
                 },
                 {
                   q: "Do you offer a trial?",
-                  a: "No trial needed. Start with our Daily Pass ($9.99/day) to test the platform risk-free with our 7-day money-back guarantee.",
+                  a: "No trial needed. Start with our Basic plan ($9.99/mo) to test the platform risk-free with our 7-day money-back guarantee.",
                 },
                 {
                   q: "What if I'm not satisfied?",

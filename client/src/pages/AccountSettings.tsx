@@ -85,7 +85,7 @@ export default function AccountSettings() {
             </div>
             <div className="flex-1">
               <p className="font-bold text-base" style={{ color: "#39ff14" }}>
-                🎉 Payment Successful — Welcome to ChalkPicks{subscribedPlan === "monthly" ? " Monthly Pro" : subscribedPlan === "daily" ? " Daily Pass" : ""}!
+                🎉 Payment Successful — Welcome to ChalkPicks{subscribedPlan === "monthly" ? " Pro" : subscribedPlan === "daily" ? " Basic" : " Elite"}!
               </p>
               <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
                 Your subscription is now active. It may take a moment for your access to update — refresh the page if premium features aren't visible yet.

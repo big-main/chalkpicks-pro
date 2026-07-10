@@ -202,11 +202,11 @@ export default function AffiliateHub() {
                 </thead>
                 <tbody>
                   {[
-                    { name: "User #2847", tier: "Monthly Pro", commission: 5.99, date: "Jul 4", status: "Active" },
-                    { name: "User #2846", tier: "Annual VIP", commission: 19.99, date: "Jul 3", status: "Active" },
-                    { name: "User #2845", tier: "Daily Pass", commission: 0.99, date: "Jul 2", status: "Active" },
-                    { name: "User #2844", tier: "Monthly Pro", commission: 5.99, date: "Jul 1", status: "Active" },
-                    { name: "User #2843", tier: "Annual VIP", commission: 19.99, date: "Jun 30", status: "Active" },
+                    { name: "User #2847", tier: "Pro", commission: 3.99, date: "Jul 4", status: "Active" },
+                    { name: "User #2846", tier: "Elite", commission: 11.99, date: "Jul 3", status: "Active" },
+                    { name: "User #2845", tier: "Basic", commission: 1.99, date: "Jul 2", status: "Active" },
+                    { name: "User #2844", tier: "Pro", commission: 3.99, date: "Jul 1", status: "Active" },
+                    { name: "User #2843", tier: "Elite", commission: 11.99, date: "Jun 30", status: "Active" },
                   ].map((referral, i) => (
                     <tr key={i} className="border-b border-green-400/10 hover:bg-green-400/5 transition-colors">
                       <td className="py-3 px-4 text-foreground">{referral.name}</td>

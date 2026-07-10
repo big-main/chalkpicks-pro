@@ -824,3 +824,11 @@
 - [x] Write and pass blog router tests (4 tests passing: create, publish, list, duplicate slug)
 - [ ] Create heartbeat cron for daily blog content generation (manus-heartbeat create command)
 - [ ] Test end-to-end blog generation and publishing on production
+
+## Deployment Fix & Pricing Alignment (Jul 10, 2026)
+- [x] Remove postinstall Socket Security script that was causing deployment failure
+- [x] Increase rate limit from 100 to 300 requests/min to prevent tool page blocking
+- [x] Update all pricing across site to match Stripe (Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr)
+- [x] Update plan names from "Daily Pass/Monthly Pro/Annual Elite" to "Basic/Pro/Elite"
+- [x] Fix subscription test assertions for new pricing
+- [x] Update Paywall, FeatureGate, PageMeta, StructuredData, AdminPanel, CreditDashboard, SubscriptionDashboard, SubscriptionManagement, UserProfile, AffiliateHub, PayPalPricing, PaymentSuccess, AccountSettings

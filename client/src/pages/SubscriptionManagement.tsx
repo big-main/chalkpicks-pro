@@ -210,20 +210,20 @@ export default function SubscriptionManagement() {
                   {[
                     {
                       date: "2026-03-22",
-                      description: "Monthly Subscription",
-                      amount: "$29.99",
+                      description: "Pro Subscription",
+                      amount: "$19.99",
                       status: "Paid",
                     },
                     {
                       date: "2026-02-22",
-                      description: "Monthly Subscription",
-                      amount: "$29.99",
+                      description: "Pro Subscription",
+                      amount: "$19.99",
                       status: "Paid",
                     },
                     {
                       date: "2026-01-22",
-                      description: "Monthly Subscription",
-                      amount: "$29.99",
+                      description: "Pro Subscription",
+                      amount: "$19.99",
                       status: "Paid",
                     },
                   ].map((invoice, idx) => (

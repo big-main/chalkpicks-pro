@@ -359,9 +359,9 @@ export default function AdminPanel() {
               </h3>
               <div className="grid md:grid-cols-3 gap-4">
                 {[
-                  { tier: "Daily Pass", price: "$9.99/day", color: "#f0b800", features: ["All AI picks", "Basic tools", "Live scores"] },
-                  { tier: "Monthly Pro", price: "$29.99/mo", color: "#39ff14", features: ["All Daily features", "+EV Finder", "Arbitrage", "Parlay Builder", "CLV Tracker", "Bankroll Tracker"] },
-                  { tier: "Yearly Elite", price: "$199.99/yr", color: "#d4a017", features: ["All Monthly features", "Priority support", "Best value (44% off)"] },
+                  { tier: "Basic", price: "$9.99/mo", color: "#f0b800", features: ["All AI picks", "Basic tools", "Live scores"] },
+                  { tier: "Pro", price: "$19.99/mo", color: "#39ff14", features: ["All Basic features", "+EV Finder", "Arbitrage", "Parlay Builder", "CLV Tracker", "Bankroll Tracker"] },
+                  { tier: "Elite", price: "$59.99/yr", color: "#d4a017", features: ["All Pro features", "Priority support", "Best value"] },
                 ].map((plan) => (
                   <div
                     key={plan.tier}

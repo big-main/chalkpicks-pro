@@ -280,9 +280,9 @@ export default function Pricing() {
     const p = plansData?.[key];
     if (p) return { key, ...p };
     const defaults = {
-      daily:   { name: "Daily Pass",    amountCents: 999,   description: "Full access for 24 hours",          features: ["All premium picks today", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"] },
-      monthly: { name: "Monthly Pro",   amountCents: 2999,  description: "Best value for serious bettors",    features: ["All premium picks daily", "AI picks generator", "Backtesting engine", "Bet tracker & analytics", "Leaderboard access", "Priority email support", "Daily pick alerts"] },
-      yearly:  { name: "Annual Elite",  amountCents: 19999, description: "Maximum savings for pros",          features: ["Everything in Monthly", "Early access to new features", "Advanced backtesting", "Custom AI pick generation", "VIP Discord access", "1-on-1 strategy sessions"] },
+      daily:   { name: "Basic",    amountCents: 999,   interval: "month", description: "Essential picks for casual bettors",  features: ["All premium picks daily", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"] },
+      monthly: { name: "Pro",      amountCents: 1999,  interval: "month", description: "Best value for serious bettors",    features: ["All premium picks daily", "AI picks generator", "Backtesting engine", "Bet tracker & analytics", "Leaderboard access", "Priority email support", "Daily pick alerts"] },
+      yearly:  { name: "Elite",    amountCents: 5999,  interval: "year",  description: "Maximum savings for pros",          features: ["Everything in Pro", "Early access to new features", "Advanced backtesting", "Custom AI pick generation", "VIP Discord access", "1-on-1 strategy sessions"] },
     };
     return { key, ...defaults[key] };
   });
@@ -500,7 +500,7 @@ export default function Pricing() {
                         ${finalPrice.toFixed(2)}
                       </span>
                       <span className="mb-2 text-sm text-white/40">
-                        /{plan.key === "daily" ? "day" : plan.key === "monthly" ? "mo" : "yr"}
+                        /{plan.key === "yearly" ? "yr" : "mo"}
                       </span>
                     </div>
                     {hasDiscount && (
@@ -510,7 +510,7 @@ export default function Pricing() {
                       </div>
                     )}
                     {plan.key === "yearly" && !hasDiscount && (
-                      <div className="text-xs mt-1.5 text-brand-gold">= ${(originalPrice / 12).toFixed(2)}/mo · Save $16/mo vs monthly</div>
+                      <div className="text-xs mt-1.5 text-brand-gold">= ${(originalPrice / 12).toFixed(2)}/mo · Save $14/mo vs Pro</div>
                     )}
                     {plan.key === "monthly" && !hasDiscount && (
                       <div className="text-xs mt-1.5 text-white/35">Billed monthly · cancel anytime</div>
@@ -634,19 +634,19 @@ export default function Pricing() {
                   <div className="w-6 h-6 flex items-center justify-center rounded-lg" style={{ background: "rgba(212,160,23,0.08)", border: "1px solid rgba(212,160,23,0.2)" }}>
                     <Check className="w-3 h-3" style={{ color: "#f0b800" }} />
                   </div>
-                  <span className="text-white/40">Daily Pass ($9.99/day)</span>
+                  <span className="text-white/40">Basic ($9.99/mo)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 flex items-center justify-center rounded-lg" style={{ background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.2)" }}>
                     <Check className="w-3 h-3" style={{ color: "#39ff14" }} />
                   </div>
-                  <span className="text-white/40">Monthly Pro ($29.99/mo)</span>
+                  <span className="text-white/40">Pro ($19.99/mo)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 flex items-center justify-center rounded-lg" style={{ background: "rgba(212,160,23,0.08)", border: "1px solid rgba(212,160,23,0.2)" }}>
                     <Check className="w-3 h-3" style={{ color: "#d4a017" }} />
                   </div>
-                  <span className="text-white/40">Annual Elite ($199.99/yr)</span>
+                  <span className="text-white/40">Elite ($59.99/yr)</span>
                 </div>
               </div>
             </div>

@@ -17,9 +17,9 @@ export default function UserProfile() {
   }
 
   const billingHistory = [
-    { date: "2026-07-01", plan: "Monthly Pro", amount: "$29.99", status: "Paid" },
-    { date: "2026-06-01", plan: "Monthly Pro", amount: "$29.99", status: "Paid" },
-    { date: "2026-05-01", plan: "Monthly Pro", amount: "$29.99", status: "Paid" },
+    { date: "2026-07-01", plan: "Pro", amount: "$19.99", status: "Paid" },
+    { date: "2026-06-01", plan: "Pro", amount: "$19.99", status: "Paid" },
+    { date: "2026-05-01", plan: "Pro", amount: "$19.99", status: "Paid" },
   ];
 
   const leaderboardStats = {

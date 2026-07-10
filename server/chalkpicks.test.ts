@@ -203,8 +203,8 @@ describe("subscription", () => {
   it("plans have correct structure", async () => {
     const caller = appRouter.createCaller(createPublicContext());
     const plans = await caller.subscription.plans();
-    expect(plans.monthly.amountCents).toBe(2999);
-    expect(plans.yearly.amountCents).toBe(19999);
+    expect(plans.monthly.amountCents).toBe(1999);
+    expect(plans.yearly.amountCents).toBe(5999);
     expect(plans.daily.amountCents).toBe(999);
     expect(Array.isArray(plans.monthly.features)).toBe(true);
   });

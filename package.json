@@ -12,8 +12,7 @@
     "test": "vitest run",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "seed:promos": "node seed-promo-codes.mjs",
-    "postinstall": "pnpm dlx @socketsecurity/socket-patch apply --silent --ecosystems npm",
-    "dependencies": "pnpm dlx @socketsecurity/socket-patch apply --silent --ecosystems npm"
+    "postinstall": "echo 'postinstall complete'"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.94.0",

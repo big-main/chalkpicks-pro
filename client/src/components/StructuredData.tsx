@@ -60,14 +60,14 @@ const structuredData = {
           {
             "@type": "Offer",
             "name": "Pro Monthly",
-            "price": "29.99",
+            "price": "19.99",
             "priceCurrency": "USD",
             "description": "Full AI picks, odds comparison, performance tracking"
           },
           {
             "@type": "Offer",
-            "name": "Pro Annual",
-            "price": "49.99",
+            "name": "Elite Annual",
+            "price": "59.99",
             "priceCurrency": "USD",
             "description": "All Pro features, priority support, annual billing"
           }

@@ -23,7 +23,7 @@ const TIER_FEATURES = {
     ],
   },
   daily: {
-    name: "Daily Pass",
+    name: "Basic",
     color: "bg-blue-600",
     icon: Zap,
     features: [
@@ -38,7 +38,7 @@ const TIER_FEATURES = {
     ],
   },
   monthly: {
-    name: "Monthly Pro",
+    name: "Pro",
     color: "bg-purple-600",
     icon: Crown,
     features: [
@@ -53,7 +53,7 @@ const TIER_FEATURES = {
     ],
   },
   yearly: {
-    name: "Annual Elite",
+    name: "Elite",
     color: "bg-amber-500",
     icon: Sparkles,
     features: [
@@ -272,10 +272,10 @@ export default function SubscriptionDashboard() {
                     {key === "free"
                       ? "Free forever"
                       : key === "daily"
-                        ? "$9.99/day"
+                        ? "$9.99/month"
                         : key === "monthly"
-                          ? "$29.99/month"
-                          : "$299.99/year"}
+                          ? "$19.99/month"
+                          : "$59.99/year"}
                   </p>
                 </CardHeader>
                 <CardContent>

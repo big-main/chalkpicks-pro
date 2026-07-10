@@ -10,30 +10,33 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
 
 export const PLANS = {
   daily: {
-    name: "Daily Pass",
-    priceId: "price_daily",
+    name: "Basic",
+    priceId: "price_1TovuwDksqAHyBc3jOzOvW3p",
     amountCents: 999,
-    description: "Full access for 24 hours",
-    features: ["All premium picks today", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"],
-    badge: "Try it out",
+    interval: "month",
+    description: "Essential picks for casual bettors",
+    features: ["All premium picks daily", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"],
+    badge: "Starter",
   },
   monthly: {
-    name: "Monthly Pro",
-    priceId: "price_monthly",
-    amountCents: 2999,
+    name: "Pro",
+    priceId: "price_1TovuxDksqAHyBc3GHCX8Kxx",
+    amountCents: 1999,
+    interval: "month",
     description: "Best value for serious bettors",
     features: ["All premium picks daily", "AI picks generator", "Backtesting engine", "Bet tracker & analytics", "Leaderboard access", "Priority email support", "Daily pick alerts"],
     badge: "Most Popular",
     popular: true,
   },
   yearly: {
-    name: "Annual Elite",
-    priceId: "price_yearly",
-    amountCents: 19999,
+    name: "Elite",
+    priceId: "price_1TovuxDksqAHyBc3yjLLYW9J",
+    amountCents: 5999,
+    interval: "year",
     description: "Maximum savings for pros",
-    features: ["Everything in Monthly", "Early access to new features", "Advanced backtesting", "Custom AI pick generation", "VIP Discord access", "1-on-1 strategy sessions"],
+    features: ["Everything in Pro", "Early access to new features", "Advanced backtesting", "Custom AI pick generation", "VIP Discord access", "1-on-1 strategy sessions"],
     badge: "Best Value",
-    savings: "Save $16/mo",
+    savings: "Save $14/mo vs Pro",
   },
 };
 
@@ -50,7 +53,6 @@ export const subscriptionRouter = router({
       const plan = PLANS[input.tier];
       if (!plan) throw new TRPCError({ code: "BAD_REQUEST" });
 
-      const isRecurring = input.tier !== "daily";
 
       // Look up Stripe promotion code if user provided one
       let stripePromotionCodeId: string | undefined;
@@ -89,22 +91,15 @@ export const subscriptionRouter = router({
       }
 
       try {
-        // Build session params
+        // Build session params using actual Stripe price IDs
+        const isSubscription = plan.interval === "month" || plan.interval === "year";
         const sessionParams: any = {
-          mode: isRecurring ? "subscription" : "payment",
+          mode: isSubscription ? "subscription" : "payment",
           payment_method_types: ["card"],
           customer_email: ctx.user.email ?? undefined,
           line_items: [
             {
-              price_data: {
-                currency: "usd",
-                unit_amount: plan.amountCents,
-                product_data: {
-                  name: `ChalkPicks Pro — ${plan.name}`,
-                  description: plan.description,
-                },
-                ...(isRecurring ? { recurring: { interval: input.tier === "monthly" ? "month" : "year" } } : {}),
-              },
+              price: plan.priceId,
               quantity: 1,
             },
           ],

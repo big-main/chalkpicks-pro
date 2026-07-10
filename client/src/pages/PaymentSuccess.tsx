@@ -88,9 +88,9 @@ export default function PaymentSuccess() {
   }, [activated]);
 
   const tierLabels: Record<string, string> = {
-    daily: "Daily Pass",
-    monthly: "Monthly Pro",
-    yearly: "Annual Elite",
+    daily: "Basic",
+    monthly: "Pro",
+    yearly: "Elite",
   };
 
   const tierIcons: Record<string, React.ReactNode> = {

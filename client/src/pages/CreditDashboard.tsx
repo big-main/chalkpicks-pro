@@ -109,9 +109,9 @@ export default function CreditDashboard() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               {[
-                { tier: "daily", name: "Daily Pass", price: 9.99, description: "24-hour access" },
-                { tier: "monthly", name: "Monthly Pass", price: 29.99, description: "30-day access" },
-                { tier: "yearly", name: "VIP Annual Pass", price: 199.99, description: "365-day access" },
+                { tier: "daily", name: "Basic", price: 9.99, description: "Monthly access" },
+                { tier: "monthly", name: "Pro", price: 19.99, description: "Monthly access" },
+                { tier: "yearly", name: "Elite", price: 59.99, description: "Annual access" },
               ].map(({ tier, name, price, description }) => (
                 <Card
                   key={tier}

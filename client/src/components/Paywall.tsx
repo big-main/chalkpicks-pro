@@ -13,9 +13,9 @@ export function Paywall({ tier, title = "Premium Feature", description = "Unlock
   const [location, navigate] = useLocation();
 
   const tierInfo = {
-    daily: { name: "Daily Pass", price: "$9.99/day", features: ["24-hour full access", "All premium picks", "Real-time alerts"] },
-    monthly: { name: "Monthly Pro", price: "$29.99/mo", features: ["Unlimited access", "Backtesting engine", "Leaderboard", "Priority support"] },
-    yearly: { name: "Annual Elite", price: "$199.99/yr", features: ["Everything in Monthly", "Early access to features", "VIP Discord", "1-on-1 sessions"] },
+    daily: { name: "Basic", price: "$9.99/mo", features: ["All premium picks daily", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"] },
+    monthly: { name: "Pro", price: "$19.99/mo", features: ["Unlimited access", "Backtesting engine", "Leaderboard", "Priority support"] },
+    yearly: { name: "Elite", price: "$59.99/yr", features: ["Everything in Pro", "Early access to features", "VIP Discord", "1-on-1 sessions"] },
   };
 
   const info = tierInfo[tier];

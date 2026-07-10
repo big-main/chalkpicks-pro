@@ -867,3 +867,8 @@
 - [x] Add Open Graph / Twitter Card meta tags to blog post pages (og:title, og:description, og:image, twitter:card)
 - [x] Submit sitemap to Google Search Console (ping Google sitemap endpoint)
 - [x] Add Related Articles section to blog post pages (2-3 other published posts)
+
+## Dynamic Sitemap, Newsletter CTA & Blog Tags (Jul 10, 2026)
+- [x] Add dynamic /sitemap-blog.xml endpoint with DB-backed blog post URLs (up to 500 posts, 1h cache)
+- [x] Add newsletter signup CTA to blog post pages (email capture before Related Articles)
+- [x] Add tags column to blog_posts schema and tag-based related article filtering

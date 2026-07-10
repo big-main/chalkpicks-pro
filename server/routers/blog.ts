@@ -71,31 +71,58 @@ export const blogRouter = router({
     }),
 
   /**
-   * Get related articles (excluding current slug, most recent published)
+   * Get related articles (tag-aware, excludes current slug)
+   * If the current post has tags, tries to find posts sharing at least one tag first;
+   * falls back to most-recent published posts if not enough tag matches.
    */
   getRelated: publicProcedure
-    .input(z.object({ slug: z.string(), limit: z.number().min(1).max(6).default(3) }))
+    .input(z.object({ slug: z.string(), tags: z.string().optional(), limit: z.number().min(1).max(6).default(3) }))
     .query(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new Error("Database unavailable");
 
+      const selectFields = {
+        id: blogPosts.id,
+        title: blogPosts.title,
+        slug: blogPosts.slug,
+        excerpt: blogPosts.excerpt,
+        heroImage: blogPosts.heroImage,
+        seoDescription: blogPosts.seoDescription,
+        tags: blogPosts.tags,
+        publishedAt: blogPosts.publishedAt,
+      };
+
+      // If the current post has tags, try tag-matched results first
+      if (input.tags) {
+        const tagList = input.tags.split(",").map(t => t.trim()).filter(Boolean);
+        // Fetch more than needed, then filter in-memory for tag overlap
+        const candidates = await db
+          .select(selectFields)
+          .from(blogPosts)
+          .where(and(eq(blogPosts.status, "published"), ne(blogPosts.slug, input.slug)))
+          .orderBy(desc(blogPosts.publishedAt))
+          .limit(30);
+
+        const tagMatches = candidates.filter(p => {
+          if (!p.tags) return false;
+          const postTags = p.tags.split(",").map(t => t.trim());
+          return tagList.some(t => postTags.includes(t));
+        });
+
+        if (tagMatches.length >= input.limit) {
+          return tagMatches.slice(0, input.limit);
+        }
+        // Pad with recency-based results if not enough tag matches
+        const tagMatchSlugs = new Set(tagMatches.map(p => p.slug));
+        const padded = candidates.filter(p => !tagMatchSlugs.has(p.slug));
+        return [...tagMatches, ...padded].slice(0, input.limit);
+      }
+
+      // No tags — fall back to most recent
       const posts = await db
-        .select({
-          id: blogPosts.id,
-          title: blogPosts.title,
-          slug: blogPosts.slug,
-          excerpt: blogPosts.excerpt,
-          heroImage: blogPosts.heroImage,
-          seoDescription: blogPosts.seoDescription,
-          publishedAt: blogPosts.publishedAt,
-        })
+        .select(selectFields)
         .from(blogPosts)
-        .where(
-          and(
-            eq(blogPosts.status, "published"),
-            ne(blogPosts.slug, input.slug)
-          )
-        )
+        .where(and(eq(blogPosts.status, "published"), ne(blogPosts.slug, input.slug)))
         .orderBy(desc(blogPosts.publishedAt))
         .limit(input.limit);
 

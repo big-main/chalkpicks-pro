@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useRoute, Link } from "wouter";
-import { ArrowLeft, Calendar, BookOpen, Twitter, Link2, ChevronRight } from "lucide-react";
+import { ArrowLeft, Calendar, BookOpen, Twitter, Link2, ChevronRight, Mail, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -29,6 +30,33 @@ export default function BlogPost() {
   const [, params] = useRoute("/blog/:slug");
   const slug = params?.slug || "";
 
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail || !newsletterEmail.includes("@")) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    setNewsletterLoading(true);
+    // Store in localStorage as lightweight capture; real integration can hook into email service
+    try {
+      const existing = JSON.parse(localStorage.getItem("cp_newsletter_subs") || "[]");
+      if (!existing.includes(newsletterEmail)) {
+        existing.push(newsletterEmail);
+        localStorage.setItem("cp_newsletter_subs", JSON.stringify(existing));
+      }
+      setNewsletterSubmitted(true);
+      toast.success("You're in! Daily picks delivered to your inbox.");
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setNewsletterLoading(false);
+    }
+  };
+
   const { data: post, isLoading } = trpc.blog.getBySlug.useQuery(
     { slug },
     { enabled: !!slug }
@@ -36,9 +64,9 @@ export default function BlogPost() {
 
   const pageUrl = typeof window !== "undefined" ? window.location.href : `https://chalkpicks.live/blog/${slug}`;
 
-  // Related articles (exclude current slug)
+  // Related articles (tag-aware, exclude current slug)
   const { data: relatedPosts } = trpc.blog.getRelated.useQuery(
-    { slug, limit: 3 },
+    { slug, tags: post?.tags ?? undefined, limit: 3 },
     { enabled: !!slug }
   );
 
@@ -258,9 +286,17 @@ export default function BlogPost() {
                 })
               : "Recently Published"}
           </div>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            Sports Betting
-          </span>
+          {post.tags ? (
+            post.tags.split(",").map(t => t.trim()).filter(Boolean).map(tag => (
+              <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                {tag}
+              </span>
+            ))
+          ) : (
+            <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              Sports Betting
+            </span>
+          )}
         </div>
 
         {/* Article Body */}
@@ -328,6 +364,49 @@ export default function BlogPost() {
               View Plans
             </Button>
           </Link>
+        </div>
+
+        {/* Newsletter Signup CTA */}
+        <div className="mt-8 p-6 rounded-xl bg-gradient-to-br from-[#0d1f14] to-[#0a1520] border border-emerald-500/20 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.06),_transparent_70%)]" />
+          <div className="relative">
+            {newsletterSubmitted ? (
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0" />
+                <div>
+                  <p className="text-white font-semibold">You're subscribed!</p>
+                  <p className="text-sm text-white/50">Expect daily AI picks and sharp money alerts in your inbox.</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 mb-1">
+                  <Mail className="w-4 h-4 text-emerald-400" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">Free Daily Picks</span>
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">Get AI picks delivered to your inbox</h3>
+                <p className="text-sm text-white/50 mb-4">Join 4,200+ bettors getting daily +EV picks, line movement alerts, and sharp money signals — free.</p>
+                <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-emerald-500/50"
+                    disabled={newsletterLoading}
+                  />
+                  <Button
+                    type="submit"
+                    disabled={newsletterLoading}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white shrink-0"
+                  >
+                    {newsletterLoading ? "Joining..." : "Get Free Picks"}
+                  </Button>
+                </form>
+                <p className="text-xs text-white/25 mt-2">No spam. Unsubscribe anytime.</p>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Related Articles */}

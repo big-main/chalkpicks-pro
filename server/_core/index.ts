@@ -595,6 +595,36 @@ async function startServer() {
     }
   });
 
+  // Dynamic sitemap — merges static routes with DB-backed blog post URLs
+  app.get("/sitemap-blog.xml", async (_req, res) => {
+    try {
+      const { getDb } = await import("../db");
+      const { blogPosts } = await import("../../drizzle/schema");
+      const { eq, desc } = await import("drizzle-orm");
+      const db = await getDb();
+      const posts = db
+        ? await db.select({ slug: blogPosts.slug, publishedAt: blogPosts.publishedAt })
+            .from(blogPosts)
+            .where(eq(blogPosts.status, "published"))
+            .orderBy(desc(blogPosts.publishedAt))
+            .limit(500)
+        : [];
+
+      const urls = posts.map(p => {
+        const lastmod = p.publishedAt ? new Date(p.publishedAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0];
+        return `  <url>\n    <loc>https://chalkpicks.live/blog/${p.slug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
+      }).join("\n");
+
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
+      res.set("Content-Type", "application/xml");
+      res.set("Cache-Control", "public, max-age=3600");
+      res.send(xml);
+    } catch (err) {
+      console.error("[Sitemap] Blog sitemap error:", err);
+      res.status(500).send("Sitemap generation failed");
+    }
+  });
+
   // Explicit routes for SEO/verification XML files — must come before SPA catch-all
   const xmlFiles = ['BingSiteAuth.xml', 'sitemap.xml', 'sitemap.xsl', 'chalkpicks2026indexnow.txt'];
   xmlFiles.forEach(filename => {

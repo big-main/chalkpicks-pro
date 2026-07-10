@@ -640,6 +640,7 @@ export const blogPosts = mysqlTable("blog_posts", {
   source: mysqlEnum("source", ["babylovegrowth", "manual", "ai-generated"]).default("babylovegrowth").notNull(),
   sourceArticleId: varchar("sourceArticleId", { length: 128 }),
   status: mysqlEnum("status", ["draft", "published", "archived"]).default("draft").notNull(),
+  tags: varchar("tags", { length: 512 }),
   publishedAt: timestamp("publishedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

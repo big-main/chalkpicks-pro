@@ -18,6 +18,7 @@ import { weeklyNewsletterHandler } from "../handlers/weeklyNewsletterHandler";
 import { welcomeDripHandler } from "../handlers/welcomeDripHandler";
 import { blogContentHandler } from "../handlers/blogContentHandler";
 import { registerSecurityMiddleware } from "../middleware/security";
+import { apiReference } from "@scalar/express-api-reference";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -69,6 +70,54 @@ async function startServer() {
   app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
   });
+
+  // Scalar API Reference docs — public endpoint
+  app.get("/openapi.json", (_req, res) => {
+    res.json({
+      openapi: "3.1.0",
+      info: {
+        title: "ChalkPicks Pro API",
+        version: "1.0.0",
+        description: "AI-powered sports betting analytics API. Access picks, odds, arbitrage, and analytics data.",
+        contact: { name: "ChalkPicks Support", email: "admin@chalkpicks.live", url: "https://chalkpicks.live" },
+      },
+      servers: [{ url: "/api", description: "Production" }],
+      paths: {
+        "/trpc/picks.today": {
+          get: { summary: "Get today's AI picks", tags: ["Picks"], responses: { "200": { description: "List of today's picks with confidence scores" } } }
+        },
+        "/trpc/odds.live": {
+          get: { summary: "Get live odds from 10+ sportsbooks", tags: ["Odds"], responses: { "200": { description: "Real-time odds data" } } }
+        },
+        "/trpc/arbitrage.scan": {
+          get: { summary: "Scan for arbitrage opportunities", tags: ["Arbitrage"], responses: { "200": { description: "Current arbitrage opportunities" } } }
+        },
+        "/trpc/blog.list": {
+          get: { summary: "List published blog articles", tags: ["Blog"], responses: { "200": { description: "Published articles from BabyLoveGrowth" } } }
+        },
+        "/trpc/subscription.plans": {
+          get: { summary: "Get subscription plans", tags: ["Subscriptions"], responses: { "200": { description: "Available plans: Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr" } } }
+        },
+      },
+      tags: [
+        { name: "Picks", description: "AI-generated sports picks" },
+        { name: "Odds", description: "Real-time odds data" },
+        { name: "Arbitrage", description: "Arbitrage opportunity scanner" },
+        { name: "Blog", description: "Sports betting content" },
+        { name: "Subscriptions", description: "Subscription management" },
+      ],
+    });
+  });
+
+  app.use(
+    "/api/docs",
+    apiReference({
+      spec: { url: "/openapi.json" },
+      theme: "saturn",
+      layout: "modern",
+      defaultHttpClient: { targetKey: "javascript", clientKey: "fetch" },
+    })
+  );
 
   // Scheduled cron handlers — must come before SPA catch-all
   app.post("/api/scheduled/refresh-arbitrage", arbitrageRefreshHandler);

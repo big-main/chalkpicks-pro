@@ -845,3 +845,10 @@
 - [x] Add route to App.tsx
 - [x] Add link to footer navigation
 - [x] Add to sitemap
+
+## ToolPilot Badge & Scalar API (Jul 10, 2026)
+- [x] Download and upload ToolPilot badge image to static assets
+- [x] Add ToolPilot badge to homepage hero/social proof section
+- [x] Add ToolPilot badge to Media Partners page header
+- [x] Install @scalar/express-api-reference for API docs
+- [x] Expose /api/docs endpoint with OpenAPI spec (also /openapi.json)

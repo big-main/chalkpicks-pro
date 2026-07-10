@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 const partners = [
   {
     name: "ToolPilot.ai",
-    logo: "/manus-storage/toolpilot-badge_17f2d7f0.jpg",
+    logo: "/manus-storage/toolpilot-logo-dark_0f845dfb.jpg",
     url: "https://www.toolpilot.ai",
     description:
       "ToolPilot.ai is the leading AI tool discovery platform, helping users find the best AI-powered solutions for every need. ChalkPicks Pro is proudly featured as a top AI sports analytics tool on their platform.",

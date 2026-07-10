@@ -236,11 +236,35 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="text-sm mb-16"
+              className="text-sm mb-6"
               style={{ color: "rgba(255, 255, 255, 0.35)" }}
             >
-              Starting at $4.99/day · Cancel anytime · No credit card for free tools
+              Starting at $9.99/mo · Cancel anytime · No credit card for free tools
             </motion.p>
+
+            {/* ToolPilot Featured Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="mb-12 flex items-center justify-center"
+            >
+              <a
+                href="https://www.toolpilot.ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-colors group"
+              >
+                <img
+                  src="/manus-storage/toolpilot-logo-dark_0f845dfb.jpg"
+                  alt="ToolPilot.ai"
+                  className="h-5 w-auto rounded"
+                />
+                <span className="text-xs text-white/50 group-hover:text-white/70 transition-colors">
+                  Featured on <span className="text-white/80 font-medium">ToolPilot.ai</span>
+                </span>
+              </a>
+            </motion.div>
 
             {/* Stats bar — floating glass cards */}
             <motion.div

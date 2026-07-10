@@ -306,4 +306,76 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
 
   // Sports list
   sports: publicProcedure.query(() => SPORTS_LIST),
+
+  // Archive of past picks grouped by date (public, powers /daily-picks SEO page)
+  archive: publicProcedure
+    .input(z.object({
+      sportKey: z.string().optional(),
+      days: z.number().min(1).max(90).optional().default(30),
+    }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - input.days);
+      const cutoffStr = cutoff.toISOString().split("T")[0];
+
+      if (!db) {
+        const today = new Date().toISOString().split("T")[0];
+        let mockData = generateMockPicks(today);
+        if (input.sportKey) mockData = mockData.filter(p => p.sportKey === input.sportKey);
+        return {
+          days: [{
+            date: today,
+            picks: mockData.map((p, i) => ({
+              id: i + 1,
+              pickDate: today,
+              sportKey: p.sportKey,
+              pickType: p.pickType as string,
+              homeTeam: p.homeTeam,
+              awayTeam: p.awayTeam,
+              recommendation: p.recommendation,
+              odds: p.odds,
+              confidenceScore: p.confidenceScore,
+              result: p.result as string,
+              tier: p.tier as string,
+            })),
+          }],
+          sports: SPORTS_LIST,
+        };
+      }
+
+      const conditions = [eq(picks.isActive, true), gte(picks.pickDate, cutoffStr)];
+      if (input.sportKey) conditions.push(eq(picks.sportKey, input.sportKey));
+
+      const rows = await db
+        .select({
+          id: picks.id,
+          pickDate: picks.pickDate,
+          sportKey: picks.sportKey,
+          pickType: picks.pickType,
+          homeTeam: picks.homeTeam,
+          awayTeam: picks.awayTeam,
+          recommendation: picks.recommendation,
+          odds: picks.odds,
+          confidenceScore: picks.confidenceScore,
+          result: picks.result,
+          tier: picks.tier,
+        })
+        .from(picks)
+        .where(and(...conditions))
+        .orderBy(desc(picks.pickDate), desc(picks.confidenceScore))
+        .limit(500);
+
+      const byDate = new Map<string, typeof rows>();
+      for (const row of rows) {
+        const list = byDate.get(row.pickDate) ?? [];
+        list.push(row);
+        byDate.set(row.pickDate, list);
+      }
+
+      return {
+        days: Array.from(byDate.entries()).map(([date, dayPicks]) => ({ date, picks: dayPicks })),
+        sports: SPORTS_LIST,
+      };
+    }),
 });

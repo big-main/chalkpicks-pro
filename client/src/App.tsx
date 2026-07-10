@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { usePageTracking } from "@/hooks/usePageTracking";
+import { useRouteSEO } from "@/hooks/useRouteSEO";
 
 // Eagerly loaded (critical path)
 import Home from "./pages/Home";
@@ -45,6 +46,13 @@ const CreditDashboard = lazy(() => import("@/pages/CreditDashboard"));
 const PropBuilder = lazy(() => import("@/pages/PropBuilder"));
 const LineMovement = lazy(() => import("@/pages/LineMovement"));
 const CorrelationFinder = lazy(() => import("@/pages/CorrelationFinder"));
+const Blog = lazy(() => import("@/pages/Blog"));
+const BlogPost = lazy(() => import("@/pages/BlogPost"));
+const DailyPicks = lazy(() => import("@/pages/DailyPicks"));
+const NFLPicks = lazy(() => import("@/pages/NFLPicks"));
+const NBAPicks = lazy(() => import("@/pages/NBAPicks"));
+const MLBPicks = lazy(() => import("@/pages/MLBPicks"));
+const NHLPicks = lazy(() => import("@/pages/NHLPicks"));
 
 function PageLoader() {
   return (
@@ -64,6 +72,7 @@ function PageLoader() {
 
 function Router() {
   usePageTracking();
+  useRouteSEO();
   return (
     <Suspense fallback={<PageLoader />}>
       <Switch>
@@ -102,6 +111,13 @@ function Router() {
         <Route path="/prop-builder" component={PropBuilder} />
         <Route path="/line-movement" component={LineMovement} />
         <Route path="/correlation-finder" component={CorrelationFinder} />
+        <Route path="/blog" component={Blog} />
+        <Route path="/blog/:slug" component={BlogPost} />
+        <Route path="/daily-picks" component={DailyPicks} />
+        <Route path="/nfl-picks" component={NFLPicks} />
+        <Route path="/nba-picks" component={NBAPicks} />
+        <Route path="/mlb-picks" component={MLBPicks} />
+        <Route path="/nhl-picks" component={NHLPicks} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

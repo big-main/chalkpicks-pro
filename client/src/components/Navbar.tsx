@@ -61,6 +61,7 @@ const navLinks = [
   { href: "/tools", label: "Tools" },
   { href: "/referral", label: "Referral" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export default function Navbar() {

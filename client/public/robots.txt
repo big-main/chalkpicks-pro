@@ -1,13 +1,36 @@
 User-agent: *
 Allow: /
 Allow: /picks
+Allow: /daily-picks
+Allow: /nfl-picks
+Allow: /nba-picks
+Allow: /mlb-picks
+Allow: /nhl-picks
+Allow: /blog
 Allow: /stats
 Allow: /leaderboard
 Allow: /pricing
 Allow: /backtesting
+Allow: /ev-finder
+Allow: /arbitrage
+Allow: /prop-builder
+Allow: /parlay-builder
+Allow: /line-movement
+Allow: /correlation-finder
+Allow: /clv-tracker
+Allow: /tools
+Allow: /sportsbooks
+Allow: /kalshi
 
 Disallow: /dashboard
+Disallow: /admin
+Disallow: /account-settings
+Disallow: /subscription-dashboard
+Disallow: /subscription-management
+Disallow: /credits
+Disallow: /notifications
 Disallow: /api/
 Disallow: /payment/
+Disallow: /snapshots/
 
 Sitemap: https://chalkpicks.live/sitemap.xml

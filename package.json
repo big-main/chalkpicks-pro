@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development tsx watch server/_core/index.ts",
-    "build": "vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+    "build": "node scripts/generate-sitemap.mjs && vite build && node scripts/generate-snapshots.mjs && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+    "seo:generate": "node scripts/generate-sitemap.mjs && node scripts/generate-snapshots.mjs",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc --noEmit",
     "format": "prettier --write .",
@@ -53,6 +54,7 @@
     "@types/ws": "^8.18.1",
     "axios": "^1.16.0",
     "bcryptjs": "^3.0.3",
+    "canvas": "^3.2.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -76,6 +78,7 @@
     "react-day-picker": "^9.11.1",
     "react-dom": "^19.2.1",
     "react-hook-form": "^7.64.0",
+    "react-markdown": "^10.1.0",
     "react-resizable-panels": "^3.0.6",
     "recharts": "^2.15.2",
     "sonner": "^2.0.7",
@@ -122,6 +125,9 @@
     },
     "overrides": {
       "tailwindcss>nanoid": "3.3.7"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "canvas"
+    ]
   }
 }

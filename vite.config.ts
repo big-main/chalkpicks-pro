@@ -16,6 +16,11 @@ export default defineConfig({
   envDir: path.resolve(import.meta.dirname),
   root: path.resolve(import.meta.dirname, "client"),
   publicDir: path.resolve(import.meta.dirname, "client", "public"),
+  esbuild: {
+    // Keep console.error/warn for real diagnostics; strip debug noise.
+    pure: ["console.log", "console.debug", "console.info"],
+    drop: ["debugger"],
+  },
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
@@ -24,8 +29,14 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           // Core vendor chunks (loaded on every page)
-          if (id.includes("node_modules/react") || id.includes("node_modules/react-dom")) {
+          // NOTE: exact path-segment match — a bare `includes("node_modules/react")`
+          // also captures react-hook-form, react-day-picker, react-resizable-panels,
+          // etc., dragging page-specific libs into the critical chunk.
+          if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) {
             return "vendor-react";
+          }
+          if (id.includes("node_modules/framer-motion")) {
+            return "vendor-motion";
           }
           if (
             id.includes("node_modules/@trpc") ||

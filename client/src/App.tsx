@@ -139,7 +139,7 @@ function Router() {
           <Route path="/bankroll-tracker" component={BankrollTracker} />
           <Route path="/referral" component={Referral} />
           <Route path="/affiliate" component={AffiliateHub} />
-          <Route path="/leaderboard" component={LiveLeaderboard} />
+          <Route path="/live-leaderboard" component={LiveLeaderboard} />
           <Route path="/community" component={CommunityChat} />
           <Route path="/bet-builder" component={BetSlipBuilder} />
           <Route path="/parlay-tracker" component={ParlayTracker} />

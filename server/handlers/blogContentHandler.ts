@@ -22,24 +22,60 @@ const INDEXNOW_KEY = "chalkpicks2026indexnow";
 const INDEXNOW_HOST = "chalkpicks.live";
 const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
 
+// Sports betting keyword → tag mapping for auto-tagging
+const TAG_KEYWORDS: Array<{ tag: string; keywords: RegExp }> = [
+  { tag: "NFL",         keywords: /\bNFL\b|football|quarterback|touchdown|super bowl/i },
+  { tag: "NBA",         keywords: /\bNBA\b|basketball|point guard|three.pointer/i },
+  { tag: "MLB",         keywords: /\bMLB\b|baseball|pitcher|home run|batting/i },
+  { tag: "NHL",         keywords: /\bNHL\b|hockey|goalie|puck|ice/i },
+  { tag: "NCAAF",       keywords: /\bNCAAF\b|college football|bowl game/i },
+  { tag: "NCAAB",       keywords: /\bNCAAB\b|college basketball|march madness/i },
+  { tag: "arbitrage",   keywords: /arbitrage|arb bet|sure bet|no.risk/i },
+  { tag: "parlay",      keywords: /parlay|accumulator|multi.bet/i },
+  { tag: "prop bets",   keywords: /prop bet|player prop|anytime scorer/i },
+  { tag: "bankroll",    keywords: /bankroll|kelly criterion|staking|unit size/i },
+  { tag: "+EV",         keywords: /\+EV|positive expected value|expected value/i },
+  { tag: "sharp money", keywords: /sharp money|steam move|line move|reverse line/i },
+  { tag: "strategy",    keywords: /strategy|system|method|approach|technique/i },
+  { tag: "AI picks",    keywords: /AI pick|machine learning|algorithm|model predict/i },
+];
+
+/**
+ * Extract up to 5 relevant tags from an article's title + content.
+ */
+function extractTagsFromArticle(title: string, content: string): string {
+  const text = `${title} ${content}`;
+  const matched: string[] = [];
+  for (const { tag, keywords } of TAG_KEYWORDS) {
+    if (keywords.test(text)) matched.push(tag);
+    if (matched.length >= 5) break;
+  }
+  return matched.join(",");
+}
+
 /**
  * Ping Google Search Console sitemap endpoint.
  * Asks Google to re-crawl the sitemap after new content is published.
  */
 async function pingGoogleSitemap(): Promise<void> {
-  const sitemapUrl = `https://${INDEXNOW_HOST}/sitemap.xml`;
-  const pingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
+  const sitemaps = [
+    `https://${INDEXNOW_HOST}/sitemap.xml`,
+    `https://${INDEXNOW_HOST}/sitemap-blog.xml`,
+  ];
 
-  try {
-    const response = await fetch(pingUrl, { method: "GET" });
-    if (response.ok) {
-      console.log(`[GooglePing] Sitemap ping successful (status: ${response.status})`);
-    } else {
-      console.warn(`[GooglePing] Unexpected response: ${response.status}`);
+  for (const sitemapUrl of sitemaps) {
+    const pingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
+    try {
+      const response = await fetch(pingUrl, { method: "GET" });
+      if (response.ok) {
+        console.log(`[GooglePing] Pinged ${sitemapUrl} (status: ${response.status})`);
+      } else {
+        console.warn(`[GooglePing] Unexpected response for ${sitemapUrl}: ${response.status}`);
+      }
+    } catch (err: any) {
+      // Non-fatal
+      console.error(`[GooglePing] Ping failed for ${sitemapUrl}:`, err.message);
     }
-  } catch (err: any) {
-    // Non-fatal
-    console.error(`[GooglePing] Sitemap ping failed:`, err.message);
   }
 }
 
@@ -130,6 +166,12 @@ export async function blogContentHandler(req: Request, res: Response) {
             continue;
           }
 
+          // Auto-extract tags from title + content
+          const autoTags = extractTagsFromArticle(
+            blogPost.title,
+            blogPost.content || ""
+          );
+
           // Insert as draft
           const result = await db.insert(blogPosts).values({
             title: blogPost.title,
@@ -140,6 +182,7 @@ export async function blogContentHandler(req: Request, res: Response) {
             heroImage: blogPost.heroImage,
             seoDescription: blogPost.seoDescription,
             jsonLd: blogPost.jsonLd,
+            tags: autoTags || null,
             source: "babylovegrowth",
             sourceArticleId: article.id,
             status: "draft",

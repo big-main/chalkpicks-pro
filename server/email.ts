@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 export interface EmailPayload {
   to: string;
   subject: string;
-  type: "daily-picks" | "subscription-confirmation" | "performance-summary" | "alert" | "welcome";
+  type: "daily-picks" | "subscription-confirmation" | "performance-summary" | "alert" | "welcome" | "newsletter-welcome";
   data?: Record<string, any>;
 }
 
@@ -53,14 +53,26 @@ export async function sendEmail(payload: EmailPayload): Promise<boolean> {
       case "welcome":
         htmlContent = generateWelcomeEmail(data || {});
         break;
+      case "newsletter-welcome":
+        htmlContent = generateNewsletterWelcomeEmail(data || {});
+        break;
     }
 
-    // Log the email (in production, send via email service)
     console.log(`[Email] Sending ${type} to ${to}`);
-    console.log(`[Email] Subject: ${subject}`);
-    console.log(`[Email] Content: ${htmlContent.substring(0, 200)}...`);
 
-    // Simulate email sending success
+    // Send via SMTP if credentials are configured
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+      await transporter.sendMail({
+        from: `"ChalkPicks Pro" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+        to,
+        subject,
+        html: htmlContent,
+      });
+    } else {
+      // Dev fallback: log content
+      console.log(`[Email] SMTP not configured — logged only. Subject: ${subject}`);
+    }
+
     return true;
   } catch (error) {
     console.error("[Email] Failed to send email:", error);
@@ -528,4 +540,77 @@ export async function sendDripEmail(options: DripEmailOptions): Promise<boolean>
     console.error(`[Email] Failed to send drip day ${options.day} to ${options.email}:`, error);
     return false;
   }
+}
+
+/**
+ * Newsletter welcome email — sent to new blog newsletter subscribers
+ */
+function generateNewsletterWelcomeEmail(data: Record<string, any>): string {
+  const email = data.email || "";
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Welcome to ChalkPicks Daily Picks</title>
+      <style>
+        body { margin: 0; padding: 0; background: #0a0f0a; font-family: 'Segoe UI', Arial, sans-serif; color: #e0e0e0; }
+        .container { max-width: 560px; margin: 0 auto; padding: 32px 24px; }
+        .logo { font-size: 22px; font-weight: 800; color: #10b981; letter-spacing: -0.5px; margin-bottom: 24px; }
+        .hero { background: linear-gradient(135deg, #0d1f14 0%, #0a1520 100%); border: 1px solid rgba(16,185,129,0.2); border-radius: 12px; padding: 28px 24px; margin-bottom: 24px; }
+        .hero h1 { font-size: 22px; font-weight: 700; color: #fff; margin: 0 0 10px; }
+        .hero p { font-size: 15px; color: rgba(255,255,255,0.6); margin: 0; line-height: 1.6; }
+        .features { margin-bottom: 24px; }
+        .feature { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+        .feature-icon { width: 32px; height: 32px; background: rgba(16,185,129,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .feature-text h3 { font-size: 14px; font-weight: 600; color: #fff; margin: 0 0 3px; }
+        .feature-text p { font-size: 13px; color: rgba(255,255,255,0.5); margin: 0; }
+        .cta { text-align: center; margin-bottom: 24px; }
+        .cta a { display: inline-block; background: #10b981; color: #fff; text-decoration: none; font-weight: 700; font-size: 15px; padding: 13px 32px; border-radius: 8px; }
+        .footer { font-size: 12px; color: rgba(255,255,255,0.3); text-align: center; line-height: 1.6; }
+        .footer a { color: rgba(16,185,129,0.7); text-decoration: none; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="logo">⚡ ChalkPicks Pro</div>
+        <div class="hero">
+          <h1>You're in. Daily picks start now.</h1>
+          <p>Welcome to the ChalkPicks newsletter — AI-powered +EV picks, sharp money alerts, and line movement signals delivered to your inbox every day.</p>
+        </div>
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-text">
+              <h3>Daily AI Picks</h3>
+              <p>Top picks across NFL, NBA, MLB, NHL — with confidence scores and edge analysis.</p>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">📈</div>
+            <div class="feature-text">
+              <h3>Sharp Money Alerts</h3>
+              <p>Know when the books move and where the sharp action is landing.</p>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">💰</div>
+            <div class="feature-text">
+              <h3>+EV Opportunities</h3>
+              <p>Positive expected value plays identified by our arbitrage and CLV engine.</p>
+            </div>
+          </div>
+        </div>
+        <div class="cta">
+          <a href="https://chalkpicks.live/picks">View Today's Picks →</a>
+        </div>
+        <div class="footer">
+          You're receiving this because you subscribed at chalkpicks.live.<br />
+          <a href="https://chalkpicks.live/unsubscribe?email=${encodeURIComponent(email)}">Unsubscribe</a> · <a href="https://chalkpicks.live/privacy">Privacy Policy</a>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
 }

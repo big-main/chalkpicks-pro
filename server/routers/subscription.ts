@@ -6,7 +6,22 @@ import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
+// Lazy Stripe client — constructing with an empty key throws at import time,
+// which would crash the whole server (and every test) when the env var is
+// missing. Fail per-request instead so the rest of the site stays up.
+let _stripe: Stripe | null = null;
+function requireStripe(): Stripe {
+  if (_stripe) return _stripe;
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new TRPCError({
+      code: "PRECONDITION_FAILED",
+      message: "Payments are temporarily unavailable. Please try again shortly.",
+    });
+  }
+  _stripe = new Stripe(key);
+  return _stripe;
+}
 
 export const PLANS = {
   daily: {
@@ -77,7 +92,7 @@ export const subscriptionRouter = router({
 
         // Find the Stripe promotion code by code string
         try {
-          const promoCodes = await stripe.promotionCodes.list({
+          const promoCodes = await requireStripe().promotionCodes.list({
             code: input.promoCode.toUpperCase(),
             active: true,
             limit: 1,
@@ -127,7 +142,7 @@ export const subscriptionRouter = router({
         // If user provided a promo code but it's not in Stripe, we apply it via metadata
         // and the webhook will handle recording the discount
 
-        const session = await stripe.checkout.sessions.create(sessionParams);
+        const session = await requireStripe().checkout.sessions.create(sessionParams);
 
         return { url: session.url };
       } catch (err: any) {
@@ -174,7 +189,7 @@ export const subscriptionRouter = router({
 
       let session: Stripe.Checkout.Session | null = null;
       try {
-        session = await stripe.checkout.sessions.retrieve(input.sessionId);
+        session = await requireStripe().checkout.sessions.retrieve(input.sessionId);
       } catch {
         // If Stripe not configured, use mock activation
       }
@@ -227,7 +242,7 @@ export const subscriptionRouter = router({
     const u = user[0];
     if (u?.stripeSubscriptionId) {
       try {
-        await stripe.subscriptions.cancel(u.stripeSubscriptionId);
+        await requireStripe().subscriptions.cancel(u.stripeSubscriptionId);
       } catch {
         // Subscription may already be canceled
       }
@@ -260,7 +275,7 @@ export const subscriptionRouter = router({
       }
 
       try {
-        const session = await stripe.billingPortal.sessions.create({
+        const session = await requireStripe().billingPortal.sessions.create({
           customer: u.stripeCustomerId,
           configuration: "bpc_1TqPBuDksqAHyBc35muDhWXS",
           return_url: input.origin + "/account-settings",

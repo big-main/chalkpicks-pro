@@ -1,12 +1,16 @@
 import express, { type Express } from "express";
 import fs from "fs";
 import { type Server } from "http";
-import { nanoid } from "nanoid";
 import path from "path";
-import { createServer as createViteServer } from "vite";
-import viteConfig from "../../vite.config";
 
 export async function setupVite(app: Express, server: Server) {
+  // Dynamic imports: vite + nanoid are devDependencies. Static imports here
+  // would force them into the production bundle's require graph, so a
+  // `pnpm install --prod` deploy would crash at boot.
+  const { createServer: createViteServer } = await import("vite");
+  const { nanoid } = await import("nanoid");
+  const viteConfig = (await import("../../vite.config")).default;
+
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },
@@ -58,18 +62,19 @@ export function serveStatic(app: Express) {
     );
   }
 
-  // Cache middleware: versioned assets get long-term cache, HTML gets short cache
+  // Cache policy:
+  //  - Vite emits content-hashed files as /assets/Name-Hash.ext → immutable 1yr
+  //    (previous regex expected ".hexhash." and matched nothing, so every JS/CSS
+  //    file was re-validated hourly).
+  //  - HTML / navigations → no-cache so deploys show up immediately.
+  //  - Everything else → 1 hour.
+  const HASHED_ASSET = /^\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(js|css|woff2?|png|jpe?g|webp|avif|svg|map)$/;
   app.use((req, res, next) => {
-    // Versioned assets (contain hash in filename) get 1 year cache
-    if (/\.[a-f0-9]{8}\.(js|css|woff2?|png|jpg|webp|svg)$/.test(req.path)) {
+    if (HASHED_ASSET.test(req.path)) {
       res.set("Cache-Control", "public, max-age=31536000, immutable");
-    }
-    // HTML and JSON get short cache (5 minutes)
-    else if (/\.(html|json)$/.test(req.path) || !req.path.includes(".")) {
-      res.set("Cache-Control", "public, max-age=300, must-revalidate");
-    }
-    // Other assets get moderate cache (1 hour)
-    else {
+    } else if (/\.(html)$/.test(req.path) || !req.path.includes(".")) {
+      res.set("Cache-Control", "no-cache");
+    } else {
       res.set("Cache-Control", "public, max-age=3600");
     }
     next();
@@ -78,20 +83,26 @@ export function serveStatic(app: Express) {
   app.use(express.static(distPath));
 
   // Explicit routes for verification and SEO files that must not be caught by SPA fallback
-  app.get('/BingSiteAuth.xml', (_req, res) => {
-    const filePath = path.resolve(distPath, 'BingSiteAuth.xml');
+  app.get("/BingSiteAuth.xml", (_req, res) => {
+    const filePath = path.resolve(distPath, "BingSiteAuth.xml");
     if (fs.existsSync(filePath)) {
-      res.set('Content-Type', 'application/xml');
-      res.set('Cache-Control', 'public, max-age=86400');
+      res.set("Content-Type", "application/xml");
+      res.set("Cache-Control", "public, max-age=86400");
       res.sendFile(filePath);
     } else {
-      res.status(404).send('Not found');
+      res.status(404).send("Not found");
     }
+  });
+
+  // API routes that fall through are true 404s — never answer them with the
+  // SPA shell (a JSON client receiving HTML with status 200 is a debugging trap).
+  app.use("/api", (_req, res) => {
+    res.status(404).json({ error: "Not found" });
   });
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
-    res.set("Cache-Control", "public, max-age=300, must-revalidate");
+    res.set("Cache-Control", "no-cache");
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }

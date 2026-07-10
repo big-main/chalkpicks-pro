@@ -19,6 +19,7 @@ import { welcomeDripHandler } from "../handlers/welcomeDripHandler";
 import { blogContentHandler } from "../handlers/blogContentHandler";
 import { registerSecurityMiddleware } from "../middleware/security";
 import { apiReference } from "@scalar/express-api-reference";
+import compression from "compression";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -55,9 +56,15 @@ async function startServer() {
   // Security middleware (helmet, rate limiting, sanitization)
   registerSecurityMiddleware(app);
 
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // Gzip/deflate every compressible response (HTML/JS/CSS/JSON). The main JS
+  // bundle drops ~70% on the wire; API payloads shrink similarly.
+  app.use(compression({ threshold: 1024 }));
+
+  // Body parsers: the 50mb limit is only needed on tRPC (base64 story/OG
+  // images). Everything else gets a tight 1mb cap to shrink the DoS surface.
+  app.use("/api/trpc", express.json({ limit: "50mb" }));
+  app.use(express.json({ limit: "1mb" }));
+  app.use(express.urlencoded({ limit: "1mb", extended: true }));
   // tRPC API
   app.use(
     "/api/trpc",

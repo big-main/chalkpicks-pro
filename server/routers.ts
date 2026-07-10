@@ -35,6 +35,7 @@ import { storyHistoryRouter } from "./routers/storyHistory";
 import { storyScheduledRouter } from "./routers/storyScheduled";
 import { communityAutomationRouter } from "./routers/communityAutomation";
 import { blogRouter } from "./routers/blog";
+import { newsletterRouter } from "./routers/newsletter";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -58,6 +59,7 @@ async function issueSessionCookie(req: Request, res: Response, userId: number, n
 export const appRouter = router({
   system: systemRouter,
   ogImage: ogImageRouter,
+  newsletter: newsletterRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
 

@@ -872,3 +872,24 @@
 - [x] Add dynamic /sitemap-blog.xml endpoint with DB-backed blog post URLs (up to 500 posts, 1h cache)
 - [x] Add newsletter signup CTA to blog post pages (email capture before Related Articles)
 - [x] Add tags column to blog_posts schema and tag-based related article filtering
+
+## Newsletter, Auto-Tags & Sitemap Index (Jul 10, 2026)
+- [x] Wire newsletter signups to DB (newsletter_subscribers table) + SMTP welcome email
+- [x] Auto-extract tags from BabyLoveGrowth API categories in blogContentHandler.ts
+- [x] Ping both /sitemap.xml and /sitemap-blog.xml to Google on publish
+
+## Claude's 13-Bug-Fix Merge (Jul 10, 2026)
+- [x] Stripe webhook: fail closed when secret missing (was accepting unsigned events)
+- [x] $100 credit bonus: now increments instead of overwriting balance
+- [x] Removed hidden trial downgrade that would've overwritten paid tier
+- [x] Added invoice.paid handler for subscription renewals + idempotency
+- [x] Lazy SDK clients (Stripe, OpenAI, Anthropic) — missing env no longer crashes boot
+- [x] Auth rate limiting: now catches batched tRPC URLs
+- [x] Input sanitizer: stopped stripping blog HTML and "<" in text
+- [x] Scheduler: builds slate from real upcoming games (no more hardcoded fake matchups)
+- [x] FAQ schema: fixed $29.99 → $19.99 to match actual Stripe pricing
+- [x] Gzip compression added (~70% wire savings on main bundle)
+- [x] Cache regex fixed: hashed JS/CSS now gets 1-year immutable caching
+- [x] Chunking fix: react-hook-form/framer-motion split out (449KB → 333KB critical)
+- [x] React Query defaults: staleTime 30s, no refetch on window focus (saves API quota)
+- [x] tRPC client/react-query upgraded 11.6 → 11.18 to match server

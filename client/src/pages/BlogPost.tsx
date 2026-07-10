@@ -32,7 +32,16 @@ export default function BlogPost() {
 
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
-  const [newsletterLoading, setNewsletterLoading] = useState(false);
+
+  const subscribeMutation = trpc.newsletter.subscribe.useMutation({
+    onSuccess: () => {
+      setNewsletterSubmitted(true);
+      toast.success("You're in! Check your inbox for a welcome email.");
+    },
+    onError: (err) => {
+      toast.error(err.message || "Something went wrong. Please try again.");
+    },
+  });
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,21 +49,7 @@ export default function BlogPost() {
       toast.error("Please enter a valid email address.");
       return;
     }
-    setNewsletterLoading(true);
-    // Store in localStorage as lightweight capture; real integration can hook into email service
-    try {
-      const existing = JSON.parse(localStorage.getItem("cp_newsletter_subs") || "[]");
-      if (!existing.includes(newsletterEmail)) {
-        existing.push(newsletterEmail);
-        localStorage.setItem("cp_newsletter_subs", JSON.stringify(existing));
-      }
-      setNewsletterSubmitted(true);
-      toast.success("You're in! Daily picks delivered to your inbox.");
-    } catch {
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setNewsletterLoading(false);
-    }
+    subscribeMutation.mutate({ email: newsletterEmail, source: "blog" });
   };
 
   const { data: post, isLoading } = trpc.blog.getBySlug.useQuery(
@@ -393,14 +388,14 @@ export default function BlogPost() {
                     value={newsletterEmail}
                     onChange={(e) => setNewsletterEmail(e.target.value)}
                     className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-emerald-500/50"
-                    disabled={newsletterLoading}
+                    disabled={subscribeMutation.isPending}
                   />
                   <Button
                     type="submit"
-                    disabled={newsletterLoading}
+                    disabled={subscribeMutation.isPending}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white shrink-0"
                   >
-                    {newsletterLoading ? "Joining..." : "Get Free Picks"}
+                    {subscribeMutation.isPending ? "Joining..." : "Get Free Picks"}
                   </Button>
                 </form>
                 <p className="text-xs text-white/25 mt-2">No spam. Unsubscribe anytime.</p>

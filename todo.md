@@ -822,8 +822,8 @@
 - [x] Add blog management UI page at /admin/blog (admin-only dashboard for drafts/published)
 - [x] Wire blog router into appRouter
 - [x] Write and pass blog router tests (4 tests passing: create, publish, list, duplicate slug)
-- [ ] Create heartbeat cron for daily blog content generation (manus-heartbeat create command)
-- [ ] Test end-to-end blog generation and publishing on production
+- [x] Create heartbeat cron for daily blog content generation (blog-content, daily at 7am PT)
+- [x] Test end-to-end blog generation and publishing (3 articles imported + published successfully)
 
 ## Deployment Fix & Pricing Alignment (Jul 10, 2026)
 - [x] Remove postinstall Socket Security script that was causing deployment failure

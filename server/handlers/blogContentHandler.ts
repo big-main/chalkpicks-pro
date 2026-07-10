@@ -31,31 +31,30 @@ export async function blogContentHandler(req: Request, res: Response) {
     let published = 0;
     let errors = 0;
 
-    // Topics to fetch blog content for
-    const topics = [
-      "sports betting strategies",
-      "nfl picks analysis",
-      "nba predictions",
-      "mlb betting trends",
-      "parlay betting tips",
-      "odds comparison",
-      "betting bankroll management",
-    ];
-
-    // Fetch articles on a random topic
-    const topic = topics[Math.floor(Math.random() * topics.length)];
-    console.log(`[BlogContent] Fetching articles on: "${topic}"`);
+    // Fetch latest articles from BabyLoveGrowth (returns all org articles)
+    console.log(`[BlogContent] Fetching latest articles from BabyLoveGrowth`);
 
     try {
-      const response = await fetchBabyLoveArticles(10, 0, topic);
-      const articles = response.articles || [];
+      const response = await fetchBabyLoveArticles(20, 0);
+      const articles = Array.isArray(response) ? response : (response.articles || []);
 
       console.log(`[BlogContent] Fetched ${articles.length} articles`);
 
       for (const article of articles) {
         try {
+          // Fetch full article content (list endpoint doesn't include content_html/content_markdown)
+          let fullArticle;
+          try {
+            const { fetchBabyLoveArticleById } = await import("../services/babyloveGrowth");
+            fullArticle = await fetchBabyLoveArticleById(String(article.id));
+          } catch (fetchErr: any) {
+            console.error(`[BlogContent] Error fetching full article ${article.id}:`, fetchErr.message);
+            errors++;
+            continue;
+          }
+
           // Transform to blog post format
-          const blogPost = transformToBlogPost(article);
+          const blogPost = transformToBlogPost(fullArticle);
 
           // Check if article already exists
           const existing = await db
@@ -115,7 +114,7 @@ export async function blogContentHandler(req: Request, res: Response) {
     }
 
     // Send admin notification
-    const summary = `Blog content sync completed:\n- Imported: ${imported}\n- Published: ${published}\n- Errors: ${errors}\n- Topic: ${topic}`;
+    const summary = `Blog content sync completed:\n- Imported: ${imported}\n- Published: ${published}\n- Errors: ${errors}`;
     console.log(`[BlogContent] ${summary}`);
 
     await notifyOwner({
@@ -128,7 +127,6 @@ export async function blogContentHandler(req: Request, res: Response) {
       imported,
       published,
       errors,
-      topic,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

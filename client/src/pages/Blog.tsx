@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
-import { BookOpen, Calendar, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { BookOpen, Calendar, ArrowRight, ChevronLeft, ChevronRight, PenLine, CheckCircle2, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -133,6 +133,65 @@ export default function Blog() {
             )}
           </>
         )}
+      </div>
+      {/* Write for Us Section */}
+      <div className="border-t border-white/5 bg-gradient-to-b from-[#111] to-[#0d0d0d]">
+        <div className="container py-16 md:py-20">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row gap-10 items-start">
+              {/* Left: Pitch */}
+              <div className="flex-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-5">
+                  <PenLine className="w-3.5 h-3.5" />
+                  Write for Us
+                </div>
+                <h2 className="text-3xl font-bold text-white mb-4 leading-tight">
+                  Share Your Edge with 10,000+ Bettors
+                </h2>
+                <p className="text-white/50 leading-relaxed mb-6">
+                  ChalkPicks Pro publishes expert-level sports betting content — strategy breakdowns, handicapping guides, bankroll management, and data-driven analysis. If you have a proven edge and can write clearly, we want to hear from you.
+                </p>
+                <p className="text-white/40 text-sm leading-relaxed">
+                  Contributors get a byline, author bio, and a link back to their site or social. High-quality pieces are promoted across our newsletter and social channels.
+                </p>
+              </div>
+
+              {/* Right: Guidelines + CTA */}
+              <div className="flex-1 space-y-6">
+                <div className="p-5 rounded-xl bg-white/[0.03] border border-white/5">
+                  <h3 className="text-sm font-semibold text-white/80 mb-4 uppercase tracking-wider">Submission Guidelines</h3>
+                  <ul className="space-y-3">
+                    {[
+                      "800–2,500 words, original and unpublished",
+                      "Focus on NFL, NBA, MLB, NHL, or college sports",
+                      "Data-backed arguments — no hot takes without evidence",
+                      "No affiliate links or promotional content",
+                      "Include a 1–2 sentence author bio",
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-2.5 text-sm text-white/50">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <a
+                  href="mailto:admin@chalkpicks.live?subject=Write%20for%20Us%20Submission&body=Hi%2C%0A%0AI'd%20like%20to%20contribute%20an%20article%20to%20ChalkPicks%20Pro.%0A%0AProposed%20title%3A%0ATopic%20summary%3A%0AWord%20count%20estimate%3A%0AAbout%20me%3A"
+                  className="block"
+                >
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+                    <Mail className="w-4 h-4" />
+                    Submit Your Pitch
+                  </Button>
+                </a>
+                <p className="text-xs text-white/25 text-center">
+                  Email admin@chalkpicks.live — we review all pitches within 5 business days.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

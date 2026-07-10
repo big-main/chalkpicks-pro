@@ -78,33 +78,493 @@ async function startServer() {
       info: {
         title: "ChalkPicks Pro API",
         version: "1.0.0",
-        description: "AI-powered sports betting analytics API. Access picks, odds, arbitrage, and analytics data.",
+        description: "AI-powered sports betting analytics API. Access picks, odds, arbitrage, analytics, and subscription data. All protected endpoints require a valid session cookie obtained via Manus OAuth login.",
         contact: { name: "ChalkPicks Support", email: "admin@chalkpicks.live", url: "https://chalkpicks.live" },
+        license: { name: "Proprietary", url: "https://chalkpicks.live/terms" },
       },
-      servers: [{ url: "/api", description: "Production" }],
+      servers: [
+        { url: "https://chalkpicks.live/api", description: "Production" },
+        { url: "https://chalkpicks.manus.space/api", description: "Staging" },
+      ],
+      security: [{ cookieAuth: [] }],
+      components: {
+        securitySchemes: {
+          cookieAuth: {
+            type: "apiKey",
+            in: "cookie",
+            name: "session",
+            description: "Session cookie issued after Manus OAuth login. Obtain by completing the OAuth flow at /api/oauth/login.",
+          },
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+            description: "JWT token for server-to-server requests. Include as: `Authorization: Bearer <token>`",
+          },
+        },
+        schemas: {
+          Pick: {
+            type: "object",
+            properties: {
+              id: { type: "integer", example: 1 },
+              sport: { type: "string", enum: ["NFL", "NBA", "MLB", "NHL", "NCAAF", "NCAAB"], example: "NBA" },
+              game: { type: "string", example: "Lakers vs Celtics" },
+              pick: { type: "string", example: "Lakers -4.5" },
+              confidence: { type: "number", minimum: 0, maximum: 100, example: 78.5 },
+              odds: { type: "string", example: "-110" },
+              analysis: { type: "string", example: "Strong home court advantage with key injury news favoring LA" },
+              result: { type: "string", nullable: true, enum: ["win", "loss", "push", null], example: null },
+              gameTime: { type: "string", format: "date-time", example: "2026-07-10T19:30:00Z" },
+              createdAt: { type: "string", format: "date-time" },
+            },
+            required: ["id", "sport", "game", "pick", "confidence", "odds"],
+          },
+          OddsLine: {
+            type: "object",
+            properties: {
+              gameId: { type: "string", example: "nba_20260710_lal_bos" },
+              sport: { type: "string", example: "basketball_nba" },
+              homeTeam: { type: "string", example: "Los Angeles Lakers" },
+              awayTeam: { type: "string", example: "Boston Celtics" },
+              commenceTime: { type: "string", format: "date-time" },
+              bookmakers: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    key: { type: "string", example: "draftkings" },
+                    title: { type: "string", example: "DraftKings" },
+                    markets: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          key: { type: "string", example: "h2h" },
+                          outcomes: {
+                            type: "array",
+                            items: {
+                              type: "object",
+                              properties: {
+                                name: { type: "string", example: "Los Angeles Lakers" },
+                                price: { type: "number", example: -120 },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          ArbitrageOpportunity: {
+            type: "object",
+            properties: {
+              id: { type: "string", example: "arb_20260710_001" },
+              sport: { type: "string", example: "NBA" },
+              game: { type: "string", example: "Lakers vs Celtics" },
+              profitPercent: { type: "number", example: 2.34 },
+              legs: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    book: { type: "string", example: "DraftKings" },
+                    outcome: { type: "string", example: "Lakers" },
+                    odds: { type: "number", example: -120 },
+                    stake: { type: "number", example: 52.17 },
+                  },
+                },
+              },
+              detectedAt: { type: "string", format: "date-time" },
+            },
+          },
+          BlogPost: {
+            type: "object",
+            properties: {
+              id: { type: "integer", example: 1 },
+              title: { type: "string", example: "Top NBA Betting Strategies for 2026" },
+              slug: { type: "string", example: "top-nba-betting-strategies-2026" },
+              excerpt: { type: "string", nullable: true },
+              heroImage: { type: "string", format: "uri", nullable: true },
+              seoDescription: { type: "string", nullable: true },
+              publishedAt: { type: "string", format: "date-time", nullable: true },
+              status: { type: "string", enum: ["draft", "published"], example: "published" },
+            },
+            required: ["id", "title", "slug", "status"],
+          },
+          SubscriptionPlan: {
+            type: "object",
+            properties: {
+              id: { type: "string", enum: ["basic", "pro", "yearly"], example: "pro" },
+              name: { type: "string", example: "Pro" },
+              price: { type: "number", example: 19.99 },
+              interval: { type: "string", enum: ["month", "year"], example: "month" },
+              features: { type: "array", items: { type: "string" }, example: ["Unlimited AI picks", "Live odds", "Arbitrage scanner"] },
+              stripePriceId: { type: "string", example: "price_xxx" },
+            },
+          },
+          User: {
+            type: "object",
+            properties: {
+              id: { type: "integer", example: 42 },
+              name: { type: "string", example: "John Doe" },
+              email: { type: "string", format: "email", example: "john@example.com" },
+              role: { type: "string", enum: ["user", "admin"], example: "user" },
+              tier: { type: "string", enum: ["free", "basic", "pro", "yearly"], example: "pro" },
+              subscriptionStatus: { type: "string", nullable: true, example: "active" },
+            },
+          },
+          ErrorResponse: {
+            type: "object",
+            properties: {
+              error: {
+                type: "object",
+                properties: {
+                  message: { type: "string", example: "UNAUTHORIZED" },
+                  code: { type: "integer", example: 401 },
+                },
+              },
+            },
+          },
+        },
+      },
       paths: {
+        "/oauth/login": {
+          get: {
+            summary: "Initiate OAuth login",
+            description: "Redirects to the Manus OAuth portal. After successful login, a session cookie is set and the user is redirected back to the app.",
+            tags: ["Authentication"],
+            security: [],
+            parameters: [
+              { name: "returnPath", in: "query", schema: { type: "string" }, description: "Path to redirect to after login", example: "/picks" },
+            ],
+            responses: {
+              "302": { description: "Redirect to OAuth portal" },
+            },
+          },
+        },
+        "/oauth/callback": {
+          get: {
+            summary: "OAuth callback",
+            description: "Handles the OAuth redirect, validates the code, issues a session cookie, and redirects to the app.",
+            tags: ["Authentication"],
+            security: [],
+            parameters: [
+              { name: "code", in: "query", required: true, schema: { type: "string" } },
+              { name: "state", in: "query", required: true, schema: { type: "string" } },
+            ],
+            responses: {
+              "302": { description: "Redirect to app with session cookie set" },
+              "400": { description: "Invalid OAuth state or code", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+            },
+          },
+        },
+        "/trpc/auth.me": {
+          get: {
+            summary: "Get current authenticated user",
+            description: "Returns the currently authenticated user's profile. Requires a valid session cookie.",
+            tags: ["Authentication"],
+            security: [{ cookieAuth: [] }],
+            parameters: [
+              { name: "input", in: "query", schema: { type: "string" }, description: "tRPC input (not required for this query)" },
+            ],
+            responses: {
+              "200": {
+                description: "Authenticated user profile",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        result: {
+                          type: "object",
+                          properties: {
+                            data: { "$ref": "#/components/schemas/User" },
+                          },
+                        },
+                      },
+                    },
+                    example: { result: { data: { id: 42, name: "John Doe", email: "john@example.com", role: "user", tier: "pro", subscriptionStatus: "active" } } },
+                  },
+                },
+              },
+              "401": { description: "Not authenticated", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+            },
+          },
+        },
         "/trpc/picks.today": {
-          get: { summary: "Get today's AI picks", tags: ["Picks"], responses: { "200": { description: "List of today's picks with confidence scores" } } }
+          get: {
+            summary: "Get today's AI picks",
+            description: "Returns AI-generated picks for today's games with confidence scores. Requires Basic tier or higher.",
+            tags: ["Picks"],
+            security: [{ cookieAuth: [] }],
+            parameters: [
+              { name: "input", in: "query", schema: { type: "string" }, description: "Optional JSON: `{\"sport\":\"NBA\"}` to filter by sport" },
+            ],
+            responses: {
+              "200": {
+                description: "List of today's AI picks",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        result: {
+                          type: "object",
+                          properties: {
+                            data: { type: "array", items: { "$ref": "#/components/schemas/Pick" } },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              "401": { description: "Not authenticated", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "403": { description: "Subscription required", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+            },
+          },
         },
         "/trpc/odds.live": {
-          get: { summary: "Get live odds from 10+ sportsbooks", tags: ["Odds"], responses: { "200": { description: "Real-time odds data" } } }
+          get: {
+            summary: "Get live odds from 10+ sportsbooks",
+            description: "Returns real-time odds data aggregated from DraftKings, FanDuel, BetMGM, Caesars, and more. Requires Pro tier or higher.",
+            tags: ["Odds"],
+            security: [{ cookieAuth: [] }],
+            parameters: [
+              { name: "input", in: "query", schema: { type: "string" }, description: "JSON: `{\"sport\":\"basketball_nba\",\"markets\":[\"h2h\",\"spreads\"]}` " },
+            ],
+            responses: {
+              "200": {
+                description: "Live odds data",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        result: {
+                          type: "object",
+                          properties: {
+                            data: { type: "array", items: { "$ref": "#/components/schemas/OddsLine" } },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              "401": { description: "Not authenticated", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "403": { description: "Pro subscription required", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+            },
+          },
         },
         "/trpc/arbitrage.scan": {
-          get: { summary: "Scan for arbitrage opportunities", tags: ["Arbitrage"], responses: { "200": { description: "Current arbitrage opportunities" } } }
+          get: {
+            summary: "Scan for arbitrage opportunities",
+            description: "Returns current arbitrage opportunities across all tracked sportsbooks. Profit percentages are guaranteed regardless of outcome. Requires Elite tier.",
+            tags: ["Arbitrage"],
+            security: [{ cookieAuth: [] }],
+            responses: {
+              "200": {
+                description: "Current arbitrage opportunities",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        result: {
+                          type: "object",
+                          properties: {
+                            data: { type: "array", items: { "$ref": "#/components/schemas/ArbitrageOpportunity" } },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              "401": { description: "Not authenticated", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "403": { description: "Elite subscription required", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+            },
+          },
         },
         "/trpc/blog.list": {
-          get: { summary: "List published blog articles", tags: ["Blog"], responses: { "200": { description: "Published articles from BabyLoveGrowth" } } }
+          get: {
+            summary: "List published blog articles",
+            description: "Returns paginated published blog articles. Public endpoint — no authentication required.",
+            tags: ["Blog"],
+            security: [],
+            parameters: [
+              { name: "input", in: "query", schema: { type: "string" }, description: "JSON: `{\"limit\":9,\"offset\":0}`", example: "{\"limit\":9,\"offset\":0}" },
+            ],
+            responses: {
+              "200": {
+                description: "Paginated list of published articles",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        result: {
+                          type: "object",
+                          properties: {
+                            data: {
+                              type: "object",
+                              properties: {
+                                posts: { type: "array", items: { "$ref": "#/components/schemas/BlogPost" } },
+                                total: { type: "integer", example: 12 },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "/trpc/blog.getBySlug": {
+          get: {
+            summary: "Get blog article by slug",
+            description: "Returns a single published article including full HTML content and JSON-LD structured data. Public endpoint.",
+            tags: ["Blog"],
+            security: [],
+            parameters: [
+              { name: "input", in: "query", required: true, schema: { type: "string" }, description: "JSON: `{\"slug\":\"article-slug\"}`", example: "{\"slug\":\"top-nba-betting-strategies-2026\"}" },
+            ],
+            responses: {
+              "200": {
+                description: "Full blog post with content",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        result: {
+                          type: "object",
+                          properties: {
+                            data: {
+                              allOf: [
+                                { "$ref": "#/components/schemas/BlogPost" },
+                                { type: "object", properties: { contentHtml: { type: "string" }, jsonLd: { type: "string" } } },
+                              ],
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              "404": { description: "Article not found", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+            },
+          },
         },
         "/trpc/subscription.plans": {
-          get: { summary: "Get subscription plans", tags: ["Subscriptions"], responses: { "200": { description: "Available plans: Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr" } } }
+          get: {
+            summary: "Get available subscription plans",
+            description: "Returns all subscription plans with pricing and features. Public endpoint.",
+            tags: ["Subscriptions"],
+            security: [],
+            responses: {
+              "200": {
+                description: "Available plans: Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        result: {
+                          type: "object",
+                          properties: {
+                            data: { type: "array", items: { "$ref": "#/components/schemas/SubscriptionPlan" } },
+                          },
+                        },
+                      },
+                    },
+                    example: {
+                      result: {
+                        data: [
+                          { id: "basic", name: "Basic", price: 9.99, interval: "month", features: ["10 AI picks/day", "Basic stats"] },
+                          { id: "pro", name: "Pro", price: 19.99, interval: "month", features: ["Unlimited picks", "Live odds", "Arbitrage scanner"] },
+                          { id: "yearly", name: "Elite", price: 59.99, interval: "year", features: ["Everything in Pro", "Priority support", "Advanced analytics"] },
+                        ],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "/trpc/subscription.createCheckout": {
+          post: {
+            summary: "Create Stripe Checkout Session",
+            description: "Creates a Stripe Checkout Session for the selected plan. Supports the CHALK15 promo code for 15% off. Requires authentication.",
+            tags: ["Subscriptions"],
+            security: [{ cookieAuth: [] }],
+            requestBody: {
+              required: true,
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      "0": {
+                        type: "object",
+                        properties: {
+                          planId: { type: "string", enum: ["basic", "pro", "yearly"], example: "pro" },
+                          promoCode: { type: "string", example: "CHALK15", description: "Optional promo code for discount" },
+                          successUrl: { type: "string", format: "uri", example: "https://chalkpicks.live/payment-success" },
+                          cancelUrl: { type: "string", format: "uri", example: "https://chalkpicks.live/pricing" },
+                        },
+                        required: ["planId", "successUrl", "cancelUrl"],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              "200": {
+                description: "Stripe Checkout Session URL",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        result: {
+                          type: "object",
+                          properties: {
+                            data: {
+                              type: "object",
+                              properties: {
+                                url: { type: "string", format: "uri", example: "https://checkout.stripe.com/pay/cs_xxx" },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              "401": { description: "Not authenticated", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+            },
+          },
         },
       },
       tags: [
-        { name: "Picks", description: "AI-generated sports picks" },
-        { name: "Odds", description: "Real-time odds data" },
-        { name: "Arbitrage", description: "Arbitrage opportunity scanner" },
-        { name: "Blog", description: "Sports betting content" },
-        { name: "Subscriptions", description: "Subscription management" },
+        { name: "Authentication", description: "OAuth login flow and session management" },
+        { name: "Picks", description: "AI-generated sports picks with confidence scores" },
+        { name: "Odds", description: "Real-time odds from 10+ sportsbooks" },
+        { name: "Arbitrage", description: "Guaranteed-profit arbitrage opportunity scanner" },
+        { name: "Blog", description: "Sports betting content and analysis" },
+        { name: "Subscriptions", description: "Subscription plans and Stripe Checkout" },
       ],
     });
   });

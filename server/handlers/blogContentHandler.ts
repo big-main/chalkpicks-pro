@@ -17,6 +17,46 @@ import { fetchBabyLoveArticles, transformToBlogPost } from "../services/babylove
 import { sendEmail } from "../email";
 import { notifyOwner } from "../_core/notification";
 
+// IndexNow configuration
+const INDEXNOW_KEY = "chalkpicks2026indexnow";
+const INDEXNOW_HOST = "chalkpicks.live";
+const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
+
+/**
+ * Ping IndexNow with newly published blog article URLs.
+ * Notifies Bing, Yandex, and other IndexNow-compatible search engines instantly.
+ */
+async function pingIndexNow(slugs: string[]): Promise<void> {
+  if (slugs.length === 0) return;
+
+  const urls = slugs.map((slug) => `https://${INDEXNOW_HOST}/blog/${slug}`);
+
+  try {
+    const body = {
+      host: INDEXNOW_HOST,
+      key: INDEXNOW_KEY,
+      keyLocation: `https://${INDEXNOW_HOST}/${INDEXNOW_KEY}.txt`,
+      urlList: urls,
+    };
+
+    const response = await fetch(INDEXNOW_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify(body),
+    });
+
+    if (response.ok || response.status === 202) {
+      console.log(`[IndexNow] Pinged ${urls.length} URL(s) successfully (status: ${response.status})`);
+    } else {
+      const text = await response.text().catch(() => "");
+      console.warn(`[IndexNow] Unexpected response ${response.status}: ${text}`);
+    }
+  } catch (err: any) {
+    // Non-fatal — log and continue
+    console.error(`[IndexNow] Ping failed:`, err.message);
+  }
+}
+
 export async function blogContentHandler(req: Request, res: Response) {
   const taskUid = req.headers["x-manus-cron-task-uid"] as string || "manual";
   console.log(`[BlogContent] Triggered by task: ${taskUid}`);
@@ -30,6 +70,7 @@ export async function blogContentHandler(req: Request, res: Response) {
     let imported = 0;
     let published = 0;
     let errors = 0;
+    const publishedSlugs: string[] = [];
 
     // Fetch latest articles from BabyLoveGrowth (returns all org articles)
     console.log(`[BlogContent] Fetching latest articles from BabyLoveGrowth`);
@@ -101,6 +142,7 @@ export async function blogContentHandler(req: Request, res: Response) {
               .where(eq(blogPosts.slug, blogPost.slug));
 
             published++;
+            publishedSlugs.push(blogPost.slug);
             console.log(`[BlogContent] Published: ${blogPost.slug}`);
           }
         } catch (err: any) {
@@ -111,6 +153,11 @@ export async function blogContentHandler(req: Request, res: Response) {
     } catch (err: any) {
       console.error(`[BlogContent] Error fetching articles:`, err.message);
       errors++;
+    }
+
+    // Ping IndexNow for all newly published articles
+    if (publishedSlugs.length > 0) {
+      await pingIndexNow(publishedSlugs);
     }
 
     // Send admin notification

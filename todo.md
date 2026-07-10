@@ -852,3 +852,13 @@
 - [x] Add ToolPilot badge to Media Partners page header
 - [x] Install @scalar/express-api-reference for API docs
 - [x] Expose /api/docs endpoint with OpenAPI spec (also /openapi.json)
+
+## Blog & SEO Enhancements (Jul 10, 2026)
+- [x] Add social share buttons (Twitter/X, Reddit, Discord) to blog post pages
+- [x] Add "Write for Us" section to blog listing page with submission form
+- [x] Set up IndexNow pings when blog articles are published
+- [x] Expand OpenAPI spec with auth examples and response schemas
+
+## GitHub & LLM Access (Jul 10, 2026)
+- [x] Confirm GitHub repo big-main/chalkpicks-prov2 is already public (no change needed)
+- [x] Public repo grants read access to Claude, GPT, Gemini, and all LLMs via GitHub API

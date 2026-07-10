@@ -625,3 +625,30 @@ export const storyScheduled = mysqlTable("story_scheduled", {
 
 export type StoryScheduled = typeof storyScheduled.$inferSelect;
 export type InsertStoryScheduled = typeof storyScheduled.$inferInsert;
+
+// ─── Blog Posts ───────────────────────────────────────────────────────────────
+export const blogPosts = mysqlTable("blog_posts", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 256 }).notNull(),
+  slug: varchar("slug", { length: 256 }).notNull().unique(),
+  excerpt: text("excerpt"),
+  content: text("content").notNull(),
+  contentHtml: text("contentHtml"),
+  heroImage: varchar("heroImage", { length: 512 }),
+  seoDescription: varchar("seoDescription", { length: 160 }),
+  jsonLd: text("jsonLd"),
+  source: mysqlEnum("source", ["babylovegrowth", "manual", "ai-generated"]).default("babylovegrowth").notNull(),
+  sourceArticleId: varchar("sourceArticleId", { length: 128 }),
+  status: mysqlEnum("status", ["draft", "published", "archived"]).default("draft").notNull(),
+  publishedAt: timestamp("publishedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ([
+  index("idx_blog_slug").on(table.slug),
+  index("idx_blog_status").on(table.status),
+  index("idx_blog_published").on(table.publishedAt),
+  index("idx_blog_source").on(table.source),
+]));
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = typeof blogPosts.$inferInsert;

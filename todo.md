@@ -810,3 +810,17 @@
 - [x] Set up 3-email welcome drip sequence after signup (handler + route ready, needs deploy + heartbeat cron)
 - [x] Test full checkout flow on production (code ready, needs deploy for live test)
 - [x] Verify all features work end-to-end (0 TS errors, all code compiles)
+
+
+## BabyLoveGrowth Integration (Jul 10, 2026)
+- [x] Configure Gmail SMTP credentials (admin@chalkpicks.live with password 992352Cmz!)
+- [x] Add BabyLoveGrowth API service (babyloveGrowth.ts with fetch, generate, transform functions)
+- [x] Create blog_posts database table with schema (title, slug, content, SEO fields, status)
+- [x] Add blog router with CRUD procedures (list, getBySlug, generateArticles, importArticle, publish, delete)
+- [x] Create blog content generation handler (daily scheduler for auto-fetching and publishing articles)
+- [x] Mount blog handler at /api/scheduled/blog-content
+- [x] Add blog management UI page at /admin/blog (admin-only dashboard for drafts/published)
+- [x] Wire blog router into appRouter
+- [x] Write and pass blog router tests (4 tests passing: create, publish, list, duplicate slug)
+- [ ] Create heartbeat cron for daily blog content generation (manus-heartbeat create command)
+- [ ] Test end-to-end blog generation and publishing on production

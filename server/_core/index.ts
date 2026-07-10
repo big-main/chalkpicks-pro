@@ -16,6 +16,7 @@ import { arbitrageRefreshHandler } from "../handlers/arbitrageRefreshHandler";
 import { dailySocialPostHandler } from "../handlers/dailySocialPostHandler";
 import { weeklyNewsletterHandler } from "../handlers/weeklyNewsletterHandler";
 import { welcomeDripHandler } from "../handlers/welcomeDripHandler";
+import { blogContentHandler } from "../handlers/blogContentHandler";
 import { registerSecurityMiddleware } from "../middleware/security";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -74,6 +75,7 @@ async function startServer() {
   app.post("/api/scheduled/daily-social-post", dailySocialPostHandler);
   app.post("/api/scheduled/weekly-newsletter", weeklyNewsletterHandler);
   app.post("/api/scheduled/welcome-drip", welcomeDripHandler);
+  app.post("/api/scheduled/blog-content", blogContentHandler);
   app.post("/api/scheduled/distribute-payouts", async (req, res) => {
     try {
       console.log("[Payout] Weekly distribution triggered");

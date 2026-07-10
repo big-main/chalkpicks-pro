@@ -81,6 +81,7 @@ const BankrollManager = lazy(() => import("@/pages/BankrollManager"));
 const ParlayCalculator = lazy(() => import("@/pages/ParlayCalculator"));
 const BlogManagement = lazy(() => import("@/pages/BlogManagement"));
 const Blog = lazy(() => import("@/pages/Blog"));
+const MediaPartners = lazy(() => import("@/pages/MediaPartners"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
 
 function PageLoader() {
@@ -168,6 +169,7 @@ function Router() {
           <Route path="/tools/bankroll-manager" component={BankrollManager} />
           <Route path="/tools/parlay-calculator" component={ParlayCalculator} />
           <Route path="/admin/blog" component={BlogManagement} />
+          <Route path="/partners" component={MediaPartners} />
           <Route path="/blog" component={Blog} />
           <Route path="/blog/best-sports-betting-picks" component={BlogBestPicks} />
           <Route path="/blog/ai-sports-betting" component={BlogAISportsBetting} />

@@ -624,6 +624,7 @@ export default function Home() {
               <div className="space-y-2.5">
                 <Link href="/leaderboard" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Leaderboard</Link>
                 <Link href="/pricing" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Pricing</Link>
+                <Link href="/partners" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Media Partners</Link>
                 <a href="https://twitter.com/chalkpicks" target="_blank" rel="noopener" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Twitter/X</a>
                 <a href="https://discord.gg/chalkpicks" target="_blank" rel="noopener" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Discord</a>
               </div>

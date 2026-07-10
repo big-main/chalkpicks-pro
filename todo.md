@@ -839,3 +839,9 @@
 - [x] Add blog routes to App.tsx
 - [x] Add ToolPilot.ai "Featured On" badge to footer/homepage
 - [x] Add ToolPilot partnership link
+
+## Media Partners Page (Jul 10, 2026)
+- [x] Create /partners (Media Partners) page with ToolPilot.ai as first featured partner
+- [x] Add route to App.tsx
+- [x] Add link to footer navigation
+- [x] Add to sitemap

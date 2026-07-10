@@ -6,7 +6,7 @@
 import { router, publicProcedure, protectedProcedure, adminProcedure } from "../_core/trpc";
 import { z } from "zod";
 import { blogPosts } from "../../drizzle/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, ne } from "drizzle-orm";
 import {
   fetchBabyLoveArticles,
   fetchBabyLoveArticleById,
@@ -68,6 +68,38 @@ export const blogRouter = router({
         .limit(1);
 
       return post[0] || null;
+    }),
+
+  /**
+   * Get related articles (excluding current slug, most recent published)
+   */
+  getRelated: publicProcedure
+    .input(z.object({ slug: z.string(), limit: z.number().min(1).max(6).default(3) }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database unavailable");
+
+      const posts = await db
+        .select({
+          id: blogPosts.id,
+          title: blogPosts.title,
+          slug: blogPosts.slug,
+          excerpt: blogPosts.excerpt,
+          heroImage: blogPosts.heroImage,
+          seoDescription: blogPosts.seoDescription,
+          publishedAt: blogPosts.publishedAt,
+        })
+        .from(blogPosts)
+        .where(
+          and(
+            eq(blogPosts.status, "published"),
+            ne(blogPosts.slug, input.slug)
+          )
+        )
+        .orderBy(desc(blogPosts.publishedAt))
+        .limit(input.limit);
+
+      return posts;
     }),
 
   /**

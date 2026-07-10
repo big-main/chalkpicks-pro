@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useRoute, Link } from "wouter";
-import { ArrowLeft, Calendar, BookOpen, Twitter, Link2 } from "lucide-react";
+import { ArrowLeft, Calendar, BookOpen, Twitter, Link2, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 
 // Reddit SVG icon (not in lucide)
@@ -33,6 +35,72 @@ export default function BlogPost() {
   );
 
   const pageUrl = typeof window !== "undefined" ? window.location.href : `https://chalkpicks.live/blog/${slug}`;
+
+  // Related articles (exclude current slug)
+  const { data: relatedPosts } = trpc.blog.getRelated.useQuery(
+    { slug, limit: 3 },
+    { enabled: !!slug }
+  );
+
+  // Inject Open Graph + Twitter Card meta tags dynamically
+  useEffect(() => {
+    if (!post) return;
+
+    const canonicalUrl = `https://chalkpicks.live/blog/${post.slug}`;
+    const ogTitle = post.title.length > 60 ? post.title.slice(0, 57) + "..." : post.title;
+    const ogDesc = (post.seoDescription || post.excerpt || "Expert sports betting analysis and AI-powered picks from ChalkPicks Pro.").slice(0, 160);
+    const ogImage = post.heroImage || "https://chalkpicks.live/og-default.png";
+
+    const setMeta = (property: string, content: string, attr = "property") => {
+      let el = document.querySelector(`meta[${attr}="${property}"]`) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attr, property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
+
+    // Page title & description
+    document.title = `${ogTitle} | ChalkPicks Pro`;
+    setMeta("description", ogDesc, "name");
+
+    // Canonical
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.setAttribute("rel", "canonical");
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute("href", canonicalUrl);
+
+    // Open Graph
+    setMeta("og:type", "article");
+    setMeta("og:title", ogTitle);
+    setMeta("og:description", ogDesc);
+    setMeta("og:url", canonicalUrl);
+    setMeta("og:image", ogImage);
+    setMeta("og:image:width", "1200");
+    setMeta("og:image:height", "630");
+    setMeta("og:site_name", "ChalkPicks Pro");
+    if (post.publishedAt) {
+      setMeta("article:published_time", new Date(post.publishedAt).toISOString());
+    }
+
+    // Twitter Card
+    setMeta("twitter:card", "summary_large_image", "name");
+    setMeta("twitter:title", ogTitle, "name");
+    setMeta("twitter:description", ogDesc, "name");
+    setMeta("twitter:image", ogImage, "name");
+    setMeta("twitter:site", "@ChalkPicksPro", "name");
+
+    // Cleanup: restore generic title when leaving
+    return () => {
+      document.title = "ChalkPicks | AI Sports Betting Picks & +EV Finder Tool";
+      const ogTypeEl = document.querySelector('meta[property="og:type"]');
+      if (ogTypeEl) ogTypeEl.setAttribute("content", "website");
+    };
+  }, [post]);
 
   const handleShareTwitter = () => {
     const text = post?.title
@@ -261,6 +329,42 @@ export default function BlogPost() {
             </Button>
           </Link>
         </div>
+
+        {/* Related Articles */}
+        {relatedPosts && relatedPosts.length > 0 && (
+          <div className="mt-10 pt-10 border-t border-white/5">
+            <h3 className="text-lg font-semibold text-white mb-5">Related Articles</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {relatedPosts.map((related) => (
+                <Link key={related.id} href={`/blog/${related.slug}`}>
+                  <Card className="bg-white/[0.02] border-white/5 hover:border-emerald-500/20 transition-all duration-300 cursor-pointer group overflow-hidden h-full">
+                    {related.heroImage && (
+                      <div className="relative h-32 overflow-hidden">
+                        <img
+                          src={related.heroImage}
+                          alt={related.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      </div>
+                    )}
+                    <CardContent className="p-4">
+                      <h4 className="text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors line-clamp-2 mb-2">
+                        {related.title}
+                      </h4>
+                      <p className="text-xs text-white/40 line-clamp-2 mb-3">
+                        {related.excerpt || related.seoDescription}
+                      </p>
+                      <span className="text-xs text-emerald-400 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        Read article <ChevronRight className="w-3 h-3" />
+                      </span>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Back to Blog */}
         <div className="mt-8 pt-8 border-t border-white/5">

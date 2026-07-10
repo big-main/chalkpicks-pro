@@ -23,6 +23,27 @@ const INDEXNOW_HOST = "chalkpicks.live";
 const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
 
 /**
+ * Ping Google Search Console sitemap endpoint.
+ * Asks Google to re-crawl the sitemap after new content is published.
+ */
+async function pingGoogleSitemap(): Promise<void> {
+  const sitemapUrl = `https://${INDEXNOW_HOST}/sitemap.xml`;
+  const pingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
+
+  try {
+    const response = await fetch(pingUrl, { method: "GET" });
+    if (response.ok) {
+      console.log(`[GooglePing] Sitemap ping successful (status: ${response.status})`);
+    } else {
+      console.warn(`[GooglePing] Unexpected response: ${response.status}`);
+    }
+  } catch (err: any) {
+    // Non-fatal
+    console.error(`[GooglePing] Sitemap ping failed:`, err.message);
+  }
+}
+
+/**
  * Ping IndexNow with newly published blog article URLs.
  * Notifies Bing, Yandex, and other IndexNow-compatible search engines instantly.
  */
@@ -155,9 +176,10 @@ export async function blogContentHandler(req: Request, res: Response) {
       errors++;
     }
 
-    // Ping IndexNow for all newly published articles
+    // Ping IndexNow + Google for all newly published articles
     if (publishedSlugs.length > 0) {
       await pingIndexNow(publishedSlugs);
+      await pingGoogleSitemap();
     }
 
     // Send admin notification

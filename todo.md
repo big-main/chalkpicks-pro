@@ -862,3 +862,8 @@
 ## GitHub & LLM Access (Jul 10, 2026)
 - [x] Confirm GitHub repo big-main/chalkpicks-prov2 is already public (no change needed)
 - [x] Public repo grants read access to Claude, GPT, Gemini, and all LLMs via GitHub API
+
+## Blog SEO & UX Improvements (Jul 10, 2026)
+- [x] Add Open Graph / Twitter Card meta tags to blog post pages (og:title, og:description, og:image, twitter:card)
+- [x] Submit sitemap to Google Search Console (ping Google sitemap endpoint)
+- [x] Add Related Articles section to blog post pages (2-3 other published posts)

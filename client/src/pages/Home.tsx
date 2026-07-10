@@ -616,6 +616,7 @@ export default function Home() {
                 <Link href="/stats" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Live Stats</Link>
                 <Link href="/ev-finder" className="block text-sm text-white/40 hover:text-white/70 transition-colors">+EV Finder</Link>
                 <Link href="/tools" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Tools</Link>
+                <Link href="/blog" className="block text-sm text-white/40 hover:text-white/70 transition-colors">Blog</Link>
               </div>
             </div>
             <div>
@@ -640,8 +641,14 @@ export default function Home() {
             <div className="text-xs text-white/30">
               © 2026 ChalkPicks Pro. All rights reserved. Bet responsibly.
             </div>
-            <div className="text-xs text-white/25">
-              Sports betting involves risk. Past performance is not indicative of future results.
+            <div className="flex items-center gap-4">
+              <a href="https://www.toolpilot.ai" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
+                <img src="/manus-storage/toolpilot-badge_17f2d7f0.jpg" alt="Featured on ToolPilot.ai" className="h-5 w-auto rounded-sm" />
+                <span className="text-xs text-white/50">Featured on ToolPilot</span>
+              </a>
+              <div className="text-xs text-white/25">
+                Sports betting involves risk. Past performance is not indicative of future results.
+              </div>
             </div>
           </div>
         </div>

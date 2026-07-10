@@ -832,3 +832,10 @@
 - [x] Update plan names from "Daily Pass/Monthly Pro/Annual Elite" to "Basic/Pro/Elite"
 - [x] Fix subscription test assertions for new pricing
 - [x] Update Paywall, FeatureGate, PageMeta, StructuredData, AdminPanel, CreditDashboard, SubscriptionDashboard, SubscriptionManagement, UserProfile, AffiliateHub, PayPalPricing, PaymentSuccess, AccountSettings
+
+## Public Blog Page & ToolPilot Badge (Jul 10, 2026)
+- [x] Create public /blog page listing published articles from database
+- [x] Create /blog/:slug detail page with full article content
+- [x] Add blog routes to App.tsx
+- [x] Add ToolPilot.ai "Featured On" badge to footer/homepage
+- [x] Add ToolPilot partnership link

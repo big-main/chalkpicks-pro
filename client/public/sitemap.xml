@@ -175,4 +175,10 @@
     <priority>0.6</priority>
     <lastmod>2026-07-04</lastmod>
   </url>
+  <url>
+    <loc>https://chalkpicks.live/blog</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-07-10</lastmod>
+  </url>
 </urlset>

@@ -121,6 +121,11 @@ const PAGE_META_MAP: Record<string, PageMetaConfig> = {
     description:
       "Calculate parlay payouts for 2-15 leg bets instantly. Enter American or decimal odds and see total payout, profit, and implied probability.",
   },
+  "/blog": {
+    title: "Sports Betting Blog | Expert Analysis & AI Insights | ChalkPicks",
+    description:
+      "Expert sports betting analysis, AI-powered strategies, and data-driven insights. Learn how to beat the books with ChalkPicks Pro.",
+  },
   "/signup": {
     title: "Sign Up | ChalkPicks Free Trial",
     description:

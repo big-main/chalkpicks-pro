@@ -8,32 +8,31 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 function ManageBillingButton() {
-  const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
   const billingMutation = trpc.subscription.getBillingPortalUrl.useMutation({
     onSuccess: (data) => {
       window.location.href = data.url;
     },
-    onError: (err) => {
-      setError(err.message || "Failed to open billing portal");
-      setIsLoading(false);
+    onError: (err: any) => {
+      setError(err?.message || "Failed to open billing portal");
     },
   });
 
   const handleClick = () => {
-    setIsLoading(true);
     setError("");
     billingMutation.mutate({ origin: window.location.origin });
   };
+
+  const isLoading = billingMutation.isLoading;
 
   return (
     <>
       <Button
         onClick={handleClick}
-        disabled={isLoading || billingMutation.isPending}
+        disabled={isLoading}
         className="w-full"
       >
-        {isLoading || billingMutation.isPending ? "Loading..." : "Manage Billing in Stripe"}
+        {isLoading ? "Loading..." : "Manage Billing in Stripe"}
       </Button>
       {error && <p className="text-brand-red text-sm mt-2">{error}</p>}
     </>

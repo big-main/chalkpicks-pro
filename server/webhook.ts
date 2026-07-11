@@ -4,6 +4,7 @@ import { getDb } from "./db";
 import { users, subscriptionOrders } from "../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 import { sendWelcomeEmail } from "./email";
+import { PLANS } from "./routers/subscription";
 
 // Lazy Stripe client — avoids crashing the entire server at boot when
 // STRIPE_SECRET_KEY is absent (tests, CI, misconfigured deploys).
@@ -16,11 +17,14 @@ function getStripe(): Stripe | null {
   return _stripe;
 }
 
+// Grant in-app access matching each plan's actual billing interval. The tier
+// KEYS (daily/monthly/yearly) are legacy; the real cadence lives in PLANS
+// (e.g. the "daily" key is now the monthly "Basic" plan). Keying off the plan
+// interval prevents a paid monthly subscriber's access from lapsing after a day.
 function tierToExpiry(tier: "daily" | "monthly" | "yearly", from: Date): Date {
   const expiresAt = new Date(from);
-  if (tier === "daily") expiresAt.setDate(expiresAt.getDate() + 1);
-  else if (tier === "monthly") expiresAt.setMonth(expiresAt.getMonth() + 1);
-  else expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+  if (PLANS[tier].interval === "year") expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+  else expiresAt.setMonth(expiresAt.getMonth() + 1);
   return expiresAt;
 }
 
@@ -104,6 +108,10 @@ export function registerStripeWebhook(app: express.Application) {
                 subscriptionTier: tier,
                 subscriptionExpiresAt: expiresAt,
                 stripeSubscriptionId: session.subscription?.toString() ?? null,
+                // Persist the Stripe customer id so the billing portal
+                // (getBillingPortalUrl) can find the customer later. Without
+                // this, "Manage Billing" always failed with "No Stripe customer".
+                stripeCustomerId: session.customer?.toString() ?? null,
                 // INCREMENT the balance — never overwrite what the user already has.
                 ...(creditBonus > 0
                   ? { accountBalance: sql`${users.accountBalance} + ${creditBonus}` }

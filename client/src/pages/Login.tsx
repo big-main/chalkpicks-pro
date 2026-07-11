@@ -19,22 +19,6 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [elevateEmail, setElevateEmail] = useState("");
-
-  const elevateMutation = trpc.auth.elevateToAdmin.useMutation({
-    onSuccess: () => {
-      alert("User elevated to admin successfully!");
-      setElevateEmail("");
-    },
-    onError: (err) => {
-      alert("Elevation failed: " + err.message);
-    }
-  });
-
-  const handleElevate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (elevateEmail) elevateMutation.mutate({ email: elevateEmail });
-  };
 
   useEffect(() => {
     if (isAuthenticated) setLocation("/");
@@ -100,19 +84,6 @@ export default function Login() {
             <a style={{ color: "#f0b800", fontWeight: 600, textDecoration: "none" }} className="hover:underline">Sign up here</a>
           </Link>
         </p>
-      </div>
-      {/* Hidden Admin Elevation Tool (Only for setup) */}
-      <div className="fixed bottom-4 right-4 opacity-0 hover:opacity-100 transition-opacity z-50">
-        <form onSubmit={handleElevate} className="flex gap-2 bg-black/80 p-2 rounded border border-white/20">
-          <input 
-            type="email" 
-            placeholder="Email to elevate" 
-            className="bg-zinc-900 text-white text-[10px] p-1 border border-white/20 rounded w-32"
-            value={elevateEmail}
-            onChange={(e) => setElevateEmail(e.target.value)}
-          />
-          <button type="submit" className="text-[10px] bg-brand-green text-black px-2 py-1 rounded font-bold">Elevate</button>
-        </form>
       </div>
     </AuthPageShell>
   );

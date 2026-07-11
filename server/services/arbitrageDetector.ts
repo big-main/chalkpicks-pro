@@ -108,15 +108,18 @@ export function calculateOptimalBets(
   const decimalOdds1 = format === "american" ? (odds1 > 0 ? odds1 / 100 + 1 : 100 / Math.abs(odds1) + 1) : odds1;
   const decimalOdds2 = format === "american" ? (odds2 > 0 ? odds2 / 100 + 1 : 100 / Math.abs(odds2) + 1) : odds2;
 
-  // Bet sizing: proportional to implied probability
-  const bet1 = (totalBankroll * prob2) / (prob1 * decimalOdds1 + prob2);
-  const bet2 = (totalBankroll * prob1) / (prob1 + prob2 * decimalOdds2);
+  // Bet sizing: stake on each side proportional to its implied probability
+  // (equivalently, inversely proportional to its decimal odds) so that both
+  // legs pay out the same amount regardless of which side wins.
+  const bet1 = (totalBankroll * prob1) / (prob1 + prob2);
+  const bet2 = (totalBankroll * prob2) / (prob1 + prob2);
 
-  // Calculate guaranteed profit
-  const profit1 = bet1 * (decimalOdds1 - 1);
-  const profit2 = bet2 * (decimalOdds2 - 1);
+  // Both legs pay out the same amount by construction — profit is that
+  // shared payout minus the total staked across both legs, and is the same
+  // no matter which side wins.
+  const payout = bet1 * decimalOdds1;
   const totalInvested = bet1 + bet2;
-  const guaranteedProfit = Math.min(profit1, profit2);
+  const guaranteedProfit = payout - totalInvested;
 
   return {
     bet1: Math.round(bet1),

@@ -20,7 +20,7 @@
 
 ## BabyLoveGrowth API
 - Base URL: https://api.babylovegrowth.ai/api/integrations/v1
-- API Key: 779da0e8-6c34-481f-9821-b9b971eb45c4
+- API Key: set via environment variable, not committed — rotate the previously-committed key
 - List articles: GET /articles?limit=50&offset=0 (returns array, no content)
 - Get full article: GET /articles/:id (returns content_html, content_markdown, jsonLd, faqJsonLd)
 - Pagination: limit + offset params, max 500 per call

@@ -85,7 +85,7 @@ async function startServer() {
       info: {
         title: "ChalkPicks Pro API",
         version: "1.0.0",
-        description: "AI-powered sports betting analytics API. Access picks, odds, arbitrage, analytics, and subscription data. All protected endpoints require a valid session cookie obtained via Manus OAuth login.",
+        description: "AI-powered sports betting analytics API. Access picks, odds, arbitrage, analytics, and subscription data. All protected endpoints require a valid session cookie obtained by registering or logging in via the auth.register / auth.login tRPC mutations.",
         contact: { name: "ChalkPicks Support", email: "admin@chalkpicks.live", url: "https://chalkpicks.live" },
         license: { name: "Proprietary", url: "https://chalkpicks.live/terms" },
       },
@@ -100,7 +100,7 @@ async function startServer() {
             type: "apiKey",
             in: "cookie",
             name: "session",
-            description: "Session cookie issued after Manus OAuth login. Obtain by completing the OAuth flow at /api/oauth/login.",
+            description: "Session cookie issued after a successful auth.register or auth.login tRPC mutation.",
           },
           bearerAuth: {
             type: "http",
@@ -238,33 +238,58 @@ async function startServer() {
         },
       },
       paths: {
-        "/oauth/login": {
-          get: {
-            summary: "Initiate OAuth login",
-            description: "Redirects to the Manus OAuth portal. After successful login, a session cookie is set and the user is redirected back to the app.",
+        "/trpc/auth.register": {
+          post: {
+            summary: "Register a new account",
+            description: "Creates a user with email + password and issues a session cookie.",
             tags: ["Authentication"],
             security: [],
-            parameters: [
-              { name: "returnPath", in: "query", schema: { type: "string" }, description: "Path to redirect to after login", example: "/picks" },
-            ],
+            requestBody: {
+              required: true,
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      name: { type: "string", example: "Jane Bettor" },
+                      email: { type: "string", format: "email", example: "jane@example.com" },
+                      password: { type: "string", minLength: 8, maxLength: 128 },
+                    },
+                    required: ["name", "email", "password"],
+                  },
+                },
+              },
+            },
             responses: {
-              "302": { description: "Redirect to OAuth portal" },
+              "200": { description: "Account created, session cookie set" },
+              "409": { description: "Email already registered", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
             },
           },
         },
-        "/oauth/callback": {
-          get: {
-            summary: "OAuth callback",
-            description: "Handles the OAuth redirect, validates the code, issues a session cookie, and redirects to the app.",
+        "/trpc/auth.login": {
+          post: {
+            summary: "Log in with email + password",
+            description: "Verifies credentials and issues a session cookie.",
             tags: ["Authentication"],
             security: [],
-            parameters: [
-              { name: "code", in: "query", required: true, schema: { type: "string" } },
-              { name: "state", in: "query", required: true, schema: { type: "string" } },
-            ],
+            requestBody: {
+              required: true,
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      email: { type: "string", format: "email" },
+                      password: { type: "string" },
+                    },
+                    required: ["email", "password"],
+                  },
+                },
+              },
+            },
             responses: {
-              "302": { description: "Redirect to app with session cookie set" },
-              "400": { description: "Invalid OAuth state or code", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "200": { description: "Session cookie set" },
+              "401": { description: "Invalid email or password", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
             },
           },
         },
@@ -566,7 +591,7 @@ async function startServer() {
         },
       },
       tags: [
-        { name: "Authentication", description: "OAuth login flow and session management" },
+        { name: "Authentication", description: "Email/password registration, login, and session management" },
         { name: "Picks", description: "AI-generated sports picks with confidence scores" },
         { name: "Odds", description: "Real-time odds from 10+ sportsbooks" },
         { name: "Arbitrage", description: "Guaranteed-profit arbitrage opportunity scanner" },

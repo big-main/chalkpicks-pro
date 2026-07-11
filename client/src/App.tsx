@@ -28,7 +28,6 @@ const Backtesting = lazy(() => import("./pages/Backtesting"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Pricing = lazy(() => import("./pages/Pricing"));
-const PayPalPricing = lazy(() => import("./pages/PayPalPricing"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const MatchupAnalysis = lazy(() => import("./pages/MatchupAnalysis"));
 const SubscriptionManagement = lazy(() => import("./pages/SubscriptionManagement"));
@@ -120,7 +119,6 @@ function Router() {
           <Route path="/dashboard" component={UserDashboard} />
           <Route path="/leaderboard" component={Leaderboard} />
           <Route path="/pricing" component={Pricing} />
-          <Route path="/pricing-paypal" component={PayPalPricing} />
           <Route path="/payment/success" component={PaymentSuccess} />
           <Route path="/matchup-analysis" component={MatchupAnalysis} />
           <Route path="/subscription-management" component={SubscriptionManagement} />

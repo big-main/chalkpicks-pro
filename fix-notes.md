@@ -18,11 +18,11 @@
 
 ## Admin Account
 - Email: admin@chalkpicks.live
-- Password: 992352
+- Password: REDACTED — rotate this credential, it was previously committed in plaintext
 - Role: admin
 
 ## BabyLoveGrowth API
-- Key: 779da0e8-6c34-481f-9821-b9b971eb45c4
+- Key: set via environment variable, not committed — rotate the previously-committed key
 - Base URL: https://api.babylovegrowth.ai/api/integrations
 - Endpoints: GET /v1/articles, GET /v1/articles/:id
 - Headers: X-API-Key, Content-Type: application/json

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import AuthPageShell from "@/components/AuthPageShell";
+import { safeRedirectPath } from "@shared/utils";
 import { Lock } from "lucide-react";
 
 const inputStyle = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(212,160,23,0.2)", color: "white" };
@@ -20,14 +21,17 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  // Continue to the page the user was headed to (e.g. /pricing) after logging in.
+  const redirectTo = safeRedirectPath(new URLSearchParams(window.location.search).get("redirect"));
+
   useEffect(() => {
-    if (isAuthenticated) setLocation("/");
-  }, [isAuthenticated, setLocation]);
+    if (isAuthenticated) setLocation(redirectTo);
+  }, [isAuthenticated, setLocation, redirectTo]);
 
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: async () => {
       await utils.auth.me.invalidate();
-      setLocation("/");
+      setLocation(redirectTo);
     },
     onError: (err) => setError(err.message || "Invalid email or password"),
   });

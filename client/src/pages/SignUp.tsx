@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import AuthPageShell from "@/components/AuthPageShell";
+import { safeRedirectPath } from "@shared/utils";
 import { Zap, Shield, TrendingUp } from "lucide-react";
 
 const inputStyle = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(212,160,23,0.2)", color: "white" };
@@ -28,14 +29,18 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
+  // Continue to wherever the user was headed (e.g. /pricing) after signing up,
+  // instead of dumping everyone on the homepage and losing checkout intent.
+  const redirectTo = safeRedirectPath(new URLSearchParams(window.location.search).get("redirect"));
+
   useEffect(() => {
-    if (isAuthenticated) setLocation("/");
-  }, [isAuthenticated, setLocation]);
+    if (isAuthenticated) setLocation(redirectTo);
+  }, [isAuthenticated, setLocation, redirectTo]);
 
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: async () => {
       await utils.auth.me.invalidate();
-      setLocation("/");
+      setLocation(redirectTo);
     },
     onError: (err) => setError(err.message || "Registration failed. Please try again."),
   });

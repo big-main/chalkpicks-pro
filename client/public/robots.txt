@@ -30,3 +30,4 @@ Disallow: /api/
 Disallow: /payment/
 
 Sitemap: https://chalkpicks.live/sitemap.xml
+Sitemap: https://chalkpicks.live/sitemap-blog.xml

@@ -14,7 +14,7 @@ const PAGE_META_MAP: Record<string, PageMetaConfig> = {
   "/": {
     title: "ChalkPicks | AI Sports Betting Picks & +EV Finder Tool",
     description:
-      "AI-powered sports betting picks with 73%+ win rate. +EV finder, prop builder, line movement tracker, and arbitrage alerts across NFL, NBA, MLB & NHL.",
+      "AI-powered sports betting picks with a data-driven edge. +EV finder, prop builder, line movement tracker, and arbitrage alerts across NFL, NBA, MLB & NHL.",
   },
   "/picks": {
     title: "AI Sports Betting Picks | ChalkPicks",

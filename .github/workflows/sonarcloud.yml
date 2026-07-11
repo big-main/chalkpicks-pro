@@ -28,7 +28,9 @@ jobs:
       matrix:
         # Adjust languages based on your repository
         # Supported: 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby', 'typescript'
-        language: [ 'javascript', 'python' ]
+        # This repo is TypeScript/JavaScript only — no Python source exists,
+        # so a 'python' entry here always fails with "no source code seen".
+        language: [ 'javascript' ]
 
     steps:
       - name: Checkout repository

@@ -23,7 +23,7 @@ function ManageBillingButton() {
     billingMutation.mutate({ origin: window.location.origin });
   };
 
-  const isLoading = billingMutation.isLoading;
+  const isLoading = billingMutation.isPending;
 
   return (
     <>

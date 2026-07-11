@@ -1,4 +1,4 @@
-import { router, protectedProcedure } from "../\_core/trpc";
+import { router, protectedProcedure } from "../_core/trpc";
 import { z } from "zod";
 import { getDb } from "../db";
 import { arbitrageOpportunities, userArbitrageTrades } from "../../drizzle/schema";
@@ -24,14 +24,16 @@ const calculateArbitrage = (probA: number, probB: number): number => {
 };
 
 // Helper: Calculate stakes for $100 investment
-const calculateStakes = (oddsA: number, oddsB: number, totalStake: number = 100) => {
+export const calculateStakes = (oddsA: number, oddsB: number, totalStake: number = 100) => {
   const decimalA = americanToDecimal(oddsA);
   const decimalB = americanToDecimal(oddsB);
   
   const probA = decimalToImpliedProbability(decimalA);
   const probB = decimalToImpliedProbability(decimalB);
-  
-  const stakeA = (totalStake * probB) / (probA + probB);
+
+  // Stake on each side proportional to its own implied probability so that
+  // stakeA * decimalA === stakeB * decimalB (equal payout on either outcome).
+  const stakeA = (totalStake * probA) / (probA + probB);
   const stakeB = totalStake - stakeA;
   
   const winningsA = stakeA * decimalA;

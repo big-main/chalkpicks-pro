@@ -14,7 +14,6 @@ import { leaderboardRouter } from "./routers/leaderboard";
 import { subscriptionRouter } from "./routers/subscription";
 import { notificationsRouter } from "./routers/notificationsRouter";
 import { feedbackRouter } from "./routers/feedback";
-import { paypalRouter } from "./routers/paypal";
 import { oddsRouter } from "./routers/odds";
 import { aiPicksRouter } from "./routers/aiPicks";
 import { promoCodeRouter } from "./routers/promoCode";
@@ -159,7 +158,6 @@ export const appRouter = router({
   subscription: subscriptionRouter,
   notifications: notificationsRouter,
   feedback: feedbackRouter,
-  paypal: paypalRouter,
   odds: oddsRouter,
   oddsComparison: oddsComparisonRouter,
   aiPicks: aiPicksRouter,

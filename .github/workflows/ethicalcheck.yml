@@ -1,3 +1,47 @@
-# This workflow has been disabled
-# The apisec-inc/ethicalcheck-action repository is no longer accessible
-# If you need API security testing, consider using an alternative action or implement your own solution
+# This workflow performs API security testing using 42Crunch API Security Audit
+# 42Crunch specializes in OpenAPI/Swagger security analysis and is a maintained alternative to the deprecated EthicalCheck action
+
+name: EthicalCheck-Workflow
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  # Customize trigger events based on your DevSecOps processes.
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '37 22 * * 3'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  Trigger_API_Security_Scan:
+    permissions:
+      security-events: write # for uploading SARIF results
+      actions: read
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 42Crunch API Security Audit
+        uses: 42Crunch/api-security-audit-action@v3
+        with:
+          # The OpenAPI Specification URL or file path
+          api-definition: "http://netbanking.apisec.ai:8080/v2/api-docs"
+          sarif-report: "ethicalcheck-results.sarif"
+          log-level: info
+
+      - name: Upload SARIF file to repository
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ./ethicalcheck-results.sarif
+          category: "API Security"

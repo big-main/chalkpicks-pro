@@ -224,3 +224,18 @@ export function uniqueBy<T>(array: T[], key: keyof T): T[] {
     return true;
   });
 }
+
+// ─── Auth / Navigation ───────────────────────────────────────────────────────
+
+/**
+ * Resolve a safe post-auth redirect target from a raw `?redirect=` value.
+ * Only same-origin, absolute in-app paths (e.g. "/pricing") are allowed —
+ * anything else (external URLs, protocol-relative "//evil.com", missing) falls
+ * back to the given default. Prevents open-redirect abuse via the auth pages.
+ */
+export function safeRedirectPath(raw: string | null | undefined, fallback = "/"): string {
+  if (!raw) return fallback;
+  // Must be a root-relative path and NOT protocol-relative ("//host").
+  if (!raw.startsWith("/") || raw.startsWith("//")) return fallback;
+  return raw;
+}

@@ -23,6 +23,10 @@ function requireStripe(): Stripe {
   return _stripe;
 }
 
+// Length of the free trial applied to new subscriptions, in days. Keep this in
+// sync with the trial length advertised in the marketing copy / dashboard.
+export const TRIAL_DAYS = 3;
+
 export const PLANS = {
   daily: {
     name: "Basic",
@@ -118,6 +122,13 @@ export const subscriptionRouter = router({
               quantity: 1,
             },
           ],
+          // 3-day free trial on subscriptions — the whole funnel advertises it,
+          // so honor it here. Card is still collected up front; Stripe charges
+          // automatically when the trial ends. Trials never apply to one-off
+          // (payment-mode) purchases.
+          ...(isSubscription
+            ? { subscription_data: { trial_period_days: TRIAL_DAYS } }
+            : {}),
           success_url: `${input.origin}/payment/success?tier=${input.tier}&session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${input.origin}/pricing`,
           client_reference_id: ctx.user.id.toString(),
@@ -195,24 +206,24 @@ export const subscriptionRouter = router({
       }
 
       const now = new Date();
-      let expiresAt = new Date(now);
-      let subscriptionTier: "daily" | "monthly" | "yearly" = "daily";
+      const expiresAt = new Date(now);
+      const subscriptionTier: "daily" | "monthly" | "yearly" = input.tier;
 
-      if (input.tier === "daily") {
-        subscriptionTier = "daily";
-        expiresAt.setDate(expiresAt.getDate() + 1);
-      } else if (input.tier === "monthly") {
-        subscriptionTier = "monthly";
-        expiresAt.setMonth(expiresAt.getMonth() + 1);
-      } else {
-        subscriptionTier = "yearly";
+      // Grant access matching the plan's real billing interval, not the legacy
+      // tier-key name (the "daily" key is now the monthly "Basic" plan).
+      if (PLANS[input.tier].interval === "year") {
         expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+      } else {
+        expiresAt.setMonth(expiresAt.getMonth() + 1);
       }
 
       await db.update(users).set({
         subscriptionTier,
         subscriptionExpiresAt: expiresAt,
         stripeSubscriptionId: session?.subscription?.toString() ?? null,
+        // Persist the Stripe customer id (when the session resolved) so the
+        // billing portal works even if the webhook hasn't landed yet.
+        ...(session?.customer ? { stripeCustomerId: session.customer.toString() } : {}),
       }).where(eq(users.id, ctx.user.id));
 
       // Record order

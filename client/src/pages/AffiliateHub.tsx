@@ -31,7 +31,7 @@ export default function AffiliateHub() {
   };
 
   const handleShareTwitter = () => {
-    const text = `Join me on ChalkPicks! Get AI-powered sports betting picks with 73%+ win rate. Use code ${referralCode} for 15% off 🎯`;
+    const text = `Join me on ChalkPicks! Get AI-powered sports betting picks with a real data-driven edge. Use code ${referralCode} for 15% off 🎯`;
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(affiliateLink)}`,
       "_blank"

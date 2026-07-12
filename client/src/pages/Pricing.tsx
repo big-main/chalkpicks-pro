@@ -256,7 +256,9 @@ export default function Pricing() {
 
   const handleSubscribe = (tier: "daily" | "monthly" | "yearly") => {
     if (!isAuthenticated) {
-      window.location.href = "/login";
+      // Send new visitors to sign up, then bring them straight back to pricing
+      // so they don't lose their place in the checkout funnel.
+      window.location.href = "/signup?redirect=/pricing";
       return;
     }
     setLoadingTier(tier);

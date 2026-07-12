@@ -11,7 +11,7 @@ const structuredData = {
       "name": "ChalkPicks Pro",
       "url": "https://chalkpicks.live",
       "logo": "https://chalkpicks.live/favicon.ico",
-      "description": "AI-powered sports betting analytics platform with 92% win rate. Daily picks, odds comparison, and ROI tracking.",
+      "description": "AI-powered sports betting analytics platform with a data-driven edge. Daily picks, odds comparison, and ROI tracking.",
       "sameAs": [
         "https://twitter.com/chalkpicks",
         "https://instagram.com/chalkpicks"
@@ -42,20 +42,20 @@ const structuredData = {
       "applicationCategory": "SportsApplication",
       "operatingSystem": "Web",
       "url": "https://chalkpicks.live",
-      "description": "AI-powered sports betting picks with 92% win rate. Real-time odds comparison, confidence scores, and ROI tracking for NFL, NBA, MLB, NHL.",
+      "description": "AI-powered sports betting picks with a data-driven edge. Real-time odds comparison, confidence scores, and ROI tracking for NFL, NBA, MLB, NHL.",
       "offers": {
         "@type": "AggregateOffer",
-        "lowPrice": "0",
-        "highPrice": "49.99",
+        "lowPrice": "9.99",
+        "highPrice": "59.99",
         "priceCurrency": "USD",
         "offerCount": "3",
         "offers": [
           {
             "@type": "Offer",
-            "name": "Free",
-            "price": "0",
+            "name": "Basic Monthly",
+            "price": "9.99",
             "priceCurrency": "USD",
-            "description": "Basic picks access"
+            "description": "Premium daily picks, AI analysis, player props & live odds"
           },
           {
             "@type": "Offer",
@@ -75,9 +75,9 @@ const structuredData = {
       },
       "featureList": [
         "AI-powered daily picks",
-        "92% historical win rate",
+        "Transparent, tracked pick history",
         "Real-time odds comparison across 18+ sportsbooks",
-        "Confidence scoring (70-95%)",
+        "Confidence scoring on every pick",
         "ROI tracking and performance analytics",
         "Line movement detection",
         "Kelly Criterion bankroll management",

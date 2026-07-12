@@ -5,7 +5,7 @@ import { z } from "zod";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { sdk } from "./_core/sdk";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { picksRouter } from "./routers/picks";
 import { statsRouter } from "./routers/stats";
 import { backtestRouter } from "./routers/backtest";
@@ -104,12 +104,16 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
-    elevateToAdmin: publicProcedure
+    // Admin-only: promote another user to admin. This was previously a
+    // publicProcedure, which let ANY unauthenticated visitor grant themselves
+    // (or anyone) admin + a 100-year subscription — a privilege-escalation and
+    // revenue hole. The first admin is bootstrapped out-of-band via seed-admin.ts.
+    elevateToAdmin: adminProcedure
       .input(z.object({ email: z.string().email() }))
       .mutation(async ({ input }) => {
         const database = await db.getDb();
         if (!database) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
-        await database.update(users).set({ 
+        await database.update(users).set({
           role: "admin",
           subscriptionTier: "yearly",
           subscriptionExpiresAt: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000)

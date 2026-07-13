@@ -658,7 +658,7 @@ async function startServer() {
   });
 
   // Explicit routes for SEO/verification XML files — must come before SPA catch-all
-  const xmlFiles = ['BingSiteAuth.xml', 'sitemap.xml', 'sitemap.xsl', 'chalkpicks2026indexnow.txt'];
+  const xmlFiles = ['BingSiteAuth.xml', 'sitemap.xml', 'sitemap.xsl', 'chalkpicks2026indexnow.txt', 'llms.txt', 'robots.txt'];
   xmlFiles.forEach(filename => {
     app.get(`/${filename}`, (req, res) => {
       import('path').then(({ resolve, join }) => {

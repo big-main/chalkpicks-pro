@@ -45,8 +45,12 @@ There is no separate lint script; `pnpm check` (TypeScript, `strict: true`) and 
 
 **Shared code** (`shared/`): `shared/const.ts` (cookie name, TTLs, shared error message strings), `shared/types.ts`, `shared/utils.ts`, `shared/_core/errors.ts` (custom error classes like `ForbiddenError`) — importable from both server and client via the `@shared` alias.
 
+**Betting math** (`shared/oddsMath.ts`): the canonical, dependency-free wagering-math module — no-vig/devig fair probabilities, expected value, Kelly staking, closing line value, and odds-format conversions. Powers the `oddsMath` tRPC router (`server/routers/oddsMath.ts`: `devig`/`evScreen`/`clv`) behind the +EV finder and calculators. Put new betting math here (not scattered across routers); it's covered by `server/oddsMath.test.ts`.
+
 ## Notes
 
 - `JWT_SECRET` is required at boot — the server throws immediately in `startServer()` if it's unset.
 - Session auth uses a signed JWT in a cookie (`server/_core/sdk.ts`, `jose` for signing), not a third-party auth provider, despite the README's "Manus OAuth" mention in places — check `sdk.ts` and `routers.ts`'s `auth` router for the actual current implementation before assuming OAuth is live.
-- `pnpm.overrides` and `pnpm.patchedDependencies` in `package.json` pin `tailwindcss`'s nested `nanoid` and patch `wouter@3.7.1` — be aware these exist if you touch those deps.
+- `pnpm.overrides` and `pnpm.patchedDependencies` in `package.json` pin `tailwindcss`'s nested `nanoid` and patch `wouter@3.7.1`, and the `overrides` also force security-patched versions of several transitive deps (`fast-xml-parser`, `tar`, `form-data`, `lodash`/`lodash-es`, express's `path-to-regexp`) — be aware these exist if you touch those deps.
+- **Deployment**: production is hosted on **Manus** (`chalkpicks.live`), with a Manus-provided cloud computer attached for background/data workloads. It is **not** deployed on Railway or Oracle Cloud — ignore any Railway deploy check that appears on PRs (it comes from an external repo integration, not from anything in this codebase). There are no Railway/Oracle/Docker config files in the repo.
+- **AEO/SEO surface**: `client/public/robots.txt` explicitly allows the major AI crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.); `client/public/llms.txt` is the AI-assistant index of key pages/definitions. Both `.txt` files (plus `sitemap*.xml`) are served via an explicit route list in `server/_core/index.ts` so the SPA catch-all can't intercept them — add new root SEO files to that `xmlFiles` array.

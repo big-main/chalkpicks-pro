@@ -29,6 +29,7 @@ import { betsExportPdfRouter } from "./routers/betsExportPdf";
 import { pushNotificationsRouter } from "./routers/pushNotifications";
 import { ogImageRouter } from "./routers/ogImage";
 import { oddsComparisonRouter } from "./routers/oddsComparison";
+import { oddsMathRouter } from "./routers/oddsMath";
 import { storyGeneratorRouter } from "./routers/storyGenerator";
 import { storyHistoryRouter } from "./routers/storyHistory";
 import { storyScheduledRouter } from "./routers/storyScheduled";
@@ -164,6 +165,7 @@ export const appRouter = router({
   feedback: feedbackRouter,
   odds: oddsRouter,
   oddsComparison: oddsComparisonRouter,
+  oddsMath: oddsMathRouter,
   aiPicks: aiPicksRouter,
   promoCode: promoCodeRouter,
   kalshi: kalshiRouter,

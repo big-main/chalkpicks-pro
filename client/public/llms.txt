@@ -1,0 +1,37 @@
+# ChalkPicks
+
+> ChalkPicks (chalkpicks.live) is an AI-powered sports betting analytics platform. It gives bettors a data-driven edge with AI-generated picks, a positive-expected-value (+EV) finder, closing-line-value (CLV) tracking, arbitrage and line-movement detection, and a suite of free betting calculators across NFL, NBA, MLB, NHL, and more. Every pick is logged, timestamped, and graded for full transparency.
+
+## Core tools
+
+- [AI Picks](https://chalkpicks.live/picks): Daily AI-generated picks with confidence scores and calculated edge against the market line.
+- [+EV Finder](https://chalkpicks.live/ev-finder): Surfaces positive expected-value bets by comparing fair no-vig probabilities against prices across 10+ sportsbooks.
+- [Arbitrage Finder](https://chalkpicks.live/arbitrage): Detects guaranteed-profit opportunities from line discrepancies between books, with exact stake sizing.
+- [Odds Comparison](https://chalkpicks.live/odds-comparison): Real-time odds from 10+ sportsbooks side by side to find the best available price.
+- [Line Movement Tracker](https://chalkpicks.live/line-movement): Tracks how lines move and flags steam moves where sharp money is flowing.
+- [CLV Tracker](https://chalkpicks.live/clv-tracker): Measures your closing line value — the single most reliable indicator of long-term betting skill.
+- [Kalshi Markets](https://chalkpicks.live/kalshi): Compares Kalshi prediction-market prices against sportsbook-implied probabilities.
+
+## Free calculators
+
+- [Bet Calculator](https://chalkpicks.live/bet-calculator): Payout and profit from stake and American/decimal odds.
+- [Odds Calculator](https://chalkpicks.live/tools/odds-calculator): Converts between American, decimal, and fractional odds and implied probability.
+- [Parlay Calculator](https://chalkpicks.live/parlay-calculator): Combines multiple legs into total parlay odds and payout.
+- [ROI Calculator](https://chalkpicks.live/tools/roi-calculator): Return-on-investment and yield from betting history.
+
+## Key concepts (definitions)
+
+- Expected Value (EV): The average profit/loss of a bet if it were placed many times, using the fair (no-vig) win probability. A +EV bet is one priced better than its true probability implies.
+- No-vig / devig fair odds: The bookmaker's odds with the built-in margin ("vig") removed, giving an estimate of the true probability. ChalkPicks computes this by normalizing each side's implied probability so they sum to 100%.
+- Closing Line Value (CLV): The difference between the price you bet and the closing price. Consistently beating the close is the strongest signal of a winning bettor; it becomes meaningful over roughly 100+ bets.
+- Kelly Criterion: A formula for mathematically optimal bet sizing given your edge and odds; most bettors use a fractional Kelly to reduce variance.
+
+## Subscriptions & content
+
+- [Pricing](https://chalkpicks.live/pricing): Basic ($9.99/mo), Pro ($19.99/mo), and Elite ($59.99/yr) plans, each with a 3-day free trial.
+- [Blog](https://chalkpicks.live/blog): Sports betting strategy, AI betting guides, and analysis.
+- [Sportsbooks](https://chalkpicks.live/sportsbooks): Reviews and comparisons of major US sportsbooks.
+
+## Responsible gambling
+
+ChalkPicks is an analytics and education platform, not a sportsbook, and does not guarantee profit. 21+ only. If gambling stops being fun, call 1-800-GAMBLER.

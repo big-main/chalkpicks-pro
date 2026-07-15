@@ -31,10 +31,23 @@ export default function AdminPanel() {
   const [searchEmail, setSearchEmail] = useState("");
   const [elevateEmail, setElevateEmail] = useState("");
   const [activeTab, setActiveTab] = useState<"overview" | "users" | "subscriptions" | "picks">("overview");
+  const [userPage, setUserPage] = useState(0);
+  const PAGE_SIZE = 25;
 
   // Fetch platform stats
   const { data: leaderboardData } = trpc.leaderboard.list.useQuery({ limit: 10 });
   const { data: picksData } = trpc.picks.list.useQuery({ limit: 5, tier: "all" });
+
+  // Fetch real users from DB
+  const { data: usersData, isLoading: usersLoading, refetch: refetchUsers } = trpc.admin.getUsers.useQuery(
+    { limit: PAGE_SIZE, offset: userPage * PAGE_SIZE },
+    { enabled: activeTab === "users" }
+  );
+
+  const updateTierMutation = trpc.admin.updateUserTier.useMutation({
+    onSuccess: () => { toast.success("User tier updated"); refetchUsers(); },
+    onError: (err) => toast.error(err.message || "Failed to update tier"),
+  });
 
   const elevateMutation = trpc.auth.elevateToAdmin.useMutation({
     onSuccess: () => {
@@ -297,13 +310,21 @@ export default function AdminPanel() {
             <div className="flex items-center justify-between mb-4">
               <h3 style={{ fontWeight: 700, color: "#39ff14", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
                 <Users className="w-4 h-4 inline mr-2" />
-                User Management
+                Members ({usersData?.total ?? "…"})
               </h3>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() => refetchUsers()}
+                  className="p-1.5 rounded"
+                  style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.2)", color: "#39ff14", cursor: "pointer" }}
+                  title="Refresh"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </button>
                 <Search className="w-4 h-4" style={{ color: "rgba(140,140,170,0.6)" }} />
                 <input
                   type="text"
-                  placeholder="Search by email..."
+                  placeholder="Filter by email..."
                   value={searchEmail}
                   onChange={(e) => setSearchEmail(e.target.value)}
                   className="px-3 py-1.5 text-sm"
@@ -318,17 +339,98 @@ export default function AdminPanel() {
                 />
               </div>
             </div>
-            <div
-              className="p-8 text-center"
-              style={{ background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.06)" }}
-            >
-              <Users className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(140,140,170,0.4)" }} />
-              <p style={{ color: "rgba(140,140,170,0.7)", fontSize: "0.875rem" }}>
-                User list requires direct database access.
-              </p>
-              <p style={{ color: "rgba(140,140,170,0.5)", fontSize: "0.8rem", marginTop: "0.5rem" }}>
-                Use the Manus Management UI → Database tab to view and manage users.
-              </p>
+
+            {usersLoading ? (
+              <div className="p-8 text-center" style={{ color: "rgba(140,140,170,0.6)" }}>
+                <RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin" style={{ color: "#39ff14" }} />
+                Loading members...
+              </div>
+            ) : (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm" style={{ borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid rgba(57,255,20,0.15)" }}>
+                        {["Name", "Email", "Tier", "Role", "Bets", "Joined", "Actions"].map((h) => (
+                          <th key={h} className="text-left py-2 px-3" style={{ color: "rgba(140,140,170,0.7)", fontWeight: 600, fontSize: "0.75rem", textTransform: "uppercase" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(usersData?.users ?? []).filter(u =>
+                        !searchEmail || u.email?.toLowerCase().includes(searchEmail.toLowerCase())
+                      ).map((u) => (
+                        <tr key={u.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }} className="hover:bg-white/[0.02]">
+                          <td className="py-2 px-3" style={{ color: "white", fontWeight: 500 }}>{u.name || "—"}</td>
+                          <td className="py-2 px-3" style={{ color: "rgba(180,180,210,0.8)" }}>{u.email}</td>
+                          <td className="py-2 px-3">
+                            <select
+                              defaultValue={u.subscriptionTier || "free"}
+                              onChange={(e) => updateTierMutation.mutate({ userId: u.id, subscriptionTier: e.target.value as any })}
+                              className="text-xs px-2 py-0.5"
+                              style={{
+                                background: "rgba(57,255,20,0.1)",
+                                border: "1px solid rgba(57,255,20,0.25)",
+                                borderRadius: "4px",
+                                color: "#39ff14",
+                                cursor: "pointer",
+                              }}
+                            >
+                              {["free", "trial", "daily", "monthly", "yearly"].map((t) => (
+                                <option key={t} value={t} style={{ background: "#0c0c16", color: "white" }}>{t}</option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="py-2 px-3">
+                            <span className="text-xs px-2 py-0.5" style={{
+                              background: u.role === "admin" ? "rgba(212,160,23,0.15)" : "rgba(255,255,255,0.05)",
+                              border: `1px solid ${u.role === "admin" ? "rgba(212,160,23,0.3)" : "rgba(255,255,255,0.1)"}`,
+                              borderRadius: "4px",
+                              color: u.role === "admin" ? "#d4a017" : "rgba(180,180,210,0.7)",
+                            }}>{u.role}</span>
+                          </td>
+                          <td className="py-2 px-3" style={{ color: "rgba(140,140,170,0.7)" }}>{u.totalBets ?? 0}</td>
+                          <td className="py-2 px-3" style={{ color: "rgba(140,140,170,0.6)", fontSize: "0.75rem" }}>
+                            {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}
+                          </td>
+                          <td className="py-2 px-3">
+                            <button
+                              onClick={() => { setElevateEmail(u.email || ""); setActiveTab("overview"); }}
+                              className="text-xs px-2 py-0.5"
+                              style={{ background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.2)", borderRadius: "4px", color: "#39ff14", cursor: "pointer" }}
+                            >
+                              Edit
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {/* Pagination */}
+                {(usersData?.total ?? 0) > PAGE_SIZE && (
+                  <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                    <span style={{ color: "rgba(140,140,170,0.6)", fontSize: "0.8rem" }}>
+                      Showing {userPage * PAGE_SIZE + 1}–{Math.min((userPage + 1) * PAGE_SIZE, usersData?.total ?? 0)} of {usersData?.total} members
+                    </span>
+                    <div className="flex gap-2">
+                      <button onClick={() => setUserPage(p => Math.max(0, p - 1))} disabled={userPage === 0}
+                        className="px-3 py-1 text-xs" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", color: "white", cursor: userPage === 0 ? "not-allowed" : "pointer", opacity: userPage === 0 ? 0.4 : 1 }}>
+                        ← Prev
+                      </button>
+                      <button onClick={() => setUserPage(p => p + 1)} disabled={(userPage + 1) * PAGE_SIZE >= (usersData?.total ?? 0)}
+                        className="px-3 py-1 text-xs" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", color: "white", cursor: (userPage + 1) * PAGE_SIZE >= (usersData?.total ?? 0) ? "not-allowed" : "pointer", opacity: (userPage + 1) * PAGE_SIZE >= (usersData?.total ?? 0) ? 0.4 : 1 }}>
+                        Next →
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Stripe link remains */}
+            <div className="mt-4 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+              <p style={{ color: "rgba(140,140,170,0.5)", fontSize: "0.75rem", marginBottom: "0.5rem" }}>For payment history and subscription management:</p>
               <a
                 href="https://dashboard.stripe.com/customers"
                 target="_blank"

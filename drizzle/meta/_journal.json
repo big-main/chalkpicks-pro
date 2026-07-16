@@ -134,6 +134,13 @@
       "when": 1783704506817,
       "tag": "0018_unusual_wendigo",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1784191227464,
+      "tag": "0019_motionless_pestilence",
+      "breakpoints": true
     }
   ]
 }

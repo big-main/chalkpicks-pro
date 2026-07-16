@@ -5,6 +5,7 @@ import { useLocation } from "wouter";
 import { WebMCPTools } from "@/components/WebMCPTools";
 import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
 import { StructuredData } from "@/components/StructuredData";
+import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo/schema-jsonld";
 import { PageMeta } from "@/components/PageMeta";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -110,6 +111,8 @@ function Router() {
   return (
     <>
       <PageMeta />
+      <OrganizationJsonLd />
+      <WebSiteJsonLd />
       <BreadcrumbJsonLd />
       <StructuredData />
       <Suspense fallback={<PageLoader />}>

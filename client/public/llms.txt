@@ -1,63 +1,80 @@
-# ChalkPicks Pro
-
+# ChalkPicks
 > AI-powered sports betting analytics platform providing daily picks, +EV finder, arbitrage detection, CLV tracking, and advanced tools for NFL, NBA, MLB, NHL, NCAAF, NCAAB, MMA, Soccer, and Tennis.
 
 ## About
-
-ChalkPicks Pro uses machine learning and statistical modeling to identify positive expected value (+EV) betting opportunities across major US sportsbooks. The platform serves recreational and professional sports bettors with data-driven tools.
+ChalkPicks uses machine learning and statistical modeling to identify positive expected value (+EV) betting opportunities across major US sportsbooks. The platform serves recreational and professional sports bettors with data-driven tools and transparent performance tracking.
 
 ## Core Features
-
 - **AI Daily Picks**: Algorithmically generated picks with confidence scores (70-95%) and edge analysis
 - **+EV Finder**: Real-time positive expected value scanner using proportional devig across 15+ sportsbooks
 - **CLV Tracker**: Closing Line Value tracking to measure betting sharpness over time
 - **Arbitrage Finder**: Cross-book arbitrage detection with optimal stake allocation
 - **Steam Moves Alerts**: Sharp money detection and reverse line movement (RLM) identification
-- **Prop Optimizer**: AI-powered player prop recommendations with correlation analysis
+- **Prop Builder**: AI-powered player prop recommendations with correlation analysis
 - **Line Movement Tracker**: Real-time spread, moneyline, and total line movement across books
 - **Parlay Builder**: Correlation-aware parlay construction with true probability calculation
 - **Bankroll Manager**: Kelly Criterion-based bankroll management and bet sizing
 - **Odds Comparison**: Side-by-side odds across DraftKings, FanDuel, BetMGM, Caesars, and more
+- **DFS Optimizer**: DraftKings and FanDuel lineup optimizer for NFL, NBA, and MLB
 
 ## Free Tools (No Account Required)
-
-- Odds Calculator: Convert between American, decimal, and fractional odds
-- Bet Calculator: Calculate payouts, implied probability, and break-even win rate
-- ROI Calculator: Track betting performance and return on investment
-- Devig Calculator: Remove bookmaker vig to find fair (no-vig) odds
-- Parlay Calculator: Multi-leg parlay payout and probability calculator
+- Odds Calculator: https://chalkpicks.live/tools/odds-calculator
+- Devig Calculator: https://chalkpicks.live/tools/devig-calculator
+- ROI Calculator: https://chalkpicks.live/tools/roi-calculator
+- Parlay Calculator: https://chalkpicks.live/tools/parlay-calculator
+- Bankroll Manager: https://chalkpicks.live/tools/bankroll-manager
+- Bet Calculator: https://chalkpicks.live/bet-calculator
 
 ## Pricing
-
 - Free: Limited daily picks, basic tools
 - Pro ($19.99/month): Full AI picks, +EV finder, arbitrage alerts, CLV tracking
 - Elite ($59.99/year): All Pro features plus priority support and annual billing
 
 ## Sports Covered
-
 NFL, NBA, MLB, NHL, NCAAF, NCAAB, MMA, Soccer (EPL, MLS, La Liga), Tennis
 
 ## Technical Details
-
 - Odds data refreshed every 60 seconds from The Odds API
 - Devigging method: Proportional normalization (sharpest book as reference)
 - Kelly Criterion: Quarter-Kelly recommended, capped at 5% bankroll per bet
-- Historical win rate: Tracked transparently on /performance page
-- API available for Pro+ subscribers at /api-access
+- Historical performance tracked transparently at https://chalkpicks.live/performance
 
-## Links
+## Sport-Specific Pages
+- NFL Picks: https://chalkpicks.live/nfl-picks
+- NBA Picks: https://chalkpicks.live/nba-picks
+- MLB Picks: https://chalkpicks.live/mlb-picks
+- NHL Picks: https://chalkpicks.live/nhl-picks
+- NCAAF Picks: https://chalkpicks.live/ncaaf-picks
+- NCAAB Picks: https://chalkpicks.live/ncaab-picks
+- MMA Picks: https://chalkpicks.live/mma-picks
+- Soccer Picks: https://chalkpicks.live/soccer-picks
+- NFL Odds: https://chalkpicks.live/odds/nfl
+- NBA Odds: https://chalkpicks.live/odds/nba
+- MLB Odds: https://chalkpicks.live/odds/mlb
+- NHL Odds: https://chalkpicks.live/odds/nhl
 
+## Key Links
 - Homepage: https://chalkpicks.live
 - Daily Picks: https://chalkpicks.live/picks
 - +EV Finder: https://chalkpicks.live/ev-finder
 - Arbitrage: https://chalkpicks.live/arbitrage
 - CLV Tracker: https://chalkpicks.live/clv-tracker
+- Line Movement: https://chalkpicks.live/line-movement
+- Prop Builder: https://chalkpicks.live/prop-builder
+- DFS Optimizer: https://chalkpicks.live/dfs-optimizer
+- Parlay Builder: https://chalkpicks.live/parlay-builder
+- Odds Comparison: https://chalkpicks.live/odds-comparison
+- Performance: https://chalkpicks.live/performance
+- Leaderboard: https://chalkpicks.live/leaderboard
 - Blog: https://chalkpicks.live/blog
 - Pricing: https://chalkpicks.live/pricing
-- Performance: https://chalkpicks.live/performance
+- API Access: https://chalkpicks.live/api-access
 
 ## Contact
-
 - Website: https://chalkpicks.live
+- Email: support@chalkpicks.live
 - Instagram: @chalkpicks
-- Twitter: @chalkpicks
+- Twitter: @chalkpicksai
+
+## Responsible Gambling
+ChalkPicks promotes responsible gambling. Users must be 21+ to use betting tools. If you or someone you know has a gambling problem, call 1-800-GAMBLER.

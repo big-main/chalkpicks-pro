@@ -928,3 +928,16 @@
 - [x] Update AGENTS.md with quant sidecar service
 - [ ] Wire quant sidecar into ChalkPicks frontend (backtesting page, Elo ratings display)
 - [ ] Set up n8n + Ollama content factory workflow
+
+## Phase 11 Drop-In Guide (Jul 16, 2026)
+- [x] odds_snapshots table added to drizzle/schema.ts + migration SQL generated
+- [x] ev.router (server/routers/ev.ts) — findPositiveEV, stampClosingLines, stampCLV
+- [x] evRouter mounted in appRouter (server/routers.ts)
+- [x] schema-jsonld.tsx component library (Organization, WebSite, Breadcrumb, SportsEvent, FAQ)
+- [x] OrganizationJsonLd + WebSiteJsonLd added to App.tsx root layout
+- [x] llms.txt rewritten with correct real route URLs
+- [x] Prerender middleware (server/prerender.ts) — GPTBot/ClaudeBot/PerplexityBot get full HTML+JSON-LD; normal users get SPA
+- [x] registerPrerenderMiddleware() wired into server/_core/index.ts before setupVite/serveStatic
+- [x] n8n closing-line cron workflow JSON exported (chalkpicks-pro-n8n-closing-line-cron.json)
+- [ ] Apply odds_snapshots migration to production DB (run SQL from drizzle/0019_*.sql)
+- [ ] Import n8n workflow JSON into bigmain.app.n8n.cloud and activate

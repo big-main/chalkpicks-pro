@@ -669,3 +669,25 @@ export const newsletterSubscribers = mysqlTable("newsletter_subscribers", {
 
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 export type InsertNewsletterSubscriber = typeof newsletterSubscribers.$inferInsert;
+
+// ─── Odds Snapshots (line history archive — the moat) ────────────────────────
+// Stores every odds fetch keyed by event_id + bookmaker + market_key.
+// stampClosingLines reads the latest row before commence_time to fill CLV.
+export const oddsSnapshots = mysqlTable("odds_snapshots", {
+  id: int("id").autoincrement().primaryKey(),
+  eventId: varchar("eventId", { length: 64 }).notNull(),
+  sportKey: varchar("sportKey", { length: 32 }).notNull(),
+  homeTeam: varchar("homeTeam", { length: 128 }).notNull(),
+  awayTeam: varchar("awayTeam", { length: 128 }).notNull(),
+  commenceTime: timestamp("commenceTime").notNull(),
+  bookmaker: varchar("bookmaker", { length: 64 }).notNull(),
+  marketKey: varchar("marketKey", { length: 32 }).notNull().default("h2h"),
+  outcomesJson: text("outcomesJson").notNull(),
+  snapshotAt: timestamp("snapshotAt").defaultNow().notNull(),
+}, (table) => ([
+  index("idx_snapshots_event_book").on(table.eventId, table.bookmaker, table.marketKey),
+  index("idx_snapshots_sport_time").on(table.sportKey, table.snapshotAt),
+  index("idx_snapshots_event_time").on(table.eventId, table.snapshotAt),
+]));
+export type OddsSnapshot = typeof oddsSnapshots.$inferSelect;
+export type InsertOddsSnapshot = typeof oddsSnapshots.$inferInsert;

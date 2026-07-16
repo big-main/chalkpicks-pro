@@ -6,6 +6,7 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { registerPrerenderMiddleware } from "../prerender";
 import { registerStripeWebhook } from "../webhook";
 import { registerStorageProxy } from "./storageProxy";
 import { registerPayPalWebhook } from "../paypal-webhook";
@@ -653,6 +654,8 @@ async function startServer() {
     });
   });
 
+  // Prerender middleware — must be before Vite/static so bots get HTML+JSON-LD
+  registerPrerenderMiddleware(app);
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);

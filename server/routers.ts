@@ -36,6 +36,7 @@ import { storyScheduledRouter } from "./routers/storyScheduled";
 import { communityAutomationRouter } from "./routers/communityAutomation";
 import { blogRouter } from "./routers/blog";
 import { newsletterRouter } from "./routers/newsletter";
+import { evRouter } from "./routers/ev";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -179,6 +180,7 @@ export const appRouter = router({
   storyScheduled: storyScheduledRouter,
   communityAutomation: communityAutomationRouter,
   blog: blogRouter,
+  ev: evRouter,
 });
 
 export type AppRouter = typeof appRouter;

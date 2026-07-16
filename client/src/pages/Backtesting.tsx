@@ -44,6 +44,7 @@ export default function Backtesting() {
   const [minConfidence, setMinConfidence] = useState([70]);
   const [bankroll, setBankroll] = useState([1000]);
   const [stakePerBet, setStakePerBet] = useState([100]);
+  const [strategy, setStrategy] = useState<"kelly" | "quarter_kelly" | "flat">("flat");
   const [results, setResults] = useState<any>(null);
 
   const hasProAccess = subscription?.isActive && (subscription?.tier === 'monthly' || subscription?.tier === 'yearly');
@@ -76,6 +77,7 @@ export default function Backtesting() {
         dateTo,
         initialBankroll: bankroll[0],
         stakePerBet: stakePerBet[0],
+        strategy,
       });
       setResults(result);
       toast.success("Backtest completed!");
@@ -149,6 +151,21 @@ export default function Backtesting() {
                 <div>
                   <Label>Min Confidence: {minConfidence[0]}%</Label>
                   <Slider value={minConfidence} onValueChange={setMinConfidence} min={0} max={100} step={5} />
+                </div>
+
+                <div>
+                  <Label className="mb-2 block">Betting Strategy</Label>
+                  <Select value={strategy} onValueChange={(v) => setStrategy(v as typeof strategy)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="flat">Flat Betting</SelectItem>
+                      <SelectItem value="kelly">Full Kelly (quant engine)</SelectItem>
+                      <SelectItem value="quarter_kelly">Quarter Kelly (quant engine)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {(strategy === "kelly" || strategy === "quarter_kelly") && (
+                    <p className="text-xs text-emerald-400 mt-1">⚡ Real Kelly sizing via Python quant sidecar</p>
+                  )}
                 </div>
 
                 <div>

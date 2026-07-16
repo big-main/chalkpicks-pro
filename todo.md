@@ -941,3 +941,44 @@
 - [x] n8n closing-line cron workflow JSON exported (chalkpicks-pro-n8n-closing-line-cron.json)
 - [ ] Apply odds_snapshots migration to production DB (run SQL from drizzle/0019_*.sql)
 - [ ] Import n8n workflow JSON into bigmain.app.n8n.cloud and activate
+
+## Tier 1 — Revenue Critical
+
+- [ ] Audit all premium features for correct subscription paywall gates (EV Finder, CLV Tracker, Arbitrage, Monte Carlo, DFS Optimizer, Prop Builder, Line Movement)
+- [ ] Fix any paywall leaks — ensure free users cannot access premium endpoints
+- [ ] Harden Stripe webhook: handle subscription.updated event (tier change)
+- [ ] Harden Stripe webhook: handle customer.subscription.deleted (revoke access)
+- [ ] Harden Stripe webhook: handle invoice.payment_failed (grace period + warning)
+- [ ] Build n8n email drip sequence: Day 0 welcome, Day 1 EV finder guide, Day 3 CLV intro, Day 7 upgrade nudge
+
+## Tier 2 — Traffic & SEO
+
+- [ ] Wire n8n content factory to auto-publish blog posts for every pick
+- [ ] Update sitemap.xml to include all new pages (elo-ratings, monte-carlo, tools/devig-calculator, dfs-optimizer, sport pick pages)
+- [ ] Google Search Console: submit sitemap, verify ownership
+- [ ] Internal linking: add sport pick pages to main nav and footer
+- [ ] Add /tools/devig-calculator, /elo-ratings, /monte-carlo to nav Tools dropdown
+
+## Tier 3 — Product Depth
+
+- [ ] Seed Elo engine with real historical game results (NFL 2024, NBA 2024, MLB 2024)
+- [ ] Wire quant.runBacktest mutation into existing Backtesting page UI
+- [ ] Apply odds_snapshots migration to production DB
+- [ ] Activate n8n closing-line cron (every 15 min stampClosingLines + stampCLV)
+- [ ] Push notification trigger: fire alert when new +EV pick drops
+
+## Tier 4 — Moat Features
+
+- [ ] Sharp money detector: real-time line movement + public betting % divergence
+- [ ] Consensus picks aggregator: scrape public consensus, display vs ChalkPicks AI
+- [ ] API access tier: expose EV/CLV/devig endpoints as paid API
+
+## Tier 4 Completion (Jul 16, 2026)
+- [x] Sharp money detector: real-time line movement + public betting % divergence (SharpMoneyDetector page + sharpMoney router)
+- [x] Consensus picks aggregator: public betting % vs ChalkPicks AI recommendation (ConsensusAggregator page + consensus router)
+- [x] API access tier: expose EV/CLV/devig endpoints as paid API (APIAccess page + apiKeys router with generate/revoke/list)
+- [x] Fix APIAccess.tsx TS errors (toast import → sonner, feature key → clvTracker)
+- [x] Add Sharp Money, Consensus, API Access to Navbar Tools section
+- [x] Add /sharp-money, /consensus routes to App.tsx
+- [x] All tests: 125 passed, 1 skipped, 0 failed
+- [x] TypeScript: 0 errors

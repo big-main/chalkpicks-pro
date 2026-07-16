@@ -90,6 +90,8 @@ const DevigCalculator = lazy(() => import("@/pages/DevigCalculator"));
 const DFSOptimizer = lazy(() => import("@/pages/DFSOptimizer"));
 const EloPowerRatings = lazy(() => import("@/pages/EloPowerRatings"));
 const MonteCarloSimulator = lazy(() => import("@/pages/MonteCarloSimulator"));
+const SharpMoneyDetector = lazy(() => import("@/pages/SharpMoneyDetector"));
+const ConsensusAggregator = lazy(() => import("@/pages/ConsensusAggregator"));
 
 function PageLoader() {
   return (
@@ -195,6 +197,8 @@ function Router() {
           <Route path="/dfs-optimizer" component={DFSOptimizer} />
           <Route path="/elo-ratings" component={EloPowerRatings} />
           <Route path="/monte-carlo" component={MonteCarloSimulator} />
+          <Route path="/sharp-money" component={SharpMoneyDetector} />
+          <Route path="/consensus" component={ConsensusAggregator} />
           <Route path="/blog" component={Blog} />
           <Route path="/blog/best-sports-betting-picks" component={BlogBestPicks} />
           <Route path="/blog/ai-sports-betting" component={BlogAISportsBetting} />

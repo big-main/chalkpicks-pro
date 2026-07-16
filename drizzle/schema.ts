@@ -691,3 +691,23 @@ export const oddsSnapshots = mysqlTable("odds_snapshots", {
 ]));
 export type OddsSnapshot = typeof oddsSnapshots.$inferSelect;
 export type InsertOddsSnapshot = typeof oddsSnapshots.$inferInsert;
+
+// ─── API Keys ──────────────────────────────────────────────────────────────
+export const apiKeys = mysqlTable("api_keys", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  keyHash: varchar("keyHash", { length: 128 }).notNull().unique(),
+  keyPrefix: varchar("keyPrefix", { length: 16 }).notNull(),
+  name: varchar("name", { length: 64 }).notNull().default("Default"),
+  tier: varchar("tier", { length: 16 }).notNull().default("basic"),
+  requestsToday: int("requestsToday").notNull().default(0),
+  requestsTotal: int("requestsTotal").notNull().default(0),
+  lastUsedAt: timestamp("lastUsedAt"),
+  revokedAt: timestamp("revokedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ([
+  index("idx_api_keys_user").on(table.userId),
+  index("idx_api_keys_hash").on(table.keyHash),
+]));
+export type ApiKey = typeof apiKeys.$inferSelect;
+export type InsertApiKey = typeof apiKeys.$inferInsert;

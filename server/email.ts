@@ -454,7 +454,7 @@ export async function sendWelcomeEmail(options: WelcomeEmailOptions): Promise<bo
 export interface DripEmailOptions {
   email: string;
   name: string;
-  day: 2 | 3;
+  day: 2 | 3 | 7;
   tier: "daily" | "monthly" | "yearly";
 }
 
@@ -534,16 +534,68 @@ function generateDay3Email(name: string, tier: string): string {
   `;
 }
 
+function generateDay7Email(name: string, tier: string): string {
+  const isYearly = tier === "yearly";
+  if (isYearly) {
+    return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a1a; color: #e2e8f0; padding: 40px 24px;">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h1 style="color: #39ff14; font-size: 24px; margin: 0;">One Week In 🎉</h1>
+        <p style="color: #94a3b8; font-size: 14px; margin-top: 8px;">You're crushing it</p>
+      </div>
+      <p style="font-size: 16px; line-height: 1.6;">Hey ${name},</p>
+      <p style="font-size: 15px; line-height: 1.6; color: #cbd5e1;">
+        You've been with ChalkPicks for a full week. As an Annual Elite member, you have access to everything — keep tracking your CLV and using the EV Finder to build your edge.
+      </p>
+      <div style="text-align: center; margin-top: 24px;">
+        <a href="https://chalkpicks.live/dashboard" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 14px;">View Your Dashboard</a>
+      </div>
+      <p style="font-size: 13px; color: #64748b; text-align: center; margin-top: 32px;">— The ChalkPicks Team</p>
+    </div>
+  `;
+  }
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a1a; color: #e2e8f0; padding: 40px 24px;">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h1 style="color: #39ff14; font-size: 24px; margin: 0;">Your First Week Results</h1>
+        <p style="color: #94a3b8; font-size: 14px; margin-top: 8px;">Day 7 — Lock in your edge</p>
+      </div>
+      <p style="font-size: 16px; line-height: 1.6;">Hey ${name},</p>
+      <p style="font-size: 15px; line-height: 1.6; color: #cbd5e1;">
+        You've had a full week to test ChalkPicks. Sharp bettors who track CLV consistently outperform the market by 3–8% over a season.
+      </p>
+      <div style="background: linear-gradient(135deg, #1a2e1a, #0a1a0a); border: 1px solid rgba(57,255,20,0.3); border-radius: 12px; padding: 24px; margin: 24px 0;">
+        <h3 style="color: #39ff14; font-size: 18px; margin: 0 0 12px;">Upgrade to Annual Elite — Save 44%</h3>
+        <ul style="color: #cbd5e1; font-size: 14px; line-height: 2; padding-left: 20px; margin: 0 0 16px;">
+          <li>Lock in \$199.99/year vs \$359.88 monthly billing</li>
+          <li>VIP Discord access (sharp plays + line alerts)</li>
+          <li>Monthly 1-on-1 strategy sessions</li>
+          <li>Priority support</li>
+        </ul>
+        <div style="text-align: center;">
+          <a href="https://chalkpicks.live/pricing" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 15px;">Upgrade Now — Save \$159</a>
+        </div>
+      </div>
+      <p style="font-size: 13px; color: #64748b; text-align: center; margin-top: 32px;">
+        This offer is available any time from your account settings.<br/>— The ChalkPicks Team
+      </p>
+    </div>
+  `;
+}
+
 /**
- * Send a drip email (Day 2 or Day 3 of the welcome sequence)
+ * Send a drip email (Day 2, 3, or 7 of the welcome sequence)
  */
 export async function sendDripEmail(options: DripEmailOptions): Promise<boolean> {
   try {
+    const subjectMap: Record<number, string> = {
+      2: "3 Pro Tips to Maximize Your Edge",
+      3: "Share ChalkPicks & Get Rewarded",
+      7: options.tier === "yearly" ? "One Week In 🎉" : "Upgrade to Annual Elite — Save 44%",
+    };
+    const subject = subjectMap[options.day] ?? "ChalkPicks Update";
+
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      // Fall back to the sendEmail logger when SMTP is not configured
-      const subject = options.day === 2
-        ? "3 Pro Tips to Maximize Your Edge"
-        : "Share ChalkPicks & Get Rewarded";
       return sendEmail({
         to: options.email,
         subject,
@@ -552,13 +604,12 @@ export async function sendDripEmail(options: DripEmailOptions): Promise<boolean>
       });
     }
 
-    const subject = options.day === 2
-      ? "3 Pro Tips to Maximize Your Edge"
-      : "Share ChalkPicks & Get Rewarded";
-
-    const html = options.day === 2
-      ? generateDay2Email(options.name)
-      : generateDay3Email(options.name, options.tier);
+    const htmlMap: Record<number, string> = {
+      2: generateDay2Email(options.name),
+      3: generateDay3Email(options.name, options.tier),
+      7: generateDay7Email(options.name, options.tier),
+    };
+    const html = htmlMap[options.day] ?? generateDay2Email(options.name);
 
     const info = await transporter.sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER,

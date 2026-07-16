@@ -38,6 +38,9 @@ import { blogRouter } from "./routers/blog";
 import { newsletterRouter } from "./routers/newsletter";
 import { evRouter } from "./routers/ev";
 import { quantRouter } from "./routers/quant";
+import { sharpMoneyRouter } from "./routers/sharpMoney";
+import { apiKeysRouter } from "./routers/apiKeys";
+import { consensusRouter } from "./routers/consensus";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -183,6 +186,9 @@ export const appRouter = router({
   blog: blogRouter,
   ev: evRouter,
   quant: quantRouter,
+  sharpMoney: sharpMoneyRouter,
+  apiKeys: apiKeysRouter,
+  consensus: consensusRouter,
 });
 
 export type AppRouter = typeof appRouter;

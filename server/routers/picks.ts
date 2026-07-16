@@ -1,4 +1,5 @@
 import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
+import { sendEVAlert } from "../pushSender";
 import { z } from "zod/v4";
 import { getDb } from "../db";
 import { picks, playerProps, games, sports } from "../../drizzle/schema";
@@ -257,6 +258,18 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
           isActive: true,
           isFeatured: parsed.confidenceScore >= 80,
         });
+        // Fire +EV push alert for high-confidence picks (≥80% confidence)
+        const confidence = Math.min(95, Math.max(50, Math.round(parsed.confidenceScore)));
+        if (confidence >= 80) {
+          sendEVAlert({
+            sport: input.sportKey,
+            team: parsed.recommendation ?? input.matchup,
+            betType: parsed.pickType ?? "pick",
+            ev: parsed.edgeScore ? Number(parsed.edgeScore) * 2 : 5,
+            odds: Math.round(parsed.odds),
+            confidence,
+          }).catch((err) => console.warn("[picks] EV push alert failed:", err));
+        }
         return { success: true, pick: { ...parsed, id: (inserted as any).insertId } };
       }
 

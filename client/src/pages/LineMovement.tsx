@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { AlertTriangle, TrendingUp, TrendingDown, Activity, DollarSign, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { FeatureGate } from "@/components/FeatureGate";
 
 function LowBalanceModal({ required, balance, onClose }: { required: number; balance: number; onClose: () => void }) {
   return (
@@ -37,7 +38,7 @@ function LowBalanceModal({ required, balance, onClose }: { required: number; bal
   );
 }
 
-export default function LineMovement() {
+function LineMovementContent() {
   const [sport, setSport] = useState<"nba" | "nfl" | "mlb" | "nhl">("nba");
   const [sharpOnly, setSharpOnly] = useState(false);
   const [showLowBalance, setShowLowBalance] = useState(false);
@@ -211,5 +212,13 @@ export default function LineMovement() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function LineMovement() {
+  return (
+    <FeatureGate feature="tools" requiredTier="monthly">
+      <LineMovementContent />
+    </FeatureGate>
   );
 }

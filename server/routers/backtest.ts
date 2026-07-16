@@ -16,9 +16,80 @@ export const backtestRouter = router({
       dateTo: z.string(),
       initialBankroll: z.number().optional().default(1000),
       stakePerBet: z.number().optional().default(100),
+      strategy: z.enum(["kelly", "quarter_kelly", "flat"]).optional().default("flat"),
     }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
+
+      // ── Quant sidecar for Kelly/quarter-Kelly strategies ──────────────────
+      if (input.strategy === "kelly" || input.strategy === "quarter_kelly") {
+        try {
+          const QUANT_URL = process.env.QUANT_SIDECAR_URL ?? "http://35.237.81.82:8091";
+          const resp = await fetch(`${QUANT_URL}/backtest/run`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              sport: input.sportKey ?? "nfl",
+              strategy: input.strategy,
+              initial_bankroll: input.initialBankroll,
+              min_confidence: input.minConfidence,
+              date_from: input.dateFrom,
+              date_to: input.dateTo,
+            }),
+            signal: AbortSignal.timeout(15000),
+          });
+          if (resp.ok) {
+            const quantResult = await resp.json() as any;
+            const mappedResults = (quantResult.results ?? []).map((r: any, i: number) => ({
+              date: r.date ?? input.dateFrom,
+              pick: r.pick ?? `Pick ${i + 1}`,
+              confidence: r.confidence ?? input.minConfidence,
+              result: r.result ?? "win",
+              profit: r.profit ?? 0,
+              bankroll: r.bankroll ?? input.initialBankroll,
+            }));
+            const backtestData = {
+              id: Date.now(),
+              name: input.name,
+              sportKey: input.sportKey ?? "all",
+              strategy: input.strategy,
+              totalPicks: quantResult.total_picks ?? 0,
+              wins: quantResult.wins ?? 0,
+              losses: quantResult.losses ?? 0,
+              pushes: quantResult.pushes ?? 0,
+              winRate: quantResult.win_rate ?? 0,
+              roi: quantResult.roi ?? 0,
+              totalProfit: quantResult.total_profit ?? 0,
+              results: mappedResults,
+              createdAt: new Date(),
+            };
+            if (db) {
+              const [ins] = await db.insert(backtests).values({
+                userId: ctx.user.id,
+                name: input.name,
+                sportKey: input.sportKey,
+                pickType: input.pickType,
+                minConfidence: input.minConfidence,
+                dateFrom: input.dateFrom,
+                dateTo: input.dateTo,
+                totalPicks: backtestData.totalPicks,
+                wins: backtestData.wins,
+                losses: backtestData.losses,
+                pushes: backtestData.pushes,
+                winRate: String(backtestData.winRate),
+                roi: String(backtestData.roi),
+                totalProfit: String(backtestData.totalProfit),
+                results: mappedResults,
+              });
+              backtestData.id = (ins as any).insertId ?? Date.now();
+            }
+            return backtestData;
+          }
+        } catch (e) {
+          // Quant sidecar unavailable — fall through to simulation
+          console.warn("[backtest] Quant sidecar unavailable, falling back to simulation:", e);
+        }
+      }
 
       // Generate mock backtest results for demo
       const daysDiff = Math.ceil((new Date(input.dateTo).getTime() - new Date(input.dateFrom).getTime()) / (1000 * 60 * 60 * 24));

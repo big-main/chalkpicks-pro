@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, TrendingUp, Zap, Search, DollarSign } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { FeatureGate } from "@/components/FeatureGate";
 
 function LowBalanceModal({ required, balance, onClose }: { required: number; balance: number; onClose: () => void }) {
   return (
@@ -39,7 +40,7 @@ function LowBalanceModal({ required, balance, onClose }: { required: number; bal
   );
 }
 
-export default function PropBuilder() {
+function PropBuilderContent() {
   const { user } = useAuth();
   const [sport, setSport] = useState<"nba" | "nfl" | "mlb" | "nhl">("nba");
   const [playerName, setPlayerName] = useState("");
@@ -277,5 +278,13 @@ export default function PropBuilder() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function PropBuilder() {
+  return (
+    <FeatureGate feature="parlay_builder" requiredTier="monthly">
+      <PropBuilderContent />
+    </FeatureGate>
   );
 }

@@ -220,6 +220,76 @@ export function registerStripeWebhook(app: express.Application) {
           case "invoice.payment_failed": {
             const invoice = event.data.object as Stripe.Invoice;
             console.warn(`[Webhook] Payment failed for invoice ${invoice.id}`);
+
+            // Find the user and send a payment failure warning email
+            const subId: string | undefined =
+              (invoice as any).subscription?.toString?.() ??
+              (invoice as any).parent?.subscription_details?.subscription?.toString?.();
+            if (subId) {
+              const db = await getDb();
+              if (db) {
+                const userResult = await db
+                  .select()
+                  .from(users)
+                  .where(eq(users.stripeSubscriptionId, subId))
+                  .limit(1);
+                if (userResult[0]?.email) {
+                  // Send payment failure warning via email service
+                  try {
+                    const { sendEmail } = await import("./email");
+                    await sendEmail({
+                      to: userResult[0].email,
+                      subject: "⚠️ ChalkPicks — Payment Failed",
+                      type: "alert" as const,
+                      data: { name: userResult[0].name ?? "there", message: "We were unable to process your ChalkPicks subscription payment. Your access will remain active for a short grace period while Stripe retries the charge. Please update your payment method to avoid losing access." },
+                    });
+                    console.log(`[Webhook] Payment failure warning sent to ${userResult[0].email}`);
+                  } catch (emailErr) {
+                    console.error("[Webhook] Failed to send payment failure email:", emailErr);
+                  }
+                }
+              }
+            }
+            break;
+          }
+
+          case "customer.subscription.updated": {
+            // Handle plan upgrades/downgrades and reactivations
+            const sub = event.data.object as Stripe.Subscription;
+            const db = await getDb();
+            if (!db) break;
+
+            const userResult = await db
+              .select()
+              .from(users)
+              .where(eq(users.stripeSubscriptionId, sub.id))
+              .limit(1);
+            if (!userResult[0]) break;
+
+            // Map Stripe price IDs to tiers (use metadata or price amount)
+            const item = sub.items?.data?.[0];
+            const priceId = item?.price?.id ?? "";
+            const amount = item?.price?.unit_amount ?? 0;
+
+            let tier: "daily" | "monthly" | "yearly" = "monthly";
+            if (amount <= 999) tier = "daily";       // $9.99 or less
+            else if (amount >= 19999) tier = "yearly"; // $199.99 or more
+
+            const status = sub.status;
+            if (status === "active" || status === "trialing") {
+              const expiresAt = new Date(((sub as any).current_period_end as number) * 1000);
+              await db
+                .update(users)
+                .set({ subscriptionTier: tier, subscriptionExpiresAt: expiresAt })
+                .where(eq(users.id, userResult[0].id));
+              console.log(`[Webhook] Updated subscription to ${tier} for user ${userResult[0].id} (status: ${status})`);
+            } else if (status === "canceled" || status === "unpaid") {
+              await db
+                .update(users)
+                .set({ subscriptionTier: "free", subscriptionExpiresAt: null, stripeSubscriptionId: null })
+                .where(eq(users.id, userResult[0].id));
+              console.log(`[Webhook] Downgraded user ${userResult[0].id} to free (status: ${status})`);
+            }
             break;
           }
 

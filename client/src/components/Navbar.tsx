@@ -10,7 +10,7 @@ import {
   BarChart3, Target, TrendingUp, Calculator, Layers, Eye,
   Trophy, Users, Settings, LogOut, Star, Percent,
   Activity, BookOpen, DollarSign, GitCompare, LineChart,
-  Brain, Flame, Shield
+  Brain, Flame, Shield, Dices, Sigma, FlaskConical, Swords
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
@@ -57,6 +57,7 @@ const navGroups = [
       { href: "/ev-finder", label: "+EV Finder", icon: Percent, desc: "Find positive expected value bets in real-time" },
       { href: "/performance", label: "Performance", icon: BarChart3, desc: "Verified track record & ROI stats" },
       { href: "/stats", label: "Live Stats", icon: Activity, desc: "Real-time game data & line movement" },
+      { href: "/elo-ratings", label: "Elo Power Ratings", icon: Sigma, desc: "AI team power ratings & win probability" },
     ],
   },
   {
@@ -69,6 +70,11 @@ const navGroups = [
       { href: "/line-movement", label: "Line Movement", icon: LineChart, desc: "Detect sharp money movements" },
       { href: "/prop-builder", label: "Prop Builder", icon: Target, desc: "Build and analyze player props" },
       { href: "/correlation-finder", label: "Correlations", icon: Eye, desc: "Find correlated bet combinations" },
+      { href: "/dfs-optimizer", label: "DFS Optimizer", icon: Dices, desc: "Optimal DraftKings & FanDuel lineups" },
+      { href: "/monte-carlo", label: "Monte Carlo", icon: FlaskConical, desc: "Bankroll risk & growth simulation" },
+      { href: "/sharp-money", label: "Sharp Money", icon: TrendingUp, desc: "Detect sharp money vs. public action" },
+      { href: "/consensus", label: "Consensus", icon: Users, desc: "Public betting % vs CP AI recommendation" },
+      { href: "/api-access", label: "API Access", icon: Brain, desc: "Integrate ChalkPicks data into your tools" },
     ],
   },
   {
@@ -80,6 +86,21 @@ const navGroups = [
       { href: "/tools/roi-calculator", label: "ROI Calculator", icon: DollarSign, desc: "Calculate return on investment" },
       { href: "/tools/bankroll-manager", label: "Bankroll Manager", icon: Shield, desc: "Manage your betting bankroll" },
       { href: "/bet-calculator", label: "Bet Calculator", icon: Calculator, desc: "Kelly Criterion & bet sizing" },
+      { href: "/tools/devig-calculator", label: "Devig Calculator", icon: Sigma, desc: "Remove vig & find true odds" },
+    ],
+  },
+  {
+    label: "Sport Picks",
+    color: "#f97316",
+    items: [
+      { href: "/nfl-picks", label: "NFL Picks", icon: Swords, desc: "AI-powered NFL predictions today" },
+      { href: "/nba-picks", label: "NBA Picks", icon: Swords, desc: "AI-powered NBA predictions today" },
+      { href: "/mlb-picks", label: "MLB Picks", icon: Swords, desc: "AI-powered MLB predictions today" },
+      { href: "/nhl-picks", label: "NHL Picks", icon: Swords, desc: "AI-powered NHL predictions today" },
+      { href: "/ncaaf-picks", label: "NCAAF Picks", icon: Swords, desc: "College football AI picks" },
+      { href: "/ncaab-picks", label: "NCAAB Picks", icon: Swords, desc: "College basketball AI picks" },
+      { href: "/mma-picks", label: "MMA Picks", icon: Swords, desc: "UFC & MMA fight predictions" },
+      { href: "/soccer-picks", label: "Soccer Picks", icon: Swords, desc: "EPL, MLS & soccer predictions" },
     ],
   },
   {
@@ -241,7 +262,7 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 8, scale: 0.97 }}
                     transition={{ duration: 0.18, ease: [0.25, 0.4, 0.25, 1] }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[780px] rounded-2xl overflow-hidden"
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[980px] rounded-2xl overflow-hidden"
                     style={{
                       background: "rgba(8, 8, 16, 0.97)",
                       border: "1px solid rgba(255, 255, 255, 0.08)",
@@ -253,7 +274,7 @@ export default function Navbar() {
                     {/* Top accent line */}
                     <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[rgba(57,255,20,0.3)] to-transparent" />
 
-                    <div className="p-5 grid grid-cols-4 gap-4">
+                    <div className="p-5 grid grid-cols-5 gap-4">
                       {navGroups.map((group) => (
                         <div key={group.label}>
                           {/* Group header */}

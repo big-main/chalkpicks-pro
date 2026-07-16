@@ -141,6 +141,13 @@
       "when": 1784191227464,
       "tag": "0019_motionless_pestilence",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1784194931087,
+      "tag": "0020_daily_invaders",
+      "breakpoints": true
     }
   ]
 }

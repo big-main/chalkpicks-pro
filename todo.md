@@ -893,3 +893,38 @@
 - [x] Chunking fix: react-hook-form/framer-motion split out (449KB → 333KB critical)
 - [x] React Query defaults: staleTime 30s, no refetch on window focus (saves API quota)
 - [x] tRPC client/react-query upgraded 11.6 → 11.18 to match server
+
+## Databricks + Global Data Site Integration (Jul 15, 2026)
+- [ ] Test Databricks REST API connectivity
+- [ ] Test Global Data Site API connectivity
+- [ ] Add credentials to .env.production on cloud computer
+- [ ] Create server/services/databricks.ts — Databricks REST API client
+- [ ] Create server/services/globalDataSite.ts — Global Data Site API client
+- [ ] Integrate Global Data Site into picks scheduler for real-time odds/stats enrichment
+- [ ] Add backtesting analytics endpoint via Databricks
+- [ ] Add analytics dashboard endpoint (win rates, ROI by sport/bet type)
+- [ ] Deploy updated code to cloud computer and restart PM2
+- [ ] Update AGENTS.md with new integrations
+
+## Phase 11: Competitive Playbook Implementation (Jul 16, 2026)
+- [x] Build @chalkpicks/odds-math module (shared/oddsMath.ts) — 29 exported functions: devig, EV, Kelly, CLV, arbitrage, steam moves, Elo, parlay math, middle detection
+- [x] Upgrade odds router to use real Odds API data with proper proportional devig from oddsMath module
+- [x] Add SportsEvent JSON-LD component for programmatic pages
+- [x] Add FAQPage JSON-LD component for rich FAQ snippets
+- [x] Create llms.txt for AI crawler discovery (GPTBot, ClaudeBot, PerplexityBot)
+- [x] Update robots.txt with AI crawler directives and new programmatic pages
+- [x] Build 8 programmatic sport pick pages (NFL, NBA, MLB, NHL, NCAAF, NCAAB, MMA, Soccer) with FAQs and JSON-LD
+- [x] Build 4 programmatic odds comparison pages (/odds/nfl, /odds/nba, /odds/mlb, /odds/nhl)
+- [x] Build Devig Calculator free tool page (/tools/devig-calculator) for SEO
+- [x] Build DFS Lineup Optimizer page with salary cap optimization (DraftKings + FanDuel, NFL/NBA/MLB)
+- [x] Deploy Python Quant Sidecar on cloud computer (FastAPI, port 8091)
+  - Elo rating system with update/predict endpoints
+  - Backtesting engine with Kelly/quarter-Kelly strategies
+  - Monte Carlo simulation for bankroll risk analysis
+  - NFL player stats via nfl-data-py (nflverse)
+  - MLB pitcher/batter stats via pybaseball
+  - OLS regression model endpoint
+- [x] Open port 8091 on cloud computer firewall
+- [x] Update AGENTS.md with quant sidecar service
+- [ ] Wire quant sidecar into ChalkPicks frontend (backtesting page, Elo ratings display)
+- [ ] Set up n8n + Ollama content factory workflow

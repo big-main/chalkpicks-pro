@@ -18,15 +18,53 @@ Allow: /sportsbooks
 Allow: /tools
 Allow: /tools/odds-calculator
 Allow: /tools/roi-calculator
+Allow: /tools/devig-calculator
 Allow: /parlay-builder
 Allow: /odds-comparison
+Allow: /blog
 Allow: /blog/best-sports-betting-picks
 Allow: /blog/ai-sports-betting
 Allow: /blog/sports-betting-strategy
-
+Allow: /nfl-picks
+Allow: /nba-picks
+Allow: /mlb-picks
+Allow: /nhl-picks
+Allow: /ncaaf-picks
+Allow: /ncaab-picks
+Allow: /mma-picks
+Allow: /soccer-picks
+Allow: /daily-picks
+Allow: /odds/nfl
+Allow: /odds/nba
+Allow: /odds/mlb
+Allow: /odds/nhl
 Disallow: /dashboard
 Disallow: /admin
 Disallow: /api/
 Disallow: /payment/
+Disallow: /account-settings
+Disallow: /subscription-management
+
+# AI Crawlers — welcome
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
 
 Sitemap: https://chalkpicks.live/sitemap.xml

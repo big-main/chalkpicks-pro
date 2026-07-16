@@ -1,6 +1,33 @@
 import { invokeLLM } from "./_core/llm";
 import nodemailer from "nodemailer";
 
+// ─── Resend HTTP API helper (no SDK needed) ───────────────────────────────────
+async function sendViaResend(to: string, subject: string, html: string): Promise<boolean> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return false;
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        from: process.env.SMTP_FROM || "ChalkPicks Pro <noreply@chalkpicks.live>",
+        to: [to],
+        subject,
+        html,
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("[Email/Resend] Error:", err);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error("[Email/Resend] Fetch failed:", e);
+    return false;
+  }
+}
+
 export interface EmailPayload {
   to: string;
   subject: string;
@@ -60,7 +87,12 @@ export async function sendEmail(payload: EmailPayload): Promise<boolean> {
 
     console.log(`[Email] Sending ${type} to ${to}`);
 
-    // Send via SMTP if credentials are configured
+    // Priority: Resend API → SMTP → log-only fallback
+    if (process.env.RESEND_API_KEY) {
+      const sent = await sendViaResend(to, subject, htmlContent);
+      if (!sent) console.warn("[Email] Resend failed, falling back to SMTP");
+      else { console.log(`[Email] Sent via Resend: ${subject} → ${to}`); return true; }
+    }
     if (process.env.SMTP_USER && process.env.SMTP_PASS) {
       await transporter.sendMail({
         from: `"ChalkPicks Pro" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
@@ -68,9 +100,10 @@ export async function sendEmail(payload: EmailPayload): Promise<boolean> {
         subject,
         html: htmlContent,
       });
+      console.log(`[Email] Sent via SMTP: ${subject} → ${to}`);
     } else {
-      // Dev fallback: log content
-      console.log(`[Email] SMTP not configured — logged only. Subject: ${subject}`);
+      // Dev fallback: log content only
+      console.log(`[Email] No email provider configured — logged only. Subject: ${subject} → ${to}`);
     }
 
     return true;

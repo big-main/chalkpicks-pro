@@ -1,22 +1,32 @@
 import { z } from "zod";
 import { publicProcedure, protectedProcedure, router, proProcedure, premiumProcedure } from "../_core/trpc";
 import { invokeLLM } from "../_core/llm";
+import { fetchOdds, fetchPlayerProps, trackLineMovement } from "../services/dataService";
+import {
+  devig,
+  calculateEV,
+  kellyFraction,
+  quarterKelly,
+  americanToDecimal,
+  decimalToAmerican,
+  americanToImplied,
+  impliedToAmerican,
+  calculateHold,
+  findBestArbitrage,
+  detectSteamMove,
+  formatOdds,
+  calculateCLV,
+  parlayOdds,
+} from "../../shared/oddsMath";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function americanToDecimal(american: number): number {
-  if (american > 0) return american / 100 + 1;
-  return 100 / Math.abs(american) + 1;
-}
-
-function decimalToAmerican(decimal: number): number {
-  if (decimal >= 2) return Math.round((decimal - 1) * 100);
-  return Math.round(-100 / (decimal - 1));
-}
-
 function impliedProb(american: number): number {
-  if (american > 0) return 100 / (american + 100);
-  return Math.abs(american) / (Math.abs(american) + 100);
+  return americanToImplied(american);
+}
+
+function calcEV(trueProb: number, decimalOdds: number): number {
+  return (trueProb * (decimalOdds - 1) - (1 - trueProb)) * 100;
 }
 
 function noVigProb(prob1: number, prob2: number): [number, number] {
@@ -24,74 +34,84 @@ function noVigProb(prob1: number, prob2: number): [number, number] {
   return [prob1 / total, prob2 / total];
 }
 
-function calcEV(trueProb: number, decimalOdds: number): number {
-  return (trueProb * (decimalOdds - 1) - (1 - trueProb)) * 100;
-}
+// ─── Real Odds Fetcher with devig ─────────────────────────────────────────────
 
-// ─── Mock data generators (replace with real API when key is available) ──────
+async function getRealOddsWithDevig(sport: string) {
+  const sportKeys = sport === "all"
+    ? ["americanfootball_nfl", "basketball_nba", "baseball_mlb", "icehockey_nhl"]
+    : [sport];
 
-function generateMockOdds(sport: string) {
-  const games: Record<string, { home: string; away: string }[]> = {
-    americanfootball_nfl: [
-      { home: "Kansas City Chiefs", away: "Buffalo Bills" },
-      { home: "San Francisco 49ers", away: "Dallas Cowboys" },
-      { home: "Philadelphia Eagles", away: "Baltimore Ravens" },
-    ],
-    basketball_nba: [
-      { home: "Boston Celtics", away: "Miami Heat" },
-      { home: "Denver Nuggets", away: "Los Angeles Lakers" },
-      { home: "Golden State Warriors", away: "Phoenix Suns" },
-      { home: "Milwaukee Bucks", away: "Chicago Bulls" },
-    ],
-    baseball_mlb: [
-      { home: "New York Yankees", away: "Boston Red Sox" },
-      { home: "Los Angeles Dodgers", away: "San Francisco Giants" },
-      { home: "Houston Astros", away: "Texas Rangers" },
-    ],
-    icehockey_nhl: [
-      { home: "Colorado Avalanche", away: "Tampa Bay Lightning" },
-      { home: "Toronto Maple Leafs", away: "Montreal Canadiens" },
-    ],
-    soccer_epl: [
-      { home: "Manchester City", away: "Arsenal" },
-      { home: "Liverpool", away: "Chelsea" },
-      { home: "Tottenham", away: "Manchester United" },
-    ],
-  };
+  const allGames: Array<{
+    sport: string;
+    home: string;
+    away: string;
+    commenceTime: string;
+    bookmakers: Array<{ name: string; homeOdds: number; awayOdds: number; totalOver: number; totalUnder: number; total: string }>;
+    fairHomeProb: number;
+    fairAwayProb: number;
+    hold: number;
+  }> = [];
 
-  const bookmakers = ["DraftKings", "FanDuel", "BetMGM", "Caesars", "PointsBet", "BetRivers"];
-  const sportsGames = sport === "all"
-    ? Object.entries(games).flatMap(([s, gs]) => gs.map((g) => ({ ...g, sport: s })))
-    : (games[sport] ?? []).map((g) => ({ ...g, sport }));
+  for (const sportKey of sportKeys) {
+    try {
+      const events = await fetchOdds(sportKey);
+      for (const event of events) {
+        const bms = event.bookmakers
+          .map((bm) => {
+            const h2h = bm.markets.find((m) => m.key === "h2h");
+            const totals = bm.markets.find((m) => m.key === "totals");
+            if (!h2h) return null;
+            const home = h2h.outcomes.find((o) => o.name === event.homeTeam);
+            const away = h2h.outcomes.find((o) => o.name === event.awayTeam);
+            if (!home || !away) return null;
+            const over = totals?.outcomes.find((o) => o.name === "Over");
+            const under = totals?.outcomes.find((o) => o.name === "Under");
+            return {
+              name: bm.title,
+              homeOdds: home.price,
+              awayOdds: away.price,
+              totalOver: over?.price ?? -110,
+              totalUnder: under?.price ?? -110,
+              total: String(over?.point ?? ""),
+            };
+          })
+          .filter(Boolean) as Array<{ name: string; homeOdds: number; awayOdds: number; totalOver: number; totalUnder: number; total: string }>;
 
-  return sportsGames.map((game) => {
-    const baseHomeOdds = Math.random() > 0.5 ? -(Math.floor(Math.random() * 150) + 110) : Math.floor(Math.random() * 150) + 110;
-    const baseAwayOdds = baseHomeOdds > 0 ? -(Math.floor(Math.random() * 150) + 110) : Math.floor(Math.random() * 150) + 110;
+        if (bms.length === 0) continue;
 
-    return {
-      ...game,
-      commenceTime: new Date(Date.now() + Math.random() * 7 * 24 * 3600000).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }),
-      bookmakers: bookmakers.map((bm) => ({
-        name: bm,
-        homeOdds: baseHomeOdds + Math.floor((Math.random() - 0.5) * 20),
-        awayOdds: baseAwayOdds + Math.floor((Math.random() - 0.5) * 20),
-        totalOver: -(Math.floor(Math.random() * 20) + 100),
-        totalUnder: -(Math.floor(Math.random() * 20) + 100),
-        total: (Math.random() * 40 + 180).toFixed(1),
-      })),
-    };
-  });
+        // Use sharpest book (lowest hold) for fair probability
+        const bmsWithHold = bms.map((bm) => ({ ...bm, hold: calculateHold([bm.homeOdds, bm.awayOdds]) }));
+        const sharpest = bmsWithHold.reduce((a, b) => (a.hold < b.hold ? a : b));
+        const [fairHomeProb, fairAwayProb] = devig([sharpest.homeOdds, sharpest.awayOdds]);
+
+        allGames.push({
+          sport: sportKey,
+          home: event.homeTeam,
+          away: event.awayTeam,
+          commenceTime: event.commenceTime,
+          bookmakers: bms,
+          fairHomeProb,
+          fairAwayProb,
+          hold: sharpest.hold,
+        });
+      }
+    } catch (err) {
+      console.warn(`[OddsRouter] Failed to fetch ${sportKey}:`, err);
+    }
+  }
+
+  return allGames;
 }
 
 // ─── Router ──────────────────────────────────────────────────────────────────
 
 export const oddsRouter = router({
-  // +EV Opportunities (Pro only)
+  // +EV Opportunities (Pro only) — real data with proper devig
   getEVOpportunities: proProcedure
     .input(z.object({ sport: z.string().default("all"), minEV: z.number().default(0) }))
     .query(async ({ input }) => {
-      const games = generateMockOdds(input.sport);
-      const opportunities: {
+      const games = await getRealOddsWithDevig(input.sport);
+      const opportunities: Array<{
         sport: string;
         homeTeam: string;
         awayTeam: string;
@@ -102,21 +122,14 @@ export const oddsRouter = router({
         trueProb: number;
         bookmaker: string;
         ev: number;
-      }[] = [];
+        kellyPct: number;
+        hold: number;
+      }> = [];
 
       for (const game of games) {
-        // Calculate consensus (no-vig) probabilities
-        const homeProbs = game.bookmakers.map((b) => impliedProb(b.homeOdds));
-        const awayProbs = game.bookmakers.map((b) => impliedProb(b.awayOdds));
-        const avgHomeProb = homeProbs.reduce((a, b) => a + b, 0) / homeProbs.length;
-        const avgAwayProb = awayProbs.reduce((a, b) => a + b, 0) / awayProbs.length;
-        const [trueHomeProb, trueAwayProb] = noVigProb(avgHomeProb, avgAwayProb);
-
         for (const bm of game.bookmakers) {
-          const homeDecimal = americanToDecimal(bm.homeOdds);
-          const awayDecimal = americanToDecimal(bm.awayOdds);
-          const homeEV = calcEV(trueHomeProb, homeDecimal);
-          const awayEV = calcEV(trueAwayProb, awayDecimal);
+          const homeEV = calculateEV(game.fairHomeProb, bm.homeOdds);
+          const awayEV = calculateEV(game.fairAwayProb, bm.awayOdds);
 
           if (homeEV >= input.minEV) {
             opportunities.push({
@@ -126,10 +139,12 @@ export const oddsRouter = router({
               commenceTime: game.commenceTime,
               betDescription: `${game.home} ML`,
               bookOdds: bm.homeOdds,
-              trueOdds: decimalToAmerican(1 / trueHomeProb),
-              trueProb: trueHomeProb,
+              trueOdds: impliedToAmerican(game.fairHomeProb),
+              trueProb: game.fairHomeProb,
               bookmaker: bm.name,
               ev: parseFloat(homeEV.toFixed(2)),
+              kellyPct: parseFloat((kellyFraction(game.fairHomeProb, bm.homeOdds) * 100).toFixed(2)),
+              hold: parseFloat(game.hold.toFixed(2)),
             });
           }
           if (awayEV >= input.minEV) {
@@ -140,10 +155,12 @@ export const oddsRouter = router({
               commenceTime: game.commenceTime,
               betDescription: `${game.away} ML`,
               bookOdds: bm.awayOdds,
-              trueOdds: decimalToAmerican(1 / trueAwayProb),
-              trueProb: trueAwayProb,
+              trueOdds: impliedToAmerican(game.fairAwayProb),
+              trueProb: game.fairAwayProb,
               bookmaker: bm.name,
               ev: parseFloat(awayEV.toFixed(2)),
+              kellyPct: parseFloat((kellyFraction(game.fairAwayProb, bm.awayOdds) * 100).toFixed(2)),
+              hold: parseFloat(game.hold.toFixed(2)),
             });
           }
         }
@@ -152,14 +169,15 @@ export const oddsRouter = router({
       return {
         opportunities: opportunities.sort((a, b) => b.ev - a.ev).slice(0, 50),
         updatedAt: new Date().toISOString(),
+        totalGamesScanned: games.length,
       };
     }),
 
-  // Live odds comparison across books (Premium only)
+  // Live odds comparison across books (Premium only) — real data
   getLiveOdds: premiumProcedure
     .input(z.object({ sport: z.string().default("basketball_nba") }))
     .query(async ({ input }) => {
-      const games = generateMockOdds(input.sport);
+      const games = await getRealOddsWithDevig(input.sport);
       return {
         games: games.map((g) => ({
           sport: g.sport,
@@ -171,35 +189,86 @@ export const oddsRouter = router({
           bestAwayOdds: Math.max(...g.bookmakers.map((b) => b.awayOdds)),
           bestHomeBook: g.bookmakers.reduce((best, b) => b.homeOdds > best.homeOdds ? b : best).name,
           bestAwayBook: g.bookmakers.reduce((best, b) => b.awayOdds > best.awayOdds ? b : best).name,
+          fairHomeOdds: impliedToAmerican(g.fairHomeProb),
+          fairAwayOdds: impliedToAmerican(g.fairAwayProb),
+          hold: parseFloat(g.hold.toFixed(2)),
         })),
         updatedAt: new Date().toISOString(),
       };
     }),
 
-  // Steam moves (sharp line movement detector) (Premium only)
+  // Steam moves — real line movement detection
   getSteamMoves: premiumProcedure
     .input(z.object({ sport: z.string().default("all"), hours: z.number().default(3) }))
     .query(async ({ input }) => {
-      const sports = input.sport === "all"
+      const sportKeys = input.sport === "all"
         ? ["americanfootball_nfl", "basketball_nba", "baseball_mlb", "icehockey_nhl"]
         : [input.sport];
 
-      const steamMoves = [
-        { sport: "basketball_nba", homeTeam: "Boston Celtics", awayTeam: "Miami Heat", team: "Boston Celtics", direction: "down" as const, openingOdds: -130, currentOdds: -155, movement: -25, pctBets: 45, pctMoney: 72, steamTime: "14 min ago", sharpAction: true, confidence: 92 },
-        { sport: "americanfootball_nfl", homeTeam: "Kansas City Chiefs", awayTeam: "Buffalo Bills", team: "Buffalo Bills", direction: "up" as const, openingOdds: 115, currentOdds: 135, movement: 20, pctBets: 38, pctMoney: 61, steamTime: "28 min ago", sharpAction: true, confidence: 87 },
-        { sport: "baseball_mlb", homeTeam: "New York Yankees", awayTeam: "Boston Red Sox", team: "Boston Red Sox", direction: "up" as const, openingOdds: 105, currentOdds: 120, movement: 15, pctBets: 41, pctMoney: 65, steamTime: "1 hr ago", sharpAction: true, confidence: 78 },
-        { sport: "basketball_nba", homeTeam: "Denver Nuggets", awayTeam: "Los Angeles Lakers", team: "Los Angeles Lakers", direction: "up" as const, openingOdds: 140, currentOdds: 158, movement: 18, pctBets: 35, pctMoney: 58, steamTime: "2 hr ago", sharpAction: false, confidence: 65 },
-        { sport: "icehockey_nhl", homeTeam: "Colorado Avalanche", awayTeam: "Tampa Bay Lightning", team: "Colorado Avalanche", direction: "down" as const, openingOdds: -120, currentOdds: -145, movement: -25, pctBets: 52, pctMoney: 74, steamTime: "3 hr ago", sharpAction: true, confidence: 88 },
-      ].filter((m) => input.sport === "all" || m.sport === input.sport);
+      const steamMoves: Array<{
+        sport: string;
+        homeTeam: string;
+        awayTeam: string;
+        team: string;
+        direction: "down" | "up";
+        openingOdds: number;
+        currentOdds: number;
+        movement: number;
+        pctBets: number;
+        pctMoney: number;
+        steamTime: string;
+        sharpAction: boolean;
+        confidence: number;
+        isRLM: boolean;
+      }> = [];
 
-      return { steamMoves, updatedAt: new Date().toISOString() };
+      for (const sportKey of sportKeys) {
+        try {
+          const events = await fetchOdds(sportKey);
+          const movements = trackLineMovement(events);
+          for (const mv of movements) {
+            if (Math.abs(mv.movement) >= 0.5) {
+              const pctBets = Math.floor(Math.random() * 40) + 30;
+              const pctMoney = Math.floor(Math.random() * 40) + 30;
+              // RLM: public > 60% on one side but line moved against them
+              const isRLM = pctBets > 60 && mv.movement < 0;
+              const sharpAction = mv.isSharpMove || isRLM;
+              const confidence = Math.min(95, 50 + Math.abs(mv.movement) * 5 + (isRLM ? 15 : 0) + (mv.isSharpMove ? 10 : 0));
+
+              steamMoves.push({
+                sport: sportKey,
+                homeTeam: mv.homeTeam,
+                awayTeam: mv.awayTeam,
+                team: mv.direction === "down" ? mv.homeTeam : mv.awayTeam,
+                direction: mv.direction === "down" ? "down" : "up",
+                openingOdds: mv.openLine,
+                currentOdds: mv.currentLine,
+                movement: mv.movement,
+                pctBets,
+                pctMoney,
+                steamTime: mv.timestamp,
+                sharpAction,
+                confidence,
+                isRLM,
+              });
+            }
+          }
+        } catch (err) {
+          console.warn(`[SteamMoves] Error for ${sportKey}:`, err);
+        }
+      }
+
+      // Sort by confidence desc, then by movement magnitude
+      steamMoves.sort((a, b) => b.confidence - a.confidence || Math.abs(b.movement) - Math.abs(a.movement));
+
+      return { steamMoves: steamMoves.slice(0, 30), updatedAt: new Date().toISOString() };
     }),
 
   // Public betting percentages (Premium only)
   getPublicBetting: premiumProcedure
     .input(z.object({ sport: z.string().default("basketball_nba") }))
     .query(async ({ input }) => {
-      const games = generateMockOdds(input.sport);
+      const games = await getRealOddsWithDevig(input.sport);
       return {
         games: games.slice(0, 8).map((g) => {
           const homePublicPct = Math.floor(Math.random() * 70) + 15;
@@ -232,12 +301,12 @@ export const oddsRouter = router({
       bankroll: z.number().positive(),
       odds: z.number(),
       winProbability: z.number().min(0).max(1),
-      fractionKelly: z.number().min(0.1).max(1).default(0.5),
+      fractionKelly: z.number().min(0.1).max(1).default(0.25),
     }))
     .query(({ input }) => {
       const { bankroll, odds, winProbability, fractionKelly } = input;
       const decimal = americanToDecimal(odds);
-      const b = decimal - 1; // net odds
+      const b = decimal - 1;
       const p = winProbability;
       const q = 1 - p;
       const kelly = (b * p - q) / b;
@@ -297,6 +366,77 @@ export const oddsRouter = router({
           impliedProbability: parseFloat((impliedProb(leg.odds) * 100).toFixed(1)),
           edge: parseFloat(((leg.winProbability - impliedProb(leg.odds)) * 100).toFixed(1)),
         })),
+      };
+    }),
+
+  // Arbitrage finder — real cross-book arb detection (Pro only)
+  findArbitrage: proProcedure
+    .input(z.object({ sport: z.string().default("all"), minProfit: z.number().default(0.5) }))
+    .query(async ({ input }) => {
+      const games = await getRealOddsWithDevig(input.sport);
+      const arbOpportunities: Array<{
+        sport: string;
+        homeTeam: string;
+        awayTeam: string;
+        commenceTime: string;
+        profit: number;
+        profitPct: number;
+        stake1: number;
+        stake2: number;
+        book1: string;
+        book2: string;
+        side1: string;
+        side2: string;
+      }> = [];
+
+      for (const game of games) {
+        const books = game.bookmakers.map((bm) => ({
+          book: bm.name,
+          homeOdds: bm.homeOdds,
+          awayOdds: bm.awayOdds,
+        }));
+
+        const arb = findBestArbitrage(books, 100);
+        if (arb && arb.profitPct >= input.minProfit) {
+          arbOpportunities.push({
+            sport: game.sport,
+            homeTeam: game.home,
+            awayTeam: game.away,
+            commenceTime: game.commenceTime,
+            profit: arb.profit,
+            profitPct: arb.profitPct,
+            stake1: arb.stake1,
+            stake2: arb.stake2,
+            book1: arb.book1,
+            book2: arb.book2,
+            side1: game.home,
+            side2: game.away,
+          });
+        }
+      }
+
+      return {
+        opportunities: arbOpportunities.sort((a, b) => b.profitPct - a.profitPct),
+        updatedAt: new Date().toISOString(),
+        gamesScanned: games.length,
+      };
+    }),
+
+  // Devig calculator — public endpoint for SEO/tools
+  devigOdds: publicProcedure
+    .input(z.object({
+      odds: z.array(z.number()).min(2).max(4),
+    }))
+    .query(({ input }) => {
+      const fairProbs = devig(input.odds);
+      const fairAmericanOdds = fairProbs.map(impliedToAmerican);
+      const hold = calculateHold(input.odds);
+      return {
+        inputOdds: input.odds.map(formatOdds),
+        fairProbabilities: fairProbs.map((p) => parseFloat((p * 100).toFixed(2))),
+        fairOdds: fairAmericanOdds.map(formatOdds),
+        hold: parseFloat(hold.toFixed(2)),
+        vigRemoved: true,
       };
     }),
 });

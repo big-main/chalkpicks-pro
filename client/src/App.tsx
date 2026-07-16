@@ -83,6 +83,10 @@ const BlogManagement = lazy(() => import("@/pages/BlogManagement"));
 const Blog = lazy(() => import("@/pages/Blog"));
 const MediaPartners = lazy(() => import("@/pages/MediaPartners"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
+const SportPicks = lazy(() => import("@/pages/SportPicks"));
+const OddsPage = lazy(() => import("@/pages/OddsPage"));
+const DevigCalculator = lazy(() => import("@/pages/DevigCalculator"));
+const DFSOptimizer = lazy(() => import("@/pages/DFSOptimizer"));
 
 function PageLoader() {
   return (
@@ -170,6 +174,20 @@ function Router() {
           <Route path="/tools/parlay-calculator" component={ParlayCalculator} />
           <Route path="/admin/blog" component={BlogManagement} />
           <Route path="/partners" component={MediaPartners} />
+          <Route path="/nfl-picks" component={SportPicks} />
+          <Route path="/nba-picks" component={SportPicks} />
+          <Route path="/mlb-picks" component={SportPicks} />
+          <Route path="/nhl-picks" component={SportPicks} />
+          <Route path="/ncaaf-picks" component={SportPicks} />
+          <Route path="/ncaab-picks" component={SportPicks} />
+          <Route path="/mma-picks" component={SportPicks} />
+          <Route path="/soccer-picks" component={SportPicks} />
+          <Route path="/odds/nfl" component={OddsPage} />
+          <Route path="/odds/nba" component={OddsPage} />
+          <Route path="/odds/mlb" component={OddsPage} />
+          <Route path="/odds/nhl" component={OddsPage} />
+          <Route path="/tools/devig-calculator" component={DevigCalculator} />
+          <Route path="/dfs-optimizer" component={DFSOptimizer} />
           <Route path="/blog" component={Blog} />
           <Route path="/blog/best-sports-betting-picks" component={BlogBestPicks} />
           <Route path="/blog/ai-sports-betting" component={BlogAISportsBetting} />

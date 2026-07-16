@@ -1,9 +1,119 @@
-import { useState } from "react";
-import React from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
-import { Check, Zap, Crown, Star, Shield, Lock, Tag, Loader2, ArrowRight } from "lucide-react";
+import NeonCard from "@/components/NeonCard";
+import { Check, Zap, Crown, Star, Shield, Lock, Tag, Loader2, ArrowRight, Sparkles, Gift, Percent, Clock } from "lucide-react";
+
+// ─── Countdown timer hook ─────────────────────────────────────────────────────
+
+function useCountdown() {
+  // Offer expires 72 hours from the user's first visit (stored in localStorage)
+  const [endTime] = useState(() => {
+    const stored = localStorage.getItem("chalk15_expires");
+    if (stored) return parseInt(stored);
+    const expires = Date.now() + 72 * 60 * 60 * 1000; // 72 hours
+    localStorage.setItem("chalk15_expires", expires.toString());
+    return expires;
+  });
+
+  const [timeLeft, setTimeLeft] = useState(() => Math.max(0, endTime - Date.now()));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const remaining = Math.max(0, endTime - Date.now());
+      setTimeLeft(remaining);
+      if (remaining <= 0) clearInterval(interval);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [endTime]);
+
+  const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+  return { hours, minutes, seconds, expired: timeLeft <= 0 };
+}
+
+// ─── Promo Banner with Countdown ─────────────────────────────────────────────
+
+function PromoBanner({ onApply }: { onApply: () => void }) {
+  const { hours, minutes, seconds, expired } = useCountdown();
+
+  if (expired) return null;
+
+  const pad = (n: number) => n.toString().padStart(2, "0");
+
+  return (
+    <div className="relative mb-4 overflow-hidden rounded-xl"
+      style={{
+        background: "linear-gradient(135deg, rgba(57,255,20,0.06) 0%, rgba(212,160,23,0.06) 100%)",
+        border: "1px solid rgba(57,255,20,0.15)",
+      }}
+    >
+      {/* Animated shimmer */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -inset-full animate-[shimmer_3s_ease-in-out_infinite]"
+          style={{ background: "linear-gradient(90deg, transparent 0%, rgba(57,255,20,0.03) 50%, transparent 100%)" }}
+        />
+      </div>
+
+      <div className="relative px-6 py-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 flex items-center justify-center rounded-xl"
+              style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.2)" }}
+            >
+              <Gift className="w-5 h-5 text-brand-green" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-white">Limited Time Offer</span>
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-green/10 text-brand-green border border-brand-green/20">
+                  15% OFF
+                </span>
+              </div>
+              <p className="text-xs text-white/50 mt-0.5">
+                Use code <span className="font-mono font-bold text-brand-green">CHALK15</span> at checkout for 15% off any plan
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onApply}
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg transition-all hover:scale-105"
+            style={{
+              background: "rgba(57,255,20,0.08)",
+              border: "1px solid rgba(57,255,20,0.25)",
+              color: "#39ff14",
+            }}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            Apply Code
+          </button>
+        </div>
+
+        {/* Countdown timer */}
+        <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <Clock className="w-3.5 h-3.5 text-brand-gold" />
+          <span className="text-xs text-white/50">Offer expires in:</span>
+          <div className="flex items-center gap-1">
+            <span className="px-1.5 py-0.5 text-xs font-mono font-bold rounded bg-white/5 text-brand-green border border-white/10">
+              {pad(hours)}
+            </span>
+            <span className="text-white/30 text-xs">:</span>
+            <span className="px-1.5 py-0.5 text-xs font-mono font-bold rounded bg-white/5 text-brand-green border border-white/10">
+              {pad(minutes)}
+            </span>
+            <span className="text-white/30 text-xs">:</span>
+            <span className="px-1.5 py-0.5 text-xs font-mono font-bold rounded bg-white/5 text-brand-green border border-white/10">
+              {pad(seconds)}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ─── Plan meta ────────────────────────────────────────────────────────────────
 
@@ -14,9 +124,9 @@ const PLAN_META: Record<string, {
   badge?: string;
   popular?: boolean;
 }> = {
-  daily:   { icon: Zap,   color: "#00d4ff", glow: "rgba(0,212,255,0.25)",   badge: "Try it out" },
-  monthly: { icon: Crown, color: "#00ff88", glow: "rgba(0,255,136,0.25)",   badge: "Most Popular", popular: true },
-  yearly:  { icon: Star,  color: "#a855f7", glow: "rgba(168,85,247,0.25)",  badge: "Best Value" },
+  daily:   { icon: Zap,   color: "#f0b800", glow: "rgba(212,160,23,0.25)",   badge: "Try it out" },
+  monthly: { icon: Crown, color: "#39ff14", glow: "rgba(57,255,20,0.25)",   badge: "Most Popular", popular: true },
+  yearly:  { icon: Star,  color: "#d4a017", glow: "rgba(212,160,23,0.25)",  badge: "Best Value" },
 };
 
 // ─── Detailed feature comparison ───────────────────────────────────────────────
@@ -69,53 +179,10 @@ const FEATURE_CATEGORIES = [
   },
 ];
 
-// ─── Feature comparison (legacy format for table) ───────────────────────────────
-
-const FEATURE_ROWS = [
-  { feature: "AI-generated picks (daily)",     daily: true,  monthly: true,  yearly: true  },
-  { feature: "Confidence & edge scores",        daily: true,  monthly: true,  yearly: true  },
-  { feature: "Live stats & player data",        daily: true,  monthly: true,  yearly: true  },
-  { feature: "+EV Finder access",               daily: false, monthly: true,  yearly: true  },
-  { feature: "Steam move detector",             daily: false, monthly: true,  yearly: true  },
-  { feature: "Kelly Criterion tool",            daily: false, monthly: true,  yearly: true  },
-  { feature: "Parlay optimizer",                daily: false, monthly: true,  yearly: true  },
-  { feature: "Backtesting engine",              daily: false, monthly: true,  yearly: true  },
-  { feature: "Bet tracker & analytics",         daily: false, monthly: true,  yearly: true  },
-  { feature: "Leaderboard access",              daily: true,  monthly: true,  yearly: true  },
-  { feature: "Email pick alerts",               daily: false, monthly: true,  yearly: true  },
-  { feature: "Advanced backtesting",            daily: false, monthly: false, yearly: true  },
-  { feature: "Custom AI pick generation",       daily: false, monthly: false, yearly: true  },
-  { feature: "VIP Discord access",              daily: false, monthly: false, yearly: true  },
-  { feature: "1-on-1 strategy sessions",        daily: false, monthly: false, yearly: true  },
-  { feature: "Priority support",                daily: false, monthly: false, yearly: true  },
-];
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const NeonCard = ({
-  children, className = "", style = {},
-}: {
-  children: React.ReactNode; className?: string; style?: React.CSSProperties;
-}) => (
-  <div
-    className={className}
-    style={{
-      background: "rgba(12, 12, 28, 0.9)",
-      border: "1px solid rgba(0, 255, 136, 0.12)",
-      borderRadius: "8px",
-      backdropFilter: "blur(12px)",
-      transition: "all 0.25s",
-      ...style,
-    }}
-  >
-    {children}
-  </div>
-);
-
 function CheckMark({ value, color }: { value: boolean; color: string }) {
   return value
     ? <div className="flex justify-center"><Check className="w-4 h-4" style={{ color }} /></div>
-    : <div className="flex justify-center"><span style={{ color: "rgba(100,100,130,0.4)", fontSize: "1rem" }}>—</span></div>;
+    : <div className="flex justify-center"><span className="text-white/20">—</span></div>;
 }
 
 // ─── Main page ────────────────────────────────────────────────────────────────
@@ -146,14 +213,13 @@ export default function Pricing() {
     }
   );
 
-  // Handle promo validation result
   React.useEffect(() => {
     if (!promoValidating) return;
     if (promoResult) {
       setPromoApplied(true);
       setPromoError("");
       setPromoDiscount(promoResult.discount ?? 0);
-      setPromoDiscountType("percentage");
+      setPromoDiscountType((promoResult.discountType as "percentage" | "fixed") ?? "percentage");
       setPromoValidating(false);
     }
   }, [promoResult, promoValidating]);
@@ -190,7 +256,9 @@ export default function Pricing() {
 
   const handleSubscribe = (tier: "daily" | "monthly" | "yearly") => {
     if (!isAuthenticated) {
-      window.location.href = "/login";
+      // Send new visitors to sign up, then bring them straight back to pricing
+      // so they don't lose their place in the checkout funnel.
+      window.location.href = "/signup?redirect=/pricing";
       return;
     }
     setLoadingTier(tier);
@@ -209,15 +277,14 @@ export default function Pricing() {
     return Math.max(0, amountCents - Math.round(promoDiscount * 100));
   };
 
-  // Build ordered plan list from server data or fallback defaults
   const planOrder: Array<"daily" | "monthly" | "yearly"> = ["daily", "monthly", "yearly"];
   const plans = planOrder.map((key) => {
     const p = plansData?.[key];
     if (p) return { key, ...p };
     const defaults = {
-      daily:   { name: "Daily Pass",    amountCents: 999,   description: "Full access for 24 hours",          features: ["All premium picks today", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"] },
-      monthly: { name: "Monthly Pro",   amountCents: 2999,  description: "Best value for serious bettors",    features: ["All premium picks daily", "AI picks generator", "Backtesting engine", "Bet tracker & analytics", "Leaderboard access", "Priority email support", "Daily pick alerts"] },
-      yearly:  { name: "Annual Elite",  amountCents: 19999, description: "Maximum savings for pros",          features: ["Everything in Monthly", "Early access to new features", "Advanced backtesting", "Custom AI pick generation", "VIP Discord access", "1-on-1 strategy sessions"] },
+      daily:   { name: "Basic",    amountCents: 999,   interval: "month", description: "Essential picks for casual bettors",  features: ["All premium picks daily", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"] },
+      monthly: { name: "Pro",      amountCents: 1999,  interval: "month", description: "Best value for serious bettors",    features: ["All premium picks daily", "AI picks generator", "Backtesting engine", "Bet tracker & analytics", "Leaderboard access", "Priority email support", "Daily pick alerts"] },
+      yearly:  { name: "Elite",    amountCents: 5999,  interval: "year",  description: "Maximum savings for pros",          features: ["Everything in Pro", "Early access to new features", "Advanced backtesting", "Custom AI pick generation", "VIP Discord access", "1-on-1 strategy sessions"] },
     };
     return { key, ...defaults[key] };
   });
@@ -226,59 +293,38 @@ export default function Pricing() {
   const isActive = mySubscription?.isActive ?? false;
 
   return (
-    <div className="min-h-screen" style={{ background: "#080814", color: "#e8e8f0" }}>
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      {/* Background grid */}
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(0,255,136,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,255,136,0.025) 1px, transparent 1px)
-          `,
-          backgroundSize: "40px 40px",
-          zIndex: 0,
-        }}
-      />
+      {/* Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute inset-0 cyber-grid-bg opacity-30" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[50vh] bg-[radial-gradient(ellipse,rgba(57,255,20,0.04)_0%,transparent_60%)]" />
+      </div>
 
-      <div className="relative z-10 container pt-24 pb-20">
+      <div className="relative z-10 container pt-28 pb-20">
 
         {/* Header */}
-        <div className="text-center mb-14">
-          <div
-            className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-bold tracking-widest"
-            style={{ background: "rgba(0,255,136,0.08)", border: "1px solid rgba(0,255,136,0.25)", borderRadius: "4px", color: "#00ff88" }}
-          >
-            <Shield className="w-3 h-3" /> SECURE CHECKOUT · CANCEL ANYTIME
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-5 rounded-full glass-card-static text-xs font-semibold">
+            <Shield className="w-3.5 h-3.5 text-brand-green" />
+            <span className="text-white/60">Secure Checkout · Cancel Anytime</span>
           </div>
-          <h1
-            style={{
-              fontFamily: "'Rajdhani', sans-serif",
-              fontWeight: 700,
-              fontSize: "clamp(2rem, 5vw, 3.5rem)",
-              textTransform: "uppercase",
-              color: "white",
-              lineHeight: 1.1,
-            }}
-          >
-            PICK YOUR{" "}
-            <span style={{ color: "#00ff88", textShadow: "0 0 20px rgba(0,255,136,0.5)" }}>EDGE</span>
+          <h1 className="font-display text-white leading-tight" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}>
+            Pick Your{" "}
+            <span className="text-emerald-gradient">Edge</span>
           </h1>
-          <p className="mt-3 text-base max-w-xl mx-auto" style={{ color: "rgba(180,180,210,0.65)" }}>
+          <p className="mt-4 text-lg max-w-xl mx-auto text-white/45">
             Join thousands of sharp bettors using AI-powered analytics, real-time odds, and professional tools to beat the books.
           </p>
 
           {/* Active subscription banner */}
           {isAuthenticated && isActive && (
-            <div
-              className="inline-flex items-center gap-2 mt-5 px-4 py-2 text-sm font-bold"
-              style={{ background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.3)", borderRadius: "6px", color: "#00ff88" }}
-            >
+            <div className="inline-flex items-center gap-2 mt-6 px-4 py-2.5 rounded-full glass-card-static text-sm font-semibold text-brand-green">
               <Check className="w-4 h-4" />
               You're on the <strong>{currentTier.charAt(0).toUpperCase() + currentTier.slice(1)}</strong> plan
               {mySubscription?.expiresAt && (
-                <span style={{ color: "rgba(0,255,136,0.7)", fontWeight: 400 }}>
+                <span className="text-brand-green/60 font-normal">
                   · expires {new Date(mySubscription.expiresAt).toLocaleDateString()}
                 </span>
               )}
@@ -286,52 +332,113 @@ export default function Pricing() {
           )}
         </div>
 
-        {/* Promo code section */}
-        <div className="max-w-md mx-auto mb-10">
-          <NeonCard className="p-5" style={{ borderColor: promoApplied ? "rgba(0,255,136,0.4)" : "rgba(0,212,255,0.2)" }}>
-            <div className="flex items-center gap-2 mb-3">
-              <Tag className="w-4 h-4" style={{ color: "#00d4ff" }} />
-              <span className="text-sm font-bold tracking-wider" style={{ color: "#00d4ff", fontFamily: "'Exo 2', sans-serif" }}>
-                PROMO CODE
-              </span>
+        {/* ═══════════════════════════════════════════════════════════════════════
+            PROMO CODE SECTION — Prominent banner + input
+            ═══════════════════════════════════════════════════════════════════════ */}
+        <div className="max-w-2xl mx-auto mb-14">
+          {/* Promo banner callout with countdown */}
+          {!promoApplied && <PromoBanner onApply={() => setPromoCode("CHALK15")} />}
+
+          {/* Promo code input card */}
+          <NeonCard className="p-6" variant={promoApplied ? "premium" : "default"}>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 flex items-center justify-center rounded-lg"
+                style={{
+                  background: promoApplied ? "rgba(57,255,20,0.1)" : "rgba(212,160,23,0.08)",
+                  border: `1px solid ${promoApplied ? "rgba(57,255,20,0.25)" : "rgba(212,160,23,0.2)"}`,
+                }}
+              >
+                {promoApplied ? (
+                  <Percent className="w-4 h-4 text-brand-green" />
+                ) : (
+                  <Tag className="w-4 h-4 text-brand-gold" />
+                )}
+              </div>
+              <div>
+                <span className="text-sm font-bold text-white">
+                  {promoApplied ? "Discount Applied!" : "Have a promo code?"}
+                </span>
+                <p className="text-xs text-white/40">
+                  {promoApplied
+                    ? `${promoDiscountType === "percentage" ? `${promoDiscount}%` : `$${promoDiscount}`} off applied to all plans below`
+                    : "Enter your code below to unlock exclusive savings"
+                  }
+                </p>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={promoCode}
-                onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoApplied(false); setPromoError(""); }}
-                placeholder="Enter code (e.g. LAUNCH50)"
-                className="flex-1 px-3 py-2 text-sm rounded"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", color: "white", outline: "none" }}
-              />
+
+            <div className="flex gap-3">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={promoCode}
+                  onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoApplied(false); setPromoError(""); }}
+                  placeholder="CHALK15"
+                  className="w-full px-4 py-3 text-sm font-mono font-semibold tracking-wider rounded-xl bg-white/5 border text-white placeholder:text-white/25 outline-none transition-all"
+                  style={{
+                    borderColor: promoApplied ? "rgba(57,255,20,0.4)" : promoError ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.1)",
+                    boxShadow: promoApplied ? "0 0 20px rgba(57,255,20,0.1)" : "none",
+                  }}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleApplyPromo(); }}
+                />
+                {promoApplied && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Check className="w-5 h-5 text-brand-green" />
+                  </div>
+                )}
+              </div>
               <button
                 onClick={handleApplyPromo}
                 disabled={promoValidating || !promoCode.trim()}
-                className="px-4 py-2 text-sm font-bold rounded transition-all"
+                className="px-6 py-3 text-sm font-bold rounded-xl transition-all whitespace-nowrap"
                 style={{
-                  background: promoApplied ? "rgba(0,255,136,0.15)" : "rgba(0,212,255,0.12)",
-                  border: `1px solid ${promoApplied ? "rgba(0,255,136,0.4)" : "rgba(0,212,255,0.3)"}`,
-                  color: promoApplied ? "#00ff88" : "#00d4ff",
-                  cursor: promoValidating ? "wait" : "pointer",
-                  opacity: !promoCode.trim() ? 0.5 : 1,
+                  background: promoApplied
+                    ? "rgba(57,255,20,0.15)"
+                    : promoCode.trim()
+                      ? "linear-gradient(135deg, rgba(57,255,20,0.2) 0%, rgba(57,255,20,0.1) 100%)"
+                      : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${promoApplied ? "rgba(57,255,20,0.4)" : promoCode.trim() ? "rgba(57,255,20,0.3)" : "rgba(255,255,255,0.08)"}`,
+                  color: promoApplied ? "#39ff14" : promoCode.trim() ? "#39ff14" : "rgba(255,255,255,0.3)",
+                  cursor: promoValidating ? "wait" : !promoCode.trim() ? "not-allowed" : "pointer",
+                  boxShadow: promoApplied ? "0 0 15px rgba(57,255,20,0.15)" : "none",
                 }}
               >
-                {promoValidating ? "..." : promoApplied ? "✓ Applied" : "Apply"}
+                {promoValidating ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : promoApplied ? (
+                  <span className="flex items-center gap-1.5"><Check className="w-4 h-4" /> Applied</span>
+                ) : (
+                  "Apply"
+                )}
               </button>
             </div>
+
+            {/* Success message */}
             {promoApplied && (
-              <p className="mt-2 text-xs font-bold" style={{ color: "#00ff88" }}>
-                ✓ {promoDiscountType === "percentage" ? `${promoDiscount}% off` : `$${promoDiscount} off`} applied! Discount will be reflected at checkout.
-              </p>
+              <div className="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-lg"
+                style={{ background: "rgba(57,255,20,0.05)", border: "1px solid rgba(57,255,20,0.15)" }}
+              >
+                <Sparkles className="w-4 h-4 text-brand-green flex-shrink-0" />
+                <p className="text-xs font-semibold text-brand-green">
+                  {promoDiscountType === "percentage" ? `${promoDiscount}% off` : `$${promoDiscount} off`} all plans!
+                  Discount reflected in prices below.
+                </p>
+              </div>
             )}
+
+            {/* Error message */}
             {promoError && (
-              <p className="mt-2 text-xs" style={{ color: "#ff4d4d" }}>{promoError}</p>
+              <div className="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-lg"
+                style={{ background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.15)" }}
+              >
+                <span className="text-xs font-semibold text-red-400">{promoError}</span>
+              </div>
             )}
           </NeonCard>
         </div>
 
         {/* Pricing cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto mb-14">
           {plans.map((plan) => {
             const meta = PLAN_META[plan.key] ?? PLAN_META.monthly;
             const Icon = meta.icon;
@@ -344,11 +451,14 @@ export default function Pricing() {
             const isLoading = loadingTier === plan.key;
 
             return (
-              <div key={plan.key} className="relative flex flex-col" style={{ transform: isPopular ? "scale(1.03)" : "scale(1)" }}>
+              <div
+                key={plan.key}
+                className="relative flex flex-col"
+                style={{ transform: isPopular ? "scale(1.03)" : "scale(1)" }}
+              >
                 {isPopular && (
-                  <div
-                    className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 text-[11px] font-bold tracking-widest z-10 whitespace-nowrap"
-                    style={{ background: "#00ff88", color: "#080814", borderRadius: "20px", boxShadow: "0 0 15px rgba(0,255,136,0.5)", fontFamily: "'Exo 2', sans-serif" }}
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1.5 text-[11px] font-bold tracking-wider z-10 whitespace-nowrap rounded-full bg-brand-green text-black shadow-lg"
+                    style={{ boxShadow: "0 0 20px rgba(57,255,20,0.4)" }}
                   >
                     ★ MOST POPULAR
                   </div>
@@ -356,92 +466,96 @@ export default function Pricing() {
 
                 <NeonCard
                   className="flex flex-col flex-1 p-7"
+                  variant={isPopular ? "premium" : isCurrent ? "accent" : "default"}
+                  interactive={false}
                   style={{
-                    borderColor: isPopular ? "rgba(0,255,136,0.4)" : isCurrent ? `${meta.color}50` : "rgba(0,255,136,0.12)",
-                    boxShadow: isPopular ? `0 0 30px ${meta.glow}` : isCurrent ? `0 0 20px ${meta.glow}` : "none",
+                    boxShadow: isPopular ? `0 0 40px ${meta.glow}` : isCurrent ? `0 0 20px ${meta.glow}` : undefined,
                   }}
                 >
                   {/* Plan header */}
                   <div className="mb-6">
-                    <div className="w-10 h-10 flex items-center justify-center mb-3" style={{ background: `${meta.color}15`, border: `1px solid ${meta.color}40`, borderRadius: "6px" }}>
+                    <div
+                      className="w-11 h-11 flex items-center justify-center mb-4 rounded-xl"
+                      style={{ background: `${meta.color}0a`, border: `1px solid ${meta.color}25` }}
+                    >
                       <Icon className="w-5 h-5" style={{ color: meta.color }} />
                     </div>
-                    <div className="text-xs font-bold tracking-widest mb-1" style={{ color: meta.color, fontFamily: "'Exo 2', sans-serif" }}>
+                    <div className="text-[10px] font-bold tracking-wider mb-1.5" style={{ color: meta.color }}>
                       {meta.badge?.toUpperCase()}
                     </div>
-                    <h2 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.4rem", textTransform: "uppercase", color: "white" }}>
-                      {plan.name}
-                    </h2>
-                    <p className="text-sm mt-1" style={{ color: "rgba(160,160,190,0.65)" }}>{plan.description}</p>
+                    <h2 className="font-display text-xl text-white">{plan.name}</h2>
+                    <p className="text-sm mt-1.5 text-white/40">{plan.description}</p>
                   </div>
 
                   {/* Price */}
-                  <div className="mb-6">
-                    <div className="flex items-end gap-1">
+                  <div className="mb-7">
+                    <div className="flex items-end gap-1.5">
                       {hasDiscount && (
-                        <span className="mb-1.5 text-lg line-through" style={{ color: "rgba(140,140,170,0.5)" }}>
+                        <span className="mb-2 text-lg line-through text-white/30">
                           ${originalPrice.toFixed(2)}
                         </span>
                       )}
-                      <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "3rem", color: hasDiscount ? "#00ff88" : meta.color, textShadow: `0 0 15px ${meta.glow}`, lineHeight: 1 }}>
+                      <span
+                        className="font-display leading-none"
+                        style={{ fontSize: "3.2rem", color: hasDiscount ? "#39ff14" : meta.color }}
+                      >
                         ${finalPrice.toFixed(2)}
                       </span>
-                      <span className="mb-1.5 text-sm" style={{ color: "rgba(140,140,170,0.6)" }}>
-                        /{plan.key === "daily" ? "day" : plan.key === "monthly" ? "mo" : "yr"}
+                      <span className="mb-2 text-sm text-white/40">
+                        /{plan.key === "yearly" ? "yr" : "mo"}
                       </span>
                     </div>
                     {hasDiscount && (
-                      <div className="text-xs mt-1 font-bold" style={{ color: "#00ff88" }}>
-                        🎉 PROMO APPLIED — You save ${(originalPrice - finalPrice).toFixed(2)}!
+                      <div className="text-xs mt-1.5 font-semibold text-brand-green flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        CHALK15 APPLIED — You save ${(originalPrice - finalPrice).toFixed(2)}!
                       </div>
                     )}
                     {plan.key === "yearly" && !hasDiscount && (
-                      <div className="text-xs mt-1" style={{ color: "#a855f7" }}>= ${(originalPrice / 12).toFixed(2)}/mo · Save $16/mo vs monthly</div>
+                      <div className="text-xs mt-1.5 text-brand-gold">= ${(originalPrice / 12).toFixed(2)}/mo · Save $14/mo vs Pro</div>
                     )}
                     {plan.key === "monthly" && !hasDiscount && (
-                      <div className="text-xs mt-1" style={{ color: "rgba(140,140,170,0.5)" }}>Billed monthly · cancel anytime</div>
+                      <div className="text-xs mt-1.5 text-white/35">Billed monthly · cancel anytime</div>
                     )}
                   </div>
 
                   {/* Features */}
-                  <ul className="space-y-2.5 mb-8 flex-1">
+                  <ul className="space-y-3 mb-8 flex-1">
                     {(plan.features as string[]).map((feature, i) => (
                       <li key={i} className="flex items-start gap-2.5 text-sm">
                         <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: meta.color }} />
-                        <span style={{ color: "rgba(200,200,220,0.85)" }}>{feature}</span>
+                        <span className="text-white/70">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
-                  {/* CTA — Backend Checkout Session */}
+                  {/* CTA */}
                   {isCurrent ? (
                     <div
-                      className="w-full py-3 text-center text-sm font-bold tracking-wider"
-                      style={{ background: `${meta.color}15`, border: `1px solid ${meta.color}40`, borderRadius: "5px", color: meta.color, fontFamily: "'Exo 2', sans-serif" }}
+                      className="w-full py-3.5 text-center text-sm font-semibold rounded-xl"
+                      style={{ background: `${meta.color}0a`, border: `1px solid ${meta.color}30`, color: meta.color }}
                     >
                       ✓ CURRENT PLAN
                     </div>
                   ) : (
                     <button
-                      onClick={() => handleSubscribe(plan.key)}
+                      onClick={() => handleSubscribe(plan.key as "daily" | "monthly" | "yearly")}
                       disabled={isLoading}
-                      className="w-full py-3 text-sm font-bold tracking-wider flex items-center justify-center gap-2 transition-all"
+                      className="w-full py-3.5 text-sm font-bold flex items-center justify-center gap-2 transition-all rounded-xl hover:scale-[1.02] active:scale-[0.98]"
                       style={{
-                        background: isPopular ? meta.color : `${meta.color}18`,
-                        color: isPopular ? "#080814" : meta.color,
-                        border: `1px solid ${meta.color}50`,
-                        borderRadius: "5px",
+                        background: isPopular ? meta.color : `${meta.color}10`,
+                        color: isPopular ? "#0a0a0f" : meta.color,
+                        border: `1px solid ${meta.color}40`,
                         cursor: isLoading ? "wait" : "pointer",
-                        fontFamily: "'Exo 2', sans-serif",
                         boxShadow: isPopular ? `0 0 20px ${meta.glow}` : "none",
                       }}
                     >
                       {isLoading ? (
-                        <><Loader2 className="w-4 h-4 animate-spin" /> PROCESSING...</>
+                        <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
                       ) : !isAuthenticated ? (
-                        <><Lock className="w-4 h-4" /> SIGN IN TO SUBSCRIBE</>
+                        <><Lock className="w-4 h-4" /> Sign In to Subscribe</>
                       ) : (
-                        <><Zap className="w-4 h-4" /> {hasDiscount ? "GET DISCOUNTED ACCESS" : "GET ACCESS NOW"}</>
+                        <><Zap className="w-4 h-4" /> {hasDiscount ? "Get Discounted Access" : "Get Access Now"}</>
                       )}
                     </button>
                   )}
@@ -452,15 +566,15 @@ export default function Pricing() {
         </div>
 
         {/* Trust badges */}
-        <div className="flex flex-wrap justify-center gap-6 mb-12">
+        <div className="flex flex-wrap justify-center gap-6 mb-14">
           {[
             { icon: Shield, label: "256-bit SSL Encryption" },
             { icon: Check,  label: "Cancel Anytime" },
             { icon: Zap,    label: "Instant Access" },
             { icon: Star,   label: "Powered by Stripe" },
           ].map((badge) => (
-            <div key={badge.label} className="flex items-center gap-2 text-sm" style={{ color: "rgba(140,140,170,0.6)" }}>
-              <badge.icon className="w-4 h-4" style={{ color: "rgba(0,255,136,0.5)" }} />
+            <div key={badge.label} className="flex items-center gap-2 text-sm text-white/40">
+              <badge.icon className="w-4 h-4 text-brand-green/60" />
               {badge.label}
             </div>
           ))}
@@ -470,77 +584,71 @@ export default function Pricing() {
         <div className="text-center mb-8">
           <button
             onClick={() => setShowComparison(!showComparison)}
-            className="text-sm font-bold tracking-wider px-5 py-2.5 transition-all flex items-center justify-center gap-2 mx-auto"
-            style={{ background: "rgba(0,212,255,0.08)", border: "1px solid rgba(0,212,255,0.25)", borderRadius: "5px", color: "#00d4ff", cursor: "pointer", fontFamily: "'Exo 2', sans-serif" }}
+            className="btn-outline-premium text-sm py-2.5 px-5"
           >
-            {showComparison ? "▲ HIDE" : "▼ SHOW"} DETAILED FEATURE COMPARISON
+            {showComparison ? "Hide" : "Show"} Detailed Feature Comparison
             <ArrowRight className="w-4 h-4" style={{ transform: showComparison ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.3s" }} />
           </button>
         </div>
 
         {/* Enhanced feature comparison table */}
         {showComparison && (
-          <NeonCard className="max-w-5xl mx-auto overflow-hidden mb-12">
-            <div className="p-8">
-              <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.5rem", textTransform: "uppercase", color: "white", marginBottom: "1.5rem" }}>
-                Complete Feature Breakdown
-              </h3>
+          <NeonCard className="max-w-5xl mx-auto overflow-hidden mb-14 p-8" interactive={false}>
+            <h3 className="font-display text-2xl text-white mb-6">Complete Feature Breakdown</h3>
 
-              {/* Categorized features */}
-              <div className="space-y-8">
-                {FEATURE_CATEGORIES.map((category, catIdx) => (
-                  <div key={catIdx}>
-                    <h4 style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 600, fontSize: "0.85rem", textTransform: "uppercase", color: "#00ff88", letterSpacing: "0.1em", marginBottom: "1rem" }}>
-                      {category.category}
-                    </h4>
-                    <div className="space-y-3">
-                      {category.features.map((feature, fIdx) => (
-                        <div key={fIdx} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start p-3 rounded" style={{ background: "rgba(0,255,136,0.02)", borderLeft: "2px solid rgba(0,255,136,0.1)" }}>
-                          <div className="md:col-span-2">
-                            <div className="font-semibold text-sm" style={{ color: "rgba(200,200,220,0.9)" }}>
-                              {feature.name}
-                            </div>
-                            <div className="text-xs mt-1" style={{ color: "rgba(140,140,170,0.6)" }}>
-                              {feature.description}
-                            </div>
-                          </div>
-                          <div className="flex justify-center">
-                            <CheckMark value={feature.daily} color="#00d4ff" />
-                          </div>
-                          <div className="flex justify-center">
-                            <CheckMark value={feature.monthly} color="#00ff88" />
-                          </div>
-                          <div className="flex justify-center">
-                            <CheckMark value={feature.yearly} color="#a855f7" />
-                          </div>
+            <div className="space-y-8">
+              {FEATURE_CATEGORIES.map((category, catIdx) => (
+                <div key={catIdx}>
+                  <h4 className="text-xs font-semibold tracking-wider text-brand-green mb-4 uppercase">
+                    {category.category}
+                  </h4>
+                  <div className="space-y-2">
+                    {category.features.map((feature, fIdx) => (
+                      <div
+                        key={fIdx}
+                        className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start p-3 rounded-lg"
+                        style={{ background: "rgba(255,255,255,0.02)", borderLeft: "2px solid rgba(57,255,20,0.1)" }}
+                      >
+                        <div className="md:col-span-2">
+                          <div className="font-medium text-sm text-white/80">{feature.name}</div>
+                          <div className="text-xs mt-0.5 text-white/35">{feature.description}</div>
                         </div>
-                      ))}
-                    </div>
+                        <div className="flex justify-center">
+                          <CheckMark value={feature.daily} color="#f0b800" />
+                        </div>
+                        <div className="flex justify-center">
+                          <CheckMark value={feature.monthly} color="#39ff14" />
+                        </div>
+                        <div className="flex justify-center">
+                          <CheckMark value={feature.yearly} color="#d4a017" />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
 
-              {/* Legend */}
-              <div className="mt-8 pt-6 border-t" style={{ borderColor: "rgba(0,255,136,0.1)" }}>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center rounded" style={{ background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.3)" }}>
-                      <Check className="w-3 h-3" style={{ color: "#00d4ff" }} />
-                    </div>
-                    <span style={{ color: "rgba(140,140,170,0.7)" }}>Daily Pass ($9.99/day)</span>
+            {/* Legend */}
+            <div className="mt-8 pt-6 border-t border-white/5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 flex items-center justify-center rounded-lg" style={{ background: "rgba(212,160,23,0.08)", border: "1px solid rgba(212,160,23,0.2)" }}>
+                    <Check className="w-3 h-3" style={{ color: "#f0b800" }} />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center rounded" style={{ background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.3)" }}>
-                      <Check className="w-3 h-3" style={{ color: "#00ff88" }} />
-                    </div>
-                    <span style={{ color: "rgba(140,140,170,0.7)" }}>Monthly Pro ($29.99/mo)</span>
+                  <span className="text-white/40">Basic ($9.99/mo)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 flex items-center justify-center rounded-lg" style={{ background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.2)" }}>
+                    <Check className="w-3 h-3" style={{ color: "#39ff14" }} />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center rounded" style={{ background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.3)" }}>
-                      <Check className="w-3 h-3" style={{ color: "#a855f7" }} />
-                    </div>
-                    <span style={{ color: "rgba(140,140,170,0.7)" }}>Annual Elite ($199.99/yr)</span>
+                  <span className="text-white/40">Pro ($19.99/mo)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 flex items-center justify-center rounded-lg" style={{ background: "rgba(212,160,23,0.08)", border: "1px solid rgba(212,160,23,0.2)" }}>
+                    <Check className="w-3 h-3" style={{ color: "#d4a017" }} />
                   </div>
+                  <span className="text-white/40">Elite ($59.99/yr)</span>
                 </div>
               </div>
             </div>
@@ -549,22 +657,28 @@ export default function Pricing() {
 
         {/* Guarantee card */}
         <div className="max-w-2xl mx-auto text-center">
-          <NeonCard className="p-8" style={{ borderColor: "rgba(168,85,247,0.2)" }}>
-            <div className="w-12 h-12 flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.3)", borderRadius: "8px" }}>
-              <Shield className="w-6 h-6" style={{ color: "#a855f7" }} />
+          <NeonCard className="p-8" variant="accent" interactive={false}>
+            <div className="w-14 h-14 flex items-center justify-center mx-auto mb-5 rounded-2xl" style={{ background: "rgba(212,160,23,0.08)", border: "1px solid rgba(212,160,23,0.2)" }}>
+              <Shield className="w-7 h-7 text-brand-gold" />
             </div>
-            <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "1.3rem", textTransform: "uppercase", color: "white", marginBottom: "0.75rem" }}>
-              MONEY-BACK GUARANTEE
-            </h3>
-            <p className="text-sm" style={{ color: "rgba(180,180,210,0.65)" }}>
+            <h3 className="font-display text-xl text-white mb-3">Money-Back Guarantee</h3>
+            <p className="text-sm text-white/45 leading-relaxed">
               Not satisfied? Contact us within 48 hours of your first purchase and we'll issue a full refund — no questions asked.
             </p>
-            <div className="mt-4 text-xs" style={{ color: "rgba(140,140,170,0.5)" }}>
+            <div className="mt-4 text-xs text-white/25">
               Payments processed securely by Stripe
             </div>
           </NeonCard>
         </div>
       </div>
+
+      {/* Shimmer animation keyframe */}
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
     </div>
   );
 }

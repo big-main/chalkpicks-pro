@@ -13,7 +13,7 @@ function LowBalanceModal({ required, balance, onClose }: { required: number; bal
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
       <Card className="max-w-md w-full border-yellow-500/50 bg-gray-900">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-yellow-400">
+          <CardTitle className="flex items-center gap-2 text-brand-gold">
             <AlertTriangle className="h-5 w-5" />
             Insufficient Credits
           </CardTitle>
@@ -21,15 +21,15 @@ function LowBalanceModal({ required, balance, onClose }: { required: number; bal
         <CardContent className="space-y-4">
           <p className="text-gray-300">
             This tool requires <span className="font-bold text-white">{required} credits</span> per use.
-            Your current balance is <span className="font-bold text-red-400">${balance.toFixed(2)}</span>.
+            Your current balance is <span className="font-bold text-brand-red">${balance.toFixed(2)}</span>.
           </p>
           <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
             <p className="text-sm text-gray-400">Top up your credits to continue using premium tools.</p>
-            <p className="text-xs text-emerald-400 mt-1">💡 Spend $5 and get $100 in free credits!</p>
+            <p className="text-xs text-brand-green mt-1">💡 Spend $5 and get $100 in free credits!</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
-            <Button onClick={() => window.location.href = "/credits"} className="flex-1 bg-emerald-600 hover:bg-emerald-700">
+            <Button onClick={() => window.location.href = "/credits"} className="flex-1 bg-brand-green/80 hover:bg-brand-green">
               <DollarSign className="h-4 w-4 mr-1" /> Buy Credits
             </Button>
           </div>
@@ -166,7 +166,7 @@ export default function PropBuilder() {
               </Card>
               <Card className="bg-gray-900 border-gray-800">
                 <CardContent className="p-4 text-center">
-                  <p className="text-2xl font-bold text-emerald-400">{data.topPicks.length}</p>
+                  <p className="text-2xl font-bold text-brand-green">{data.topPicks.length}</p>
                   <p className="text-xs text-gray-400">+EV Props Found</p>
                 </CardContent>
               </Card>
@@ -178,7 +178,7 @@ export default function PropBuilder() {
               </Card>
               <Card className="bg-gray-900 border-gray-800">
                 <CardContent className="p-4 text-center">
-                  <p className="text-2xl font-bold text-yellow-400">${propMutation.data?.balance?.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-brand-gold">${propMutation.data?.balance?.toFixed(2)}</p>
                   <p className="text-xs text-gray-400">Credits Remaining</p>
                 </CardContent>
               </Card>
@@ -186,9 +186,9 @@ export default function PropBuilder() {
 
             {/* Top Picks */}
             {data.topPicks.length > 0 && (
-              <Card className="bg-gray-900 border-emerald-500/30">
+              <Card className="bg-gray-900 border-brand-green/30">
                 <CardHeader>
-                  <CardTitle className="text-emerald-400 flex items-center gap-2">
+                  <CardTitle className="text-brand-green flex items-center gap-2">
                     <TrendingUp className="h-5 w-5" /> Top +EV Props
                   </CardTitle>
                 </CardHeader>
@@ -197,7 +197,7 @@ export default function PropBuilder() {
                     {data.topPicks.map((prop, i) => (
                       <div key={i} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg border border-gray-700">
                         <div className="flex items-center gap-3">
-                          <Badge className="bg-emerald-600/20 text-emerald-400 border-emerald-500/30">
+                          <Badge className="bg-brand-green/80/20 text-brand-green border-brand-green/30">
                             +{prop.ev.toFixed(1)}% EV
                           </Badge>
                           <div>
@@ -206,7 +206,7 @@ export default function PropBuilder() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-mono text-emerald-400">{prop.overOdds > 0 ? "+" : ""}{prop.overOdds}</p>
+                          <p className="font-mono text-brand-green">{prop.overOdds > 0 ? "+" : ""}{prop.overOdds}</p>
                           <p className="text-xs text-gray-500">{prop.bookmaker}</p>
                         </div>
                       </div>
@@ -242,14 +242,14 @@ export default function PropBuilder() {
                           <td className="p-2 text-gray-400">{prop.market}</td>
                           <td className="p-2 text-center">{prop.line}</td>
                           <td className="p-2 text-center">
-                            <Badge variant="outline" className={prop.recommendation === "over" ? "text-emerald-400 border-emerald-500/30" : prop.recommendation === "under" ? "text-red-400 border-red-500/30" : "text-gray-400 border-gray-500/30"}>
+                            <Badge variant="outline" className={prop.recommendation === "over" ? "text-brand-green border-brand-green/30" : prop.recommendation === "under" ? "text-brand-red border-brand-red/30" : "text-gray-400 border-gray-500/30"}>
                               {prop.recommendation}
                             </Badge>
                           </td>
                           <td className="p-2 text-center font-mono">{prop.overOdds > 0 ? "+" : ""}{prop.overOdds}</td>
                           <td className="p-2 text-center text-gray-400">{prop.bookmaker}</td>
                           <td className="p-2 text-center">
-                            <span className={prop.ev > 3 ? "text-emerald-400 font-bold" : prop.ev > 0 ? "text-yellow-400" : "text-red-400"}>
+                            <span className={prop.ev > 3 ? "text-brand-green font-bold" : prop.ev > 0 ? "text-brand-gold" : "text-brand-red"}>
                               {prop.ev > 0 ? "+" : ""}{prop.ev.toFixed(1)}%
                             </span>
                           </td>

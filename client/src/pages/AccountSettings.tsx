@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import Navbar from "@/components/Navbar";
@@ -16,15 +16,32 @@ export default function AccountSettings() {
   const { isAuthenticated, user } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
 
+  // Detect post-purchase redirect from Stripe Buy Button
+  const searchParams = new URLSearchParams(window.location.search);
+  const justSubscribed = searchParams.get("subscribed") === "true";
+  const subscribedPlan = searchParams.get("plan") ?? "";
+  const [showSuccessBanner, setShowSuccessBanner] = useState(justSubscribed);
+
+  useEffect(() => {
+    if (justSubscribed) {
+      // Clean up URL without reload
+      const clean = window.location.pathname;
+      window.history.replaceState({}, "", clean);
+      // Auto-dismiss after 8 seconds
+      const t = setTimeout(() => setShowSuccessBanner(false), 8000);
+      return () => clearTimeout(t);
+    }
+  }, [justSubscribed]);
+
   const logoutMutation = trpc.auth.logout.useMutation();
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#080814" }}>
-        <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)" }}>
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+        <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)" }}>
           <CardContent className="pt-6">
             <p style={{ color: "#e8e8f0", marginBottom: "1rem" }}>Please log in to access account settings.</p>
-            <Button onClick={() => setLocation("/login")} style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", color: "#080814", fontWeight: 700 }}>
+            <Button onClick={() => setLocation("/login")} className="btn-premium">
               Go to Login
             </Button>
           </CardContent>
@@ -50,12 +67,42 @@ export default function AccountSettings() {
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: "#080814" }}>
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <div className="container pt-24 pb-16">
+        {/* Post-purchase success banner */}
+        {showSuccessBanner && (
+          <div
+            className="mb-6 flex items-start gap-4 p-5 rounded-2xl"
+            style={{
+              background: "linear-gradient(135deg, rgba(57,255,20,0.08) 0%, rgba(57,255,20,0.04) 100%)",
+              border: "1px solid rgba(57,255,20,0.3)",
+              boxShadow: "0 0 30px rgba(57,255,20,0.08)",
+            }}
+          >
+            <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(57,255,20,0.15)" }}>
+              <CheckCircle className="w-5 h-5" style={{ color: "#39ff14" }} />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-base" style={{ color: "#39ff14" }}>
+                🎉 Payment Successful — Welcome to ChalkPicks{subscribedPlan === "monthly" ? " Pro" : subscribedPlan === "daily" ? " Basic" : " Elite"}!
+              </p>
+              <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>
+                Your subscription is now active. It may take a moment for your access to update — refresh the page if premium features aren't visible yet.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowSuccessBanner(false)}
+              className="flex-shrink-0 text-white/30 hover:text-white/60 transition-colors text-lg leading-none"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8">
-          <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2rem", textTransform: "uppercase", color: "white" }}>
+          <h1 style={{ fontWeight: 700, fontSize: "2rem", textTransform: "uppercase", color: "white" }}>
             Account Settings
           </h1>
           <p style={{ color: "#a8a8b0", marginTop: "0.5rem" }}>
@@ -73,9 +120,9 @@ export default function AccountSettings() {
                   onClick={() => setActiveTab(tab.id)}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all"
                   style={{
-                    background: activeTab === tab.id ? "rgba(0,212,255,0.1)" : "transparent",
-                    border: activeTab === tab.id ? "1px solid rgba(0,212,255,0.3)" : "1px solid rgba(0,212,255,0.1)",
-                    color: activeTab === tab.id ? "#00d4ff" : "#a8a8b0",
+                    background: activeTab === tab.id ? "rgba(212,160,23,0.1)" : "transparent",
+                    border: activeTab === tab.id ? "1px solid rgba(212,160,23,0.3)" : "1px solid rgba(212,160,23,0.1)",
+                    color: activeTab === tab.id ? "#f0b800" : "#a8a8b0",
                   }}
                 >
                   <tab.icon className="w-4 h-4" />
@@ -89,7 +136,7 @@ export default function AccountSettings() {
           <div className="lg:col-span-3">
             {/* Profile Tab */}
             {activeTab === "profile" && (
-              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)" }}>
+              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)" }}>
                 <CardHeader>
                   <CardTitle style={{ color: "white" }}>Profile Information</CardTitle>
                   <CardDescription style={{ color: "#a8a8b0" }}>
@@ -112,7 +159,7 @@ export default function AccountSettings() {
                       readOnly
                       style={{
                         background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(0,212,255,0.2)",
+                        border: "1px solid rgba(212,160,23,0.2)",
                         color: "#e8e8f0",
                         marginTop: "0.5rem",
                       }}
@@ -128,7 +175,7 @@ export default function AccountSettings() {
                         readOnly
                         style={{
                           background: "rgba(255,255,255,0.05)",
-                          border: "1px solid rgba(0,212,255,0.2)",
+                          border: "1px solid rgba(212,160,23,0.2)",
                           color: "#e8e8f0",
                         }}
                       />
@@ -140,7 +187,7 @@ export default function AccountSettings() {
 
                   <div>
                     <Label style={{ color: "#e8e8f0", fontSize: "0.875rem", fontWeight: 500 }}>Account Type</Label>
-                    <div style={{ marginTop: "0.5rem", padding: "0.75rem", background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "6px", color: "#00d4ff", fontWeight: 600 }}>
+                    <div style={{ marginTop: "0.5rem", padding: "0.75rem", background: "rgba(212,160,23,0.1)", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "6px", color: "#f0b800", fontWeight: 600 }}>
                       {user?.subscriptionTier === "free" ? "No Active Subscription" : `${user?.subscriptionTier?.charAt(0).toUpperCase()}${user?.subscriptionTier?.slice(1)} Subscriber`}
                     </div>
                   </div>
@@ -153,7 +200,7 @@ export default function AccountSettings() {
                       readOnly
                       style={{
                         background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(0,212,255,0.2)",
+                        border: "1px solid rgba(212,160,23,0.2)",
                         color: "#e8e8f0",
                         marginTop: "0.5rem",
                       }}
@@ -165,7 +212,7 @@ export default function AccountSettings() {
 
             {/* Security Tab */}
             {activeTab === "security" && (
-              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)" }}>
+              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)" }}>
                 <CardHeader>
                   <CardTitle style={{ color: "white" }}>Security Settings</CardTitle>
                   <CardDescription style={{ color: "#a8a8b0" }}>
@@ -185,7 +232,7 @@ export default function AccountSettings() {
                     <p style={{ color: "#a8a8b0", fontSize: "0.875rem", marginBottom: "1rem" }}>
                       You're currently using email &amp; password authentication
                     </p>
-                    <div style={{ padding: "1rem", background: "rgba(0,212,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "6px", color: "#00d4ff", fontSize: "0.875rem" }}>
+                    <div style={{ padding: "1rem", background: "rgba(212,160,23,0.05)", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "6px", color: "#f0b800", fontSize: "0.875rem" }}>
                       ✓ Email &amp; Password Authentication
                     </div>
                   </div>
@@ -218,7 +265,7 @@ export default function AccountSettings() {
 
             {/* Notifications Tab */}
             {activeTab === "notifications" && (
-              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)" }}>
+              <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)" }}>
                 <CardHeader>
                   <CardTitle style={{ color: "white" }}>Notification Preferences</CardTitle>
                   <CardDescription style={{ color: "#a8a8b0" }}>
@@ -233,7 +280,7 @@ export default function AccountSettings() {
                       { label: "Performance Alerts", desc: "Weekly performance summaries" },
                       { label: "System Notifications", desc: "Important updates and maintenance alerts" },
                     ].map((item, i) => (
-                      <div key={i} className="flex items-center justify-between p-4" style={{ background: "rgba(0,212,255,0.05)", border: "1px solid rgba(0,212,255,0.1)", borderRadius: "6px" }}>
+                      <div key={i} className="flex items-center justify-between p-4" style={{ background: "rgba(212,160,23,0.05)", border: "1px solid rgba(212,160,23,0.1)", borderRadius: "6px" }}>
                         <div>
                           <p style={{ color: "#e8e8f0", fontWeight: 600, fontSize: "0.875rem" }}>{item.label}</p>
                           <p style={{ color: "#a8a8b0", fontSize: "0.75rem", marginTop: "0.25rem" }}>{item.desc}</p>
@@ -243,7 +290,7 @@ export default function AccountSettings() {
                     ))}
                   </div>
 
-                  <Button style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", color: "#080814", fontWeight: 700, width: "100%" }}>
+                  <Button className="btn-premium w-full">
                     Save Preferences
                   </Button>
                 </CardContent>

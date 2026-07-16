@@ -144,7 +144,7 @@ export function FilterPresets({
                       variant="ghost"
                       size="sm"
                       onClick={() => onDeletePreset(preset.id)}
-                      className="h-7 px-2 text-xs text-red-400 hover:text-red-500"
+                      className="h-7 px-2 text-xs text-brand-red hover:text-brand-red"
                     >
                       <Trash2 size={12} />
                     </Button>

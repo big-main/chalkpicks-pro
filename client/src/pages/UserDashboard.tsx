@@ -14,6 +14,7 @@ import { Link } from "wouter";
 import { Plus, TrendingUp, TrendingDown, Target, DollarSign, Trophy, CheckCircle2, XCircle, Clock, Trash2, Crown, Download } from "lucide-react";
 import { toast } from "sonner";
 import DashboardMetrics from "@/components/DashboardMetrics";
+import { TrialPrompt } from "@/components/TrialPrompt";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
@@ -184,6 +185,12 @@ export default function UserDashboard() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-16">
+        {/* Trial Prompt for Free Users */}
+        <div className="border-b border-border/50 bg-card/30">
+          <div className="container py-4">
+            <TrialPrompt />
+          </div>
+        </div>
         {/* Edge Terminal Metrics */}
         {summary && (
           <div className="border-b border-border/50 bg-card/30">
@@ -216,7 +223,7 @@ export default function UserDashboard() {
                   </Badge>
                 )}
                 {mySubscription?.accountBalance !== undefined && mySubscription.accountBalance > 0 && (
-                  <Badge className="bg-amber-500/15 text-amber-500 border-amber-500/30 flex items-center gap-1">
+                  <Badge className="bg-amber-500/15 text-brand-gold border-amber-500/30 flex items-center gap-1">
                     <DollarSign className="w-3 h-3" /> Balance: ${(mySubscription.accountBalance / 100).toFixed(2)}
                   </Badge>
                 )}
@@ -303,9 +310,9 @@ export default function UserDashboard() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {[
                 { label: "Win Rate", value: `${summary.winRate}%`, sub: `${summary.wins}W - ${summary.losses}L`, icon: Target, color: "text-accent" },
-                { label: "ROI", value: `${summary.roi > 0 ? "+" : ""}${summary.roi}%`, sub: `$${summary.totalStaked} staked`, icon: TrendingUp, color: summary.roi >= 0 ? "text-accent" : "text-red-400" },
-                { label: "Total Profit", value: `${summary.totalProfit >= 0 ? "+" : ""}$${summary.totalProfit}`, sub: `${summary.totalBets} total bets`, icon: DollarSign, color: summary.totalProfit >= 0 ? "text-accent" : "text-red-400" },
-                { label: "Current Streak", value: summary.streak > 0 ? `W${summary.streak}` : summary.streak < 0 ? `L${Math.abs(summary.streak)}` : "-", sub: "Active streak", icon: summary.streak >= 0 ? TrendingUp : TrendingDown, color: summary.streak > 0 ? "text-accent" : summary.streak < 0 ? "text-red-400" : "text-muted-foreground" },
+                { label: "ROI", value: `${summary.roi > 0 ? "+" : ""}${summary.roi}%`, sub: `$${summary.totalStaked} staked`, icon: TrendingUp, color: summary.roi >= 0 ? "text-accent" : "text-brand-red" },
+                { label: "Total Profit", value: `${summary.totalProfit >= 0 ? "+" : ""}$${summary.totalProfit}`, sub: `${summary.totalBets} total bets`, icon: DollarSign, color: summary.totalProfit >= 0 ? "text-accent" : "text-brand-red" },
+                { label: "Current Streak", value: summary.streak > 0 ? `W${summary.streak}` : summary.streak < 0 ? `L${Math.abs(summary.streak)}` : "-", sub: "Active streak", icon: summary.streak >= 0 ? TrendingUp : TrendingDown, color: summary.streak > 0 ? "text-accent" : summary.streak < 0 ? "text-brand-red" : "text-muted-foreground" },
               ].map(s => (
                 <Card key={s.label} className="bg-card border-border">
                   <CardContent className="p-4">
@@ -361,13 +368,13 @@ export default function UserDashboard() {
                           <div className="flex items-center gap-3">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                               bet.result === "win" ? "bg-accent/20" :
-                              bet.result === "loss" ? "bg-red-400/20" :
-                              bet.result === "push" ? "bg-secondary" : "bg-yellow-400/20"
+                              bet.result === "loss" ? "bg-brand-red/20" :
+                              bet.result === "push" ? "bg-secondary" : "bg-brand-gold/20"
                             }`}>
                               {bet.result === "win" ? <CheckCircle2 className="w-4 h-4 text-accent" /> :
-                               bet.result === "loss" ? <XCircle className="w-4 h-4 text-red-400" /> :
+                               bet.result === "loss" ? <XCircle className="w-4 h-4 text-brand-red" /> :
                                bet.result === "push" ? <Target className="w-4 h-4 text-muted-foreground" /> :
-                               <Clock className="w-4 h-4 text-yellow-400" />}
+                               <Clock className="w-4 h-4 text-brand-gold" />}
                             </div>
                             <div>
                               <div className="font-medium text-foreground text-sm">{bet.description}</div>
@@ -380,7 +387,7 @@ export default function UserDashboard() {
                             <div className="text-right">
                               <div className={`font-bold text-sm ${
                                 bet.result === "win" ? "text-accent" :
-                                bet.result === "loss" ? "text-red-400" : "text-foreground"
+                                bet.result === "loss" ? "text-brand-red" : "text-foreground"
                               }`}>
                                 {bet.result === "win" ? `+$${Number(bet.profit).toFixed(2)}` :
                                  bet.result === "loss" ? `-$${Number(bet.stake).toFixed(2)}` :
@@ -391,11 +398,11 @@ export default function UserDashboard() {
                             {bet.result === "pending" && (
                               <div className="flex gap-1">
                                 <Button size="sm" className="h-7 text-xs bg-accent/20 text-accent hover:bg-accent/30 border-0" onClick={() => settleBet.mutate({ id: bet.id, result: "win" })}>W</Button>
-                                <Button size="sm" className="h-7 text-xs bg-red-400/20 text-red-400 hover:bg-red-400/30 border-0" onClick={() => settleBet.mutate({ id: bet.id, result: "loss" })}>L</Button>
+                                <Button size="sm" className="h-7 text-xs bg-brand-red/20 text-brand-red hover:bg-brand-red/30 border-0" onClick={() => settleBet.mutate({ id: bet.id, result: "loss" })}>L</Button>
                                 <Button size="sm" className="h-7 text-xs bg-secondary text-muted-foreground border-0" onClick={() => settleBet.mutate({ id: bet.id, result: "push" })}>P</Button>
                               </div>
                             )}
-                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400" onClick={() => deleteBet.mutate({ id: bet.id })}>
+                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-brand-red" onClick={() => deleteBet.mutate({ id: bet.id })}>
                               <Trash2 className="w-3.5 h-3.5" />
                             </Button>
                           </div>

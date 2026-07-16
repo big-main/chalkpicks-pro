@@ -20,9 +20,9 @@ export default function LiveNewsTicker() {
   }, [news]);
 
   const sportColors: Record<string, string> = {
-    nfl: "#00ff88",
-    nba: "#00d4ff",
-    mlb: "#a855f7",
+    nfl: "#39ff14",
+    nba: "#f0b800",
+    mlb: "#d4a017",
     nhl: "#ff6b6b",
     soccer: "#fbbf24",
   };
@@ -32,14 +32,14 @@ export default function LiveNewsTicker() {
       <div
         className="w-full overflow-hidden py-1.5"
         style={{
-          background: "rgba(0, 255, 136, 0.03)",
-          borderBottom: "1px solid rgba(0, 255, 136, 0.08)",
+          background: "rgba(57, 255, 20, 0.03)",
+          borderBottom: "1px solid rgba(57, 255, 20, 0.08)",
         }}
       >
         <div className="container flex items-center gap-3">
           <div className="flex items-center gap-1.5 shrink-0">
-            <Activity className="w-3 h-3" style={{ color: "#00ff88" }} />
-            <span className="text-[10px] font-bold tracking-widest" style={{ color: "#00ff88" }}>
+            <Activity className="w-3 h-3" style={{ color: "#39ff14" }} />
+            <span className="text-[10px] font-bold tracking-widest" style={{ color: "#39ff14" }}>
               LIVE
             </span>
           </div>
@@ -52,20 +52,20 @@ export default function LiveNewsTicker() {
   }
 
   const currentNews = news[currentIndex];
-  const sportColor = sportColors[currentNews?.sport] || "#00d4ff";
+  const sportColor = sportColors[currentNews?.sport] || "#f0b800";
 
   return (
     <div
       className="w-full overflow-hidden py-1.5"
       style={{
-        background: "rgba(0, 255, 136, 0.03)",
-        borderBottom: "1px solid rgba(0, 255, 136, 0.08)",
+        background: "rgba(57, 255, 20, 0.03)",
+        borderBottom: "1px solid rgba(57, 255, 20, 0.08)",
       }}
     >
       <div className="container flex items-center gap-3">
         <div className="flex items-center gap-1.5 shrink-0">
           <span className="live-dot" />
-          <span className="text-[10px] font-bold tracking-widest" style={{ color: "#00ff88" }}>
+          <span className="text-[10px] font-bold tracking-widest" style={{ color: "#39ff14" }}>
             LIVE
           </span>
         </div>
@@ -94,9 +94,9 @@ export default function LiveNewsTicker() {
               key={s}
               className="text-[9px] font-bold tracking-wider px-1.5 py-0.5 rounded cursor-pointer transition-all"
               style={{
-                color: sportColors[s.toLowerCase()] || "#00d4ff",
-                background: `${sportColors[s.toLowerCase()] || "#00d4ff"}10`,
-                border: `1px solid ${sportColors[s.toLowerCase()] || "#00d4ff"}20`,
+                color: sportColors[s.toLowerCase()] || "#f0b800",
+                background: `${sportColors[s.toLowerCase()] || "#f0b800"}10`,
+                border: `1px solid ${sportColors[s.toLowerCase()] || "#f0b800"}20`,
               }}
             >
               {s}

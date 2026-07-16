@@ -9,6 +9,7 @@ import { ArrowLeft, Brain, Zap, Target, TrendingUp, Lock, CheckCircle2, PlusCirc
 import { toast } from "sonner";
 import { useState } from "react";
 import PickFeedback from "@/components/PickFeedback";
+import { SportsEventSchema } from "@/components/SportsEventSchema";
 
 export default function PickDetail() {
   const { id } = useParams<{ id: string }>();
@@ -53,6 +54,15 @@ export default function PickDetail() {
 
   return (
     <div className="min-h-screen bg-background">
+      {pick.homeTeam && pick.awayTeam && (
+        <SportsEventSchema
+          homeTeam={pick.homeTeam}
+          awayTeam={pick.awayTeam}
+          sport={pick.sportKey?.toUpperCase()}
+          startDate={(pick as { gameTime?: string }).gameTime ?? pick.pickDate}
+          url={typeof window !== "undefined" ? window.location.href : undefined}
+        />
+      )}
       <Navbar />
       <div className="pt-16">
         <div className="container py-8 max-w-3xl mx-auto">

@@ -123,7 +123,7 @@ function BankrollTrackerContent() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Bankroll Tracker</h1>
-          <p className="text-cyan-400">Monitor your betting bankroll and ROI</p>
+          <p className="text-brand-blue">Monitor your betting bankroll and ROI</p>
         </div>
 
         {/* Sessions */}
@@ -161,7 +161,7 @@ function BankrollTrackerContent() {
                       <CardTitle className="text-sm text-slate-400">Current Bankroll</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className={`text-2xl font-bold ${activeSession.currentBalance >= activeSession.startBalance ? "text-green-400" : "text-red-400"}`}>
+                      <p className={`text-2xl font-bold ${activeSession.currentBalance >= activeSession.startBalance ? "text-brand-green" : "text-brand-red"}`}>
                         ${activeSession.currentBalance.toFixed(2)}
                       </p>
                     </CardContent>
@@ -172,7 +172,7 @@ function BankrollTrackerContent() {
                       <CardTitle className="text-sm text-slate-400">ROI</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className={`text-2xl font-bold ${roi > 0 ? "text-green-400" : "text-red-400"}`}>{roi.toFixed(1)}%</p>
+                      <p className={`text-2xl font-bold ${roi > 0 ? "text-brand-green" : "text-brand-red"}`}>{roi.toFixed(1)}%</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -242,7 +242,7 @@ function BankrollTrackerContent() {
                         />
                       </div>
                     </div>
-                    <Button onClick={addEntry} className="w-full bg-cyan-600 hover:bg-cyan-700">
+                    <Button onClick={addEntry} className="w-full bg-brand-blue/80 hover:bg-brand-blue">
                       <Plus className="w-4 h-4 mr-2" />
                       Add Entry
                     </Button>
@@ -272,7 +272,7 @@ function BankrollTrackerContent() {
                                 <td className="py-2 px-2 text-slate-300">{entry.date}</td>
                                 <td className="py-2 px-2 text-slate-300">{entry.description}</td>
                                 <td className="py-2 px-2 text-slate-300 capitalize">{entry.type.replace("_", " ")}</td>
-                                <td className={`text-right py-2 px-2 ${entry.amount > 0 ? "text-green-400" : "text-red-400"}`}>
+                                <td className={`text-right py-2 px-2 ${entry.amount > 0 ? "text-brand-green" : "text-brand-red"}`}>
                                   {entry.amount > 0 ? "+" : ""}${entry.amount.toFixed(2)}
                                 </td>
                               </tr>
@@ -288,7 +288,7 @@ function BankrollTrackerContent() {
               <Card className="bg-slate-800 border-slate-700">
                 <CardContent className="py-12 text-center">
                   <p className="text-slate-400 mb-4">No active session. Create one to get started.</p>
-                  <Button onClick={() => setShowNewSession(true)} className="bg-cyan-600 hover:bg-cyan-700">
+                  <Button onClick={() => setShowNewSession(true)} className="bg-brand-blue/80 hover:bg-brand-blue">
                     <Plus className="w-4 h-4 mr-2" />
                     Create Session
                   </Button>
@@ -324,7 +324,7 @@ function BankrollTrackerContent() {
                       />
                     </div>
                     <div className="flex gap-2">
-                      <Button onClick={createSession} className="flex-1 bg-green-600 hover:bg-green-700">
+                      <Button onClick={createSession} className="flex-1 bg-brand-green/80 hover:bg-brand-green">
                         Create
                       </Button>
                       <Button onClick={() => setShowNewSession(false)} variant="outline" className="flex-1">
@@ -340,7 +340,7 @@ function BankrollTrackerContent() {
                   {sessions.map((session) => (
                     <Card
                       key={session.id}
-                      className="bg-slate-800 border-slate-700 cursor-pointer hover:border-cyan-500 transition"
+                      className="bg-slate-800 border-slate-700 cursor-pointer hover:border-brand-blue transition"
                       onClick={() => setActiveSession(session)}
                     >
                       <CardHeader className="pb-3">
@@ -353,13 +353,13 @@ function BankrollTrackerContent() {
                         </div>
                         <div>
                           <p className="text-xs text-slate-400">Current</p>
-                          <p className={`text-sm font-bold ${session.currentBalance >= session.startBalance ? "text-green-400" : "text-red-400"}`}>
+                          <p className={`text-sm font-bold ${session.currentBalance >= session.startBalance ? "text-brand-green" : "text-brand-red"}`}>
                             ${session.currentBalance.toFixed(2)}
                           </p>
                         </div>
                         <div>
                           <p className="text-xs text-slate-400">ROI</p>
-                          <p className={`text-sm font-bold ${((session.currentBalance - session.startBalance) / session.startBalance) * 100 > 0 ? "text-green-400" : "text-red-400"}`}>
+                          <p className={`text-sm font-bold ${((session.currentBalance - session.startBalance) / session.startBalance) * 100 > 0 ? "text-brand-green" : "text-brand-red"}`}>
                             {(((session.currentBalance - session.startBalance) / session.startBalance) * 100).toFixed(1)}%
                           </p>
                         </div>
@@ -374,7 +374,7 @@ function BankrollTrackerContent() {
                 <Card className="bg-slate-800 border-slate-700">
                   <CardContent className="py-12 text-center">
                     <p className="text-slate-400 mb-4">No sessions yet. Create one to start tracking.</p>
-                    <Button onClick={() => setShowNewSession(true)} className="bg-cyan-600 hover:bg-cyan-700">
+                    <Button onClick={() => setShowNewSession(true)} className="bg-brand-blue/80 hover:bg-brand-blue">
                       <Plus className="w-4 h-4 mr-2" />
                       Create Session
                     </Button>

@@ -55,7 +55,7 @@ export default function AdminPromos() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-400 mb-2">Access Denied</h1>
+          <h1 className="text-2xl font-bold text-brand-red mb-2">Access Denied</h1>
           <p className="text-gray-400">You must be an admin to access this page.</p>
         </div>
       </div>
@@ -83,7 +83,7 @@ export default function AdminPromos() {
           <h1 className="text-3xl font-bold">Promo Code Manager</h1>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded font-medium transition"
+            className="flex items-center gap-2 px-4 py-2 bg-brand-green/80 hover:bg-brand-green rounded font-medium transition"
           >
             <Plus className="w-4 h-4" /> New Code
           </button>
@@ -91,7 +91,7 @@ export default function AdminPromos() {
 
         {/* Create form */}
         {showForm && (
-          <div className="bg-gray-800 p-6 rounded-lg mb-8 border border-green-500/30">
+          <div className="bg-gray-800 p-6 rounded-lg mb-8 border border-brand-green/30">
             <h2 className="text-xl font-bold mb-4">Create Promo Code</h2>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -101,7 +101,7 @@ export default function AdminPromos() {
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                   placeholder="e.g., LAUNCH50"
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-green-500"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-brand-green"
                   required
                 />
               </div>
@@ -111,7 +111,7 @@ export default function AdminPromos() {
                 <select
                   value={formData.discountType}
                   onChange={(e) => setFormData({ ...formData, discountType: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-green-500"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-brand-green"
                 >
                   <option value="percentage">Percentage (%)</option>
                   <option value="fixed">Fixed ($)</option>
@@ -125,7 +125,7 @@ export default function AdminPromos() {
                   value={formData.discountValue}
                   onChange={(e) => setFormData({ ...formData, discountValue: parseFloat(e.target.value) })}
                   placeholder="50"
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-green-500"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-brand-green"
                   required
                 />
               </div>
@@ -135,7 +135,7 @@ export default function AdminPromos() {
                 <select
                   value={formData.tier}
                   onChange={(e) => setFormData({ ...formData, tier: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-green-500"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-brand-green"
                 >
                   <option value="daily">Daily</option>
                   <option value="monthly">Monthly</option>
@@ -150,7 +150,7 @@ export default function AdminPromos() {
                   value={formData.maxUses}
                   onChange={(e) => setFormData({ ...formData, maxUses: parseInt(e.target.value) })}
                   placeholder="100"
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-green-500"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-brand-green"
                 />
               </div>
 
@@ -161,7 +161,7 @@ export default function AdminPromos() {
                   value={formData.source}
                   onChange={(e) => setFormData({ ...formData, source: e.target.value })}
                   placeholder="e.g., twitter, email, reddit"
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-green-500"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-brand-green"
                 />
               </div>
 
@@ -171,7 +171,7 @@ export default function AdminPromos() {
                   type="datetime-local"
                   value={formData.expiresAt}
                   onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-green-500"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-brand-green"
                 />
               </div>
 
@@ -179,7 +179,7 @@ export default function AdminPromos() {
                 <button
                   type="submit"
                   disabled={createPromo.isPending}
-                  className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 rounded font-medium transition"
+                  className="flex-1 px-4 py-2 bg-brand-green/80 hover:bg-brand-green disabled:bg-gray-600 rounded font-medium transition"
                 >
                   {createPromo.isPending ? "Creating..." : "Create Code"}
                 </button>
@@ -212,7 +212,7 @@ export default function AdminPromos() {
             <tbody>
               {codes?.map((code) => (
                 <tr key={code.id} className="border-b border-gray-700 hover:bg-gray-750 transition">
-                  <td className="px-6 py-3 font-mono font-bold text-green-400">{code.code}</td>
+                  <td className="px-6 py-3 font-mono font-bold text-brand-green">{code.code}</td>
                   <td className="px-6 py-3">
                     {code.discountType === "percentage"
                       ? `${code.discountValue}%`
@@ -229,8 +229,8 @@ export default function AdminPromos() {
                     <span
                       className={`px-2 py-1 rounded text-xs font-semibold ${
                         code.isActive
-                          ? "bg-green-900/30 text-green-400"
-                          : "bg-red-900/30 text-red-400"
+                          ? "bg-brand-green/10 text-brand-green"
+                          : "bg-red-900/30 text-brand-red"
                       }`}
                     >
                       {code.isActive ? "Active" : "Inactive"}
@@ -241,7 +241,7 @@ export default function AdminPromos() {
                       <button
                         onClick={() => deactivatePromo.mutate({ codeId: code.id })}
                         disabled={deactivatePromo.isPending}
-                        className="text-red-400 hover:text-red-300 transition"
+                        className="text-brand-red hover:text-red-300 transition"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

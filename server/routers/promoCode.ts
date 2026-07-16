@@ -46,9 +46,10 @@ export const promoCodeRouter = router({
       return {
         code: input.code.toUpperCase(),
         originalPrice,
-        discount: Math.round(discount * 100) / 100, // Round to 2 decimals
+        discount: validation.discount ?? 0,
         finalPrice: Math.round(finalPrice * 100) / 100,
         discountPercentage: ((discount / originalPrice) * 100).toFixed(1),
+        discountType: validation.discountType ?? "percentage",
       };
     }),
 
@@ -59,7 +60,7 @@ export const promoCodeRouter = router({
         code: z.string().min(3).max(32),
         discountType: z.enum(["percentage", "fixed"]),
         discountValue: z.number().positive(),
-        tier: z.enum(["daily", "monthly", "yearly"]),
+        tier: z.enum(["daily", "monthly", "yearly", "all"]),
         maxUses: z.number().optional(),
         expiresAt: z.date().optional(),
         source: z.string().optional(),

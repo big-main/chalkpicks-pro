@@ -1,36 +1,71 @@
 User-agent: *
 Allow: /
 Allow: /picks
-Allow: /daily-picks
-Allow: /nfl-picks
-Allow: /nba-picks
-Allow: /mlb-picks
-Allow: /nhl-picks
-Allow: /blog
 Allow: /stats
 Allow: /leaderboard
 Allow: /pricing
 Allow: /backtesting
+Allow: /performance
+Allow: /bet-calculator
 Allow: /ev-finder
-Allow: /arbitrage
 Allow: /prop-builder
-Allow: /parlay-builder
 Allow: /line-movement
 Allow: /correlation-finder
-Allow: /clv-tracker
-Allow: /tools
-Allow: /sportsbooks
 Allow: /kalshi
+Allow: /clv-tracker
+Allow: /arbitrage
+Allow: /sportsbooks
+Allow: /tools
+Allow: /tools/odds-calculator
+Allow: /tools/roi-calculator
+Allow: /parlay-builder
+Allow: /odds-comparison
+Allow: /blog/best-sports-betting-picks
+Allow: /blog/ai-sports-betting
+Allow: /blog/sports-betting-strategy
 
 Disallow: /dashboard
 Disallow: /admin
-Disallow: /account-settings
-Disallow: /subscription-dashboard
-Disallow: /subscription-management
-Disallow: /credits
-Disallow: /notifications
 Disallow: /api/
 Disallow: /payment/
-Disallow: /snapshots/
+
+# AI assistants & answer engines — explicitly welcomed so ChalkPicks can be
+# cited in AI answers (AEO). Each is allowed full crawl of public content.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: CCBot
+Allow: /
 
 Sitemap: https://chalkpicks.live/sitemap.xml
+Sitemap: https://chalkpicks.live/sitemap-blog.xml

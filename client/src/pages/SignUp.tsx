@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import AuthPageShell from "@/components/AuthPageShell";
+import { safeRedirectPath } from "@shared/utils";
 import { Zap, Shield, TrendingUp } from "lucide-react";
 
-const inputStyle = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", color: "white" };
+const inputStyle = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(212,160,23,0.2)", color: "white" };
 
 const features = [
   { icon: TrendingUp, text: "AI picks with confidence scores" },
@@ -28,14 +29,18 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
+  // Continue to wherever the user was headed (e.g. /pricing) after signing up,
+  // instead of dumping everyone on the homepage and losing checkout intent.
+  const redirectTo = safeRedirectPath(new URLSearchParams(window.location.search).get("redirect"));
+
   useEffect(() => {
-    if (isAuthenticated) setLocation("/");
-  }, [isAuthenticated, setLocation]);
+    if (isAuthenticated) setLocation(redirectTo);
+  }, [isAuthenticated, setLocation, redirectTo]);
 
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: async () => {
       await utils.auth.me.invalidate();
-      setLocation("/");
+      setLocation(redirectTo);
     },
     onError: (err) => setError(err.message || "Registration failed. Please try again."),
   });
@@ -52,9 +57,9 @@ export default function SignUp() {
   return (
     <AuthPageShell rightLink={{ href: "/login", label: "Log In", variant: "outline" }}>
       <div className="text-center mb-8">
-        <h1 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "2.5rem", textTransform: "uppercase", color: "white", lineHeight: 1.2 }}>
+        <h1 style={{ fontWeight: 700, fontSize: "2.5rem", textTransform: "uppercase", color: "white", lineHeight: 1.2 }}>
           Join the{" "}
-          <span style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          <span style={{ background: "linear-gradient(135deg, #f0b800 0%, #39ff14 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             Future
           </span>
         </h1>
@@ -66,13 +71,13 @@ export default function SignUp() {
       <div className="space-y-3 mb-8">
         {features.map((f, i) => (
           <div key={i} className="flex items-center gap-3">
-            <f.icon className="w-5 h-5" style={{ color: "#00d4ff" }} />
+            <f.icon className="w-5 h-5" style={{ color: "#f0b800" }} />
             <span style={{ color: "#e8e8f0" }}>{f.text}</span>
           </div>
         ))}
       </div>
 
-      <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
+      <Card style={{ background: "rgba(20,20,30,0.8)", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
         <CardHeader>
           <CardTitle style={{ color: "white", fontSize: "1.5rem" }}>Create Your Account</CardTitle>
           <CardDescription style={{ color: "#a8a8b0" }}>Sign up in seconds — no credit card required</CardDescription>
@@ -100,8 +105,7 @@ export default function SignUp() {
                 onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" style={inputStyle} />
             </div>
             {error && <p style={{ color: "#ff4d4d", fontSize: "0.875rem" }}>{error}</p>}
-            <Button type="submit" className="w-full" size="lg" disabled={registerMutation.isPending}
-              style={{ background: "linear-gradient(135deg, #00d4ff 0%, #00ff88 100%)", color: "#080814", fontWeight: 700, height: "2.75rem", fontSize: "1rem" }}>
+            <Button type="submit" className="btn-premium w-full h-11 text-base" size="lg" disabled={registerMutation.isPending}>
               {registerMutation.isPending ? "Creating account..." : "Create Account"}
             </Button>
             <p style={{ color: "#666", fontSize: "0.75rem", textAlign: "center" }}>
@@ -115,7 +119,7 @@ export default function SignUp() {
         <p style={{ color: "#a8a8b0" }}>
           Already have an account?{" "}
           <Link href="/login">
-            <a style={{ color: "#00d4ff", fontWeight: 600, textDecoration: "none" }} className="hover:underline">Log in here</a>
+            <a style={{ color: "#f0b800", fontWeight: 600, textDecoration: "none" }} className="hover:underline">Log in here</a>
           </Link>
         </p>
       </div>

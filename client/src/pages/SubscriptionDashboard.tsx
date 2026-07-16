@@ -23,7 +23,7 @@ const TIER_FEATURES = {
     ],
   },
   daily: {
-    name: "Daily Pass",
+    name: "Basic",
     color: "bg-blue-600",
     icon: Zap,
     features: [
@@ -38,7 +38,7 @@ const TIER_FEATURES = {
     ],
   },
   monthly: {
-    name: "Monthly Pro",
+    name: "Pro",
     color: "bg-purple-600",
     icon: Crown,
     features: [
@@ -53,7 +53,7 @@ const TIER_FEATURES = {
     ],
   },
   yearly: {
-    name: "Annual Elite",
+    name: "Elite",
     color: "bg-amber-500",
     icon: Sparkles,
     features: [
@@ -96,7 +96,7 @@ export default function SubscriptionDashboard() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-blue mx-auto mb-4"></div>
           <p className="text-slate-400">Loading subscription details...</p>
         </div>
       </div>
@@ -174,14 +174,14 @@ export default function SubscriptionDashboard() {
                 key={idx}
                 className={`border-2 ${
                   feature.included
-                    ? "bg-emerald-500/10 border-emerald-500/30"
+                    ? "bg-brand-green/10 border-brand-green/30"
                     : "bg-slate-800/50 border-slate-700/50 opacity-50"
                 }`}
               >
                 <CardContent className="pt-6">
                   <div className="flex items-start gap-3">
                     {feature.included ? (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-brand-green flex-shrink-0 mt-0.5" />
                     ) : (
                       <Circle className="w-5 h-5 text-slate-500 flex-shrink-0 mt-0.5" />
                     )}
@@ -202,7 +202,7 @@ export default function SubscriptionDashboard() {
             <Card className="bg-gradient-to-br from-amber-500/20 to-purple-500/20 border-amber-500/30">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-amber-400" />
+                  <Sparkles className="w-5 h-5 text-brand-gold" />
                   Upgrade Your Tier
                 </CardTitle>
               </CardHeader>
@@ -223,10 +223,10 @@ export default function SubscriptionDashboard() {
           )}
 
           {/* Manage Subscription */}
-          <Card className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-cyan-500/30">
+          <Card className="bg-gradient-to-br from-brand-blue/20 to-blue-500/20 border-brand-blue/30">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <Zap className="w-5 h-5 text-cyan-400" />
+                <Zap className="w-5 h-5 text-brand-blue" />
                 Manage Subscription
               </CardTitle>
             </CardHeader>
@@ -241,7 +241,7 @@ export default function SubscriptionDashboard() {
                   // Open Stripe customer portal
                   window.location.href = `https://billing.stripe.com/login/test_YWNjdF8xSXRyeUNoOFBtbnl0QWsxN1Z6ckhaamVUeTRoTjZjTElnNQ?prefilled_email=${encodeURIComponent(user?.email || '')}`;
                 }}
-                className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700"
+                className="w-full bg-gradient-to-r from-brand-blue to-blue-600 hover:from-brand-blue/80 hover:to-blue-700"
               >
                 Manage Subscription
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -259,23 +259,23 @@ export default function SubscriptionDashboard() {
                 key={key}
                 className={`border-2 ${
                   key === currentTier
-                    ? "bg-slate-800 border-cyan-500/50 ring-2 ring-cyan-500/20"
+                    ? "bg-slate-800 border-brand-blue/50 ring-2 ring-cyan-500/20"
                     : "bg-slate-800/50 border-slate-700/50"
                 }`}
               >
                 <CardHeader>
                   <div className="flex items-center justify-between mb-2">
                     <CardTitle className="text-white">{tier.name}</CardTitle>
-                    {key === currentTier && <Badge className="bg-cyan-500">Current</Badge>}
+                    {key === currentTier && <Badge className="bg-brand-blue">Current</Badge>}
                   </div>
                   <p className="text-sm text-slate-400">
                     {key === "free"
                       ? "Free forever"
                       : key === "daily"
-                        ? "$9.99/day"
+                        ? "$9.99/month"
                         : key === "monthly"
-                          ? "$29.99/month"
-                          : "$299.99/year"}
+                          ? "$19.99/month"
+                          : "$59.99/year"}
                   </p>
                 </CardHeader>
                 <CardContent>
@@ -283,7 +283,7 @@ export default function SubscriptionDashboard() {
                     {tier.features.slice(0, 4).map((feature, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-sm">
                         {feature.included ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                          <CheckCircle2 className="w-4 h-4 text-brand-green flex-shrink-0" />
                         ) : (
                           <Circle className="w-4 h-4 text-slate-600 flex-shrink-0" />
                         )}

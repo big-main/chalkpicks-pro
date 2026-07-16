@@ -137,11 +137,11 @@ export default function MatchupAnalysis() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Avg Points For</span>
-                  <span className="font-semibold text-green-400">{MATCHUP_DATA.homeStats.avgPointsFor}</span>
+                  <span className="font-semibold text-brand-green">{MATCHUP_DATA.homeStats.avgPointsFor}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Avg Points Against</span>
-                  <span className="font-semibold text-red-400">{MATCHUP_DATA.homeStats.avgPointsAgainst}</span>
+                  <span className="font-semibold text-brand-red">{MATCHUP_DATA.homeStats.avgPointsAgainst}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Offensive Rank</span>
@@ -169,11 +169,11 @@ export default function MatchupAnalysis() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Avg Points For</span>
-                  <span className="font-semibold text-green-400">{MATCHUP_DATA.awayStats.avgPointsFor}</span>
+                  <span className="font-semibold text-brand-green">{MATCHUP_DATA.awayStats.avgPointsFor}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Avg Points Against</span>
-                  <span className="font-semibold text-red-400">{MATCHUP_DATA.awayStats.avgPointsAgainst}</span>
+                  <span className="font-semibold text-brand-red">{MATCHUP_DATA.awayStats.avgPointsAgainst}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Offensive Rank</span>

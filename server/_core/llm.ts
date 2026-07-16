@@ -55,6 +55,13 @@ export type ToolChoice =
   | ToolChoiceByName
   | ToolChoiceExplicit;
 
+/**
+ * Task complexity hint for cost-optimized routing.
+ * - 'high'  → forces Forge (gemini-2.5-flash) regardless of other params
+ * - omitted → auto-route: Qwen2.5 7B (free) unless JSON schema or tools needed
+ */
+export type TaskComplexity = "high" | "medium" | "low";
+
 export type InvokeParams = {
   messages: Message[];
   tools?: Tool[];
@@ -66,6 +73,10 @@ export type InvokeParams = {
   output_schema?: OutputSchema;
   responseFormat?: ResponseFormat;
   response_format?: ResponseFormat;
+  /** Optional explicit model override (uses Forge endpoint) */
+  model?: string;
+  /** Complexity hint: 'high' forces Forge; omit/low/medium defaults to Qwen */
+  complexity?: TaskComplexity;
 };
 
 export type ToolCall = {
@@ -267,6 +278,115 @@ const normalizeResponseFormat = ({
   };
 };
 
+// In-memory LRU cache for LLM responses (no Redis dependency required)
+// Key: SHA-256 of serialized payload, Value: { result, expiresAt }
+const _llmCache = new Map<string, { result: InvokeResult; expiresAt: number }>();
+const LLM_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const LLM_CACHE_MAX_SIZE = 500; // max entries
+
+// Params that are safe to cache (no tools, no streaming, deterministic)
+function isCacheable(params: InvokeParams): boolean {
+  if (params.tools && params.tools.length > 0) return false;
+  return true;
+}
+
+function getLLMCacheKey(payload: Record<string, unknown>): string {
+  // Use a simple hash function that works in ESM context
+  const str = JSON.stringify(payload);
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash).toString(36);
+}
+
+// ── Qwen / Ollama health check ──────────────────────────────────────────────
+// Cached health state to avoid pinging Ollama on every request.
+// Re-checks every 30s. Falls back to Forge automatically when Ollama is down.
+let _ollamaHealthy: boolean | null = null;
+let _ollamaLastCheck = 0;
+const OLLAMA_HEALTH_TTL_MS = 30_000;
+
+async function checkOllamaHealth(): Promise<boolean> {
+  const now = Date.now();
+  if (_ollamaHealthy !== null && now - _ollamaLastCheck < OLLAMA_HEALTH_TTL_MS) {
+    return _ollamaHealthy;
+  }
+  try {
+    const baseUrl = ENV.ollamaApiUrl.replace(/\/v1$/, "");
+    const res = await fetch(`${baseUrl}/api/tags`, {
+      signal: AbortSignal.timeout(2000), // 2s timeout — fast fail
+    });
+    _ollamaHealthy = res.ok;
+  } catch {
+    _ollamaHealthy = false;
+  }
+  _ollamaLastCheck = now;
+  if (!_ollamaHealthy) {
+    console.warn("[LLM] Ollama unreachable — falling back to Forge (Gemini)");
+  }
+  return _ollamaHealthy;
+}
+
+/**
+ * Resolve which LLM provider/endpoint to use.
+ *
+ * Routing priority (Qwen-first to maximize free usage):
+ * 1. Explicit model override → OpenRouter (GPT-4o-mini)
+ * 2. JSON schema response_format → OpenRouter GPT-4o-mini (Ollama doesn't support it)
+ * 3. Tool/function calling → OpenRouter GPT-4o-mini
+ * 4. complexity='high' → OpenRouter GPT-4o-mini
+ * 5. Ollama health check fails → OpenRouter GPT-4o-mini (auto-fallback)
+ * 6. Everything else → Qwen2.5 7B on Cloud Computer (FREE)
+ */
+async function resolveProvider(params: InvokeParams): Promise<{ apiUrl: string; apiKey: string; model: string }> {
+  const hasJsonSchema = !!(params.responseFormat?.type === "json_schema" ||
+    params.response_format?.type === "json_schema" ||
+    params.outputSchema || params.output_schema);
+  const hasTools = !!(params.tools && params.tools.length > 0);
+  const forceGpt = params.complexity === "high" || !!params.model;
+
+  if (!forceGpt && !hasJsonSchema && !hasTools) {
+    // Only ping Ollama when we'd actually use it
+    const ollamaUp = await checkOllamaHealth();
+    if (ollamaUp) {
+      return {
+        apiUrl: `${ENV.ollamaApiUrl}/chat/completions`,
+        apiKey: "ollama",
+        model: ENV.ollamaModel,
+      };
+    }
+    // Ollama is down — fall through to GPT-4o-mini
+  }
+
+  // Use OpenRouter GPT-4o-mini as the fallback (replaces Gemini)
+  if (ENV.openRouterApiKey) {
+    const model = params.model ?? ENV.openRouterModel;
+    return { apiUrl: ENV.openRouterApiUrl, apiKey: ENV.openRouterApiKey, model };
+  }
+
+  // Final fallback: Forge (only if OpenRouter key is missing)
+  const model = params.model ?? "gemini-2.5-flash";
+  return { apiUrl: resolveApiUrl(), apiKey: ENV.forgeApiKey, model };
+}
+
+/**
+ * Get the current LLM provider status for the UI status badge.
+ * Returns which provider is active and health state.
+ */
+export function getLlmStatus(): { provider: "qwen" | "gpt-4o-mini" | "gemini"; healthy: boolean; lastCheck: number } {
+  if (_ollamaHealthy === true) {
+    return { provider: "qwen", healthy: true, lastCheck: _ollamaLastCheck };
+  }
+  // OpenRouter GPT-4o-mini is the primary fallback
+  if (ENV.openRouterApiKey) {
+    return { provider: "gpt-4o-mini", healthy: true, lastCheck: _ollamaLastCheck };
+  }
+  return { provider: "gemini", healthy: true, lastCheck: _ollamaLastCheck };
+}
+
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   assertApiKey();
 
@@ -281,8 +401,11 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     response_format,
   } = params;
 
+  const { apiUrl, apiKey, model } = await resolveProvider(params);
+  const isOllama = apiKey === "ollama";
+
   const payload: Record<string, unknown> = {
-    model: "gemini-2.5-flash",
+    model,
     messages: messages.map(normalizeMessage),
   };
 
@@ -298,9 +421,9 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.tool_choice = normalizedToolChoice;
   }
 
-  payload.max_tokens = 32768
-  payload.thinking = {
-    "budget_tokens": 128
+  // Non-Ollama params (max_tokens for GPT-4o-mini and Forge)
+  if (!isOllama) {
+    payload.max_tokens = 16384;
   }
 
   const normalizedResponseFormat = normalizeResponseFormat({
@@ -314,11 +437,26 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
-  const response = await fetch(resolveApiUrl(), {
+  // Check in-memory cache for deterministic calls (no tools)
+  const cacheable = isCacheable(params);
+  if (cacheable) {
+    const cacheKey = getLLMCacheKey(payload);
+    const cached = _llmCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.result;
+    }
+    // Evict oldest entry if cache is full
+    if (_llmCache.size >= LLM_CACHE_MAX_SIZE) {
+      const firstKey = _llmCache.keys().next().value;
+      if (firstKey) _llmCache.delete(firstKey);
+    }
+  }
+
+  const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
+      authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify(payload),
   });
@@ -330,5 +468,13 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     );
   }
 
-  return (await response.json()) as InvokeResult;
+  const result = (await response.json()) as InvokeResult;
+
+  // Store in cache if cacheable
+  if (cacheable) {
+    const cacheKey = getLLMCacheKey(payload);
+    _llmCache.set(cacheKey, { result, expiresAt: Date.now() + LLM_CACHE_TTL_MS });
+  }
+
+  return result;
 }

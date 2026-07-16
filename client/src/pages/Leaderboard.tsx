@@ -32,7 +32,7 @@ export default function Leaderboard() {
           <div className="container py-8">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
-                <Badge className="mb-2 bg-yellow-400/15 text-yellow-400 border-yellow-400/30 text-xs flex items-center gap-1 w-fit">
+                <Badge className="mb-2 bg-brand-gold/15 text-brand-gold border-brand-gold/30 text-xs flex items-center gap-1 w-fit">
                   <Crown className="w-3 h-3" /> Rankings
                 </Badge>
                 <h1 className="font-display text-4xl tracking-wider">
@@ -117,9 +117,9 @@ export default function Leaderboard() {
               {[entries[1], entries[0], entries[2]].map((entry: any, podiumIndex: number) => {
                 const actualRank = podiumIndex === 0 ? 2 : podiumIndex === 1 ? 1 : 3;
                 const heights = ["h-28", "h-36", "h-24"];
-                const colors = ["text-gray-300", "text-yellow-400", "text-amber-600"];
-                const bgColors = ["bg-gray-400/10", "bg-yellow-400/10", "bg-amber-600/10"];
-                const borderColors = ["border-gray-400/30", "border-yellow-400/30", "border-amber-600/30"];
+                const colors = ["text-gray-300", "text-brand-gold", "text-amber-600"];
+                const bgColors = ["bg-gray-400/10", "bg-brand-gold/10", "bg-amber-600/10"];
+                const borderColors = ["border-gray-400/30", "border-brand-gold/30", "border-amber-600/30"];
                 return (
                   <Card key={entry.id ?? entry.userId ?? podiumIndex} className={`${bgColors[podiumIndex]} ${borderColors[podiumIndex]} border`}>
                     <CardContent className={`p-4 flex flex-col items-center justify-end ${heights[podiumIndex]}`}>
@@ -166,7 +166,7 @@ export default function Leaderboard() {
                         <tr key={entry.id ?? entry.userId} className="border-b border-border/30 hover:bg-secondary/30 transition-colors">
                           <td className="p-3">
                             <div className={`font-display text-base ${
-                              entry.rank === 1 ? "text-yellow-400" :
+                              entry.rank === 1 ? "text-brand-gold" :
                               entry.rank === 2 ? "text-gray-300" :
                               entry.rank === 3 ? "text-amber-600" : "text-muted-foreground"
                             }`}>
@@ -186,12 +186,12 @@ export default function Leaderboard() {
                           </td>
                           <td className="p-3 text-right text-sm text-foreground">{entry.wins}-{entry.losses}</td>
                           <td className="p-3 text-right">
-                            <span className={`text-sm font-bold ${entry.winRate >= 70 ? "text-accent" : entry.winRate >= 55 ? "text-yellow-400" : "text-foreground"}`}>
+                            <span className={`text-sm font-bold ${entry.winRate >= 70 ? "text-accent" : entry.winRate >= 55 ? "text-brand-gold" : "text-foreground"}`}>
                               {entry.winRate}%
                             </span>
                           </td>
                           <td className="p-3 text-right">
-                            <span className={`text-sm font-bold ${entry.roi > 0 ? "text-accent" : "text-red-400"}`}>
+                            <span className={`text-sm font-bold ${entry.roi > 0 ? "text-accent" : "text-brand-red"}`}>
                               {entry.roi > 0 ? "+" : ""}{entry.roi}%
                             </span>
                           </td>
@@ -203,10 +203,10 @@ export default function Leaderboard() {
                               {entry.streak > 0 ? (
                                 <TrendingUp className="w-3.5 h-3.5 text-accent" />
                               ) : entry.streak < 0 ? (
-                                <TrendingDown className="w-3.5 h-3.5 text-red-400" />
+                                <TrendingDown className="w-3.5 h-3.5 text-brand-red" />
                               ) : null}
                               <span className={`text-xs font-medium ${
-                                entry.streak > 0 ? "text-accent" : entry.streak < 0 ? "text-red-400" : "text-muted-foreground"
+                                entry.streak > 0 ? "text-accent" : entry.streak < 0 ? "text-brand-red" : "text-muted-foreground"
                               }`}>
                                 {entry.streak > 0 ? `W${entry.streak}` : entry.streak < 0 ? `L${Math.abs(entry.streak)}` : "-"}
                               </span>

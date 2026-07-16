@@ -183,13 +183,13 @@ export default function Backtesting() {
                     <Card>
                       <CardContent className="pt-6">
                         <div className="text-sm text-muted-foreground">Win Rate</div>
-                        <div className="text-3xl font-bold text-green-500">{(displayData.winRate * 100).toFixed(1)}%</div>
+                        <div className="text-3xl font-bold text-brand-green">{(displayData.winRate * 100).toFixed(1)}%</div>
                       </CardContent>
                     </Card>
                     <Card>
                       <CardContent className="pt-6">
                         <div className="text-sm text-muted-foreground">ROI</div>
-                        <div className={`text-3xl font-bold ${displayData.roi > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        <div className={`text-3xl font-bold ${displayData.roi > 0 ? 'text-brand-green' : 'text-brand-red'}`}>
                           {displayData.roi.toFixed(1)}%
                         </div>
                       </CardContent>
@@ -197,7 +197,7 @@ export default function Backtesting() {
                     <Card>
                       <CardContent className="pt-6">
                         <div className="text-sm text-muted-foreground">Profit</div>
-                        <div className={`text-3xl font-bold ${displayData.profit > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        <div className={`text-3xl font-bold ${displayData.profit > 0 ? 'text-brand-green' : 'text-brand-red'}`}>
                           ${displayData.profit.toFixed(0)}
                         </div>
                       </CardContent>

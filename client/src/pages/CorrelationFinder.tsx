@@ -12,7 +12,7 @@ function LowBalanceModal({ required, balance, onClose }: { required: number; bal
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
       <Card className="max-w-md w-full border-yellow-500/50 bg-gray-900">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-yellow-400">
+          <CardTitle className="flex items-center gap-2 text-brand-gold">
             <AlertTriangle className="h-5 w-5" />
             Insufficient Credits
           </CardTitle>
@@ -20,14 +20,14 @@ function LowBalanceModal({ required, balance, onClose }: { required: number; bal
         <CardContent className="space-y-4">
           <p className="text-gray-300">
             This tool requires <span className="font-bold text-white">{required} credits</span> per use.
-            Your current balance is <span className="font-bold text-red-400">${balance.toFixed(2)}</span>.
+            Your current balance is <span className="font-bold text-brand-red">${balance.toFixed(2)}</span>.
           </p>
           <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
-            <p className="text-xs text-emerald-400">💡 Spend $5 and get $100 in free credits!</p>
+            <p className="text-xs text-brand-green">💡 Spend $5 and get $100 in free credits!</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
-            <Button onClick={() => window.location.href = "/credits"} className="flex-1 bg-emerald-600 hover:bg-emerald-700">
+            <Button onClick={() => window.location.href = "/credits"} className="flex-1 bg-brand-green/80 hover:bg-brand-green">
               <DollarSign className="h-4 w-4 mr-1" /> Buy Credits
             </Button>
           </div>
@@ -150,7 +150,7 @@ export default function CorrelationFinder() {
               </Card>
               <Card className="bg-gray-900 border-gray-800">
                 <CardContent className="p-4 text-center">
-                  <p className="text-2xl font-bold text-yellow-400">${corrMutation.data?.balance?.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-brand-gold">${corrMutation.data?.balance?.toFixed(2)}</p>
                   <p className="text-xs text-gray-400">Credits Remaining</p>
                 </CardContent>
               </Card>
@@ -165,7 +165,7 @@ export default function CorrelationFinder() {
                       <div className="flex items-center gap-2">
                         <Badge className={
                           pair.recommendation === "strong_corr" ? "bg-orange-600/20 text-orange-400 border-orange-500/30" :
-                          pair.recommendation === "moderate_corr" ? "bg-yellow-600/20 text-yellow-400 border-yellow-500/30" :
+                          pair.recommendation === "moderate_corr" ? "bg-yellow-600/20 text-brand-gold border-yellow-500/30" :
                           "bg-gray-600/20 text-gray-400 border-gray-500/30"
                         }>
                           {pair.recommendation === "strong_corr" ? "Strong" : pair.recommendation === "moderate_corr" ? "Moderate" : "Weak"}
@@ -176,8 +176,8 @@ export default function CorrelationFinder() {
                       </div>
                       <div className="text-right">
                         <span className={`text-lg font-bold ${
-                          pair.correlation > 0.6 ? "text-emerald-400" :
-                          pair.correlation > 0.3 ? "text-yellow-400" :
+                          pair.correlation > 0.6 ? "text-brand-green" :
+                          pair.correlation > 0.3 ? "text-brand-gold" :
                           "text-gray-400"
                         }`}>
                           {(pair.correlation * 100).toFixed(0)}% correlated
@@ -191,7 +191,7 @@ export default function CorrelationFinder() {
                         <p className="text-xs text-gray-500 mb-1">LEG 1</p>
                         <p className="font-medium text-white">{pair.leg1.team}</p>
                         <p className="text-sm text-gray-400">{pair.leg1.market} {pair.leg1.line}</p>
-                        <p className="text-sm font-mono text-cyan-400">
+                        <p className="text-sm font-mono text-brand-blue">
                           {pair.leg1.odds > 0 ? "+" : ""}{pair.leg1.odds}
                         </p>
                       </div>
@@ -199,7 +199,7 @@ export default function CorrelationFinder() {
                         <p className="text-xs text-gray-500 mb-1">LEG 2</p>
                         <p className="font-medium text-white">{pair.leg2.team}</p>
                         <p className="text-sm text-gray-400">{pair.leg2.market} {pair.leg2.line}</p>
-                        <p className="text-sm font-mono text-cyan-400">
+                        <p className="text-sm font-mono text-brand-blue">
                           {pair.leg2.odds > 0 ? "+" : ""}{pair.leg2.odds}
                         </p>
                       </div>

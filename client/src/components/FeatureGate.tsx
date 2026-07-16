@@ -56,7 +56,7 @@ export function FeatureGate({
         <Paywall
           tier={tier}
           title={feature.charAt(0).toUpperCase() + feature.slice(1)}
-          description={`This premium feature requires a ${tier === "daily" ? "Daily Pass" : tier === "monthly" ? "Monthly Pro" : "Annual Elite"} subscription.`}
+          description={`This premium feature requires a ${tier === "daily" ? "Basic" : tier === "monthly" ? "Pro" : "Elite"} subscription.`}
         />
       )
     );

@@ -29,7 +29,7 @@ function AnalyticsDashboard() {
     <Card className="bg-gradient-to-r from-slate-800 to-slate-900 border-slate-700 mt-8">
       <CardHeader>
         <CardTitle className="text-white flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-cyan-400" />
+          <BarChart3 className="w-5 h-5 text-brand-blue" />
           Market Analytics Dashboard
         </CardTitle>
       </CardHeader>
@@ -41,15 +41,15 @@ function AnalyticsDashboard() {
           </div>
           <div className="bg-slate-800/50 rounded-lg p-4">
             <p className="text-slate-400 text-xs uppercase">Avg Volume</p>
-            <p className="text-2xl font-bold text-cyan-400">${data?.avgVolume ? `${(data.avgVolume / 1000).toFixed(0)}K` : "-"}</p>
+            <p className="text-2xl font-bold text-brand-blue">${data?.avgVolume ? `${(data.avgVolume / 1000).toFixed(0)}K` : "-"}</p>
           </div>
           <div className="bg-slate-800/50 rounded-lg p-4">
             <p className="text-slate-400 text-xs uppercase">Edge Opportunities</p>
-            <p className="text-2xl font-bold text-green-400">{data?.edgeOpportunities ?? "-"}</p>
+            <p className="text-2xl font-bold text-brand-green">{data?.edgeOpportunities ?? "-"}</p>
           </div>
           <div className="bg-slate-800/50 rounded-lg p-4">
             <p className="text-slate-400 text-xs uppercase">Comparisons</p>
-            <p className="text-2xl font-bold text-amber-400">{compData?.comparisons?.length ?? "-"}</p>
+            <p className="text-2xl font-bold text-brand-gold">{compData?.comparisons?.length ?? "-"}</p>
           </div>
         </div>
         {data?.topMovers?.length > 0 && (
@@ -59,7 +59,7 @@ function AnalyticsDashboard() {
               {(data.topMovers as any[]).slice(0, 3).map((m: any, i: number) => (
                 <div key={i} className="flex justify-between items-center bg-slate-800/30 rounded px-3 py-2">
                   <span className="text-white text-sm">{m.title || m.ticker}</span>
-                  <Badge variant="outline" className="text-cyan-400 border-cyan-400/30">
+                  <Badge variant="outline" className="text-brand-blue border-brand-blue/30">
                     {m.volume ? `$${(m.volume / 1000).toFixed(0)}K vol` : "Active"}
                   </Badge>
                 </div>
@@ -74,7 +74,7 @@ function AnalyticsDashboard() {
               {(compData.comparisons as any[]).slice(0, 3).map((c: any, i: number) => (
                 <div key={i} className="flex justify-between items-center bg-slate-800/30 rounded px-3 py-2">
                   <span className="text-white text-sm">{c.matchup || c.event}</span>
-                  <span className={`text-sm font-bold ${c.discrepancy > 5 ? 'text-green-400' : 'text-slate-400'}`}>
+                  <span className={`text-sm font-bold ${c.discrepancy > 5 ? 'text-brand-green' : 'text-slate-400'}`}>
                     {c.discrepancy ? `${c.discrepancy.toFixed(1)}% edge` : c.recommendation || ""}
                   </span>
                 </div>
@@ -124,9 +124,9 @@ function KalshiMarketsContent() {
   const markets = getMarketsByTab();
 
   const getMarketSentiment = (probability: number) => {
-    if (probability > 0.65) return { label: "Strong Yes", color: "bg-emerald-500/20 border-emerald-500/50 text-emerald-400" };
-    if (probability > 0.55) return { label: "Lean Yes", color: "bg-green-500/20 border-green-500/50 text-green-400" };
-    if (probability < 0.35) return { label: "Strong No", color: "bg-red-500/20 border-red-500/50 text-red-400" };
+    if (probability > 0.65) return { label: "Strong Yes", color: "bg-brand-green/20 border-brand-green/50 text-brand-green" };
+    if (probability > 0.55) return { label: "Lean Yes", color: "bg-brand-green/20 border-brand-green/50 text-brand-green" };
+    if (probability < 0.35) return { label: "Strong No", color: "bg-brand-red/20 border-brand-red/50 text-brand-red" };
     if (probability < 0.45) return { label: "Lean No", color: "bg-orange-500/20 border-orange-500/50 text-orange-400" };
     return { label: "Neutral", color: "bg-slate-500/20 border-slate-500/50 text-slate-400" };
   };
@@ -139,14 +139,14 @@ function KalshiMarketsContent() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-2">
-                <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-brand-green via-cyan-400 to-blue-400 bg-clip-text text-transparent">
                   Kalshi Markets
                 </span>
               </h1>
               <p className="text-slate-400">Real-time prediction market analysis with AI-powered trading signals</p>
             </div>
             <div className="text-right hidden md:block">
-              <div className="text-3xl font-bold text-cyan-400">{markets.length}</div>
+              <div className="text-3xl font-bold text-brand-blue">{markets.length}</div>
               <p className="text-sm text-slate-400">Active Markets</p>
             </div>
           </div>
@@ -161,7 +161,7 @@ function KalshiMarketsContent() {
                   <p className="text-slate-400 text-sm mb-1">Total Volume</p>
                   <p className="text-2xl font-bold text-white">$2.4M</p>
                 </div>
-                <DollarSign className="w-8 h-8 text-cyan-400 opacity-50" />
+                <DollarSign className="w-8 h-8 text-brand-blue opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -172,7 +172,7 @@ function KalshiMarketsContent() {
                   <p className="text-slate-400 text-sm mb-1">24h Traders</p>
                   <p className="text-2xl font-bold text-white">12.3K</p>
                 </div>
-                <Users className="w-8 h-8 text-emerald-400 opacity-50" />
+                <Users className="w-8 h-8 text-brand-green opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -194,7 +194,7 @@ function KalshiMarketsContent() {
                   <p className="text-slate-400 text-sm mb-1">AI Confidence</p>
                   <p className="text-2xl font-bold text-white">87.2%</p>
                 </div>
-                <Brain className="w-8 h-8 text-amber-400 opacity-50" />
+                <Brain className="w-8 h-8 text-brand-gold opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -207,7 +207,7 @@ function KalshiMarketsContent() {
             placeholder="Search markets by title, category, or keyword..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-slate-800 border-slate-700 text-white placeholder-slate-500 focus:border-cyan-500"
+            className="pl-10 bg-slate-800 border-slate-700 text-white placeholder-slate-500 focus:border-brand-blue"
           />
         </div>
 
@@ -215,7 +215,7 @@ function KalshiMarketsContent() {
         {marketAlerts.data && marketAlerts.data.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <Zap className="w-5 h-5 text-amber-400" />
+              <Zap className="w-5 h-5 text-brand-gold" />
               Market Alerts
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -227,12 +227,12 @@ function KalshiMarketsContent() {
                 >
                   <CardContent className="pt-6">
                     <div className="flex items-start gap-3">
-                      <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-1" />
+                      <AlertCircle className="w-5 h-5 text-brand-gold flex-shrink-0 mt-1" />
                       <div className="flex-1">
                         <h3 className="font-semibold text-white text-sm mb-1">{alert.market.title}</h3>
                         <p className="text-xs text-slate-400 mb-2">{alert.reasoning}</p>
                         <div className="flex items-center justify-between">
-                          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
+                          <Badge className="bg-amber-500/20 text-brand-gold border-amber-500/30">
                             {Math.round(0.65 * 100)}%
                           </Badge>
                           <span className="text-xs text-slate-500">High volatility</span>
@@ -276,7 +276,7 @@ function KalshiMarketsContent() {
                     return (
                       <Card
                         key={market.id}
-                        className={`bg-slate-800 border-slate-700 hover:border-cyan-500/50 transition-all cursor-pointer ${
+                        className={`bg-slate-800 border-slate-700 hover:border-brand-blue/50 transition-all cursor-pointer ${
                           selectedMarket === market.id ? "ring-2 ring-cyan-500" : ""
                         }`}
                         onClick={() => setSelectedMarket(market.id)}
@@ -297,19 +297,19 @@ function KalshiMarketsContent() {
                               <div>
                                 <p className="text-xs text-slate-400 mb-1">Probability</p>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-2xl font-bold text-cyan-400">
+                                  <span className="text-2xl font-bold text-brand-blue">
                                     {Math.round(0.65 * 100)}%
                                   </span>
                                   {0.65 > 0.5 ? (
-                                    <TrendingUp className="w-5 h-5 text-emerald-400" />
+                                    <TrendingUp className="w-5 h-5 text-brand-green" />
                                   ) : (
-                                    <TrendingDown className="w-5 h-5 text-red-400" />
+                                    <TrendingDown className="w-5 h-5 text-brand-red" />
                                   )}
                                 </div>
                               </div>
                               <div>
                                 <p className="text-xs text-slate-400 mb-1">24h Change</p>
-                                <p className={`text-2xl font-bold ${1 > 0 ? "text-emerald-400" : "text-red-400"}`}>
+                                <p className={`text-2xl font-bold ${1 > 0 ? "text-brand-green" : "text-brand-red"}`}>
                                   {1 > 0 ? "+" : ""}1%
                                 </p>
                               </div>
@@ -335,7 +335,7 @@ function KalshiMarketsContent() {
 
                             {/* AI Recommendation */}
                             <div className="bg-slate-700/50 rounded p-3 flex items-start gap-2">
-                              <Brain className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
+                              <Brain className="w-4 h-4 text-brand-blue flex-shrink-0 mt-0.5" />
                               <div className="text-xs">
                                 <p className="text-slate-300 font-medium mb-1">AI Signal: BULLISH</p>
                                 <p className="text-slate-400">Market shows strong momentum</p>
@@ -343,7 +343,7 @@ function KalshiMarketsContent() {
                             </div>
 
                             {/* Trade Button */}
-                            <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700">
+                            <Button className="w-full bg-gradient-to-r from-brand-blue to-blue-600 hover:from-brand-blue/80 hover:to-blue-700">
                               <Target className="w-4 h-4 mr-2" />
                               Trade Now
                             </Button>

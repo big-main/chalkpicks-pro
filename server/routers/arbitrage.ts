@@ -1,4 +1,4 @@
-import { router, protectedProcedure } from "../\_core/trpc";
+import { router, protectedProcedure } from "../_core/trpc";
 import { z } from "zod";
 import { getDb } from "../db";
 import { arbitrageOpportunities, userArbitrageTrades } from "../../drizzle/schema";
@@ -24,14 +24,16 @@ const calculateArbitrage = (probA: number, probB: number): number => {
 };
 
 // Helper: Calculate stakes for $100 investment
-const calculateStakes = (oddsA: number, oddsB: number, totalStake: number = 100) => {
+export const calculateStakes = (oddsA: number, oddsB: number, totalStake: number = 100) => {
   const decimalA = americanToDecimal(oddsA);
   const decimalB = americanToDecimal(oddsB);
   
   const probA = decimalToImpliedProbability(decimalA);
   const probB = decimalToImpliedProbability(decimalB);
-  
-  const stakeA = (totalStake * probB) / (probA + probB);
+
+  // Stake on each side proportional to its own implied probability so that
+  // stakeA * decimalA === stakeB * decimalB (equal payout on either outcome).
+  const stakeA = (totalStake * probA) / (probA + probB);
   const stakeB = totalStake - stakeA;
   
   const winningsA = stakeA * decimalA;
@@ -140,6 +142,7 @@ export const arbitrageRouter = router({
         guaranteedProfit: Number(opp.guaranteedProfit),
         oddsA: Number(opp.oddsA),
         oddsB: Number(opp.oddsB),
+        source: String(opp.source ?? "api"), // Include source (heartbeat-cron or heartbeat-cron+oddsportal)
       }));
     }),
 
@@ -173,6 +176,7 @@ export const arbitrageRouter = router({
         guaranteedProfit: Number(opp[0].guaranteedProfit),
         oddsA: Number(opp[0].oddsA),
         oddsB: Number(opp[0].oddsB),
+        source: String(opp[0].source ?? "api"), // Include source
       };
     }),
 

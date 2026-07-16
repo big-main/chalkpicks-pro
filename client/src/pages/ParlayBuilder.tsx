@@ -89,7 +89,7 @@ function ParlayBuilderContent() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Parlay Builder</h1>
-          <p className="text-cyan-400">Create and analyze multi-leg parlays</p>
+          <p className="text-brand-blue">Create and analyze multi-leg parlays</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -121,7 +121,7 @@ function ParlayBuilderContent() {
                       className="bg-slate-700 border-slate-600 text-white"
                     />
                   </div>
-                  <Button onClick={addLeg} className="w-full bg-cyan-600 hover:bg-cyan-700">
+                  <Button onClick={addLeg} className="w-full bg-brand-blue/80 hover:bg-brand-blue">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Leg
                   </Button>
@@ -147,7 +147,7 @@ function ParlayBuilderContent() {
                           variant="ghost"
                           size="sm"
                           onClick={() => removeLeg(leg.id)}
-                          className="text-red-400 hover:text-red-300"
+                          className="text-brand-red hover:text-red-300"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -172,7 +172,7 @@ function ParlayBuilderContent() {
                   <Button
                     onClick={saveParlay}
                     disabled={currentLegs.length === 0}
-                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    className="flex-1 bg-brand-green/80 hover:bg-brand-green"
                   >
                     <Zap className="w-4 h-4 mr-2" />
                     Save Parlay
@@ -211,12 +211,12 @@ function ParlayBuilderContent() {
 
                 <div>
                   <p className="text-xs text-slate-400">Potential Payout</p>
-                  <p className="text-2xl font-bold text-green-400">${payout.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-brand-green">${payout.toFixed(2)}</p>
                 </div>
 
                 <div>
                   <p className="text-xs text-slate-400">ROI</p>
-                  <p className={`text-2xl font-bold ${roi > 0 ? "text-green-400" : "text-slate-400"}`}>
+                  <p className={`text-2xl font-bold ${roi > 0 ? "text-brand-green" : "text-slate-400"}`}>
                     {roi.toFixed(1)}%
                   </p>
                 </div>
@@ -253,7 +253,7 @@ function ParlayBuilderContent() {
                     </div>
                     <div>
                       <p className="text-xs text-slate-400">Potential Payout</p>
-                      <p className="text-lg font-bold text-green-400">
+                      <p className="text-lg font-bold text-brand-green">
                         ${calculatePayout(parlay.legs, parlay.stake).toFixed(2)}
                       </p>
                     </div>

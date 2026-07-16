@@ -5,7 +5,7 @@ import { z } from "zod";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { sdk } from "./_core/sdk";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { picksRouter } from "./routers/picks";
 import { statsRouter } from "./routers/stats";
 import { backtestRouter } from "./routers/backtest";
@@ -14,7 +14,6 @@ import { leaderboardRouter } from "./routers/leaderboard";
 import { subscriptionRouter } from "./routers/subscription";
 import { notificationsRouter } from "./routers/notificationsRouter";
 import { feedbackRouter } from "./routers/feedback";
-import { paypalRouter } from "./routers/paypal";
 import { oddsRouter } from "./routers/odds";
 import { aiPicksRouter } from "./routers/aiPicks";
 import { promoCodeRouter } from "./routers/promoCode";
@@ -30,6 +29,7 @@ import { betsExportPdfRouter } from "./routers/betsExportPdf";
 import { pushNotificationsRouter } from "./routers/pushNotifications";
 import { ogImageRouter } from "./routers/ogImage";
 import { oddsComparisonRouter } from "./routers/oddsComparison";
+import { oddsMathRouter } from "./routers/oddsMath";
 import { storyGeneratorRouter } from "./routers/storyGenerator";
 import { storyHistoryRouter } from "./routers/storyHistory";
 import { storyScheduledRouter } from "./routers/storyScheduled";
@@ -105,12 +105,16 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
-    elevateToAdmin: publicProcedure
+    // Admin-only: promote another user to admin. This was previously a
+    // publicProcedure, which let ANY unauthenticated visitor grant themselves
+    // (or anyone) admin + a 100-year subscription — a privilege-escalation and
+    // revenue hole. The first admin is bootstrapped out-of-band via seed-admin.ts.
+    elevateToAdmin: adminProcedure
       .input(z.object({ email: z.string().email() }))
       .mutation(async ({ input }) => {
         const database = await db.getDb();
         if (!database) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
-        await database.update(users).set({ 
+        await database.update(users).set({
           role: "admin",
           subscriptionTier: "yearly",
           subscriptionExpiresAt: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000)
@@ -159,9 +163,9 @@ export const appRouter = router({
   subscription: subscriptionRouter,
   notifications: notificationsRouter,
   feedback: feedbackRouter,
-  paypal: paypalRouter,
   odds: oddsRouter,
   oddsComparison: oddsComparisonRouter,
+  oddsMath: oddsMathRouter,
   aiPicks: aiPicksRouter,
   promoCode: promoCodeRouter,
   kalshi: kalshiRouter,

@@ -29,15 +29,15 @@ const SAMPLE_EV_BETS: EVBet[] = [
 function getSportColor(sport: string): string {
   switch (sport) {
     case "NBA": return "#ff6b35";
-    case "NFL": return "#00d4ff";
-    case "MLB": return "#00ff88";
-    case "NHL": return "#a855f7";
-    default:    return "#00ff88";
+    case "NFL": return "#f0b800";
+    case "MLB": return "#39ff14";
+    case "NHL": return "#d4a017";
+    default:    return "#39ff14";
   }
 }
 
 function getEVColor(ev: number): string {
-  if (ev >= 6) return "#00ff88";
+  if (ev >= 6) return "#39ff14";
   if (ev >= 4) return "#f0c040";
   return "#ff9f40";
 }
@@ -77,9 +77,9 @@ export default function RecentEVTicker() {
     <section
       className="py-4 overflow-hidden"
       style={{
-        background: "linear-gradient(180deg, rgba(0,255,136,0.03) 0%, rgba(8,8,20,1) 100%)",
-        borderTop: "1px solid rgba(0,255,136,0.15)",
-        borderBottom: "1px solid rgba(0,255,136,0.08)",
+        background: "linear-gradient(180deg, rgba(57,255,20,0.03) 0%, rgba(8,8,20,1) 100%)",
+        borderTop: "1px solid rgba(57,255,20,0.15)",
+        borderBottom: "1px solid rgba(57,255,20,0.08)",
       }}
     >
       {/* Header */}
@@ -88,11 +88,10 @@ export default function RecentEVTicker() {
           <div
             className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold tracking-wider uppercase"
             style={{
-              background: "rgba(0,255,136,0.1)",
-              border: "1px solid rgba(0,255,136,0.3)",
+              background: "rgba(57,255,20,0.1)",
+              border: "1px solid rgba(57,255,20,0.3)",
               borderRadius: "4px",
-              color: "#00ff88",
-              fontFamily: "'Rajdhani', sans-serif",
+              color: "#39ff14",
             }}
           >
             <Zap className="w-3 h-3" />
@@ -100,7 +99,7 @@ export default function RecentEVTicker() {
           </div>
           <span
             className="text-sm font-semibold"
-            style={{ color: "rgba(220,220,240,0.9)", fontFamily: "'Rajdhani', sans-serif" }}
+            style={{ color: "rgba(220,220,240,0.9)" }}
           >
             Recent +EV Bets Found
           </span>
@@ -125,7 +124,7 @@ export default function RecentEVTicker() {
             className="flex-shrink-0 no-underline transition-all duration-200 hover:scale-[1.02] group"
             style={{
               background: "rgba(20,20,40,0.9)",
-              border: "1px solid rgba(0,255,136,0.12)",
+              border: "1px solid rgba(57,255,20,0.12)",
               borderRadius: "10px",
               minWidth: "360px",
               display: "block",
@@ -145,7 +144,6 @@ export default function RecentEVTicker() {
                     background: `${getSportColor(bet.sport)}20`,
                     color: getSportColor(bet.sport),
                     borderRadius: "3px",
-                    fontFamily: "'Rajdhani', sans-serif",
                     letterSpacing: "0.05em",
                   }}
                 >
@@ -153,14 +151,14 @@ export default function RecentEVTicker() {
                 </span>
                 <span
                   className="text-xs font-semibold"
-                  style={{ color: "rgba(200,200,220,0.95)", fontFamily: "'Rajdhani', sans-serif" }}
+                  style={{ color: "rgba(200,200,220,0.95)" }}
                 >
                   {bet.matchup}
                 </span>
               </div>
               <ExternalLink
                 className="w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity ml-2 flex-shrink-0"
-                style={{ color: "#00ff88" }}
+                style={{ color: "#39ff14" }}
               />
             </div>
 
@@ -170,7 +168,7 @@ export default function RecentEVTicker() {
               <div className="flex-1 min-w-0">
                 <div
                   className="text-sm font-bold truncate"
-                  style={{ color: "white", fontFamily: "'Rajdhani', sans-serif" }}
+                  style={{ color: "white" }}
                 >
                   {bet.bet}
                 </div>
@@ -203,7 +201,6 @@ export default function RecentEVTicker() {
                     className="text-base font-black"
                     style={{
                       color: getEVColor(bet.ev),
-                      fontFamily: "'Rajdhani', sans-serif",
                       lineHeight: 1,
                     }}
                   >
@@ -221,12 +218,11 @@ export default function RecentEVTicker() {
               {/* Recommended bet size */}
               <div className="text-center flex-shrink-0">
                 <div className="flex items-center gap-0.5">
-                  <DollarSign className="w-3 h-3" style={{ color: "#00d4ff" }} />
+                  <DollarSign className="w-3 h-3" style={{ color: "#f0b800" }} />
                   <span
                     className="text-base font-black"
                     style={{
-                      color: "#00d4ff",
-                      fontFamily: "'Rajdhani', sans-serif",
+                      color: "#f0b800",
                       lineHeight: 1,
                     }}
                   >

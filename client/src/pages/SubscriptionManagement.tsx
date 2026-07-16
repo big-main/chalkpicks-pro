@@ -8,34 +8,33 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 function ManageBillingButton() {
-  const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
   const billingMutation = trpc.subscription.getBillingPortalUrl.useMutation({
     onSuccess: (data) => {
       window.location.href = data.url;
     },
-    onError: (err) => {
-      setError(err.message || "Failed to open billing portal");
-      setIsLoading(false);
+    onError: (err: any) => {
+      setError(err?.message || "Failed to open billing portal");
     },
   });
 
   const handleClick = () => {
-    setIsLoading(true);
     setError("");
     billingMutation.mutate({ origin: window.location.origin });
   };
+
+  const isLoading = billingMutation.isPending;
 
   return (
     <>
       <Button
         onClick={handleClick}
-        disabled={isLoading || billingMutation.isPending}
+        disabled={isLoading}
         className="w-full"
       >
-        {isLoading || billingMutation.isPending ? "Loading..." : "Manage Billing in Stripe"}
+        {isLoading ? "Loading..." : "Manage Billing in Stripe"}
       </Button>
-      {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
+      {error && <p className="text-brand-red text-sm mt-2">{error}</p>}
     </>
   );
 }
@@ -83,7 +82,7 @@ export default function SubscriptionManagement() {
             <Card className="mb-6">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-400" />
+                  <CheckCircle2 className="w-5 h-5 text-brand-green" />
                   Current Plan
                 </CardTitle>
               </CardHeader>
@@ -101,7 +100,7 @@ export default function SubscriptionManagement() {
                       </p>
                     </div>
                     {subscription?.isActive && (
-                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                      <Badge className="bg-brand-green/20 text-brand-green border-brand-green/30">
                         Active
                       </Badge>
                     )}
@@ -129,11 +128,11 @@ export default function SubscriptionManagement() {
                       {subscription?.tier === "free" && (
                         <>
                           <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <CheckCircle2 className="w-4 h-4 text-green-400" />
+                            <CheckCircle2 className="w-4 h-4 text-brand-green" />
                             No active subscription
                           </li>
                           <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <CheckCircle2 className="w-4 h-4 text-green-400" />
+                            <CheckCircle2 className="w-4 h-4 text-brand-green" />
                             Upgrade to access premium features
                           </li>
                         </>
@@ -141,27 +140,27 @@ export default function SubscriptionManagement() {
                       {(subscription?.tier === "daily" || subscription?.tier === "monthly" || subscription?.tier === "yearly") && (
                         <>
                           <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <CheckCircle2 className="w-4 h-4 text-green-400" />
+                            <CheckCircle2 className="w-4 h-4 text-brand-green" />
                             All standard features
                           </li>
                           <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <CheckCircle2 className="w-4 h-4 text-green-400" />
+                            <CheckCircle2 className="w-4 h-4 text-brand-green" />
                             Premium AI-powered picks
                           </li>
                           <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <CheckCircle2 className="w-4 h-4 text-green-400" />
+                            <CheckCircle2 className="w-4 h-4 text-brand-green" />
                             Advanced backtesting engine
                           </li>
                           <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <CheckCircle2 className="w-4 h-4 text-green-400" />
+                            <CheckCircle2 className="w-4 h-4 text-brand-green" />
                             Daily pick alerts
                           </li>
                           <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <CheckCircle2 className="w-4 h-4 text-green-400" />
+                            <CheckCircle2 className="w-4 h-4 text-brand-green" />
                             Performance analytics
                           </li>
                           <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <CheckCircle2 className="w-4 h-4 text-green-400" />
+                            <CheckCircle2 className="w-4 h-4 text-brand-green" />
                             Priority support
                           </li>
                         </>
@@ -210,20 +209,20 @@ export default function SubscriptionManagement() {
                   {[
                     {
                       date: "2026-03-22",
-                      description: "Monthly Subscription",
-                      amount: "$29.99",
+                      description: "Pro Subscription",
+                      amount: "$19.99",
                       status: "Paid",
                     },
                     {
                       date: "2026-02-22",
-                      description: "Monthly Subscription",
-                      amount: "$29.99",
+                      description: "Pro Subscription",
+                      amount: "$19.99",
                       status: "Paid",
                     },
                     {
                       date: "2026-01-22",
-                      description: "Monthly Subscription",
-                      amount: "$29.99",
+                      description: "Pro Subscription",
+                      amount: "$19.99",
                       status: "Paid",
                     },
                   ].map((invoice, idx) => (
@@ -296,15 +295,15 @@ export default function SubscriptionManagement() {
             </Card>
 
             {/* Danger Zone */}
-            <Card className="border-red-500/20">
+            <Card className="border-brand-red/20">
               <CardHeader>
-                <CardTitle className="text-lg text-red-400">Danger Zone</CardTitle>
+                <CardTitle className="text-lg text-brand-red">Danger Zone</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-3">
+                <div className="bg-brand-red/10 border border-brand-red/20 rounded-lg p-3 mb-3">
                   <div className="flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
-                    <p className="text-xs text-red-400">
+                    <AlertCircle className="w-4 h-4 text-brand-red mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-brand-red">
                       Canceling your subscription will immediately revoke access to premium features.
                     </p>
                   </div>

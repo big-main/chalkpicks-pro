@@ -34,12 +34,12 @@ export function PromoCodeInput({
 
   if (applied) {
     return (
-      <div className="flex items-center gap-2 p-3 rounded bg-green-900/20 border border-green-500/50">
-        <Check className="w-4 h-4 text-green-400" />
-        <span className="text-sm text-green-400">Promo code applied: {code}</span>
+      <div className="flex items-center gap-2 p-3 rounded bg-green-900/20 border border-brand-green/50">
+        <Check className="w-4 h-4 text-brand-green" />
+        <span className="text-sm text-brand-green">Promo code applied: {code}</span>
         <button
           onClick={handleClear}
-          className="ml-auto text-xs text-green-400 hover:text-green-300 underline"
+          className="ml-auto text-xs text-brand-green hover:text-brand-green underline"
         >
           Change
         </button>
@@ -56,7 +56,7 @@ export function PromoCodeInput({
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
           onKeyDown={(e) => e.key === "Enter" && handleApply()}
-          className="flex-1 px-3 py-2 bg-gray-900/50 border border-green-500/30 rounded text-sm text-white placeholder-gray-500 focus:outline-none focus:border-green-500"
+          className="flex-1 px-3 py-2 bg-gray-900/50 border border-brand-green/30 rounded text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-green"
         />
         <button
           onClick={handleApply}
@@ -67,7 +67,7 @@ export function PromoCodeInput({
         </button>
       </div>
       {validatePromo.error && (
-        <div className="flex items-center gap-2 text-red-400 text-xs">
+        <div className="flex items-center gap-2 text-brand-red text-xs">
           <AlertCircle className="w-3 h-3" />
           {validatePromo.error.message}
         </div>

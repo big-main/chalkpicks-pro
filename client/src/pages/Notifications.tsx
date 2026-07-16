@@ -14,9 +14,9 @@ import { Bell, Mail, MessageSquare, CheckCircle, AlertCircle, Clock, Trophy, Tre
 import Navbar from "@/components/Navbar";
 
 const notifTypeIcons: Record<string, React.ReactNode> = {
-  login_alert: <Shield className="w-4 h-4 text-yellow-400" />,
-  subscription_confirm: <CheckCircle className="w-4 h-4 text-green-400" />,
-  daily_picks: <Trophy className="w-4 h-4 text-amber-400" />,
+  login_alert: <Shield className="w-4 h-4 text-brand-gold" />,
+  subscription_confirm: <CheckCircle className="w-4 h-4 text-brand-green" />,
+  daily_picks: <Trophy className="w-4 h-4 text-brand-gold" />,
   daily_digest: <TrendingUp className="w-4 h-4 text-blue-400" />,
   performance_summary: <Zap className="w-4 h-4 text-purple-400" />,
   system: <Bell className="w-4 h-4 text-slate-400" />,
@@ -32,9 +32,9 @@ const notifTypeLabels: Record<string, string> = {
 };
 
 const statusColors: Record<string, string> = {
-  sent: "text-green-400",
-  failed: "text-red-400",
-  pending: "text-yellow-400",
+  sent: "text-brand-green",
+  failed: "text-brand-red",
+  pending: "text-brand-gold",
 };
 
 export default function Notifications() {
@@ -247,10 +247,10 @@ export default function Notifications() {
                     </div>
                     <Separator />
                     {[
-                      { field: "emailDailyPicks", label: "Daily Picks", desc: "Get today's top AI picks every morning", icon: <Trophy className="w-4 h-4 text-amber-400" /> },
+                      { field: "emailDailyPicks", label: "Daily Picks", desc: "Get today's top AI picks every morning", icon: <Trophy className="w-4 h-4 text-brand-gold" /> },
                       { field: "emailDailyDigest", label: "Daily Digest", desc: "Performance summary and stats recap", icon: <TrendingUp className="w-4 h-4 text-blue-400" /> },
-                      { field: "emailSubscriptionConfirm", label: "Subscription Confirmations", desc: "Receipts and subscription status updates", icon: <CheckCircle className="w-4 h-4 text-green-400" /> },
-                      { field: "emailLoginAlert", label: "Login Alerts", desc: "Security alert when a new login is detected", icon: <Shield className="w-4 h-4 text-yellow-400" /> },
+                      { field: "emailSubscriptionConfirm", label: "Subscription Confirmations", desc: "Receipts and subscription status updates", icon: <CheckCircle className="w-4 h-4 text-brand-green" /> },
+                      { field: "emailLoginAlert", label: "Login Alerts", desc: "Security alert when a new login is detected", icon: <Shield className="w-4 h-4 text-brand-gold" /> },
                       { field: "emailPerformanceSummary", label: "Performance Summary", desc: "Weekly and monthly betting performance reports", icon: <Zap className="w-4 h-4 text-purple-400" /> },
                     ].map(({ field, label, desc, icon }) => (
                       <div key={field} className="flex items-center justify-between">
@@ -275,7 +275,7 @@ export default function Notifications() {
                 <Card className="bg-card border-border">
                   <CardHeader className="pb-4">
                     <div className="flex items-center gap-2">
-                      <MessageSquare className="w-5 h-5 text-green-400" />
+                      <MessageSquare className="w-5 h-5 text-brand-green" />
                       <CardTitle className="text-lg">SMS Notifications</CardTitle>
                     </div>
                     <CardDescription>Get instant text alerts on your phone.</CardDescription>
@@ -394,7 +394,7 @@ export default function Notifications() {
                         <div key={log.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-background/50">
                           <div className="shrink-0">
                             {log.channel === "email" ? <Mail className="w-4 h-4 text-blue-400" /> :
-                             log.channel === "sms" ? <MessageSquare className="w-4 h-4 text-green-400" /> :
+                             log.channel === "sms" ? <MessageSquare className="w-4 h-4 text-brand-green" /> :
                              <Bell className="w-4 h-4 text-slate-400" />}
                           </div>
                           <div className="flex-1 min-w-0">

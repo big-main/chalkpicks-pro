@@ -159,11 +159,11 @@ export default function Stats() {
                             <div className="flex items-center gap-1 mt-0.5">
                               <TrendingUp className={`w-3 h-3 ${
                                 player.trend === "up" ? "text-accent" :
-                                player.trend === "down" ? "text-red-400 rotate-180" : "text-muted-foreground"
+                                player.trend === "down" ? "text-brand-red rotate-180" : "text-muted-foreground"
                               }`} />
                               <span className={`text-xs ${
                                 player.trend === "up" ? "text-accent" :
-                                player.trend === "down" ? "text-red-400" : "text-muted-foreground"
+                                player.trend === "down" ? "text-brand-red" : "text-muted-foreground"
                               }`}>{player.trend}</span>
                             </div>
                             {player.stats && (
@@ -249,8 +249,8 @@ export default function Stats() {
                       <div className="flex items-center justify-between flex-wrap gap-3">
                         <div className="flex items-center gap-3">
                           <AlertTriangle className={`w-4 h-4 flex-shrink-0 ${
-                            inj.status === "Out" ? "text-red-400" :
-                            inj.status === "Questionable" ? "text-yellow-400" : "text-orange-400"
+                            inj.status === "Out" ? "text-brand-red" :
+                            inj.status === "Questionable" ? "text-brand-gold" : "text-orange-400"
                           }`} />
                           <div>
                             <div className="font-semibold text-foreground text-sm">{inj.player}</div>

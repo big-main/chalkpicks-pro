@@ -6,10 +6,10 @@ import { rateLimit } from "express-rate-limit";
 import helmet from "helmet";
 import type { Express, Request, Response, NextFunction } from "express";
 
-// Global rate limiter: 100 requests per minute per IP
+// Global rate limiter: 300 requests per minute per IP
 const globalLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 100,
+  max: 300,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests, please try again later." },
@@ -33,15 +33,16 @@ const webhookLimiter = rateLimit({
   message: { error: "Webhook rate limit exceeded." },
 });
 
-// Sanitize request body — strip any HTML/script tags from string values
+// Sanitize request body — neutralize active script vectors while PRESERVING
+// legitimate markup and text. The previous version stripped ALL tags from
+// every tRPC body, which silently destroyed blog contentHtml on save and
+// mangled any text containing "<" (e.g. "spread < 3.5").
 function sanitizeValue(value: any): any {
   if (typeof value === "string") {
-    // Remove script tags and event handlers
     return value
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-      .replace(/on\w+\s*=\s*["'][^"']*["']/gi, "")
-      .replace(/<[^>]*>/g, "")
-      .trim();
+      .replace(/\son\w+\s*=\s*(["'])[^"']*\1/gi, "")
+      .replace(/javascript\s*:/gi, "");
   }
   if (Array.isArray(value)) {
     return value.map(sanitizeValue);
@@ -85,9 +86,16 @@ export function registerSecurityMiddleware(app: Express) {
   // Global rate limiter on API routes
   app.use("/api/trpc", globalLimiter);
 
-  // Strict rate limiter on auth-related tRPC calls
-  app.use("/api/trpc/auth.register", authLimiter);
-  app.use("/api/trpc/auth.login", authLimiter);
+  // Strict rate limiter on auth-related tRPC calls.
+  // NOTE: tRPC batches requests as /api/trpc/proc1,proc2?batch=1 — a
+  // path-mounted limiter on "/api/trpc/auth.login" is trivially bypassed by
+  // batching auth.login behind another procedure. Inspect the full URL instead.
+  app.use("/api/trpc", (req: Request, res: Response, next: NextFunction) => {
+    if (/auth\.(login|register)/.test(req.originalUrl)) {
+      return authLimiter(req, res, next);
+    }
+    next();
+  });
 
   // Webhook rate limiter
   app.use("/api/stripe/webhook", webhookLimiter);

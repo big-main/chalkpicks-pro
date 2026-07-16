@@ -23,9 +23,22 @@ import { clvRouter } from "./routers/clv";
 import { referralRouter } from "./routers/referral";
 import { featureRouter } from "./routers/features";
 import { arbitrageRouter } from "./routers/arbitrage";
+import { arbitrageOpportunitiesRouter } from "./routers/arbitrageOpportunities";
 import { toolsRouter } from "./routers/tools";
 import { adminRouter } from "./routers/admin";
 import { betsExportPdfRouter } from "./routers/betsExportPdf";
+import { pushNotificationsRouter } from "./routers/pushNotifications";
+import { ogImageRouter } from "./routers/ogImage";
+import { oddsComparisonRouter } from "./routers/oddsComparison";
+import { storyGeneratorRouter } from "./routers/storyGenerator";
+import { storyHistoryRouter } from "./routers/storyHistory";
+import { storyScheduledRouter } from "./routers/storyScheduled";
+import { communityAutomationRouter } from "./routers/communityAutomation";
+import { blogRouter } from "./routers/blog";
+import { newsletterRouter } from "./routers/newsletter";
+// leaderboardPayouts and draftKings routers disabled — schema not yet migrated
+// import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
+// import { draftKingsRouter } from "./routers/draftkings";
 import * as db from "./db";
 import type { User } from "../drizzle/schema";
 import { users } from "../drizzle/schema";
@@ -45,6 +58,8 @@ async function issueSessionCookie(req: Request, res: Response, userId: number, n
 
 export const appRouter = router({
   system: systemRouter,
+  ogImage: ogImageRouter,
+  newsletter: newsletterRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
 
@@ -146,6 +161,7 @@ export const appRouter = router({
   feedback: feedbackRouter,
   paypal: paypalRouter,
   odds: oddsRouter,
+  oddsComparison: oddsComparisonRouter,
   aiPicks: aiPicksRouter,
   promoCode: promoCodeRouter,
   kalshi: kalshiRouter,
@@ -153,9 +169,16 @@ export const appRouter = router({
   referral: referralRouter,
   features: featureRouter,
   arbitrage: arbitrageRouter,
+  arbitrageOpportunities: arbitrageOpportunitiesRouter,
   tools: toolsRouter,
   admin: adminRouter,
   betsReport: betsExportPdfRouter,
+  push: pushNotificationsRouter,
+  storyGenerator: storyGeneratorRouter,
+  storyHistory: storyHistoryRouter,
+  storyScheduled: storyScheduledRouter,
+  communityAutomation: communityAutomationRouter,
+  blog: blogRouter,
 });
 
 export type AppRouter = typeof appRouter;

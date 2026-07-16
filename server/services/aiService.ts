@@ -1,13 +1,31 @@
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy SDK clients — constructing OpenAI with an undefined apiKey throws at
+// import time. Because this module is pulled in by the root tRPC router, that
+// single missing env var would crash the ENTIRE server at boot instead of
+// just failing AI requests. Fail per-call instead.
+let _openai: OpenAI | null = null;
+function openaiClient(): OpenAI {
+  if (!_openai) {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("OPENAI_API_KEY is not configured — AI analysis is unavailable.");
+    }
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return _openai;
+}
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+let _anthropic: Anthropic | null = null;
+function anthropicClient(): Anthropic {
+  if (!_anthropic) {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      throw new Error("ANTHROPIC_API_KEY is not configured — AI analysis is unavailable.");
+    }
+    _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  }
+  return _anthropic;
+}
 
 export interface PickAnalysisInput {
   sport: string;
@@ -33,7 +51,7 @@ export async function generatePickAnalysis(
   input: PickAnalysisInput
 ): Promise<PickAnalysisOutput> {
   // Use Claude for detailed analysis
-  const claudeResponse = await anthropic.messages.create({
+  const claudeResponse = await anthropicClient().messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 1024,
     messages: [
@@ -79,7 +97,7 @@ Respond in JSON format:
   }
 
   // Use OpenAI for title generation
-  const titleResponse = await openai.chat.completions.create({
+  const titleResponse = await openaiClient().chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: [
       {
@@ -110,7 +128,7 @@ Recommendation: ${claudeAnalysis.recommendation}`,
  * Generate betting insights using multi-model approach
  */
 export async function generateBettingInsights(context: string): Promise<string> {
-  const response = await openai.chat.completions.create({
+  const response = await openaiClient().chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: [
       {
@@ -137,7 +155,7 @@ export async function analyzeSteamMove(
   matchup: string,
   lineMovement: string
 ): Promise<{ isSharpMove: boolean; confidence: number; analysis: string }> {
-  const response = await anthropic.messages.create({
+  const response = await anthropicClient().messages.create({
     model: "claude-3-haiku-20240307",
     max_tokens: 512,
     messages: [
@@ -189,7 +207,7 @@ export async function calculateExpectedValue(
   const ev = winProbability * decimalOdds - 1;
 
   // Use AI to refine recommendation
-  const response = await openai.chat.completions.create({
+  const response = await openaiClient().chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: [
       {

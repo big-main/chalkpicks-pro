@@ -373,7 +373,7 @@ export const promoCodes = mysqlTable("promo_codes", {
   code: varchar("code", { length: 32 }).unique().notNull(),
   discountType: mysqlEnum("discountType", ["percentage", "fixed"]).notNull(),
   discountValue: decimal("discountValue", { precision: 5, scale: 2 }).notNull(),
-  tier: mysqlEnum("tier", ["daily", "monthly", "yearly"]).notNull(),
+  tier: mysqlEnum("tier", ["daily", "monthly", "yearly", "all"]).notNull(),
   maxUses: int("maxUses"),
   currentUses: int("currentUses").default(0).notNull(),
   expiresAt: timestamp("expiresAt"),
@@ -531,3 +531,141 @@ export const userArbitrageTrades = mysqlTable("user_arbitrage_trades", {
 
 export type UserArbitrageTrade = typeof userArbitrageTrades.$inferSelect;
 export type InsertUserArbitrageTrade = typeof userArbitrageTrades.$inferInsert;
+
+// ─── OddsHarvester Cache ─────────────────────────────────────────────────────
+// Caches the last successful OddsHarvester scrape per sport to avoid re-scraping
+// if the next cron run hits the API while a scrape is in progress (60–120s).
+export const oddsHarvesterCache = mysqlTable("odds_harvester_cache", {
+  id: int("id").autoincrement().primaryKey(),
+  sport: varchar("sport", { length: 32 }).notNull().unique(), // e.g., "basketball"
+  data: json("data").notNull(), // Serialized BookmakerOdds[] array
+  scrapedAt: timestamp("scrapedAt").notNull(),
+  expiresAt: timestamp("expiresAt").notNull(), // TTL: 5 minutes (matches cron interval)
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type OddsHarvesterCache = typeof oddsHarvesterCache.$inferSelect;
+export type InsertOddsHarvesterCache = typeof oddsHarvesterCache.$inferInsert;
+
+// ─── Push Subscriptions ───────────────────────────────────────────────────────
+export const pushSubscriptions = mysqlTable("push_subscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  endpoint: text("endpoint").notNull(),
+  p256dh: text("p256dh").notNull(),
+  auth: varchar("auth", { length: 256 }).notNull(),
+  userAgent: varchar("userAgent", { length: 512 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ([
+  index("idx_push_subs_user").on(table.userId),
+]));
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;
+
+// ─── Story Exports ───────────────────────────────────────────────────────────
+// Tracks all generated Instagram story images for history and analytics
+export const storyExports = mysqlTable("story_exports", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"),
+  pickId: int("pickId"),
+  sport: varchar("sport", { length: 32 }).notNull(),
+  homeTeam: varchar("homeTeam", { length: 128 }).notNull(),
+  awayTeam: varchar("awayTeam", { length: 128 }).notNull(),
+  recommendation: varchar("recommendation", { length: 256 }).notNull(),
+  odds: int("odds"),
+  confidenceScore: int("confidenceScore").notNull(),
+  pickType: varchar("pickType", { length: 64 }).notNull(),
+  aiAnalysis: text("aiAnalysis"),
+  result: mysqlEnum("result", ["win", "loss", "push", "pending"]).default("pending").notNull(),
+  s3Url: varchar("s3Url", { length: 512 }),
+  s3Key: varchar("s3Key", { length: 512 }),
+  // imageBase64 removed — use S3 URL instead for efficiency
+  generatedAt: timestamp("generatedAt").defaultNow().notNull(),
+  postedToInstagram: boolean("postedToInstagram").default(false).notNull(),
+  postedAt: timestamp("postedAt"),
+  instagramPostId: varchar("instagramPostId", { length: 128 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ([
+  index("idx_story_exports_user").on(table.userId),
+  index("idx_story_exports_pick").on(table.pickId),
+  index("idx_story_exports_date").on(table.generatedAt),
+]));
+
+export type StoryExport = typeof storyExports.$inferSelect;
+export type InsertStoryExport = typeof storyExports.$inferInsert;
+
+
+// ─── Scheduled Stories ─────────────────────────────────────────────────────────
+export const storyScheduled = mysqlTable("story_scheduled", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  storyExportId: int("storyExportId"),
+  sport: varchar("sport", { length: 32 }).notNull(),
+  homeTeam: varchar("homeTeam", { length: 128 }).notNull(),
+  awayTeam: varchar("awayTeam", { length: 128 }).notNull(),
+  recommendation: varchar("recommendation", { length: 256 }).notNull(),
+  confidenceScore: int("confidenceScore").notNull(),
+  pickType: varchar("pickType", { length: 64 }).notNull(),
+  aiAnalysis: text("aiAnalysis"),
+  templateId: varchar("templateId", { length: 64 }).default("default").notNull(),
+  scheduledTime: timestamp("scheduledTime").notNull(),
+  status: mysqlEnum("status", ["pending", "posted", "failed", "cancelled"]).default("pending").notNull(),
+  postedAt: timestamp("postedAt"),
+  failureReason: text("failureReason"),
+  instagramPostId: varchar("instagramPostId", { length: 128 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ([
+  index("idx_story_scheduled_user").on(table.userId),
+  index("idx_story_scheduled_time").on(table.scheduledTime),
+  index("idx_story_scheduled_status").on(table.status),
+]));
+
+export type StoryScheduled = typeof storyScheduled.$inferSelect;
+export type InsertStoryScheduled = typeof storyScheduled.$inferInsert;
+
+// ─── Blog Posts ───────────────────────────────────────────────────────────────
+export const blogPosts = mysqlTable("blog_posts", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 256 }).notNull(),
+  slug: varchar("slug", { length: 256 }).notNull().unique(),
+  excerpt: text("excerpt"),
+  content: text("content").notNull(),
+  contentHtml: text("contentHtml"),
+  heroImage: varchar("heroImage", { length: 512 }),
+  seoDescription: varchar("seoDescription", { length: 160 }),
+  jsonLd: text("jsonLd"),
+  source: mysqlEnum("source", ["babylovegrowth", "manual", "ai-generated"]).default("babylovegrowth").notNull(),
+  sourceArticleId: varchar("sourceArticleId", { length: 128 }),
+  status: mysqlEnum("status", ["draft", "published", "archived"]).default("draft").notNull(),
+  tags: varchar("tags", { length: 512 }),
+  publishedAt: timestamp("publishedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ([
+  index("idx_blog_slug").on(table.slug),
+  index("idx_blog_status").on(table.status),
+  index("idx_blog_published").on(table.publishedAt),
+  index("idx_blog_source").on(table.source),
+]));
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = typeof blogPosts.$inferInsert;
+
+// ─── Newsletter Subscribers ────────────────────────────────────────────────────
+export const newsletterSubscribers = mysqlTable("newsletter_subscribers", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  source: varchar("source", { length: 64 }).default("blog").notNull(),
+  status: mysqlEnum("status", ["active", "unsubscribed"]).default("active").notNull(),
+  welcomeSentAt: timestamp("welcomeSentAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ([
+  index("idx_newsletter_email").on(table.email),
+  index("idx_newsletter_status").on(table.status),
+]));
+
+export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
+export type InsertNewsletterSubscriber = typeof newsletterSubscribers.$inferInsert;

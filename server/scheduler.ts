@@ -4,15 +4,102 @@ import { invokeLLM } from "./_core/llm";
 import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 import { sendDailyPicksToAllUsers, sendDailyDigestToAllUsers } from "./notificationService";
 import { resolveGameResults, syncGameScores } from "./services/gameResultsResolver";
-import { fetchOdds } from "./services/dataService";
+import { fetchOdds, type OddsEvent } from "./services/dataService";
+import { sendHighConfidencePickAlert } from "./services/pushNotifications";
 
-const DAILY_MATCHUPS = [
-  { sportKey: "nfl", homeTeam: "Kansas City Chiefs", awayTeam: "Las Vegas Raiders", pickType: "spread" as const },
-  { sportKey: "nba", homeTeam: "Boston Celtics", awayTeam: "Golden State Warriors", pickType: "over_under" as const },
-  { sportKey: "mlb", homeTeam: "Los Angeles Dodgers", awayTeam: "San Francisco Giants", pickType: "moneyline" as const },
-  { sportKey: "nhl", homeTeam: "Colorado Avalanche", awayTeam: "Minnesota Wild", pickType: "spread" as const },
-  { sportKey: "nba", homeTeam: "Denver Nuggets", awayTeam: "Phoenix Suns", pickType: "player_prop" as const },
+type PickType = "moneyline" | "spread" | "over_under" | "player_prop";
+type SlateMatchup = { sportKey: string; homeTeam: string; awayTeam: string; pickType: PickType };
+type SlateEntry = { matchup: SlateMatchup; event?: OddsEvent };
+
+// Dev-only fallback when ODDS_API_KEY is not configured. NEVER used in
+// production — publishing picks for games that aren't actually being played
+// destroys subscriber trust faster than anything else.
+const DEV_FALLBACK_MATCHUPS: SlateMatchup[] = [
+  { sportKey: "nfl", homeTeam: "Kansas City Chiefs", awayTeam: "Las Vegas Raiders", pickType: "spread" },
+  { sportKey: "nba", homeTeam: "Boston Celtics", awayTeam: "Golden State Warriors", pickType: "over_under" },
+  { sportKey: "mlb", homeTeam: "Los Angeles Dodgers", awayTeam: "San Francisco Giants", pickType: "moneyline" },
 ];
+
+const SLATE_SPORTS = ["nfl", "nba", "mlb", "nhl", "ncaaf", "ncaab", "mma", "soccer"];
+const SLATE_MAX_PICKS = 6;
+const SLATE_WINDOW_HOURS = 36;
+// Real Odds API event ids are 32-char hex; the offline mock generator emits
+// ids like "nba_2_1720620000000". Filter mocks so a transient API failure can
+// never leak fabricated games into paid picks.
+const MOCK_EVENT_ID = /^[a-z]+_\d+_\d{10,}$/;
+
+/**
+ * Build today's slate from REAL upcoming games across every in-season sport.
+ * Only events with live bookmaker odds commencing within the next 36 hours
+ * qualify — the sports calendar decides what we pick, not a hardcoded list.
+ */
+async function buildDailySlate(): Promise<SlateEntry[]> {
+  const now = Date.now();
+  const horizon = now + SLATE_WINDOW_HOURS * 60 * 60 * 1000;
+  const candidates: { sportKey: string; event: OddsEvent; commence: number }[] = [];
+
+  for (const sportKey of SLATE_SPORTS) {
+    try {
+      const events = await fetchOdds(sportKey);
+      for (const event of events) {
+        if (!event?.homeTeam || !event?.awayTeam) continue;
+        if (!event.bookmakers?.length) continue;
+        if (MOCK_EVENT_ID.test(String(event.id ?? ""))) continue;
+        const commence = Date.parse(event.commenceTime ?? "");
+        if (!Number.isFinite(commence) || commence < now || commence > horizon) continue;
+        candidates.push({ sportKey, event, commence });
+      }
+    } catch (err) {
+      console.warn(`[Scheduler] Slate fetch failed for ${sportKey}:`, (err as Error).message);
+    }
+  }
+
+  // Soonest games first; spread coverage across sports before doubling up.
+  candidates.sort((a, b) => a.commence - b.commence);
+  const perSportCount = new Map<string, number>();
+  const seen = new Set<string>();
+  const slate: SlateEntry[] = [];
+  const pickTypeRotation: PickType[] = ["spread", "moneyline", "over_under"];
+
+  for (const c of candidates) {
+    if (slate.length >= SLATE_MAX_PICKS) break;
+    const gameKey = `${c.event.homeTeam}|${c.event.awayTeam}`;
+    if (seen.has(gameKey)) continue;
+    const sportCount = perSportCount.get(c.sportKey) ?? 0;
+    if (sportCount >= 2) continue; // max 2 picks per sport for a diverse card
+    seen.add(gameKey);
+    perSportCount.set(c.sportKey, sportCount + 1);
+    slate.push({
+      matchup: {
+        sportKey: c.sportKey,
+        homeTeam: c.event.homeTeam,
+        awayTeam: c.event.awayTeam,
+        pickType: pickTypeRotation[slate.length % pickTypeRotation.length],
+      },
+      event: c.event,
+    });
+  }
+
+  return slate;
+}
+
+/** Summarize odds directly from the slate's own event — no fuzzy re-matching. */
+function oddsContextFromEvent(event: OddsEvent): string {
+  if (!event.bookmakers?.length) return "";
+  const bookLines: string[] = [];
+  for (const book of event.bookmakers.slice(0, 6)) {
+    const h2h = book.markets?.find((m: any) => m.key === "h2h");
+    const spreads = book.markets?.find((m: any) => m.key === "spreads");
+    const totals = book.markets?.find((m: any) => m.key === "totals");
+    let line = `${book.title}: `;
+    if (h2h?.outcomes) line += `ML [${h2h.outcomes.map((o: any) => `${o.name} ${o.price > 0 ? "+" : ""}${o.price}`).join(", ")}]`;
+    if (spreads?.outcomes) line += ` | Spread [${spreads.outcomes.map((o: any) => `${o.name} ${o.point > 0 ? "+" : ""}${o.point} (${o.price > 0 ? "+" : ""}${o.price})`).join(", ")}]`;
+    if (totals?.outcomes) line += ` | Total [${totals.outcomes.map((o: any) => `${o.name} ${o.point} (${o.price > 0 ? "+" : ""}${o.price})`).join(", ")}]`;
+    bookLines.push(line);
+  }
+  if (bookLines.length === 0) return "";
+  return `\nReal-Time Odds from ${bookLines.length} sportsbooks:\n${bookLines.join("\n")}\nUse these real odds to identify edge and value. Compare lines across books for sharp money indicators.`;
+}
 
 async function getWeatherContext(sportKey: string, homeTeam: string): Promise<string> {
   // Only relevant for outdoor sports
@@ -112,12 +199,14 @@ async function getOddsContext(sportKey: string, homeTeam: string, awayTeam: stri
   }
 }
 
-async function generatePickForMatchup(matchup: typeof DAILY_MATCHUPS[0], date: string) {
+async function generatePickForMatchup(matchup: SlateMatchup, date: string, event?: OddsEvent) {
   try {
     const weatherContext = await getWeatherContext(matchup.sportKey, matchup.homeTeam);
     const weatherSection = weatherContext ? `\nWeather Conditions: ${weatherContext}\nConsider weather impact on totals, passing game, and scoring.` : '';
     const feedbackContext = await getFeedbackContext();
-    const oddsContext = await getOddsContext(matchup.sportKey, matchup.homeTeam, matchup.awayTeam);
+    const oddsContext = event
+      ? oddsContextFromEvent(event)
+      : await getOddsContext(matchup.sportKey, matchup.homeTeam, matchup.awayTeam);
     const prompt = `You are an expert sports betting analyst. Generate a betting pick for this matchup:
 Sport: ${matchup.sportKey.toUpperCase()}
 Home Team: ${matchup.homeTeam}
@@ -211,9 +300,24 @@ export async function runDailyPicksJob() {
     return;
   }
 
+  // Build the slate from real upcoming games. Without an Odds API key
+  // (local dev only), fall back to the static list so the UI has data.
+  let slate: SlateEntry[];
+  if (process.env.ODDS_API_KEY) {
+    slate = await buildDailySlate();
+    if (slate.length === 0) {
+      console.warn("[Scheduler] No real games with live odds in the next 36h — skipping pick generation (never fabricate picks).");
+      return;
+    }
+    console.log(`[Scheduler] Slate built from live odds: ${slate.map(s => `${s.matchup.awayTeam} @ ${s.matchup.homeTeam} (${s.matchup.sportKey})`).join("; ")}`);
+  } else {
+    console.warn("[Scheduler] ODDS_API_KEY missing — using DEV fallback matchups. Do not run production this way.");
+    slate = DEV_FALLBACK_MATCHUPS.map(matchup => ({ matchup }));
+  }
+
   let generated = 0;
-  for (const matchup of DAILY_MATCHUPS) {
-    const pick = await generatePickForMatchup(matchup, today);
+  for (const { matchup, event } of slate) {
+    const pick = await generatePickForMatchup(matchup, today, event);
     if (pick) {
       try {
         await db.insert(picks).values({
@@ -235,6 +339,17 @@ export async function runDailyPicksJob() {
         });
         generated++;
         console.log(`[Scheduler] Generated pick: ${pick.recommendation} (${pick.confidenceScore}% confidence)`);
+        // Fire Web Push alert for high-confidence picks (85%+)
+        if (pick.confidenceScore >= 85) {
+          sendHighConfidencePickAlert({
+            id: 0, // placeholder until DB returns the inserted ID
+            recommendation: pick.recommendation,
+            sportKey: pick.sportKey,
+            confidenceScore: pick.confidenceScore,
+            homeTeam: pick.homeTeam,
+            awayTeam: pick.awayTeam,
+          }).catch(err => console.error("[Scheduler] Push alert failed:", err));
+        }
       } catch (err) {
         console.error(`[Scheduler] Failed to insert pick:`, err);
       }
@@ -243,7 +358,7 @@ export async function runDailyPicksJob() {
     await new Promise(resolve => setTimeout(resolve, 500));
   }
 
-  console.log(`[Scheduler] Daily picks job complete: ${generated}/${DAILY_MATCHUPS.length} picks generated`);
+  console.log(`[Scheduler] Daily picks job complete: ${generated}/${slate.length} picks generated`);
 
   // Send daily picks notifications to all subscribed users
   if (generated > 0) {

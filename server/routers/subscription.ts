@@ -6,34 +6,52 @@ import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
+// Lazy Stripe client — constructing with an empty key throws at import time,
+// which would crash the whole server (and every test) when the env var is
+// missing. Fail per-request instead so the rest of the site stays up.
+let _stripe: Stripe | null = null;
+function requireStripe(): Stripe {
+  if (_stripe) return _stripe;
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new TRPCError({
+      code: "PRECONDITION_FAILED",
+      message: "Payments are temporarily unavailable. Please try again shortly.",
+    });
+  }
+  _stripe = new Stripe(key);
+  return _stripe;
+}
 
 export const PLANS = {
   daily: {
-    name: "Daily Pass",
-    priceId: "price_daily",
+    name: "Basic",
+    priceId: "price_1TovuwDksqAHyBc3jOzOvW3p",
     amountCents: 999,
-    description: "Full access for 24 hours",
-    features: ["All premium picks today", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"],
-    badge: "Try it out",
+    interval: "month",
+    description: "Essential picks for casual bettors",
+    features: ["All premium picks daily", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"],
+    badge: "Starter",
   },
   monthly: {
-    name: "Monthly Pro",
-    priceId: "price_monthly",
-    amountCents: 2999,
+    name: "Pro",
+    priceId: "price_1TovuxDksqAHyBc3GHCX8Kxx",
+    amountCents: 1999,
+    interval: "month",
     description: "Best value for serious bettors",
     features: ["All premium picks daily", "AI picks generator", "Backtesting engine", "Bet tracker & analytics", "Leaderboard access", "Priority email support", "Daily pick alerts"],
     badge: "Most Popular",
     popular: true,
   },
   yearly: {
-    name: "Annual Elite",
-    priceId: "price_yearly",
-    amountCents: 19999,
+    name: "Elite",
+    priceId: "price_1TovuxDksqAHyBc3yjLLYW9J",
+    amountCents: 5999,
+    interval: "year",
     description: "Maximum savings for pros",
-    features: ["Everything in Monthly", "Early access to new features", "Advanced backtesting", "Custom AI pick generation", "VIP Discord access", "1-on-1 strategy sessions"],
+    features: ["Everything in Pro", "Early access to new features", "Advanced backtesting", "Custom AI pick generation", "VIP Discord access", "1-on-1 strategy sessions"],
     badge: "Best Value",
-    savings: "Save $16/mo",
+    savings: "Save $14/mo vs Pro",
   },
 };
 
@@ -50,15 +68,16 @@ export const subscriptionRouter = router({
       const plan = PLANS[input.tier];
       if (!plan) throw new TRPCError({ code: "BAD_REQUEST" });
 
-      const isRecurring = input.tier !== "daily";
-      let finalAmount = plan.amountCents;
-      let promoCodeId: string = "";
 
-      // Validate and apply promo code if provided
+      // Look up Stripe promotion code if user provided one
+      let stripePromotionCodeId: string | undefined;
+      let promoCodeDbId: string = "";
+
       if (input.promoCode) {
-        const { validatePromoCode, getPromoCodeByCode } = await import("../db");
+        // Validate against our DB first
+        const { validatePromoCode, getPromoCodeByCode, incrementPromoCodeUsage } = await import("../db");
         const validation = await validatePromoCode(input.promoCode, input.tier);
-        
+
         if (!validation.valid) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -68,34 +87,34 @@ export const subscriptionRouter = router({
 
         const promo = await getPromoCodeByCode(input.promoCode);
         if (promo) {
-          promoCodeId = promo.id.toString();
-          let discount = 0;
-          if (validation.discountType === "percentage") {
-            discount = Math.round((plan.amountCents * validation.discount!) / 100);
-          } else {
-            discount = Math.round(validation.discount! * 100);
+          promoCodeDbId = promo.id.toString();
+        }
+
+        // Find the Stripe promotion code by code string
+        try {
+          const promoCodes = await requireStripe().promotionCodes.list({
+            code: input.promoCode.toUpperCase(),
+            active: true,
+            limit: 1,
+          });
+          if (promoCodes.data.length > 0) {
+            stripePromotionCodeId = promoCodes.data[0].id;
           }
-          finalAmount = Math.max(0, plan.amountCents - discount);
+        } catch (err) {
+          console.warn("[Checkout] Failed to look up Stripe promo code:", err);
         }
       }
 
       try {
-        const session = await stripe.checkout.sessions.create({
-          mode: isRecurring ? "subscription" : "payment",
+        // Build session params using actual Stripe price IDs
+        const isSubscription = plan.interval === "month" || plan.interval === "year";
+        const sessionParams: any = {
+          mode: isSubscription ? "subscription" : "payment",
           payment_method_types: ["card"],
           customer_email: ctx.user.email ?? undefined,
-          allow_promotion_codes: true,
           line_items: [
             {
-              price_data: {
-                currency: "usd",
-                unit_amount: finalAmount,
-                product_data: {
-                  name: `ChalkPicks Pro — ${plan.name}`,
-                  description: plan.description,
-                },
-                ...(isRecurring ? { recurring: { interval: input.tier === "monthly" ? "month" : "year" } } : {}),
-              },
+              price: plan.priceId,
               quantity: 1,
             },
           ],
@@ -107,12 +126,27 @@ export const subscriptionRouter = router({
             customer_email: ctx.user.email ?? "",
             customer_name: ctx.user.name ?? "",
             tier: input.tier,
-            promoCodeId: promoCodeId,
+            promoCodeId: promoCodeDbId,
+            promoCode: input.promoCode ?? "",
           },
-        });
+        };
+
+        // Apply the Stripe promotion code discount
+        if (stripePromotionCodeId) {
+          // When we have a matching Stripe promo code, apply it directly
+          sessionParams.discounts = [{ promotion_code: stripePromotionCodeId }];
+        } else if (!input.promoCode) {
+          // If no promo code provided, allow users to enter one at Stripe checkout
+          sessionParams.allow_promotion_codes = true;
+        }
+        // If user provided a promo code but it's not in Stripe, we apply it via metadata
+        // and the webhook will handle recording the discount
+
+        const session = await requireStripe().checkout.sessions.create(sessionParams);
 
         return { url: session.url };
       } catch (err: any) {
+        console.error("[Checkout] Error creating session:", err.message);
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: err.message });
       }
     }),
@@ -131,12 +165,12 @@ export const subscriptionRouter = router({
     const u = user[0];
     if (!u) return { tier: "free", expiresAt: null, isActive: false, accountBalance: 0 };
 
-    const isActive = u.subscriptionTier !== "free" && (
+    const isActive = (u.subscriptionTier !== "free") && (
       !u.subscriptionExpiresAt || u.subscriptionExpiresAt > new Date()
     );
 
     return {
-      tier: u.subscriptionTier,
+      tier: u.subscriptionTier === "trial" ? "trial" : u.subscriptionTier,
       expiresAt: u.subscriptionExpiresAt,
       isActive,
       accountBalance: parseFloat(u.accountBalance.toString()),
@@ -155,7 +189,7 @@ export const subscriptionRouter = router({
 
       let session: Stripe.Checkout.Session | null = null;
       try {
-        session = await stripe.checkout.sessions.retrieve(input.sessionId);
+        session = await requireStripe().checkout.sessions.retrieve(input.sessionId);
       } catch {
         // If Stripe not configured, use mock activation
       }
@@ -208,7 +242,7 @@ export const subscriptionRouter = router({
     const u = user[0];
     if (u?.stripeSubscriptionId) {
       try {
-        await stripe.subscriptions.cancel(u.stripeSubscriptionId);
+        await requireStripe().subscriptions.cancel(u.stripeSubscriptionId);
       } catch {
         // Subscription may already be canceled
       }
@@ -241,9 +275,10 @@ export const subscriptionRouter = router({
       }
 
       try {
-        const session = await stripe.billingPortal.sessions.create({
+        const session = await requireStripe().billingPortal.sessions.create({
           customer: u.stripeCustomerId,
-          return_url: input.origin + "/subscriptions",
+          configuration: "bpc_1TqPBuDksqAHyBc35muDhWXS",
+          return_url: input.origin + "/account-settings",
         });
         return { url: session.url };
       } catch (err) {

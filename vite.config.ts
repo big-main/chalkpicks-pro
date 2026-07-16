@@ -16,17 +16,54 @@ export default defineConfig({
   envDir: path.resolve(import.meta.dirname),
   root: path.resolve(import.meta.dirname, "client"),
   publicDir: path.resolve(import.meta.dirname, "client", "public"),
+  esbuild: {
+    // Keep console.error/warn for real diagnostics; strip debug noise.
+    pure: ["console.log", "console.debug", "console.info"],
+    drop: ["debugger"],
+  },
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        manualChunks: {
-          "vendor-react": ["react", "react-dom"],
-          "vendor-charts": ["recharts"],
-          "vendor-trpc": ["@trpc/client", "@trpc/react-query", "@tanstack/react-query", "superjson"],
-          "vendor-ui": ["lucide-react", "wouter", "sonner", "clsx", "tailwind-merge"],
+        manualChunks(id) {
+          // Core vendor chunks (loaded on every page)
+          // NOTE: exact path-segment match — a bare `includes("node_modules/react")`
+          // also captures react-hook-form, react-day-picker, react-resizable-panels,
+          // etc., dragging page-specific libs into the critical chunk.
+          if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) {
+            return "vendor-react";
+          }
+          if (id.includes("node_modules/framer-motion")) {
+            return "vendor-motion";
+          }
+          if (
+            id.includes("node_modules/@trpc") ||
+            id.includes("node_modules/@tanstack/react-query") ||
+            id.includes("node_modules/superjson")
+          ) {
+            return "vendor-trpc";
+          }
+          if (
+            id.includes("node_modules/lucide-react") ||
+            id.includes("node_modules/wouter") ||
+            id.includes("node_modules/sonner") ||
+            id.includes("node_modules/clsx") ||
+            id.includes("node_modules/tailwind-merge")
+          ) {
+            return "vendor-ui";
+          }
+          // Feature-specific chunks (deferred to lazy-loaded pages)
+          if (id.includes("node_modules/recharts")) {
+            return "vendor-charts";
+          }
+          if (id.includes("node_modules/date-fns")) {
+            return "vendor-dates";
+          }
+          if (id.includes("node_modules/zod")) {
+            return "vendor-validation";
+          }
         },
       },
     },

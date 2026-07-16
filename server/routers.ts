@@ -37,6 +37,7 @@ import { communityAutomationRouter } from "./routers/communityAutomation";
 import { blogRouter } from "./routers/blog";
 import { newsletterRouter } from "./routers/newsletter";
 import { evRouter } from "./routers/ev";
+import { quantRouter } from "./routers/quant";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -181,6 +182,7 @@ export const appRouter = router({
   communityAutomation: communityAutomationRouter,
   blog: blogRouter,
   ev: evRouter,
+  quant: quantRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -32,7 +32,7 @@ export const storyHistoryRouter = router({
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
 
       try {
-        const result = await db.insert(storyExports).values({
+        const insertResult = await db.insert(storyExports).values({
           userId: ctx.user.id,
           pickId: input.pickId ?? null,
           sport: input.sport,
@@ -49,8 +49,25 @@ export const storyHistoryRouter = router({
           postedToInstagram: false,
         });
 
-        // Fetch the inserted row to get the ID
-        const inserted = await db.select().from(storyExports).orderBy(desc(storyExports.createdAt)).limit(1);
+        // MySQL Drizzle returns [ResultSetHeader, FieldPacket[]] — grab insertId directly
+        const insertId: number = (insertResult as any)[0]?.insertId ?? (insertResult as any).insertId ?? 0;
+        if (insertId > 0) {
+          return { success: true, id: insertId };
+        }
+        // Fallback: query by userId + sport + homeTeam + awayTeam to avoid race conditions
+        const inserted = await db
+          .select()
+          .from(storyExports)
+          .where(
+            and(
+              eq(storyExports.userId, ctx.user.id),
+              eq(storyExports.sport, input.sport),
+              eq(storyExports.homeTeam, input.homeTeam),
+              eq(storyExports.awayTeam, input.awayTeam),
+            )
+          )
+          .orderBy(desc(storyExports.createdAt))
+          .limit(1);
         const id = inserted[0]?.id ?? 0;
         return { success: true, id };
       } catch (error) {
@@ -125,6 +142,8 @@ export const storyHistoryRouter = router({
         if (!story[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Story not found" });
         return story[0];
       } catch (error) {
+        // Re-throw TRPCErrors (e.g. NOT_FOUND) without wrapping them
+        if (error instanceof TRPCError) throw error;
         console.error("[StoryHistory] Get failed:", error);
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to fetch story" });
       }

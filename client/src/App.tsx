@@ -88,6 +88,8 @@ const SportPicks = lazy(() => import("@/pages/SportPicks"));
 const OddsPage = lazy(() => import("@/pages/OddsPage"));
 const DevigCalculator = lazy(() => import("@/pages/DevigCalculator"));
 const DFSOptimizer = lazy(() => import("@/pages/DFSOptimizer"));
+const EloPowerRatings = lazy(() => import("@/pages/EloPowerRatings"));
+const MonteCarloSimulator = lazy(() => import("@/pages/MonteCarloSimulator"));
 
 function PageLoader() {
   return (
@@ -191,6 +193,8 @@ function Router() {
           <Route path="/odds/nhl" component={OddsPage} />
           <Route path="/tools/devig-calculator" component={DevigCalculator} />
           <Route path="/dfs-optimizer" component={DFSOptimizer} />
+          <Route path="/elo-ratings" component={EloPowerRatings} />
+          <Route path="/monte-carlo" component={MonteCarloSimulator} />
           <Route path="/blog" component={Blog} />
           <Route path="/blog/best-sports-betting-picks" component={BlogBestPicks} />
           <Route path="/blog/ai-sports-betting" component={BlogAISportsBetting} />

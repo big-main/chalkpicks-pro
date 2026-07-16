@@ -11,7 +11,11 @@ import { invokeLLM } from "../_core/llm";
  */
 async function analyzeSentiment(comment: string): Promise<"positive" | "neutral" | "negative"> {
   try {
-    const response = await invokeLLM({
+    // Race LLM call against a 5s timeout so tests and slow networks don't hang
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("LLM timeout")), 5000)
+    );
+    const response = await Promise.race([invokeLLM({
       messages: [
         {
           role: "system",
@@ -22,7 +26,7 @@ async function analyzeSentiment(comment: string): Promise<"positive" | "neutral"
           content: `Analyze this feedback: "${comment}"`,
         },
       ],
-    });
+    }), timeoutPromise]);
 
     const content = response.choices[0]?.message.content;
     const contentStr = typeof content === "string" ? content : "";

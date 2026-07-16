@@ -18,6 +18,7 @@ import { weeklyNewsletterHandler } from "../handlers/weeklyNewsletterHandler";
 import { welcomeDripHandler } from "../handlers/welcomeDripHandler";
 import { blogContentHandler } from "../handlers/blogContentHandler";
 import { registerSecurityMiddleware } from "../middleware/security";
+import { registerWorkerRoutes } from "../workerRoutes";
 import { apiReference } from "@scalar/express-api-reference";
 import compression from "compression";
 
@@ -77,6 +78,8 @@ async function startServer() {
   app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
   });
+  // Cloud-computer worker API (token-guarded; see cloud-computer/README.md)
+  registerWorkerRoutes(app);
 
   // Scalar API Reference docs — public endpoint
   app.get("/openapi.json", (_req, res) => {

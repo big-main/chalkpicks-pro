@@ -18,6 +18,7 @@ import Home from "./pages/Home";
 import NotFound from "@/pages/NotFound";
 import { SocialProofTicker } from "@/components/SocialProofTicker";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { AiChatWidget } from "@/components/AiChatWidget";
 import { SwipeNavProvider } from "@/components/SwipeNavProvider";
 
 // Lazy-loaded pages (code splitting)
@@ -194,6 +195,7 @@ function App() {
             <Router />
             <SocialProofTicker />
             <MobileBottomNav />
+            <AiChatWidget />
           </SwipeNavProvider>
         </TooltipProvider>
       </ThemeProvider>

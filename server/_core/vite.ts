@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import fs from "fs";
 import { type Server } from "http";
 import path from "path";
+import { injectSeo } from "./seo";
 
 export async function setupVite(app: Express, server: Server) {
   // Dynamic imports: vite + nanoid are devDependencies. Static imports here
@@ -42,7 +43,7 @@ export async function setupVite(app: Express, server: Server) {
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`
       );
-      const page = await vite.transformIndexHtml(url, template);
+      const page = await injectSeo(await vite.transformIndexHtml(url, template), url);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
@@ -100,9 +101,27 @@ export function serveStatic(app: Express) {
     res.status(404).json({ error: "Not found" });
   });
 
-  // fall through to index.html if the file doesn't exist
-  app.use("*", (_req, res) => {
-    res.set("Cache-Control", "no-cache");
-    res.sendFile(path.resolve(distPath, "index.html"));
+  // Fall through to index.html for SPA navigations — with the head rewritten
+  // per-route (title/description/canonical/JSON-LD) so crawlers and AI answer
+  // engines see unique, content-bearing HTML for every URL. The template is
+  // cached in memory; per-route output is recomputed each request (blog/pick
+  // routes hit the DB, everything else is a map lookup).
+  let indexTemplate: string | null = null;
+  app.use("*", async (req, res) => {
+    try {
+      if (!indexTemplate) {
+        indexTemplate = await fs.promises.readFile(
+          path.resolve(distPath, "index.html"),
+          "utf-8"
+        );
+      }
+      const page = await injectSeo(indexTemplate, req.originalUrl);
+      res.set("Cache-Control", "no-cache");
+      res.status(200).set({ "Content-Type": "text/html" }).end(page);
+    } catch {
+      // Fail open: serve the raw file exactly as before.
+      res.set("Cache-Control", "no-cache");
+      res.sendFile(path.resolve(distPath, "index.html"));
+    }
   });
 }

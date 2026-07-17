@@ -30,6 +30,7 @@ import { pushNotificationsRouter } from "./routers/pushNotifications";
 import { ogImageRouter } from "./routers/ogImage";
 import { oddsComparisonRouter } from "./routers/oddsComparison";
 import { oddsMathRouter } from "./routers/oddsMath";
+import { assistantRouter } from "./routers/assistant";
 import { storyGeneratorRouter } from "./routers/storyGenerator";
 import { storyHistoryRouter } from "./routers/storyHistory";
 import { storyScheduledRouter } from "./routers/storyScheduled";
@@ -166,6 +167,7 @@ export const appRouter = router({
   odds: oddsRouter,
   oddsComparison: oddsComparisonRouter,
   oddsMath: oddsMathRouter,
+  assistant: assistantRouter,
   aiPicks: aiPicksRouter,
   promoCode: promoCodeRouter,
   kalshi: kalshiRouter,

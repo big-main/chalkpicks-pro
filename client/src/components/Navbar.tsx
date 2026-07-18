@@ -66,6 +66,7 @@ const navGroups = [
     items: [
       { href: "/arbitrage", label: "Arbitrage", icon: GitCompare, desc: "Guaranteed profit opportunities" },
       { href: "/parlay-builder", label: "Parlay Builder", icon: Layers, desc: "AI-optimized correlated parlays" },
+      { href: "/parlay-flow", label: "Visual Parlay Flow", icon: Layers, desc: "Interactive node-based parlay diagram" },
       { href: "/clv-tracker", label: "CLV Tracker", icon: TrendingUp, desc: "Track closing line value on every bet" },
       { href: "/line-movement", label: "Line Movement", icon: LineChart, desc: "Detect sharp money movements" },
       { href: "/prop-builder", label: "Prop Builder", icon: Target, desc: "Build and analyze player props" },

@@ -982,3 +982,22 @@
 - [x] Add /sharp-money, /consensus routes to App.tsx
 - [x] All tests: 125 passed, 1 skipped, 0 failed
 - [x] TypeScript: 0 errors
+
+## Phase 12 — SEO / Traffic / @xyflow/react (Jul 17, 2026)
+
+- [ ] Install @xyflow/react in the Manus webdev project (client dependency)
+- [ ] Verify chalkpicks.live sitemap.xml is accessible and valid (DeepSeek found it returning an error)
+- [ ] Verify bot pre-rendering snapshots are being served to Googlebot (SPA client-side rendering is the primary SEO blocker identified by DeepSeek)
+- [ ] Submit chalkpicks.live to Google Search Console and request indexing
+- [ ] Audit robots.txt to ensure Googlebot is not blocked
+- [ ] Verify blog content is server-side rendered or snapshot-served (DeepSeek found blog also client-side rendered)
+- [ ] Save connectors and cloud computer state (per user instruction)
+
+## Phase 12 — All Next Steps (Jul 17, 2026)
+
+- [ ] Apply odds_snapshots migration to production DB (SQL from drizzle/0019_*.sql)
+- [ ] Build and export n8n closing-line cron workflow (every 15 min, stampClosingLines + stampCLV)
+- [ ] Create Product Hunt launch copy and assets (tagline, description, screenshots, logo)
+- [ ] Build @xyflow/react visual parlay builder component (/tools/parlay-flow)
+- [ ] Wire quant sidecar into Backtesting page UI
+- [ ] Run full test suite and save checkpoint

@@ -92,6 +92,7 @@ const EloPowerRatings = lazy(() => import("@/pages/EloPowerRatings"));
 const MonteCarloSimulator = lazy(() => import("@/pages/MonteCarloSimulator"));
 const SharpMoneyDetector = lazy(() => import("@/pages/SharpMoneyDetector"));
 const ConsensusAggregator = lazy(() => import("@/pages/ConsensusAggregator"));
+const ParlayFlow = lazy(() => import("@/pages/ParlayFlow"));
 
 function PageLoader() {
   return (
@@ -147,6 +148,7 @@ function Router() {
           <Route path="/kalshi" component={KalshiMarkets} />
           <Route path="/clv-tracker" component={CLVTracker} />
           <Route path="/parlay-builder" component={ParlayBuilder} />
+          <Route path="/parlay-flow" component={ParlayFlow} />
           <Route path="/bankroll-tracker" component={BankrollTracker} />
           <Route path="/referral" component={Referral} />
           <Route path="/affiliate" component={AffiliateHub} />

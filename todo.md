@@ -1110,3 +1110,20 @@
 - [x] Add affiliate click tracking (affiliate_clicks table + affiliateClicksRouter)
 - [x] All 138 tests pass (11 new sportsbook config tests)
 - [x] Save checkpoint
+
+## Phase 21 — Partners & Directories Page (Jul 19, 2026) — COMPLETE
+
+- [x] Built /directories page with all 17 directory listings grouped by category (AI, Startup, SaaS, Sports, General)
+- [x] ToolPilot featured badge section at top of page
+- [x] Stats row: 17 directories, 4 AI platforms, 6 featured, 4 review platforms
+- [x] Added /directories route to App.tsx
+- [x] Added Sportsbooks + Directories links to footer Community section
+- [x] Save checkpoint
+
+## Phase 22 — Affiliate Analytics Dashboard (Jul 19, 2026) — COMPLETE
+
+- [x] Enhanced affiliateClicksRouter with getStats (clicks by book/sport/source/daily), getRecentCount procedures
+- [x] Built admin-only /admin/affiliates page with: KPI cards, bar chart (clicks by book), 30-day trend line chart, revenue estimate table, source/sport breakdowns
+- [x] Added Affiliate Analytics + Blog Management to AdminPanel quick links grid
+- [x] All 138 tests pass
+- [x] Save checkpoint

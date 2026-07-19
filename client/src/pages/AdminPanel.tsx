@@ -255,8 +255,10 @@ export default function AdminPanel() {
                   {[
                     { label: "Stripe Dashboard", href: "https://dashboard.stripe.com", color: "#d4a017" },
                     { label: "Admin Promos", href: "/admin/promos", color: "#39ff14" },
+                    { label: "Affiliate Analytics", href: "/admin/affiliates", color: "#f97316" },
                     { label: "Feedback Analytics", href: "/feedback-analytics", color: "#f0b800" },
                     { label: "Subscription Mgmt", href: "/subscription-management", color: "#fbbf24" },
+                    { label: "Blog Management", href: "/admin/blog", color: "#9333ea" },
                   ].map((link) => (
                     <a
                       key={link.label}

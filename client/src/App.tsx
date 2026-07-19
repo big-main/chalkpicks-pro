@@ -96,6 +96,8 @@ const SharpMoneyDetector = lazy(() => import("@/pages/SharpMoneyDetector"));
 const ConsensusAggregator = lazy(() => import("@/pages/ConsensusAggregator"));
 const ParlayFlow = lazy(() => import("@/pages/ParlayFlow"));
 const MyTrackedPicks = lazy(() => import("@/pages/MyTrackedPicks").then(m => ({ default: m.MyTrackedPicks })));
+const Partners = lazy(() => import("@/pages/Partners"));
+const AdminAffiliates = lazy(() => import("@/pages/AdminAffiliates"));
 
 function PageLoader() {
   return (
@@ -170,6 +172,7 @@ function Router() {
           <Route path="/sportsbooks" component={Sportsbooks} />
           <Route path="/sponsors" component={Sponsors} />
           <Route path="/admin" component={AdminPanel} />
+          <Route path="/admin/affiliates" component={AdminAffiliates} />
           <Route path="/credits" component={CreditDashboard} />
           <Route path="/prop-builder" component={PropBuilder} />
           <Route path="/line-movement" component={LineMovement} />
@@ -187,6 +190,7 @@ function Router() {
           <Route path="/tools/parlay-calculator" component={ParlayCalculator} />
           <Route path="/admin/blog" component={BlogManagement} />
           <Route path="/partners" component={MediaPartners} />
+          <Route path="/directories" component={Partners} />
           <Route path="/nfl-picks" component={SportPicks} />
           <Route path="/nba-picks" component={SportPicks} />
           <Route path="/mlb-picks" component={SportPicks} />

@@ -242,6 +242,11 @@ export default function Pricing() {
   const createCheckout = trpc.subscription.createCheckout.useMutation({
     onSuccess: (data) => {
       if (data.url) {
+        analytics.track("subscription_started", {
+          tier: loadingTier,
+          promoApplied,
+          promoCode: promoApplied ? promoCode.trim() : undefined,
+        });
         window.location.href = data.url;
       }
       setLoadingTier(null);

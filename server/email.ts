@@ -451,6 +451,35 @@ export async function sendWelcomeEmail(options: WelcomeEmailOptions): Promise<bo
 
 // ─── Drip Email Sequence ──────────────────────────────────────────────────────
 
+/**
+ * Send a raw HTML email directly (no template generation)
+ */
+export async function sendEmailRaw(to: string, subject: string, html: string): Promise<boolean> {
+  try {
+    console.log(`[Email] Sending raw email to ${to}`);
+    if (process.env.RESEND_API_KEY) {
+      const sent = await sendViaResend(to, subject, html);
+      if (sent) { console.log(`[Email] Sent via Resend: ${subject} → ${to}`); return true; }
+      console.warn("[Email] Resend failed, falling back to SMTP");
+    }
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+      await transporter.sendMail({
+        from: `"ChalkPicks Pro" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+        to,
+        subject,
+        html,
+      });
+      console.log(`[Email] Sent via SMTP: ${subject} → ${to}`);
+      return true;
+    }
+    console.log(`[Email] No email provider configured, logged only: ${subject} → ${to}`);
+    return false;
+  } catch (e) {
+    console.error(`[Email/Raw] Error sending to ${to}:`, e);
+    return false;
+  }
+}
+
 export interface DripEmailOptions {
   email: string;
   name: string;

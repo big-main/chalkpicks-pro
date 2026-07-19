@@ -20,12 +20,12 @@ export default function BlogManagement() {
   });
 
   // Mutations
-  const generateMutation = trpc.blog.generateArticles.useMutation({
+  const generateMutation = trpc.blog.generateFromPick.useMutation({
     onSuccess: () => {
       setIsGenerating(false);
       refetchPosts();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       setIsGenerating(false);
       alert(`Error: ${error.message}`);
     },
@@ -58,8 +58,7 @@ export default function BlogManagement() {
   const handleGenerate = async () => {
     setIsGenerating(true);
     await generateMutation.mutateAsync({
-      topic: selectedTopic,
-      count: 5,
+      pickId: 1, // Generate from latest pick
     });
   };
 

@@ -20,6 +20,7 @@ import NotFound from "@/pages/NotFound";
 import { SocialProofTicker } from "@/components/SocialProofTicker";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { SwipeNavProvider } from "@/components/SwipeNavProvider";
+import { BackButton } from "@/components/BackButton";
 
 // Lazy-loaded pages (code splitting)
 const Picks = lazy(() => import("./pages/Picks"));
@@ -224,6 +225,7 @@ function App() {
         <TooltipProvider>
           <Toaster richColors position="top-right" />
           <SwipeNavProvider>
+            <BackButton />
             <Router />
             <SocialProofTicker />
             <MobileBottomNav />

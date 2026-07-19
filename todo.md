@@ -1078,3 +1078,21 @@
 - [x] Create createUserAlertForPickResolution helper function (inline in gameResultsResolver)
 - [x] Test auto-alert creation end-to-end (127 tests passing)
 - [x] Save checkpoint
+
+## Phase 19 — Push Notifications + My Tracked Picks (Jul 19, 2026) — BACKEND COMPLETE
+
+- [x] Wire push notifications into gameResultsResolver on pick resolution (sendPushToUser integrated)
+- [x] Add userPickTracking table to schema (userId, pickId, addedAt, notes) — migration applied
+- [x] Create tRPC procedures: addToTracked, removeFromTracked, getTrackedPicks, updateTrackedNotes, getTrackedStats
+- [x] Build My Tracked Picks page with live status (MyTrackedPicks.tsx created)
+- [x] Wire tracking router into appRouter (trackingRouter mounted)
+- [x] TypeScript compiles clean (0 errors)
+- [x] All tests pass (127 passed, 1 skipped, 0 failed)
+
+## Phase 19 — Frontend Integration (NEXT)
+
+- [ ] Add MyTrackedPicks route to App.tsx (lazy import + route definition)
+- [ ] Add favorite/track button to pick cards (PickCard component)
+- [ ] Add My Tracked Picks link to Navbar user dropdown
+- [ ] Test end-to-end flow (add pick → view in tracked → resolve → get push notification)
+- [ ] Save checkpoint

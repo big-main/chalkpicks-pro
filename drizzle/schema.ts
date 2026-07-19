@@ -748,3 +748,19 @@ export const userAlerts = mysqlTable("user_alerts", {
 ]));
 export type UserAlert = typeof userAlerts.$inferSelect;
 export type InsertUserAlert = typeof userAlerts.$inferInsert;
+
+// User Pick Tracking (Favorites/Bookmarks)
+export const userPickTracking = mysqlTable("user_pick_tracking", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  pickId: int("pickId").notNull().references(() => picks.id, { onDelete: "cascade" }),
+  notes: text("notes"),
+  addedAt: timestamp("addedAt").defaultNow().notNull(),
+}, (table) => ([
+  index("idx_tracking_user").on(table.userId),
+  index("idx_tracking_pick").on(table.pickId),
+  index("idx_tracking_user_pick").on(table.userId, table.pickId),
+]));
+
+export type UserPickTracking = typeof userPickTracking.$inferSelect;
+export type InsertUserPickTracking = typeof userPickTracking.$inferInsert;

@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import SharePickCard from "@/components/SharePickCard";
 import PushNotificationBanner from "@/components/PushNotificationBanner";
 import { PlaceBetButton } from "@/components/PlaceBetButton";
+import { analytics } from "@/lib/analytics";
 
 const PICK_TYPE_LABELS: Record<string, string> = {
   moneyline: "Moneyline",
@@ -109,6 +110,7 @@ function TrackPickButton({ pickId }: { pickId: number }) {
     onSuccess: () => {
       utils.tracking.getTrackedPicks.invalidate();
       toast.success("Pick tracked! You'll get notified when it resolves.");
+      analytics.track("pick_tracked", { pickId });
     },
     onError: (err: any) => toast.error(err.message || "Failed to track pick"),
   });
@@ -116,6 +118,7 @@ function TrackPickButton({ pickId }: { pickId: number }) {
     onSuccess: () => {
       utils.tracking.getTrackedPicks.invalidate();
       toast.success("Pick untracked");
+      analytics.track("pick_untracked", { pickId });
     },
   });
 

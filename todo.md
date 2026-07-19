@@ -1165,3 +1165,16 @@
 - [x] Super property 'tier' registered for all events
 - [x] TypeScript clean (0 errors), 138 tests pass
 - [x] Save checkpoint
+
+## Phase 27 — Analytics Event Wiring (Jul 19, 2026) — COMPLETE
+
+- [x] analytics.track("sportsbook_clicked", {bookId, bookName, sportKey, eventId, source}) in PlaceBetButton
+- [x] analytics.track("pick_tracked"/{"pick_untracked"}) with {pickId} in TrackPickButton
+- [x] analytics.reset() on logout in useAuth (Mixpanel session cleared on sign-out)
+- [x] analytics.track("arbitrage_viewed") on ArbitrageFinder mount
+- [x] analytics.track("ev_finder_used", {sport, minEV}) on EVFinder filter change
+- [x] analytics.track("subscription_page_viewed") on Pricing page mount
+- [x] analytics.track("pick_viewed", {pickId, sport, tier, pickType, isLocked}) on PickDetail mount
+- [x] analytics.track("leaderboard_viewed", {period}) on Leaderboard period change
+- [x] TypeScript clean (0 errors), 138 tests pass
+- [x] Save checkpoint

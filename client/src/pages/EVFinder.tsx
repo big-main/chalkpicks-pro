@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import { Paywall } from "@/components/Paywall";
 import { PlaceBetButton } from "@/components/PlaceBetButton";
+import { analytics } from "@/lib/analytics";
 import { RefreshCw, TrendingUp, Zap, Filter, Lock, ArrowRight, Info } from "lucide-react";
 import { Link } from "wouter";
 
@@ -55,6 +56,11 @@ export default function EVFinder() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const hasProAccess = subscription?.isActive && (subscription?.tier === 'monthly' || subscription?.tier === 'yearly');
+
+  // Track EV finder usage
+  useEffect(() => {
+    analytics.track("ev_finder_used", { sport, minEV });
+  }, [sport, minEV]);
 
   const { data, isLoading, refetch } = trpc.odds.getEVOpportunities.useQuery(
     { sport, minEV },

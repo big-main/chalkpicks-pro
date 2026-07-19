@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { SPORTSBOOKS, getFeaturedBooks, buildDeepLink, SPORT_PATH_MAP, type Sportsbook } from "../../../shared/sportsbooks";
 import { ExternalLink, ChevronDown } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { analytics } from "@/lib/analytics";
 
 interface PlaceBetButtonProps {
   /** Sport key (nfl, nba, mlb, etc.) */
@@ -57,10 +58,19 @@ export function PlaceBetButton({
     e.preventDefault();
     e.stopPropagation();
     
-    // Track the click
+    // Track the click in DB
     trackClick.mutate({
       sportsbookId: book.id,
       sportKey: sportKey || "unknown",
+      source: "place_bet_button",
+    });
+
+    // Track in Mixpanel
+    analytics.track("sportsbook_clicked", {
+      bookId: book.id,
+      bookName: book.shortName,
+      sportKey: sportKey || "unknown",
+      eventId: eventId || null,
       source: "place_bet_button",
     });
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
+import { analytics } from "@/lib/analytics";
 import NeonCard from "@/components/NeonCard";
 import { Check, Zap, Crown, Star, Shield, Lock, Tag, Loader2, ArrowRight, Sparkles, Gift, Percent, Clock } from "lucide-react";
 
@@ -212,6 +213,11 @@ export default function Pricing() {
       retry: false,
     }
   );
+
+  // Track subscription page view
+  useEffect(() => {
+    analytics.track("subscription_page_viewed", {});
+  }, []);
 
   React.useEffect(() => {
     if (!promoValidating) return;

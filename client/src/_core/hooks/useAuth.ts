@@ -1,6 +1,7 @@
 import { trpc } from "@/lib/trpc";
 import { TRPCClientError } from "@trpc/client";
 import { useCallback, useEffect, useMemo } from "react";
+import { analytics } from "@/lib/analytics";
 
 type UseAuthOptions = {
   redirectOnUnauthenticated?: boolean;
@@ -20,6 +21,8 @@ export function useAuth(options?: UseAuthOptions) {
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: () => {
       utils.auth.me.setData(undefined, null);
+      // Reset Mixpanel session on logout
+      analytics.reset();
     },
   });
 

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
+import { analytics } from "@/lib/analytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,11 @@ import {
 
 function ArbitrageFinderContent() {
   const [selectedArbitrage, setSelectedArbitrage] = useState<number | null>(null);
+
+  // Track page view
+  useEffect(() => {
+    analytics.track("arbitrage_viewed", {});
+  }, []);
   const [customOddsA, setCustomOddsA] = useState<string>("-110");
   const [customOddsB, setCustomOddsB] = useState<string>("-110");
   const [customStake, setCustomStake] = useState<string>("100");

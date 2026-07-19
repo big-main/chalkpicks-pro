@@ -366,6 +366,51 @@ export default function Sportsbooks() {
           </div>
         </div>
 
+        {/* Affiliate Program Section */}
+        <div className="max-w-4xl mx-auto mt-12">
+          <div
+            className="p-6 rounded-xl"
+            style={{ background: "rgba(12,12,28,0.9)", border: "1px solid rgba(240,184,0,0.2)" }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className="w-9 h-9 flex items-center justify-center rounded-lg"
+                style={{ background: "rgba(240,184,0,0.12)", border: "1px solid rgba(240,184,0,0.25)" }}
+              >
+                <TrendingUp className="w-4 h-4" style={{ color: "#f0b800" }} />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-base">Become an Affiliate Partner</h3>
+                <p className="text-xs" style={{ color: "rgba(140,140,170,0.55)" }}>Earn $75–$300 per new depositor you refer to each sportsbook</p>
+              </div>
+            </div>
+            <p className="text-sm mb-5" style={{ color: "rgba(180,180,210,0.65)" }}>
+              Apply directly to each sportsbook's affiliate program below. Once approved, replace the <code className="text-xs px-1 py-0.5 rounded" style={{ background: "rgba(57,255,20,0.08)", color: "#39ff14" }}>?ref=chalkpicks</code> links in your config with your real tracking URLs to start earning CPA commissions.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {SPORTSBOOKS.filter(b => b.affiliateProgramUrl).map((book) => (
+                <a
+                  key={book.id}
+                  href={book.affiliateProgramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-3 rounded-lg transition-all hover:opacity-90"
+                  style={{ background: `${book.color}08`, border: `1px solid ${book.color}20` }}
+                >
+                  <div>
+                    <div className="text-sm font-semibold text-white">{book.shortName}</div>
+                    <div className="text-xs" style={{ color: "rgba(140,140,170,0.55)" }}>~${book.estimatedCpa}/depositor</div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs font-bold" style={{ color: book.color }}>Apply</span>
+                    <ExternalLink className="w-3 h-3" style={{ color: book.color }} />
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Responsible gambling */}
         <div
           className="max-w-4xl mx-auto mt-10 p-5 rounded-lg"

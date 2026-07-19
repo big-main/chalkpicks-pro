@@ -29,6 +29,10 @@ export interface Sportsbook {
   featured: boolean;
   /** Odds API key name (matches The Odds API bookmaker keys) */
   oddsApiKey: string;
+  /** URL to apply for the affiliate/partner program (earns CPA commission per referred depositor) */
+  affiliateProgramUrl: string;
+  /** Estimated CPA commission per new depositor (USD) */
+  estimatedCpa: number;
 }
 
 export const SPORTSBOOKS: Sportsbook[] = [
@@ -46,6 +50,8 @@ export const SPORTSBOOKS: Sportsbook[] = [
     rating: 4.8,
     featured: true,
     oddsApiKey: "draftkings",
+    affiliateProgramUrl: "https://www.sbkaffiliates.com/",
+    estimatedCpa: 250,
   },
   {
     id: "fanduel",
@@ -61,6 +67,8 @@ export const SPORTSBOOKS: Sportsbook[] = [
     rating: 4.9,
     featured: true,
     oddsApiKey: "fanduel",
+    affiliateProgramUrl: "https://affiliates.fanduel.com/",
+    estimatedCpa: 300,
   },
   {
     id: "betmgm",
@@ -76,6 +84,8 @@ export const SPORTSBOOKS: Sportsbook[] = [
     rating: 4.7,
     featured: true,
     oddsApiKey: "betmgm",
+    affiliateProgramUrl: "https://www.entainaffiliates.com/",
+    estimatedCpa: 200,
   },
   {
     id: "caesars",
@@ -91,6 +101,8 @@ export const SPORTSBOOKS: Sportsbook[] = [
     rating: 4.5,
     featured: false,
     oddsApiKey: "williamhill_us",
+    affiliateProgramUrl: "https://www.caesarsaffiliates.com/",
+    estimatedCpa: 150,
   },
   {
     id: "bet365",
@@ -106,6 +118,8 @@ export const SPORTSBOOKS: Sportsbook[] = [
     rating: 4.6,
     featured: false,
     oddsApiKey: "bet365",
+    affiliateProgramUrl: "https://www.bet365affiliates.com/",
+    estimatedCpa: 175,
   },
   {
     id: "espnbet",
@@ -121,6 +135,8 @@ export const SPORTSBOOKS: Sportsbook[] = [
     rating: 4.4,
     featured: false,
     oddsApiKey: "espnbet",
+    affiliateProgramUrl: "https://www.espnbetaffiliates.com/",
+    estimatedCpa: 150,
   },
   {
     id: "pointsbet",
@@ -136,6 +152,8 @@ export const SPORTSBOOKS: Sportsbook[] = [
     rating: 4.3,
     featured: false,
     oddsApiKey: "fanatics",
+    affiliateProgramUrl: "https://affiliates.fanatics.com/",
+    estimatedCpa: 125,
   },
   {
     id: "betrivers",
@@ -151,6 +169,8 @@ export const SPORTSBOOKS: Sportsbook[] = [
     rating: 4.2,
     featured: false,
     oddsApiKey: "betrivers",
+    affiliateProgramUrl: "https://www.betrivers.com/affiliates/",
+    estimatedCpa: 100,
   },
   {
     id: "bovada",
@@ -166,6 +186,8 @@ export const SPORTSBOOKS: Sportsbook[] = [
     rating: 4.1,
     featured: false,
     oddsApiKey: "bovada",
+    affiliateProgramUrl: "https://www.bovadaaffiliates.com/",
+    estimatedCpa: 100,
   },
   {
     id: "mybookie",
@@ -181,6 +203,8 @@ export const SPORTSBOOKS: Sportsbook[] = [
     rating: 4.0,
     featured: false,
     oddsApiKey: "mybookieag",
+    affiliateProgramUrl: "https://mybookie.ag/affiliates/",
+    estimatedCpa: 75,
   },
   {
     id: "betonline",
@@ -196,6 +220,8 @@ export const SPORTSBOOKS: Sportsbook[] = [
     rating: 4.0,
     featured: false,
     oddsApiKey: "betonlineag",
+    affiliateProgramUrl: "https://www.betonline.ag/affiliates/",
+    estimatedCpa: 75,
   },
 ];
 

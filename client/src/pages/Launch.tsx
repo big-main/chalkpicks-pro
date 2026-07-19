@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import { ArrowLeft, ExternalLink, Twitter, Share2, Bell, Star, Users, Zap, Trophy } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 
 // Product Hunt launch date — update this to your actual launch date
 const LAUNCH_DATE = new Date("2026-08-05T12:00:01-07:00"); // Tuesday Aug 5, 12:00 AM PT
@@ -30,12 +31,25 @@ export default function Launch() {
   const [notifyEmail, setNotifyEmail] = useState("");
   const [notified, setNotified] = useState(false);
 
+  const subscribe = trpc.newsletter.subscribe.useMutation({
+    onSuccess: (data) => {
+      setNotified(true);
+      if (data.isNew) {
+        toast.success("You're on the list! We'll email you on launch day.");
+      } else {
+        toast.success("Already subscribed — we'll remind you on launch day!");
+        setNotified(true);
+      }
+    },
+    onError: () => {
+      toast.error("Something went wrong. Please try again.");
+    },
+  });
+
   function handleNotify(e: React.FormEvent) {
     e.preventDefault();
     if (!notifyEmail) return;
-    // In production, wire this to your newsletter_subscribers table
-    setNotified(true);
-    toast.success("You're on the list! We'll notify you when we launch.");
+    subscribe.mutate({ email: notifyEmail, source: "launch_page" });
   }
 
   function copyShareText(platform: keyof typeof SHARE_MESSAGES) {
@@ -184,10 +198,11 @@ export default function Launch() {
                 />
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-lg text-sm font-bold transition-all hover:opacity-90"
+                  disabled={subscribe.isPending}
+                  className="px-5 py-2.5 rounded-lg text-sm font-bold transition-all hover:opacity-90 disabled:opacity-60"
                   style={{ background: "#f0b800", color: "#080814" }}
                 >
-                  Notify Me
+                  {subscribe.isPending ? "Saving..." : "Notify Me"}
                 </button>
               </form>
             )}

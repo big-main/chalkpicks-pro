@@ -1143,3 +1143,12 @@
 - [x] Added /launch route to App.tsx
 - [x] Added 🐱 Product Hunt Launch link to footer Community section
 - [x] 138 tests pass, TypeScript clean
+
+## Phase 25 — Launch Page Newsletter + Affiliate Program Links (Jul 19, 2026) — COMPLETE
+
+- [x] Wired launch page notify-me form to newsletter.subscribe tRPC mutation (source: "launch_page" tag distinguishes launch subscribers)
+- [x] Added loading state ("Saving...") and error handling to notify-me button
+- [x] Added affiliateProgramUrl + estimatedCpa fields to Sportsbook interface and all 11 books
+- [x] Added "Become an Affiliate Partner" section to Sportsbooks page with Apply links for all 11 books
+- [x] 138 tests pass, TypeScript clean
+- [x] Save checkpoint

@@ -1001,3 +1001,14 @@
 - [x] Build @xyflow/react visual parlay builder component (/parlay-flow)
 - [ ] Wire quant sidecar into Backtesting page UI
 - [ ] Run full test suite and save checkpoint
+
+## Phase 12 — Blog Content Pipeline Fix (Jul 19, 2026)
+
+- [x] Replace BabyLoveGrowth blog content handler with AI-generated articles from daily picks
+- [x] Integrate odds-api.io as primary odds provider (2,400 req/day free)
+- [x] Fix cloud computer blog pipeline: rebuild dist/index.js from updated source
+- [x] Fix Ollama routing: OLLAMA_API_URL=http://localhost:11434/v1 in .env.production
+- [x] Switch blog generation from CPU Ollama (too slow) to Forge API (Gemini) via complexity:'high'
+- [x] Verify blog pipeline end-to-end: 3 articles published, 0 errors, IndexNow pinged
+- [x] All tests: 127 passed, 1 skipped, 0 failed
+- [x] PM2 state saved on cloud computer

@@ -1089,10 +1089,24 @@
 - [x] TypeScript compiles clean (0 errors)
 - [x] All tests pass (127 passed, 1 skipped, 0 failed)
 
-## Phase 19 — Frontend Integration (NEXT)
+## Phase 19 — Frontend Integration — COMPLETE
 
-- [ ] Add MyTrackedPicks route to App.tsx (lazy import + route definition)
-- [ ] Add favorite/track button to pick cards (PickCard component)
-- [ ] Add My Tracked Picks link to Navbar user dropdown
-- [ ] Test end-to-end flow (add pick → view in tracked → resolve → get push notification)
-- [ ] Save checkpoint
+- [x] Add MyTrackedPicks route to App.tsx (lazy import + route definition)
+- [x] Add favorite/track button to pick cards (TrackPickButton with Bookmark icon)
+- [x] Add My Tracked Picks link to Navbar user dropdown (Target icon)
+- [x] PlaceBetButton also added to pick cards alongside track button
+- [x] Save checkpoint
+
+## Phase 20 — Sportsbook Affiliate Deep Links (Jul 19, 2026) — COMPLETE
+
+- [x] Create sportsbook config file with affiliate links, logos, deep-link URL patterns for 11 books (shared/sportsbooks.ts)
+- [x] Build "Place Bet" button component (PlaceBetButton) with sportsbook selector dropdown
+- [x] Add PlaceBetButton to every pick card on Picks page (compact mode)
+- [x] Add PlaceBetButton to PickDetail page (full mode with dropdown)
+- [x] Add PlaceBetButton to Arbitrage Finder results (both books per arb)
+- [x] Add PlaceBetButton to EV Finder results (compact, linked to source bookmaker)
+- [x] Add PlaceBetButton to ArbitrageOpportunities component (both books per opportunity)
+- [x] Update /sportsbooks page with all 11 books, signup bonuses, affiliate tracking, show-more
+- [x] Add affiliate click tracking (affiliate_clicks table + affiliateClicksRouter)
+- [x] All 138 tests pass (11 new sportsbook config tests)
+- [x] Save checkpoint

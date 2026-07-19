@@ -95,6 +95,7 @@ const MonteCarloSimulator = lazy(() => import("@/pages/MonteCarloSimulator"));
 const SharpMoneyDetector = lazy(() => import("@/pages/SharpMoneyDetector"));
 const ConsensusAggregator = lazy(() => import("@/pages/ConsensusAggregator"));
 const ParlayFlow = lazy(() => import("@/pages/ParlayFlow"));
+const MyTrackedPicks = lazy(() => import("@/pages/MyTrackedPicks").then(m => ({ default: m.MyTrackedPicks })));
 
 function PageLoader() {
   return (
@@ -140,6 +141,7 @@ function Router() {
           <Route path="/subscription-management" component={SubscriptionManagement} />
           <Route path="/feedback-analytics" component={FeedbackAnalytics} />
           <Route path="/notifications" component={Notifications} />
+          <Route path="/my-tracked-picks" component={MyTrackedPicks} />
           <Route path="/ev-finder" component={EVFinder} />
           <Route path="/tools" component={Tools} />
           <Route path="/signup" component={SignUp} />

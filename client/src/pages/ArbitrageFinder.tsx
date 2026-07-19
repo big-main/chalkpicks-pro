@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FeatureGate } from "@/components/FeatureGate";
 import { ArbitrageFilters, type ArbitrageFilterOptions } from "@/components/ArbitrageFilters";
+import { PlaceBetButton } from "@/components/PlaceBetButton";
 import {
   TrendingUp,
   TrendingDown,
@@ -248,11 +249,19 @@ function ArbitrageFinderContent() {
                           </div>
                         </div>
 
-                        {/* Trade Button */}
-                        <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
-                          <Zap className="w-4 h-4 mr-2" />
-                          Execute Trade
-                        </Button>
+                        {/* Place Bet Buttons */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <PlaceBetButton
+                            sportKey={arb.sport}
+                            bestBookmaker={arb.bookA}
+                            compact
+                          />
+                          <PlaceBetButton
+                            sportKey={arb.sport}
+                            bestBookmaker={arb.bookB}
+                            compact
+                          />
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

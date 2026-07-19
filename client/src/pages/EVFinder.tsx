@@ -3,6 +3,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import { Paywall } from "@/components/Paywall";
+import { PlaceBetButton } from "@/components/PlaceBetButton";
 import { RefreshCw, TrendingUp, Zap, Filter, Lock, ArrowRight, Info } from "lucide-react";
 import { Link } from "wouter";
 
@@ -266,6 +267,15 @@ export default function EVFinder() {
                       </div>
                       <div className="text-[10px] font-bold tracking-wider" style={{ color: "rgba(140,140,170,0.6)" }}>EV</div>
                     </div>
+                  </div>
+
+                  {/* Place Bet */}
+                  <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                    <PlaceBetButton
+                      sportKey={opp.sport}
+                      bestBookmaker={opp.bookmaker}
+                      compact
+                    />
                   </div>
                 </div>
               </NeonCard>

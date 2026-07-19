@@ -12,7 +12,7 @@ export function MyTrackedPicks() {
   const [selectedTab, setSelectedTab] = useState("all");
 
   const { data: trackedPicks = [], isLoading, refetch } = trpc.tracking.getTrackedPicks.useQuery(
-    { userId: user?.id || 0 },
+    undefined,
     { enabled: !!user?.id }
   );
 

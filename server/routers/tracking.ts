@@ -83,20 +83,7 @@ export const trackingRouter = router({
    * Get all tracked picks for the current user
    */
   getTrackedPicks: protectedProcedure
-    .input(
-      z.object({
-        userId: z.number(),
-      })
-    )
-    .query(async ({ ctx, input }: any) => {
-      // Users can only view their own tracked picks
-      if (input.userId !== ctx.user.id) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Cannot view other users' tracked picks",
-        });
-      }
-
+    .query(async ({ ctx }: any) => {
       const db = await getDb();
       if (!db) return [];
 

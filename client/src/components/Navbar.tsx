@@ -448,6 +448,7 @@ export default function Navbar() {
                         <div className="p-2 space-y-0.5">
                           {[
                             { href: "/dashboard", label: "My Dashboard", icon: BarChart3 },
+                            { href: "/my-tracked-picks", label: "Tracked Picks", icon: Target },
                             { href: "/subscription-dashboard", label: "Subscription", icon: Crown },
                             { href: "/credits", label: "Credits", icon: Zap, color: "#39ff14" },
                             { href: "/account-settings", label: "Account Settings", icon: Settings },

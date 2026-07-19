@@ -9,6 +9,7 @@ import { ArrowLeft, Brain, Zap, Target, TrendingUp, Lock, CheckCircle2, PlusCirc
 import { toast } from "sonner";
 import { useState } from "react";
 import PickFeedback from "@/components/PickFeedback";
+import { PlaceBetButton } from "@/components/PlaceBetButton";
 
 export default function PickDetail() {
   const { id } = useParams<{ id: string }>();
@@ -110,6 +111,15 @@ export default function PickDetail() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Place Bet CTA */}
+          {!isLocked && (
+            <div className="mb-5 flex items-center gap-3">
+              <PlaceBetButton
+                sportKey={pick.sportKey}
+              />
+            </div>
+          )}
 
           <Card className="bg-card border-border mb-5">
             <CardHeader className="pb-3">

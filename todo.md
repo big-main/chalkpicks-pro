@@ -1152,3 +1152,16 @@
 - [x] Added "Become an Affiliate Partner" section to Sportsbooks page with Apply links for all 11 books
 - [x] 138 tests pass, TypeScript clean
 - [x] Save checkpoint
+
+## Phase 26 — Mixpanel Analytics Integration (Jul 19, 2026) — COMPLETE
+
+- [x] Installed mixpanel-browser@2.81.0
+- [x] Created client/src/lib/analytics.ts with typed event catalogue (24 events), identify, reset, register, page helpers
+- [x] Hardcoded real Mixpanel token (d83e21f4a4fa864ee3d4e73dd3ae72c9) — no env var needed
+- [x] Enabled autocapture: true + record_sessions_percent: 100 per user spec
+- [x] Initialized in main.tsx on app load (initAnalytics())
+- [x] Page views tracked via usePageTracking hook (fires analytics.page() on every route change)
+- [x] User identified on login via useAuth() in Router (userId, email, name, tier, role, createdAt)
+- [x] Super property 'tier' registered for all events
+- [x] TypeScript clean (0 errors), 138 tests pass
+- [x] Save checkpoint

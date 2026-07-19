@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/PageTransition";
 import { useLocation } from "wouter";
@@ -13,6 +13,8 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { usePageTracking } from "@/hooks/usePageTracking";
+import { analytics } from "@/lib/analytics";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 // Eagerly loaded (critical path)
 import Home from "./pages/Home";
@@ -119,6 +121,21 @@ function PageLoader() {
 function Router() {
   usePageTracking();
   const [location] = useLocation();
+  const { user } = useAuth();
+
+  // Identify user in Mixpanel when they log in or on app load
+  useEffect(() => {
+    if (user) {
+      analytics.identify(String(user.id), {
+        email: user.email ?? undefined,
+        name: user.name ?? undefined,
+        tier: (user as Record<string, unknown>).tier as string | undefined,
+        role: user.role ?? undefined,
+        createdAt: (user as Record<string, unknown>).createdAt as string | undefined,
+      });
+      analytics.register({ tier: (user as Record<string, unknown>).tier ?? "free" });
+    }
+  }, [user?.id]);
   return (
     <>
       <PageMeta />

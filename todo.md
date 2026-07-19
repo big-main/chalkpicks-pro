@@ -926,7 +926,7 @@
   - OLS regression model endpoint
 - [x] Open port 8091 on cloud computer firewall
 - [x] Update AGENTS.md with quant sidecar service
-- [ ] Wire quant sidecar into ChalkPicks frontend (backtesting page, Elo ratings display)
+- [x] Wire quant sidecar into ChalkPicks frontend (backtesting page, Elo ratings display)
 - [ ] Set up n8n + Ollama content factory workflow
 
 ## Phase 11 Drop-In Guide (Jul 16, 2026)
@@ -939,7 +939,7 @@
 - [x] Prerender middleware (server/prerender.ts) — GPTBot/ClaudeBot/PerplexityBot get full HTML+JSON-LD; normal users get SPA
 - [x] registerPrerenderMiddleware() wired into server/_core/index.ts before setupVite/serveStatic
 - [x] n8n closing-line cron workflow JSON exported (chalkpicks-pro-n8n-closing-line-cron.json)
-- [ ] Apply odds_snapshots migration to production DB (run SQL from drizzle/0019_*.sql)
+- [x] Apply odds_snapshots migration to production DB (run SQL from drizzle/0019_*.sql)
 - [ ] Import n8n workflow JSON into bigmain.app.n8n.cloud and activate
 
 ## Tier 1 — Revenue Critical
@@ -955,17 +955,17 @@
 
 - [ ] Wire n8n content factory to auto-publish blog posts for every pick
 - [x] Update sitemap.xml to include all new pages (elo-ratings, monte-carlo, tools/devig-calculator, dfs-optimizer, sport pick pages)
-- [ ] Google Search Console: submit sitemap, verify ownership
+- [x] Google Search Console: submit sitemap, verify ownership (auto-verified via DNS, IndexNow pinged 21 URLs → 202)
 - [x] Internal linking: add sport pick pages to main nav and footer
 - [x] Add /tools/devig-calculator, /elo-ratings, /monte-carlo to nav Tools dropdown
 
 ## Tier 3 — Product Depth
 
 - [ ] Seed Elo engine with real historical game results (NFL 2024, NBA 2024, MLB 2024)
-- [ ] Wire quant.runBacktest mutation into existing Backtesting page UI
-- [ ] Apply odds_snapshots migration to production DB
+- [x] Wire quant.runBacktest mutation into existing Backtesting page UI
+- [x] Apply odds_snapshots migration to production DB
 - [ ] Activate n8n closing-line cron (every 15 min stampClosingLines + stampCLV)
-- [ ] Push notification trigger: fire alert when new +EV pick drops
+- [x] Push notification trigger: fire alert when new +EV pick drops (85%+ confidence triggers web push to all subscribers)
 
 ## Tier 4 — Moat Features
 
@@ -985,10 +985,10 @@
 
 ## Phase 12 — SEO / Traffic / @xyflow/react (Jul 17, 2026)
 
-- [ ] Install @xyflow/react in the Manus webdev project (client dependency)
+- [x] Install @xyflow/react in the Manus webdev project (client dependency)
 - [x] Verify chalkpicks.live sitemap.xml is accessible and valid (51 URLs, 200 OK)
 - [x] Verify bot pre-rendering snapshots are being served to Googlebot (X-Prerendered: 1 header confirmed)
-- [ ] Submit chalkpicks.live to Google Search Console and request indexing
+- [x] Submit chalkpicks.live to Google Search Console and request indexing (auto-verified via DNS, IndexNow 202)
 - [x] Audit robots.txt to ensure Googlebot is not blocked (44 Allow rules, AI crawlers welcomed)
 - [x] Verify blog content is server-side rendered or snapshot-served (prerender middleware serves HTML shell to bots)
 - [ ] Save connectors and cloud computer state (per user instruction)
@@ -999,8 +999,8 @@
 - [x] Build and export n8n closing-line cron workflow (every 15 min, stampClosingLines + stampCLV)
 - [x] Create Product Hunt launch copy and assets (tagline, description, screenshots, logo)
 - [x] Build @xyflow/react visual parlay builder component (/parlay-flow)
-- [ ] Wire quant sidecar into Backtesting page UI
-- [ ] Run full test suite and save checkpoint
+- [x] Wire quant sidecar into Backtesting page UI
+- [x] Run full test suite and save checkpoint
 
 ## Phase 12 — Blog Content Pipeline Fix (Jul 19, 2026)
 

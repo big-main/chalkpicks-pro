@@ -711,3 +711,40 @@ export const apiKeys = mysqlTable("api_keys", {
 ]));
 export type ApiKey = typeof apiKeys.$inferSelect;
 export type InsertApiKey = typeof apiKeys.$inferInsert;
+
+// ─── Announcements ────────────────────────────────────────────────────────────
+export const announcements = mysqlTable("announcements", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 256 }).notNull(),
+  body: text("body").notNull(),
+  type: mysqlEnum("type", ["info", "warning", "success", "promo"]).notNull().default("info"),
+  ctaText: varchar("ctaText", { length: 64 }),
+  ctaUrl: varchar("ctaUrl", { length: 512 }),
+  isActive: boolean("isActive").notNull().default(true),
+  startsAt: timestamp("startsAt").defaultNow().notNull(),
+  endsAt: timestamp("endsAt"),
+  createdBy: int("createdBy").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ([
+  index("idx_announcements_active").on(table.isActive),
+]));
+export type Announcement = typeof announcements.$inferSelect;
+export type InsertAnnouncement = typeof announcements.$inferInsert;
+
+// ─── User Alerts ──────────────────────────────────────────────────────────────
+export const userAlerts = mysqlTable("user_alerts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  type: mysqlEnum("type", ["pick_result", "line_movement", "promo", "system", "broadcast"]).notNull(),
+  title: varchar("title", { length: 256 }).notNull(),
+  body: text("body").notNull(),
+  pickId: int("pickId"),
+  actionUrl: varchar("actionUrl", { length: 512 }),
+  isRead: boolean("isRead").notNull().default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ([
+  index("idx_user_alerts_user").on(table.userId),
+  index("idx_user_alerts_unread").on(table.userId, table.isRead),
+]));
+export type UserAlert = typeof userAlerts.$inferSelect;
+export type InsertUserAlert = typeof userAlerts.$inferInsert;

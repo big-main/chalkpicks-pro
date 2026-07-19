@@ -51,6 +51,9 @@ export default function Notifications() {
   const { data: history } = trpc.notifications.getHistory.useQuery(undefined, {
     enabled: isAuthenticated,
   });
+  const { data: myAlerts, refetch: refetchAlerts } = trpc.notifications.getMyAlerts.useQuery({ limit: 50, offset: 0 }, {
+    enabled: isAuthenticated,
+  });
 
   const updatePrefs = trpc.notifications.updatePreferences.useMutation({
     onSuccess: () => {
@@ -69,6 +72,17 @@ export default function Notifications() {
 
   const markRead = trpc.notifications.markRead.useMutation({
     onSuccess: () => refetchInApp(),
+  });
+
+  const markAlert = trpc.notifications.markAlert.useMutation({
+    onSuccess: () => refetchAlerts(),
+  });
+
+  const markAllAlerts = trpc.notifications.markAllAlerts.useMutation({
+    onSuccess: () => {
+      refetchAlerts();
+      toast.success("All alerts marked as read.");
+    },
   });
 
   const sendTest = trpc.notifications.sendTest.useMutation({
@@ -120,6 +134,7 @@ export default function Notifications() {
   }
 
   const unreadCount = inAppNotifs?.filter(n => !n.isRead).length ?? 0;
+  const alertUnreadCount = myAlerts?.unreadCount ?? 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -142,6 +157,9 @@ export default function Notifications() {
             <TabsList className="mb-6 bg-card border border-border">
               <TabsTrigger value="inbox" className="gap-2">
                 <Bell className="w-4 h-4" /> Inbox {unreadCount > 0 && <Badge className="bg-destructive text-destructive-foreground text-xs px-1.5 py-0">{unreadCount}</Badge>}
+              </TabsTrigger>
+              <TabsTrigger value="alerts" className="gap-2">
+                <Zap className="w-4 h-4" /> Alerts {alertUnreadCount > 0 && <Badge className="bg-destructive text-destructive-foreground text-xs px-1.5 py-0">{alertUnreadCount}</Badge>}
               </TabsTrigger>
               <TabsTrigger value="preferences" className="gap-2">
                 <Settings className="w-4 h-4" /> Preferences
@@ -217,6 +235,68 @@ export default function Notifications() {
                     <Bell className="w-4 h-4 mr-2" />
                     Send Test In-App Notification
                   </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* ─── ALERTS TAB ────────────────────────────────────────────────── */}
+            <TabsContent value="alerts">
+              <Card className="bg-card border-border">
+                <CardHeader className="flex flex-row items-center justify-between pb-4">
+                  <div>
+                    <CardTitle className="text-lg">Personal Alerts</CardTitle>
+                    <CardDescription>Bet resolution, line movement, and pick updates.</CardDescription>
+                  </div>
+                  {alertUnreadCount > 0 && (
+                    <Button variant="outline" size="sm" onClick={() => markAllAlerts.mutate()}>
+                      Mark All Read
+                    </Button>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {!myAlerts?.alerts || myAlerts.alerts.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Zap className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-30" />
+                      <p className="text-muted-foreground">No personal alerts yet.</p>
+                      <p className="text-sm text-muted-foreground mt-1">You'll see bet resolution, line movement, and pick alerts here.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {myAlerts.alerts.map((alert) => (
+                        <div
+                          key={alert.id}
+                          className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors hover:bg-accent/50 ${!alert.isRead ? "border-primary/30 bg-primary/5" : "border-border bg-transparent"}`}
+                          onClick={() => !alert.isRead && markAlert.mutate({ alertId: alert.id })}
+                        >
+                          <div className="mt-0.5 shrink-0">
+                            {alert.type === "pick_result" ? <Trophy className="w-4 h-4 text-brand-gold" /> :
+                             alert.type === "line_movement" ? <TrendingUp className="w-4 h-4 text-blue-400" /> :
+                             alert.type === "broadcast" ? <Zap className="w-4 h-4 text-purple-400" /> :
+                             <Bell className="w-4 h-4 text-muted-foreground" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className={`font-semibold text-sm ${!alert.isRead ? "text-foreground" : "text-muted-foreground"}`}>
+                                {alert.title}
+                              </p>
+                              <span className="text-xs text-muted-foreground shrink-0">
+                                {new Date(alert.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-0.5">{alert.body}</p>
+                            {alert.actionUrl && (
+                              <a href={alert.actionUrl} className="text-xs text-primary underline mt-1 inline-block">
+                                View details →
+                              </a>
+                            )}
+                          </div>
+                          {!alert.isRead && (
+                            <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1.5" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

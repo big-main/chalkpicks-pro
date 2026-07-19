@@ -1058,3 +1058,16 @@
 - [x] Replace Databricks with direct TiDB analytics queries (zero cost, uses existing picks table)
 - [x] Wire API-Sports into scheduler for player stats enrichment (getInjuries, getStandings, getPlayerStats)
 - [x] Wire TiDB analytics into admin dashboard for win rate/ROI tracking (getDashboardAnalytics, getWeeklyPerformance, getAllTimeStats)
+
+## Phase 17 — Custom Notification System (Jul 19, 2026)
+
+- [x] DB: Add announcements table (id, title, body, type, isActive, startsAt, endsAt, createdBy)
+- [x] DB: Add user_alerts table (id, userId, type, title, body, pickId, isRead, createdAt)
+- [x] tRPC: Admin broadcast procedure (push to all web-push subscribers + optional email blast)
+- [x] tRPC: Announcement CRUD (admin create/update/delete, public getActive)
+- [x] tRPC: User alerts procedures (getMyAlerts, markRead, markAllAlerts)
+- [x] UI: Admin Notifications panel with broadcast form + announcement manager (Notifications tab in AdminPanel)
+- [x] UI: Site-wide announcement bar (dismissible, 4 types: info/warning/success/promo)
+- [x] UI: User alerts tab in Notifications page (bell icon with unread count)
+- [x] UI: User alerts page with full history (Alerts tab in /notifications)
+- [x] Auto-alert: trigger user alert when a tracked pick resolves (win/loss/push)

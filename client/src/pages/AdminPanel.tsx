@@ -6,8 +6,9 @@ import { Link } from "wouter";
 import {
   Users, Shield, TrendingUp, DollarSign, Activity,
   BarChart3, Settings, Eye, Ban, CheckCircle2,
-  AlertCircle, Crown, Calendar, Search, RefreshCw
+  AlertCircle, Crown, Calendar, Search, RefreshCw, Bell, Send, Megaphone
 } from "lucide-react";
+import { useState as useLocalState } from "react";
 import { toast } from "sonner";
 
 const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp";
@@ -30,7 +31,15 @@ export default function AdminPanel() {
   const { user, isAuthenticated } = useAuth();
   const [searchEmail, setSearchEmail] = useState("");
   const [elevateEmail, setElevateEmail] = useState("");
-  const [activeTab, setActiveTab] = useState<"overview" | "users" | "subscriptions" | "picks">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "users" | "subscriptions" | "picks" | "notifications">("overview");
+  const [broadcastTitle, setBroadcastTitle] = useState("");
+  const [broadcastBody, setBroadcastBody] = useState("");
+  const [broadcastUrl, setBroadcastUrl] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailHtml, setEmailHtml] = useState("");
+  const [announcementTitle, setAnnouncementTitle] = useState("");
+  const [announcementBody, setAnnouncementBody] = useState("");
+  const [announcementType, setAnnouncementType] = useState<"info" | "warning" | "success" | "promo">("info");
   const [userPage, setUserPage] = useState(0);
   const PAGE_SIZE = 25;
 
@@ -79,11 +88,32 @@ export default function AdminPanel() {
     );
   }
 
+  // Notifications mutations
+  const broadcastPush = trpc.notifications.broadcastPush.useMutation({
+    onSuccess: (d) => toast.success(`Push sent to ${d.pushCount} subscribers`),
+    onError: () => toast.error("Broadcast failed"),
+  });
+  const emailBlast = trpc.notifications.emailBlast.useMutation({
+    onSuccess: (d) => toast.success(`Email sent to ${d.sent} subscribers (${d.errors} errors)`),
+    onError: () => toast.error("Email blast failed"),
+  });
+  const createAnnouncement = trpc.notifications.createAnnouncement.useMutation({
+    onSuccess: () => { toast.success("Announcement created"); setAnnouncementTitle(""); setAnnouncementBody(""); },
+    onError: () => toast.error("Failed to create announcement"),
+  });
+  const { data: announcementsList, refetch: refetchAnnouncements } = trpc.notifications.listAnnouncements.useQuery(undefined, {
+    enabled: activeTab === "notifications",
+  });
+  const deleteAnnouncement = trpc.notifications.deleteAnnouncement.useMutation({
+    onSuccess: () => { toast.success("Deleted"); refetchAnnouncements(); },
+  });
+
   const tabs = [
     { id: "overview", label: "Overview", icon: BarChart3 },
     { id: "users", label: "User Management", icon: Users },
     { id: "subscriptions", label: "Subscriptions", icon: Crown },
     { id: "picks", label: "Picks Engine", icon: Activity },
+    { id: "notifications", label: "Notifications", icon: Bell },
   ] as const;
 
   return (
@@ -574,6 +604,131 @@ export default function AdminPanel() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Notifications Tab */}
+        {activeTab === "notifications" && (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+            {/* Broadcast Push */}
+            <div style={cardStyle}>
+              <div className="flex items-center gap-2 mb-4">
+                <Bell className="w-5 h-5" style={{ color: "#39ff14" }} />
+                <h3 style={{ fontWeight: 700, color: "white" }}>Broadcast Push</h3>
+              </div>
+              <div className="space-y-3">
+                <input
+                  placeholder="Title (e.g. 🔥 Breaking: Injury alert)" value={broadcastTitle}
+                  onChange={(e) => setBroadcastTitle(e.target.value)}
+                  className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30"
+                />
+                <textarea
+                  placeholder="Message body" value={broadcastBody}
+                  onChange={(e) => setBroadcastBody(e.target.value)} rows={3}
+                  className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30 resize-none"
+                />
+                <input
+                  placeholder="URL (optional, e.g. /picks)" value={broadcastUrl}
+                  onChange={(e) => setBroadcastUrl(e.target.value)}
+                  className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30"
+                />
+                <button
+                  onClick={() => broadcastPush.mutate({ title: broadcastTitle, body: broadcastBody, url: broadcastUrl || undefined, saveAsAlert: true })}
+                  disabled={broadcastPush.isPending || !broadcastTitle || !broadcastBody}
+                  className="w-full py-2 text-sm font-bold rounded flex items-center justify-center gap-2"
+                  style={{ background: broadcastPush.isPending ? "rgba(57,255,20,0.2)" : "rgba(57,255,20,0.15)", border: "1px solid rgba(57,255,20,0.4)", color: "#39ff14" }}
+                >
+                  <Send className="w-4 h-4" /> {broadcastPush.isPending ? "Sending..." : "Send Push to All"}
+                </button>
+              </div>
+            </div>
+
+            {/* Email Blast */}
+            <div style={cardStyle}>
+              <div className="flex items-center gap-2 mb-4">
+                <Send className="w-5 h-5" style={{ color: "#d4a017" }} />
+                <h3 style={{ fontWeight: 700, color: "white" }}>Email Blast</h3>
+              </div>
+              <div className="space-y-3">
+                <input
+                  placeholder="Subject line" value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30"
+                />
+                <textarea
+                  placeholder="HTML body (paste full HTML or plain text)" value={emailHtml}
+                  onChange={(e) => setEmailHtml(e.target.value)} rows={6}
+                  className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30 resize-none font-mono text-xs"
+                />
+                <button
+                  onClick={() => emailBlast.mutate({ subject: emailSubject, htmlBody: emailHtml })}
+                  disabled={emailBlast.isPending || !emailSubject || !emailHtml}
+                  className="w-full py-2 text-sm font-bold rounded flex items-center justify-center gap-2"
+                  style={{ background: emailBlast.isPending ? "rgba(212,160,23,0.2)" : "rgba(212,160,23,0.15)", border: "1px solid rgba(212,160,23,0.4)", color: "#d4a017" }}
+                >
+                  <Send className="w-4 h-4" /> {emailBlast.isPending ? "Sending..." : "Send Email to All Subscribers"}
+                </button>
+              </div>
+            </div>
+
+            {/* Announcement Bar */}
+            <div style={{ ...cardStyle, gridColumn: "1 / -1" }}>
+              <div className="flex items-center gap-2 mb-4">
+                <Megaphone className="w-5 h-5" style={{ color: "#a78bfa" }} />
+                <h3 style={{ fontWeight: 700, color: "white" }}>Site Announcement Bar</h3>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div className="space-y-3">
+                  <input
+                    placeholder="Announcement title" value={announcementTitle}
+                    onChange={(e) => setAnnouncementTitle(e.target.value)}
+                    className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30"
+                  />
+                  <input
+                    placeholder="Body (optional)" value={announcementBody}
+                    onChange={(e) => setAnnouncementBody(e.target.value)}
+                    className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30"
+                  />
+                  <select
+                    value={announcementType}
+                    onChange={(e) => setAnnouncementType(e.target.value as typeof announcementType)}
+                    className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white"
+                  >
+                    <option value="info">Info (blue)</option>
+                    <option value="success">Success (green)</option>
+                    <option value="warning">Warning (amber)</option>
+                    <option value="promo">Promo (purple gradient)</option>
+                  </select>
+                  <button
+                    onClick={() => createAnnouncement.mutate({ title: announcementTitle, body: announcementBody, type: announcementType })}
+                    disabled={createAnnouncement.isPending || !announcementTitle}
+                    className="w-full py-2 text-sm font-bold rounded flex items-center justify-center gap-2"
+                    style={{ background: "rgba(167,139,250,0.15)", border: "1px solid rgba(167,139,250,0.4)", color: "#a78bfa" }}
+                  >
+                    <Megaphone className="w-4 h-4" /> {createAnnouncement.isPending ? "Creating..." : "Post Announcement"}
+                  </button>
+                </div>
+                <div>
+                  <p className="text-xs mb-2" style={{ color: "rgba(140,140,170,0.7)" }}>Active announcements:</p>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {(announcementsList ?? []).length === 0 ? (
+                      <p className="text-xs" style={{ color: "rgba(140,140,170,0.4)" }}>None</p>
+                    ) : (announcementsList ?? []).map((a) => (
+                      <div key={a.id} className="flex items-center justify-between gap-2 p-2 rounded" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-white truncate">{a.title}</p>
+                          <p className="text-xs" style={{ color: a.isActive ? "#39ff14" : "rgba(140,140,170,0.5)" }}>{a.isActive ? "Active" : "Inactive"} · {a.type}</p>
+                        </div>
+                        <button
+                          onClick={() => deleteAnnouncement.mutate({ id: a.id })}
+                          className="text-xs px-2 py-1 rounded"
+                          style={{ background: "rgba(255,59,48,0.15)", border: "1px solid rgba(255,59,48,0.3)", color: "#ff3b30" }}
+                        >Delete</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

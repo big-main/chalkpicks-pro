@@ -9,19 +9,17 @@ describe("Secrets Configuration", () => {
   it("should have SMTP credentials configured", () => {
     expect(process.env.SMTP_USER).toBeDefined();
     expect(process.env.SMTP_USER).toBe("admin@chalkpicks.live");
-    
+
     expect(process.env.SMTP_PASS).toBeDefined();
     expect(process.env.SMTP_PASS?.length).toBeGreaterThan(0);
-    
+
     expect(process.env.SMTP_FROM).toBeDefined();
     expect(process.env.SMTP_FROM).toBe("admin@chalkpicks.live");
   });
 
-  it("should have BabyLoveGrowth API key configured", () => {
-    expect(process.env.BABYLOVEGROWTH_API_KEY).toBeDefined();
-    expect(process.env.BABYLOVEGROWTH_API_KEY).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-    );
+  it("should have Odds API IO key configured", () => {
+    expect(process.env.ODDS_API_IO_KEY).toBeDefined();
+    expect(process.env.ODDS_API_IO_KEY?.length).toBeGreaterThan(10);
   });
 
   it("should validate SMTP credentials format", () => {
@@ -29,9 +27,8 @@ describe("Secrets Configuration", () => {
     expect(smtpUser).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
   });
 
-  it("should validate BabyLoveGrowth API key format (UUID)", () => {
-    const apiKey = process.env.BABYLOVEGROWTH_API_KEY;
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    expect(apiKey).toMatch(uuidRegex);
+  it("should validate Odds API IO key format (hex string)", () => {
+    const apiKey = process.env.ODDS_API_IO_KEY;
+    expect(apiKey).toMatch(/^[0-9a-f]{64}$/i);
   });
 });

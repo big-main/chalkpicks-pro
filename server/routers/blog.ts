@@ -1,19 +1,15 @@
 /**
  * Blog Management Router
- * Handles fetching, creating, and publishing blog posts from BabyLoveGrowth
+ * Handles fetching, creating, publishing, and AI-generating blog posts.
+ * BabyLoveGrowth integration removed — articles are now generated from
+ * daily picks via invokeLLM (Ollama on cloud computer, zero cost).
  */
 
 import { router, publicProcedure, protectedProcedure, adminProcedure } from "../_core/trpc";
 import { z } from "zod";
-import { blogPosts } from "../../drizzle/schema";
-import { eq, desc, and, ne } from "drizzle-orm";
-import {
-  fetchBabyLoveArticles,
-  fetchBabyLoveArticleById,
-  generateBabyLoveArticles,
-  transformToBlogPost,
-  type BabyLoveArticle,
-} from "../services/babyloveGrowth";
+import { blogPosts, picks } from "../../drizzle/schema";
+import { eq, desc, and, ne, gte } from "drizzle-orm";
+import { invokeLLM } from "../_core/llm";
 import { getDb } from "../db";
 
 export const blogRouter = router({
@@ -130,98 +126,60 @@ export const blogRouter = router({
     }),
 
   /**
-   * Fetch articles from BabyLoveGrowth (admin only)
+   * AI-generate a blog article from a specific pick (admin only)
+   * Uses invokeLLM (Ollama on cloud computer) — zero cost
    */
-  fetchFromBabyLove: adminProcedure
+  generateFromPick: adminProcedure
     .input(
       z.object({
-        limit: z.number().min(1).max(100).default(50),
-        offset: z.number().min(0).default(0),
-        topic: z.string().optional(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      try {
-        const articles = await fetchBabyLoveArticles(
-          input.limit,
-          input.offset,
-          input.topic
-        );
-        return articles;
-      } catch (error: any) {
-        throw new Error(`Failed to fetch articles: ${error.message}`);
-      }
-    }),
-
-  /**
-   * Generate articles on a topic (admin only)
-   */
-  generateArticles: adminProcedure
-    .input(
-      z.object({
-        topic: z.string().min(3),
-        count: z.number().min(1).max(10).default(5),
-      })
-    )
-    .mutation(async ({ input }) => {
-      try {
-        const articles = await generateBabyLoveArticles(input.topic, input.count);
-        return articles;
-      } catch (error: any) {
-        throw new Error(`Failed to generate articles: ${error.message}`);
-      }
-    }),
-
-  /**
-   * Import an article from BabyLoveGrowth as a draft (admin only)
-   */
-  importArticle: adminProcedure
-    .input(
-      z.object({
-        babyloveArticleId: z.string(),
+        pickId: z.number(),
       })
     )
     .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new Error("Database unavailable");
 
-      try {
-        // Fetch the article from BabyLoveGrowth
-        const article = await fetchBabyLoveArticleById(input.babyloveArticleId);
+      const pickRows = await db.select().from(picks).where(eq(picks.id, input.pickId)).limit(1);
+      if (!pickRows.length) throw new Error("Pick not found");
+      const pick = pickRows[0];
 
-        // Transform to blog post format
-        const blogPost = transformToBlogPost(article);
+      const matchup = pick.homeTeam && pick.awayTeam
+        ? `${pick.awayTeam} vs ${pick.homeTeam}`
+        : pick.sportKey.toUpperCase();
+      const slug = matchup.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").slice(0, 80)
+        + "-prediction-pick-" + pick.pickDate;
+      const title = `${matchup} Prediction & Pick — ${pick.pickDate} | ChalkPicks AI`;
 
-        // Check if article already exists
-        const existing = await db
-          .select()
-          .from(blogPosts)
-          .where(eq(blogPosts.slug, blogPost.slug))
-          .limit(1);
+      const existing = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug)).limit(1);
+      if (existing.length > 0) throw new Error(`Article already exists: ${slug}`);
 
-        if (existing.length > 0) {
-          throw new Error(`Article with slug "${blogPost.slug}" already exists`);
-        }
+      const oddsStr = pick.odds ? (pick.odds > 0 ? `+${pick.odds}` : String(pick.odds)) : "N/A";
+      const response = await invokeLLM({
+        messages: [
+          { role: "system", content: "You are a professional sports betting analyst. Write detailed, SEO-optimized betting analysis articles in markdown format." },
+          { role: "user", content: `Write a 650-750 word SEO article about: ${matchup} | ${pick.sportKey} | ${pick.pickType} | Rec: ${pick.recommendation} | Confidence: ${pick.confidenceScore}% | Odds: ${oddsStr} | Date: ${pick.pickDate}. Use ## H2 headings. Include sections: Why We Like This Pick, Key Factors, Betting Strategy. Return ONLY markdown body.` },
+        ],
+      });
 
-        // Insert as draft
-        await db.insert(blogPosts).values({
-          title: blogPost.title,
-          slug: blogPost.slug,
-          excerpt: blogPost.excerpt,
-          content: blogPost.content,
-          contentHtml: blogPost.contentHtml,
-          heroImage: blogPost.heroImage,
-          seoDescription: blogPost.seoDescription,
-          jsonLd: blogPost.jsonLd,
-          source: "babylovegrowth",
-          sourceArticleId: input.babyloveArticleId,
-          status: "draft",
-        });
+      const content = typeof response.choices?.[0]?.message?.content === "string"
+        ? response.choices[0].message.content : "";
+      if (!content || content.length < 100) throw new Error("LLM returned empty content");
 
-        return { success: true, slug: blogPost.slug };
-      } catch (error: any) {
-        throw new Error(`Failed to import article: ${error.message}`);
-      }
+      const excerpt = content.replace(/#{1,3} .+\n/g, "").replace(/\n+/g, " ").slice(0, 200).trim() + "...";
+      const seoDescription = `${matchup} prediction for ${pick.pickDate}. ${pick.confidenceScore}% confidence. AI-powered by ChalkPicks.`.slice(0, 160);
+
+      await db.insert(blogPosts).values({
+        title,
+        slug,
+        excerpt,
+        content,
+        seoDescription,
+        source: "ai-generated",
+        status: "published",
+        publishedAt: new Date(),
+      });
+
+      return { success: true, slug };
     }),
 
   /**

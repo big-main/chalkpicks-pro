@@ -1025,3 +1025,21 @@
 - [x] Paywall audit: Quant router upgraded from protectedProcedure → premiumProcedure (4 endpoints)
 - [x] Confirmed: Arbitrage already uses subscriptionTier checks, Backtest uses proProcedure, Tools uses credit system
 - [x] All nav dropdowns already include devig-calculator, elo-ratings, monte-carlo, dfs-optimizer, sharp-money, consensus, api-access, parlay-flow
+
+## Phase 14 — Final Cleanup + Integrations (Jul 19, 2026)
+
+- [x] Install Grok CLI on cloud computer (~/.grok/bin/grok)
+- [x] Sync latest code to cloud computer (paywall fixes, prerender, sitemap, robots.txt)
+- [x] Rebuild dist/index.js on cloud computer and restart PM2
+- [x] Seed Elo engine with 2024 historical data: NFL (87 games), NBA (38 games), MLB (26 games) — all 151 successful
+- [x] Build n8n email drip sequence workflow JSON (Day 0/1/3/7 — welcome, EV guide, CLV intro, upgrade nudge)
+- [x] n8n content factory workflow already existed (Ollama tweet + blog snippet generation)
+- [x] n8n closing-line cron workflow already existed
+- [x] Note: n8n REST API not enabled on bigmain.app.n8n.cloud — workflows must be imported manually via UI
+- [x] Create Global Data Site (SportsData.io) API client service (server/services/globalDataSite.ts)
+- [x] Create Databricks REST API client service (server/services/databricks.ts)
+- [x] Add Global Data Site API keys to cloud computer .env.production
+- [ ] Note: Global Data Site API keys returning 401 — subscription may need renewal
+- [ ] Note: Databricks not yet configured — needs DATABRICKS_HOST, DATABRICKS_TOKEN, DATABRICKS_WAREHOUSE_ID
+- [x] IndexNow pinged 21 URLs (202 accepted) for Bing/Yandex instant indexing
+- [x] Google sitemap ping submitted

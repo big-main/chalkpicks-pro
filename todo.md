@@ -995,9 +995,9 @@
 
 ## Phase 12 — All Next Steps (Jul 17, 2026)
 
-- [ ] Apply odds_snapshots migration to production DB (SQL from drizzle/0019_*.sql)
-- [ ] Build and export n8n closing-line cron workflow (every 15 min, stampClosingLines + stampCLV)
-- [ ] Create Product Hunt launch copy and assets (tagline, description, screenshots, logo)
-- [ ] Build @xyflow/react visual parlay builder component (/tools/parlay-flow)
+- [x] Apply odds_snapshots migration to production DB (SQL from drizzle/0019_*.sql)
+- [x] Build and export n8n closing-line cron workflow (every 15 min, stampClosingLines + stampCLV)
+- [x] Create Product Hunt launch copy and assets (tagline, description, screenshots, logo)
+- [x] Build @xyflow/react visual parlay builder component (/parlay-flow)
 - [ ] Wire quant sidecar into Backtesting page UI
 - [ ] Run full test suite and save checkpoint

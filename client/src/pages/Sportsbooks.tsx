@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { ExternalLink, Star, Shield, Zap, Gift, TrendingUp, DollarSign, ArrowLeft, ChevronDown } from "lucide-react";
 import { SPORTSBOOKS, type Sportsbook } from "../../../shared/sportsbooks";
@@ -40,6 +40,19 @@ export default function Sportsbooks() {
   const trackClick = trpc.affiliateClicks.track.useMutation();
   const [showAll, setShowAll] = useState(false);
 
+  // Rotating bonus banner
+  const featuredBooks = SPORTSBOOKS.filter((b) => b.featured);
+  const [bannerIdx, setBannerIdx] = useState(0);
+  const [bannerPaused, setBannerPaused] = useState(false);
+
+  useEffect(() => {
+    if (bannerPaused) return;
+    const t = setInterval(() => setBannerIdx((i) => (i + 1) % featuredBooks.length), 5000);
+    return () => clearInterval(t);
+  }, [bannerPaused, featuredBooks.length]);
+
+  const bannerBook = featuredBooks[bannerIdx];
+
   const visibleBooks = showAll ? SPORTSBOOKS : SPORTSBOOKS.slice(0, 6);
 
   function handleBookClick(book: Sportsbook) {
@@ -75,6 +88,90 @@ export default function Sportsbooks() {
             <ArrowLeft className="w-4 h-4" /> Back to Home
           </button>
         </Link>
+
+        {/* Rotating Bonus Banner */}
+        {bannerBook && (
+          <div
+            className="relative mb-8 rounded-xl overflow-hidden"
+            style={{ background: `linear-gradient(135deg, ${bannerBook.color}18, rgba(8,8,20,0.95))`, border: `1px solid ${bannerBook.color}40` }}
+            onMouseEnter={() => setBannerPaused(true)}
+            onMouseLeave={() => setBannerPaused(false)}
+          >
+            {/* Glow */}
+            <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at 20% 50%, ${bannerBook.color}10, transparent 60%)` }} />
+
+            <div className="relative flex flex-col sm:flex-row items-center gap-4 px-6 py-4">
+              {/* Left: badge + offer */}
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div
+                  className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-xs font-black"
+                  style={{ background: `${bannerBook.color}20`, border: `1px solid ${bannerBook.color}40`, color: bannerBook.color }}
+                >
+                  🎁
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-xs font-bold tracking-widest" style={{ color: bannerBook.color }}>EXCLUSIVE OFFER</span>
+                    <span className="text-xs font-semibold text-white">{bannerBook.shortName}</span>
+                  </div>
+                  <p className="text-sm font-bold text-white truncate">{bannerBook.signupBonus}</p>
+                  <p className="text-xs mt-0.5 truncate" style={{ color: "rgba(180,180,210,0.55)" }}>{bannerBook.bonusDetails}</p>
+                </div>
+              </div>
+
+              {/* Right: CTA + dots */}
+              <div className="flex items-center gap-3 flex-shrink-0">
+                {/* Dot indicators */}
+                <div className="hidden sm:flex items-center gap-1">
+                  {featuredBooks.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setBannerIdx(i)}
+                      className="w-1.5 h-1.5 rounded-full transition-all"
+                      style={{ background: i === bannerIdx ? bannerBook.color : "rgba(255,255,255,0.2)", transform: i === bannerIdx ? "scale(1.3)" : "scale(1)" }}
+                    />
+                  ))}
+                </div>
+                {/* Prev/Next */}
+                <button
+                  onClick={() => setBannerIdx((i) => (i - 1 + featuredBooks.length) % featuredBooks.length)}
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-white/50 hover:text-white transition-colors"
+                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
+                >
+                  ‹
+                </button>
+                <button
+                  onClick={() => setBannerIdx((i) => (i + 1) % featuredBooks.length)}
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-white/50 hover:text-white transition-colors"
+                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
+                >
+                  ›
+                </button>
+                <button
+                  onClick={() => handleBookClick(bannerBook)}
+                  className="px-5 py-2 rounded-lg text-sm font-bold transition-all hover:opacity-90"
+                  style={{ background: bannerBook.color, color: "#080814" }}
+                >
+                  Claim Bonus →
+                </button>
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="h-0.5 w-full" style={{ background: "rgba(255,255,255,0.05)" }}>
+              {!bannerPaused && (
+                <div
+                  key={bannerIdx}
+                  className="h-full"
+                  style={{
+                    background: bannerBook.color,
+                    animation: "progress-bar 5s linear forwards",
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Header */}
         <div className="text-center mb-14">

@@ -1127,3 +1127,19 @@
 - [x] Added Affiliate Analytics + Blog Management to AdminPanel quick links grid
 - [x] All 138 tests pass
 - [x] Save checkpoint
+
+## Phase 23 — Sportsbooks Bonus Banner (Jul 19, 2026) — COMPLETE
+
+- [x] Added rotating bonus CTA banner to Sportsbooks page (top of page)
+- [x] Auto-rotates every 5s through featured books, pauses on hover
+- [x] Prev/next arrows + dot indicators for manual navigation
+- [x] Progress bar shows time until next rotation
+- [x] Claim Bonus button tracks affiliate click and opens book
+- [x] Added @keyframes progress-bar to index.css
+
+## Phase 24 — Product Hunt Launch Prep (Jul 19, 2026) — COMPLETE
+
+- [x] Built /launch page with countdown timer to Aug 5 launch, notify-me email form, Twitter/Discord share copy buttons, feature highlights, direct PH link
+- [x] Added /launch route to App.tsx
+- [x] Added 🐱 Product Hunt Launch link to footer Community section
+- [x] 138 tests pass, TypeScript clean

@@ -98,6 +98,7 @@ const ParlayFlow = lazy(() => import("@/pages/ParlayFlow"));
 const MyTrackedPicks = lazy(() => import("@/pages/MyTrackedPicks").then(m => ({ default: m.MyTrackedPicks })));
 const Partners = lazy(() => import("@/pages/Partners"));
 const AdminAffiliates = lazy(() => import("@/pages/AdminAffiliates"));
+const Launch = lazy(() => import("@/pages/Launch"));
 
 function PageLoader() {
   return (
@@ -191,6 +192,7 @@ function Router() {
           <Route path="/admin/blog" component={BlogManagement} />
           <Route path="/partners" component={MediaPartners} />
           <Route path="/directories" component={Partners} />
+          <Route path="/launch" component={Launch} />
           <Route path="/nfl-picks" component={SportPicks} />
           <Route path="/nba-picks" component={SportPicks} />
           <Route path="/mlb-picks" component={SportPicks} />

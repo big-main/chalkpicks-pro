@@ -162,6 +162,132 @@ export interface CorrelationPair {
 const ODDS_API_KEY = process.env.ODDS_API_KEY || "";
 const ODDS_API_BASE = "https://api.the-odds-api.com/v4";
 
+// ─── odds-api.io (primary free provider: 100 req/hour, free forever) ────────
+const ODDS_API_IO_KEY = process.env.ODDS_API_IO_KEY || "";
+const ODDS_API_IO_BASE = "https://api.odds-api.io/v3";
+
+// Map ChalkPicks sport keys → odds-api.io sport slugs and league name filters
+const SPORT_IO_MAP: Record<string, { sport: string; leagueFilter?: string }> = {
+  nfl:   { sport: "american-football", leagueFilter: "NFL" },
+  nba:   { sport: "basketball",        leagueFilter: "NBA" },
+  mlb:   { sport: "baseball",          leagueFilter: "MLB" },
+  nhl:   { sport: "ice-hockey",        leagueFilter: "NHL" },
+  ncaaf: { sport: "american-football", leagueFilter: "NCAAF" },
+  ncaab: { sport: "basketball",        leagueFilter: "NCAAB" },
+  soccer:{ sport: "soccer",            leagueFilter: "MLS" },
+  mma:   { sport: "mma" },
+};
+
+/** Fetch upcoming events + odds from odds-api.io and normalize to OddsEvent[]. */
+async function fetchOddsFromIo(sport: string): Promise<OddsEvent[]> {
+  if (!ODDS_API_IO_KEY) return [];
+  const mapping = SPORT_IO_MAP[sport.toLowerCase()];
+  if (!mapping) return [];
+
+  try {
+    // Step 1: get upcoming events for this sport
+    const eventsUrl = `${ODDS_API_IO_BASE}/events?apiKey=${ODDS_API_IO_KEY}&sport=${mapping.sport}`;
+    const evRes = await fetch(eventsUrl, { signal: AbortSignal.timeout(8000) });
+    if (!evRes.ok) {
+      console.warn(`[OddsApiIo] Events ${evRes.status} for ${sport}`);
+      return [];
+    }
+    const allEvents = await evRes.json() as any[];
+
+    // Filter to upcoming events within 36h matching the target league
+    const now = Date.now();
+    const horizon = now + 36 * 60 * 60 * 1000;
+    const upcoming = allEvents.filter((e: any) => {
+      if (e.status !== "pending" && e.status !== "live") return false;
+      const t = Date.parse(e.date ?? "");
+      if (!Number.isFinite(t) || t < now || t > horizon) return false;
+      if (mapping.leagueFilter) {
+        const ln = (e.league?.name ?? "").toUpperCase();
+        if (!ln.includes(mapping.leagueFilter.toUpperCase())) return false;
+      }
+      return true;
+    });
+
+    if (upcoming.length === 0) return [];
+
+    // Step 2: fetch odds for each event (max 6 to stay within rate limits)
+    const results: OddsEvent[] = [];
+    for (const ev of upcoming.slice(0, 6)) {
+      try {
+        const oddsUrl = `${ODDS_API_IO_BASE}/odds?apiKey=${ODDS_API_IO_KEY}&eventId=${ev.id}&bookmakers=FanDuel,DraftKings`;
+        const oddsRes = await fetch(oddsUrl, { signal: AbortSignal.timeout(8000) });
+        if (!oddsRes.ok) continue;
+        const oddsData = await oddsRes.json() as any;
+        if (oddsData.error) continue;
+
+        // Normalize to OddsEvent shape
+        const bookmakers: OddsEvent["bookmakers"] = [];
+        for (const [bookName, markets] of Object.entries(oddsData.bookmakers ?? {})) {
+          const mktList = markets as any[];
+          const normalizedMarkets: any[] = [];
+          for (const mkt of mktList) {
+            if (mkt.name === "ML" && mkt.odds?.[0]) {
+              const o = mkt.odds[0];
+              // odds-api.io returns decimal odds; convert to american
+              const toAmerican = (dec: number) => dec >= 2 ? Math.round((dec - 1) * 100) : Math.round(-100 / (dec - 1));
+              normalizedMarkets.push({
+                key: "h2h",
+                lastUpdate: mkt.updatedAt,
+                outcomes: [
+                  { name: oddsData.home, price: toAmerican(parseFloat(o.home)) },
+                  { name: oddsData.away, price: toAmerican(parseFloat(o.away)) },
+                ],
+              });
+            } else if (mkt.name === "Spread" && mkt.odds?.[0]) {
+              const o = mkt.odds[0];
+              const toAmerican = (dec: number) => dec >= 2 ? Math.round((dec - 1) * 100) : Math.round(-100 / (dec - 1));
+              normalizedMarkets.push({
+                key: "spreads",
+                lastUpdate: mkt.updatedAt,
+                outcomes: [
+                  { name: oddsData.home, price: toAmerican(parseFloat(o.home)), point: -(o.hdp ?? 0) },
+                  { name: oddsData.away, price: toAmerican(parseFloat(o.away)), point: o.hdp ?? 0 },
+                ],
+              });
+            } else if (mkt.name === "Totals" && mkt.odds?.[0]) {
+              const o = mkt.odds[0];
+              const toAmerican = (dec: number) => dec >= 2 ? Math.round((dec - 1) * 100) : Math.round(-100 / (dec - 1));
+              normalizedMarkets.push({
+                key: "totals",
+                lastUpdate: mkt.updatedAt,
+                outcomes: [
+                  { name: "Over",  price: toAmerican(parseFloat(o.over)),  point: o.hdp ?? 0 },
+                  { name: "Under", price: toAmerican(parseFloat(o.under)), point: o.hdp ?? 0 },
+                ],
+              });
+            }
+          }
+          if (normalizedMarkets.length > 0) {
+            bookmakers.push({ key: bookName.toLowerCase().replace(/\s/g, ""), title: bookName, lastUpdate: new Date().toISOString(), markets: normalizedMarkets });
+          }
+        }
+
+        if (bookmakers.length === 0) continue;
+        results.push({
+          id: String(ev.id),
+          sport,
+          sportKey: mapping.sport,
+          homeTeam: oddsData.home ?? ev.home,
+          awayTeam: oddsData.away ?? ev.away,
+          commenceTime: ev.date,
+          bookmakers,
+        });
+      } catch (err) {
+        console.warn(`[OddsApiIo] Odds fetch failed for event ${ev.id}:`, (err as Error).message);
+      }
+    }
+    return results;
+  } catch (err) {
+    console.warn(`[OddsApiIo] Fetch failed for ${sport}:`, (err as Error).message);
+    return [];
+  }
+}
+
 const SPORT_KEYS: Record<string, string> = {
   nfl: "americanfootball_nfl",
   nba: "basketball_nba",
@@ -178,10 +304,19 @@ export async function fetchOdds(sport: string, markets: string = "h2h,spreads,to
   const cached = cache.get<OddsEvent[]>(cacheKey);
   if (cached) return cached;
 
+  // Primary: odds-api.io (100 req/hour free forever)
+  if (ODDS_API_IO_KEY) {
+    const ioResults = await fetchOddsFromIo(sport);
+    if (ioResults.length > 0) {
+      cache.set(cacheKey, ioResults, TTL.ODDS);
+      return ioResults;
+    }
+    console.warn(`[OddsApiIo] No results for ${sport}, falling back to The Odds API`);
+  }
+
+  // Fallback: The Odds API (500 req/month)
   const sportKey = SPORT_KEYS[sport.toLowerCase()] || sport;
-  
   if (!ODDS_API_KEY) {
-    // Return generated realistic data when no API key
     return generateRealisticOdds(sport);
   }
 

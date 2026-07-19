@@ -303,7 +303,7 @@ export async function runDailyPicksJob() {
   // Build the slate from real upcoming games. Without an Odds API key
   // (local dev only), fall back to the static list so the UI has data.
   let slate: SlateEntry[];
-  if (process.env.ODDS_API_KEY) {
+  if (process.env.ODDS_API_IO_KEY || process.env.ODDS_API_KEY) {
     slate = await buildDailySlate();
     if (slate.length === 0) {
       console.warn("[Scheduler] No real games with live odds in the next 36h — skipping pick generation (never fabricate picks).");
@@ -311,7 +311,7 @@ export async function runDailyPicksJob() {
     }
     console.log(`[Scheduler] Slate built from live odds: ${slate.map(s => `${s.matchup.awayTeam} @ ${s.matchup.homeTeam} (${s.matchup.sportKey})`).join("; ")}`);
   } else {
-    console.warn("[Scheduler] ODDS_API_KEY missing — using DEV fallback matchups. Do not run production this way.");
+    console.warn("[Scheduler] ODDS_API_IO_KEY and ODDS_API_KEY both missing — using DEV fallback matchups. Do not run production this way.");
     slate = DEV_FALLBACK_MATCHUPS.map(matchup => ({ matchup }));
   }
 

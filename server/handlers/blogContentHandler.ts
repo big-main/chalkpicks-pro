@@ -158,6 +158,7 @@ Return ONLY the markdown article body — no title, no frontmatter.`;
         { role: "system", content: "You are a professional sports betting analyst. Write detailed, SEO-optimized betting analysis articles in markdown format." },
         { role: "user", content: prompt },
       ],
+      complexity: "high", // Force Forge API (Gemini) — Ollama on CPU is too slow for 650-word articles
     });
 
     const rawContent = response.choices?.[0]?.message?.content;

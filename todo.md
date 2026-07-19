@@ -1039,8 +1039,8 @@
 - [x] Create Global Data Site (SportsData.io) API client service (server/services/globalDataSite.ts)
 - [x] Create Databricks REST API client service (server/services/databricks.ts)
 - [x] Add Global Data Site API keys to cloud computer .env.production
-- [ ] Note: Global Data Site API keys returning 401 — subscription may need renewal
-- [ ] Note: Databricks not yet configured — needs DATABRICKS_HOST, DATABRICKS_TOKEN, DATABRICKS_WAREHOUSE_ID
+- [x] Note: Global Data Site API keys returning 401 — subscription may need renewal (blocked on user — stub ready)
+- [x] Note: Databricks not yet configured — needs DATABRICKS_HOST, DATABRICKS_TOKEN, DATABRICKS_WAREHOUSE_ID (blocked on user — stub ready)
 - [x] IndexNow pinged 21 URLs (202 accepted) for Bing/Yandex instant indexing
 - [x] Google sitemap ping submitted
 
@@ -1051,3 +1051,10 @@
 - [x] Build weekly newsletter Heartbeat job (aggregate stats + top picks + CTA email) — task_uid: cctvFpG8sNiXvBgM2VFvJ2, Sundays 4PM UTC
 - [x] Fix LiveDataStreamer ESPN API timeout errors (AbortController 8s timeout, error throttling 5min, polling 30s/60s/120s)
 - [x] Wire Instagram social automation to Heartbeat scheduler (AGENT cron 4x daily at 15:00/19:00/00:00/04:00 UTC, task_uid: 9atfMsK7PDLgQjqjzKiQAo)
+
+## Phase 16 — Alternatives for Global Data Site + Databricks (Jul 19, 2026)
+
+- [x] Replace Global Data Site (SportsData.io) with API-Sports.io (free 100 req/day) + ESPN fallback for player stats + injury data
+- [x] Replace Databricks with direct TiDB analytics queries (zero cost, uses existing picks table)
+- [x] Wire API-Sports into scheduler for player stats enrichment (getInjuries, getStandings, getPlayerStats)
+- [x] Wire TiDB analytics into admin dashboard for win rate/ROI tracking (getDashboardAnalytics, getWeeklyPerformance, getAllTimeStats)

@@ -1,27 +1,22 @@
 /**
- * Databricks REST API Client
+ * Analytics Engine — Direct TiDB Queries
  * 
- * Provides access to Databricks SQL warehouse for:
- * - Backtesting analytics (historical win rates, ROI by sport/bet type)
- * - Advanced statistical models
- * - Large-scale data processing
+ * Replaces Databricks SQL warehouse (paid, not configured) with direct queries
+ * against the existing TiDB Cloud database. Same analytics, zero extra cost.
  * 
- * Env vars:
- *   DATABRICKS_HOST - Workspace URL (e.g., https://xxx.cloud.databricks.com)
- *   DATABRICKS_TOKEN - Personal access token
- *   DATABRICKS_WAREHOUSE_ID - SQL warehouse ID for queries
+ * The picks table already has all the data needed:
+ * - sportKey, pickType, result, confidenceScore, edgeScore, odds, pickDate
  * 
- * Docs: https://docs.databricks.com/api/workspace/introduction
+ * No external dependencies or credentials required.
  */
 
-interface DatabricksQueryResult {
-  columns: string[];
-  rows: any[][];
-  rowCount: number;
-  executionTime: number;
-}
+import { getDb } from "../db";
+import { picks } from "../../drizzle/schema";
+import { sql, eq, and, gte, lte, count, avg } from "drizzle-orm";
 
-interface AnalyticsSummary {
+// ─── Types ──────────────────────────────────────────────────────────────────
+
+export interface AnalyticsSummary {
   sport: string;
   totalPicks: number;
   wins: number;
@@ -33,168 +28,241 @@ interface AnalyticsSummary {
   clvAvg: number;
 }
 
-function getConfig() {
-  return {
-    host: process.env.DATABRICKS_HOST || "",
-    token: process.env.DATABRICKS_TOKEN || "",
-    warehouseId: process.env.DATABRICKS_WAREHOUSE_ID || "",
-  };
+interface DashboardAnalytics {
+  bySport: AnalyticsSummary[];
+  byBetType: { betType: string; winRate: number; roi: number; count: number }[];
+  recentTrend: { date: string; winRate: number; roi: number }[];
 }
 
-/**
- * Execute a SQL query against the Databricks SQL warehouse
- */
-export async function executeQuery(sql: string): Promise<DatabricksQueryResult | null> {
-  const { host, token, warehouseId } = getConfig();
-  if (!host || !token || !warehouseId) {
-    console.warn("[Databricks] Missing configuration (DATABRICKS_HOST, DATABRICKS_TOKEN, or DATABRICKS_WAREHOUSE_ID)");
-    return null;
-  }
+// ─── Helper: Raw SQL via Drizzle ────────────────────────────────────────────
 
-  const startTime = Date.now();
+async function rawQuery<T>(sqlStr: string): Promise<T[]> {
+  const db = await getDb();
+  if (!db) return [];
   try {
-    // Submit statement
-    const submitResp = await fetch(`${host}/api/2.0/sql/statements`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        warehouse_id: warehouseId,
-        statement: sql,
-        wait_timeout: "30s",
-        disposition: "INLINE",
-      }),
-      signal: AbortSignal.timeout(35000),
-    });
-
-    if (!submitResp.ok) {
-      console.error(`[Databricks] Query failed: ${submitResp.status} ${submitResp.statusText}`);
-      return null;
-    }
-
-    const result = (await submitResp.json()) as any;
-    
-    if (result.status?.state === "FAILED") {
-      console.error(`[Databricks] Query error: ${result.status.error?.message}`);
-      return null;
-    }
-
-    const columns = (result.manifest?.schema?.columns ?? []).map((c: any) => c.name);
-    const rows = result.result?.data_array ?? [];
-
-    return {
-      columns,
-      rows,
-      rowCount: rows.length,
-      executionTime: Date.now() - startTime,
-    };
+    const [rows] = await (db as any).execute(sql.raw(sqlStr));
+    return (rows ?? []) as T[];
   } catch (err) {
-    console.error("[Databricks] Request failed:", err);
-    return null;
+    console.error("[Analytics] Query failed:", (err as Error).message);
+    return [];
   }
 }
 
+// ─── Public API ─────────────────────────────────────────────────────────────
+
 /**
- * Get backtesting analytics by sport and bet type
+ * Get backtesting analytics by sport (and optional date range)
  */
 export async function getBacktestAnalytics(
   sport?: string,
   dateFrom?: string,
   dateTo?: string
 ): Promise<AnalyticsSummary[]> {
-  const conditions: string[] = [];
-  if (sport && sport !== "all") conditions.push(`sport_key = '${sport}'`);
-  if (dateFrom) conditions.push(`game_date >= '${dateFrom}'`);
-  if (dateTo) conditions.push(`game_date <= '${dateTo}'`);
+  const conditions: string[] = ["result != 'pending'"];
+  if (sport && sport !== "all") conditions.push(`sportKey = '${sport}'`);
+  if (dateFrom) conditions.push(`pickDate >= '${dateFrom}'`);
+  if (dateTo) conditions.push(`pickDate <= '${dateTo}'`);
 
   const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-  const sql = `
+  const rows = await rawQuery<any>(`
     SELECT 
-      sport_key as sport,
+      sportKey as sport,
       COUNT(*) as total_picks,
       SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
       SUM(CASE WHEN result = 'loss' THEN 1 ELSE 0 END) as losses,
       SUM(CASE WHEN result = 'push' THEN 1 ELSE 0 END) as pushes,
       ROUND(AVG(CASE WHEN result = 'win' THEN 1.0 ELSE 0.0 END) * 100, 2) as win_rate,
-      ROUND(SUM(profit) / SUM(stake) * 100, 2) as roi,
-      ROUND(AVG(confidence_score), 1) as avg_confidence,
-      ROUND(AVG(clv_percent), 2) as clv_avg
-    FROM picks_history
+      ROUND(
+        SUM(CASE 
+          WHEN result = 'win' AND odds > 0 THEN odds / 100.0
+          WHEN result = 'win' AND odds < 0 THEN 100.0 / ABS(odds)
+          WHEN result = 'loss' THEN -1.0
+          ELSE 0
+        END) / NULLIF(COUNT(*), 0) * 100, 2
+      ) as roi,
+      ROUND(AVG(confidenceScore), 1) as avg_confidence,
+      ROUND(AVG(CAST(edgeScore AS DECIMAL(5,2))), 2) as clv_avg
+    FROM picks
     ${where}
-    GROUP BY sport_key
+    GROUP BY sportKey
     ORDER BY total_picks DESC
-  `;
+  `);
 
-  const result = await executeQuery(sql);
-  if (!result) return [];
-
-  return result.rows.map((row) => ({
-    sport: row[0] ?? "",
-    totalPicks: Number(row[1]) || 0,
-    wins: Number(row[2]) || 0,
-    losses: Number(row[3]) || 0,
-    pushes: Number(row[4]) || 0,
-    winRate: Number(row[5]) || 0,
-    roi: Number(row[6]) || 0,
-    avgConfidence: Number(row[7]) || 0,
-    clvAvg: Number(row[8]) || 0,
+  return rows.map((row: any) => ({
+    sport: row.sport ?? "",
+    totalPicks: Number(row.total_picks) || 0,
+    wins: Number(row.wins) || 0,
+    losses: Number(row.losses) || 0,
+    pushes: Number(row.pushes) || 0,
+    winRate: Number(row.win_rate) || 0,
+    roi: Number(row.roi) || 0,
+    avgConfidence: Number(row.avg_confidence) || 0,
+    clvAvg: Number(row.clv_avg) || 0,
   }));
 }
 
 /**
- * Get win rate and ROI dashboard data grouped by sport and bet type
+ * Get full dashboard analytics: by sport, by bet type, and 30-day trend
  */
-export async function getDashboardAnalytics(): Promise<{
-  bySport: AnalyticsSummary[];
-  byBetType: { betType: string; winRate: number; roi: number; count: number }[];
-  recentTrend: { date: string; winRate: number; roi: number }[];
-}> {
+export async function getDashboardAnalytics(): Promise<DashboardAnalytics> {
   const bySport = await getBacktestAnalytics();
 
-  const byBetTypeResult = await executeQuery(`
+  const byBetTypeRows = await rawQuery<any>(`
     SELECT 
-      pick_type,
+      pickType,
       ROUND(AVG(CASE WHEN result = 'win' THEN 1.0 ELSE 0.0 END) * 100, 2) as win_rate,
-      ROUND(SUM(profit) / NULLIF(SUM(stake), 0) * 100, 2) as roi,
-      COUNT(*) as count
-    FROM picks_history
-    GROUP BY pick_type
-    ORDER BY count DESC
+      ROUND(
+        SUM(CASE 
+          WHEN result = 'win' AND odds > 0 THEN odds / 100.0
+          WHEN result = 'win' AND odds < 0 THEN 100.0 / ABS(odds)
+          WHEN result = 'loss' THEN -1.0
+          ELSE 0
+        END) / NULLIF(COUNT(*), 0) * 100, 2
+      ) as roi,
+      COUNT(*) as cnt
+    FROM picks
+    WHERE result != 'pending'
+    GROUP BY pickType
+    ORDER BY cnt DESC
   `);
 
-  const byBetType = (byBetTypeResult?.rows ?? []).map((row) => ({
-    betType: row[0] ?? "",
-    winRate: Number(row[1]) || 0,
-    roi: Number(row[2]) || 0,
-    count: Number(row[3]) || 0,
+  const byBetType = byBetTypeRows.map((row: any) => ({
+    betType: row.pickType ?? "",
+    winRate: Number(row.win_rate) || 0,
+    roi: Number(row.roi) || 0,
+    count: Number(row.cnt) || 0,
   }));
 
-  const trendResult = await executeQuery(`
+  const trendRows = await rawQuery<any>(`
     SELECT 
-      DATE_FORMAT(game_date, '%Y-%m-%d') as date,
+      pickDate as date,
       ROUND(AVG(CASE WHEN result = 'win' THEN 1.0 ELSE 0.0 END) * 100, 2) as win_rate,
-      ROUND(SUM(profit) / NULLIF(SUM(stake), 0) * 100, 2) as roi
-    FROM picks_history
-    WHERE game_date >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
-    GROUP BY DATE_FORMAT(game_date, '%Y-%m-%d')
-    ORDER BY date DESC
+      ROUND(
+        SUM(CASE 
+          WHEN result = 'win' AND odds > 0 THEN odds / 100.0
+          WHEN result = 'win' AND odds < 0 THEN 100.0 / ABS(odds)
+          WHEN result = 'loss' THEN -1.0
+          ELSE 0
+        END) / NULLIF(COUNT(*), 0) * 100, 2
+      ) as roi
+    FROM picks
+    WHERE result != 'pending'
+      AND pickDate >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY), '%Y-%m-%d')
+    GROUP BY pickDate
+    ORDER BY pickDate DESC
     LIMIT 30
   `);
 
-  const recentTrend = (trendResult?.rows ?? []).map((row) => ({
-    date: row[0] ?? "",
-    winRate: Number(row[1]) || 0,
-    roi: Number(row[2]) || 0,
+  const recentTrend = trendRows.map((row: any) => ({
+    date: row.date ?? "",
+    winRate: Number(row.win_rate) || 0,
+    roi: Number(row.roi) || 0,
   }));
 
   return { bySport, byBetType, recentTrend };
 }
 
+/**
+ * Get performance for a specific time period (for weekly newsletter, etc.)
+ */
+export async function getWeeklyPerformance(daysBack: number = 7): Promise<{
+  totalPicks: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+  roi: number;
+  topSport: string;
+  topBetType: string;
+}> {
+  const rows = await rawQuery<any>(`
+    SELECT 
+      COUNT(*) as total,
+      SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
+      SUM(CASE WHEN result = 'loss' THEN 1 ELSE 0 END) as losses,
+      ROUND(AVG(CASE WHEN result = 'win' THEN 1.0 ELSE 0.0 END) * 100, 2) as win_rate,
+      ROUND(
+        SUM(CASE 
+          WHEN result = 'win' AND odds > 0 THEN odds / 100.0
+          WHEN result = 'win' AND odds < 0 THEN 100.0 / ABS(odds)
+          WHEN result = 'loss' THEN -1.0
+          ELSE 0
+        END) / NULLIF(COUNT(*), 0) * 100, 2
+      ) as roi
+    FROM picks
+    WHERE result != 'pending'
+      AND pickDate >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL ${daysBack} DAY), '%Y-%m-%d')
+  `);
+
+  const topSportRows = await rawQuery<any>(`
+    SELECT sportKey, COUNT(*) as cnt
+    FROM picks
+    WHERE result = 'win'
+      AND pickDate >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL ${daysBack} DAY), '%Y-%m-%d')
+    GROUP BY sportKey
+    ORDER BY cnt DESC
+    LIMIT 1
+  `);
+
+  const topBetTypeRows = await rawQuery<any>(`
+    SELECT pickType, COUNT(*) as cnt
+    FROM picks
+    WHERE result = 'win'
+      AND pickDate >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL ${daysBack} DAY), '%Y-%m-%d')
+    GROUP BY pickType
+    ORDER BY cnt DESC
+    LIMIT 1
+  `);
+
+  const r = rows[0] ?? {};
+  return {
+    totalPicks: Number(r.total) || 0,
+    wins: Number(r.wins) || 0,
+    losses: Number(r.losses) || 0,
+    winRate: Number(r.win_rate) || 0,
+    roi: Number(r.roi) || 0,
+    topSport: topSportRows[0]?.sportKey ?? "N/A",
+    topBetType: topBetTypeRows[0]?.pickType ?? "N/A",
+  };
+}
+
+/**
+ * Get all-time stats (for landing page social proof)
+ */
+export async function getAllTimeStats(): Promise<{
+  totalPicks: number;
+  winRate: number;
+  avgROI: number;
+  bestStreak: number;
+}> {
+  const rows = await rawQuery<any>(`
+    SELECT 
+      COUNT(*) as total,
+      ROUND(AVG(CASE WHEN result = 'win' THEN 1.0 ELSE 0.0 END) * 100, 2) as win_rate,
+      ROUND(
+        SUM(CASE 
+          WHEN result = 'win' AND odds > 0 THEN odds / 100.0
+          WHEN result = 'win' AND odds < 0 THEN 100.0 / ABS(odds)
+          WHEN result = 'loss' THEN -1.0
+          ELSE 0
+        END) / NULLIF(COUNT(*), 0) * 100, 2
+      ) as roi
+    FROM picks
+    WHERE result != 'pending'
+  `);
+
+  const r = rows[0] ?? {};
+  return {
+    totalPicks: Number(r.total) || 0,
+    winRate: Number(r.win_rate) || 0,
+    avgROI: Number(r.roi) || 0,
+    bestStreak: 0, // Would need window function — skip for now
+  };
+}
+
 export default {
-  executeQuery,
   getBacktestAnalytics,
   getDashboardAnalytics,
+  getWeeklyPerformance,
+  getAllTimeStats,
 };

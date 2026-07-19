@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, premiumProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { userBets } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
@@ -8,7 +8,7 @@ export const clvRouter = router({
   /**
    * Get CLV statistics for a user's bets
    */
-  getClvStats: protectedProcedure.query(async ({ ctx }) => {
+  getClvStats: premiumProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
     if (!userId) return null;
 
@@ -62,7 +62,7 @@ export const clvRouter = router({
   /**
    * Get CLV breakdown by bet type
    */
-  getClvByBetType: protectedProcedure.query(async ({ ctx }) => {
+  getClvByBetType: premiumProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
     if (!userId) return [];
 
@@ -91,7 +91,7 @@ export const clvRouter = router({
   /**
    * Record CLV for a bet
    */
-  recordClv: protectedProcedure
+  recordClv: premiumProcedure
     .input(
       z.object({
         betId: z.number(),
@@ -136,7 +136,7 @@ export const clvRouter = router({
   /**
    * Get best CLV bets
    */
-  getBestClvBets: protectedProcedure.query(async ({ ctx }) => {
+  getBestClvBets: premiumProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
     if (!userId) return [];
 
@@ -154,7 +154,7 @@ export const clvRouter = router({
   /**
    * Get worst CLV bets
    */
-  getWorstClvBets: protectedProcedure.query(async ({ ctx }) => {
+  getWorstClvBets: premiumProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
     if (!userId) return [];
 
@@ -172,7 +172,7 @@ export const clvRouter = router({
   /**
    * Get CLV insights
    */
-  getClvInsights: protectedProcedure.query(async ({ ctx }) => {
+  getClvInsights: premiumProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
     if (!userId) return null;
 

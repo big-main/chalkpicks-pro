@@ -1,4 +1,4 @@
-import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
+import { publicProcedure, protectedProcedure, premiumProcedure, router } from "../_core/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
@@ -85,7 +85,7 @@ export const quantRouter = router({
   /**
    * Run a backtesting simulation using the quant sidecar
    */
-  runBacktest: protectedProcedure
+  runBacktest: premiumProcedure
     .input(z.object({
       sport: z.enum(["nfl", "nba", "mlb", "nhl", "all"]).default("nfl"),
       strategy: z.enum(["kelly", "quarter_kelly", "flat"]).default("kelly"),
@@ -119,7 +119,7 @@ export const quantRouter = router({
   /**
    * Run a Monte Carlo bankroll simulation
    */
-  monteCarlo: protectedProcedure
+  monteCarlo: premiumProcedure
     .input(z.object({
       initial_bankroll: z.number().min(100).max(1000000).default(1000),
       win_rate: z.number().min(0.1).max(0.9).default(0.55),
@@ -153,7 +153,7 @@ export const quantRouter = router({
   /**
    * Get NFL player stats from nflverse
    */
-  nflPlayerStats: protectedProcedure
+  nflPlayerStats: premiumProcedure
     .input(z.object({
       season: z.number().optional().default(2024),
       position: z.string().optional(),
@@ -172,7 +172,7 @@ export const quantRouter = router({
   /**
    * Get MLB pitcher stats from pybaseball
    */
-  mlbPitcherStats: protectedProcedure
+  mlbPitcherStats: premiumProcedure
     .input(z.object({
       season: z.number().optional().default(2024),
       min_ip: z.number().optional().default(20),

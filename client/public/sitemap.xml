@@ -287,4 +287,29 @@
     <priority>0.8</priority>
     <lastmod>2026-07-16</lastmod>
   </url>
+  <!-- Sharp Analytics Tools -->
+  <url>
+    <loc>https://chalkpicks.live/sharp-money</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-07-19</lastmod>
+  </url>
+  <url>
+    <loc>https://chalkpicks.live/consensus</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-07-19</lastmod>
+  </url>
+  <url>
+    <loc>https://chalkpicks.live/api-access</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2026-07-19</lastmod>
+  </url>
+  <url>
+    <loc>https://chalkpicks.live/parlay-flow</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-07-19</lastmod>
+  </url>
 </urlset>

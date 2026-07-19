@@ -4,7 +4,7 @@
  * A "steam move" occurs when the line moves AGAINST the public betting %
  * (e.g., 70% of public bets on Team A but the line moves toward Team B).
  */
-import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
+import { publicProcedure, protectedProcedure, premiumProcedure, router } from "../_core/trpc";
 import { z } from "zod/v4";
 import { getDb } from "../db";
 import { oddsSnapshots } from "../../drizzle/schema";
@@ -66,7 +66,7 @@ function isSharpMove(publicPct: number, lineMovedTowardTeam: boolean, teamIsHome
 
 export const sharpMoneyRouter = router({
   /** Get current steam moves — lines moving against public % */
-  getSteamMoves: protectedProcedure
+  getSteamMoves: premiumProcedure
     .input(z.object({
       sport: z.string().default("americanfootball_nfl"),
       minMagnitude: z.number().default(3),
@@ -226,7 +226,7 @@ export const sharpMoneyRouter = router({
     }),
 
   /** Get consensus betting percentages for a sport */
-  getConsensus: protectedProcedure
+  getConsensus: premiumProcedure
     .input(z.object({
       sport: z.string().default("americanfootball_nfl"),
     }))
@@ -286,7 +286,7 @@ export const sharpMoneyRouter = router({
     }),
 
   /** Get line history for a specific event */
-  getLineHistory: protectedProcedure
+  getLineHistory: premiumProcedure
     .input(z.object({ eventId: z.string() }))
     .query(async ({ input }) => {
       const db = await getDb();

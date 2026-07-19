@@ -315,6 +315,46 @@ const PAGE_META: Record<string, PageMeta> = {
       breadcrumbLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }]),
     ],
   },
+  "/sharp-money": {
+    title: "Sharp Money Detector — Real-Time Line Movement",
+    description:
+      "Detect sharp money moves and public betting divergence in real-time. Track where the smart money is going across all major sportsbooks.",
+    canonicalPath: "/sharp-money",
+    jsonLd: [
+      orgLd(),
+      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Sharp Money", path: "/sharp-money" }]),
+    ],
+  },
+  "/consensus": {
+    title: "Consensus Picks — Public vs AI Recommendations",
+    description:
+      "Compare public betting consensus against ChalkPicks AI recommendations. See where the crowd is wrong and find contrarian value.",
+    canonicalPath: "/consensus",
+    jsonLd: [
+      orgLd(),
+      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Consensus", path: "/consensus" }]),
+    ],
+  },
+  "/api-access": {
+    title: "ChalkPicks API — EV, CLV & Devig Endpoints",
+    description:
+      "Access ChalkPicks data programmatically. Get +EV picks, CLV tracking, and devig calculations via our paid REST API.",
+    canonicalPath: "/api-access",
+    jsonLd: [
+      orgLd(),
+      breadcrumbLd([{ name: "Home", path: "/" }, { name: "API Access", path: "/api-access" }]),
+    ],
+  },
+  "/parlay-flow": {
+    title: "Visual Parlay Builder — Drag & Drop Creator",
+    description:
+      "Build parlays visually with our drag-and-drop flow builder. See correlations, calculate odds, and optimize your multi-leg bets.",
+    canonicalPath: "/parlay-flow",
+    jsonLd: [
+      orgLd(),
+      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Parlay Flow", path: "/parlay-flow" }]),
+    ],
+  },
 };
 
 // ─── HTML shell builder ───────────────────────────────────────────────────────

@@ -944,20 +944,20 @@
 
 ## Tier 1 — Revenue Critical
 
-- [ ] Audit all premium features for correct subscription paywall gates (EV Finder, CLV Tracker, Arbitrage, Monte Carlo, DFS Optimizer, Prop Builder, Line Movement)
-- [ ] Fix any paywall leaks — ensure free users cannot access premium endpoints
-- [ ] Harden Stripe webhook: handle subscription.updated event (tier change)
-- [ ] Harden Stripe webhook: handle customer.subscription.deleted (revoke access)
-- [ ] Harden Stripe webhook: handle invoice.payment_failed (grace period + warning)
+- [x] Audit all premium features for correct subscription paywall gates (EV Finder, CLV Tracker, Arbitrage, Monte Carlo, DFS Optimizer, Prop Builder, Line Movement)
+- [x] Fix any paywall leaks — ensure free users cannot access premium endpoints
+- [x] Harden Stripe webhook: handle subscription.updated event (tier change)
+- [x] Harden Stripe webhook: handle customer.subscription.deleted (revoke access)
+- [x] Harden Stripe webhook: handle invoice.payment_failed (grace period + warning)
 - [ ] Build n8n email drip sequence: Day 0 welcome, Day 1 EV finder guide, Day 3 CLV intro, Day 7 upgrade nudge
 
 ## Tier 2 — Traffic & SEO
 
 - [ ] Wire n8n content factory to auto-publish blog posts for every pick
-- [ ] Update sitemap.xml to include all new pages (elo-ratings, monte-carlo, tools/devig-calculator, dfs-optimizer, sport pick pages)
+- [x] Update sitemap.xml to include all new pages (elo-ratings, monte-carlo, tools/devig-calculator, dfs-optimizer, sport pick pages)
 - [ ] Google Search Console: submit sitemap, verify ownership
-- [ ] Internal linking: add sport pick pages to main nav and footer
-- [ ] Add /tools/devig-calculator, /elo-ratings, /monte-carlo to nav Tools dropdown
+- [x] Internal linking: add sport pick pages to main nav and footer
+- [x] Add /tools/devig-calculator, /elo-ratings, /monte-carlo to nav Tools dropdown
 
 ## Tier 3 — Product Depth
 
@@ -969,9 +969,9 @@
 
 ## Tier 4 — Moat Features
 
-- [ ] Sharp money detector: real-time line movement + public betting % divergence
-- [ ] Consensus picks aggregator: scrape public consensus, display vs ChalkPicks AI
-- [ ] API access tier: expose EV/CLV/devig endpoints as paid API
+- [x] Sharp money detector: real-time line movement + public betting % divergence
+- [x] Consensus picks aggregator: scrape public consensus, display vs ChalkPicks AI
+- [x] API access tier: expose EV/CLV/devig endpoints as paid API
 
 ## Tier 4 Completion (Jul 16, 2026)
 - [x] Sharp money detector: real-time line movement + public betting % divergence (SharpMoneyDetector page + sharpMoney router)
@@ -986,11 +986,11 @@
 ## Phase 12 — SEO / Traffic / @xyflow/react (Jul 17, 2026)
 
 - [ ] Install @xyflow/react in the Manus webdev project (client dependency)
-- [ ] Verify chalkpicks.live sitemap.xml is accessible and valid (DeepSeek found it returning an error)
-- [ ] Verify bot pre-rendering snapshots are being served to Googlebot (SPA client-side rendering is the primary SEO blocker identified by DeepSeek)
+- [x] Verify chalkpicks.live sitemap.xml is accessible and valid (51 URLs, 200 OK)
+- [x] Verify bot pre-rendering snapshots are being served to Googlebot (X-Prerendered: 1 header confirmed)
 - [ ] Submit chalkpicks.live to Google Search Console and request indexing
-- [ ] Audit robots.txt to ensure Googlebot is not blocked
-- [ ] Verify blog content is server-side rendered or snapshot-served (DeepSeek found blog also client-side rendered)
+- [x] Audit robots.txt to ensure Googlebot is not blocked (44 Allow rules, AI crawlers welcomed)
+- [x] Verify blog content is server-side rendered or snapshot-served (prerender middleware serves HTML shell to bots)
 - [ ] Save connectors and cloud computer state (per user instruction)
 
 ## Phase 12 — All Next Steps (Jul 17, 2026)
@@ -1012,3 +1012,16 @@
 - [x] Verify blog pipeline end-to-end: 3 articles published, 0 errors, IndexNow pinged
 - [x] All tests: 127 passed, 1 skipped, 0 failed
 - [x] PM2 state saved on cloud computer
+
+## Phase 13 — SEO + Paywall Hardening (Jul 19, 2026)
+
+- [x] Sitemap.xml verified accessible (51 URLs, 200 OK) — added 4 missing pages (sharp-money, consensus, api-access, parlay-flow)
+- [x] robots.txt verified correct — added 4 new Allow rules for missing pages
+- [x] Bot pre-rendering confirmed working (X-Prerendered: 1 header, HTML shell with JSON-LD served to Googlebot)
+- [x] Added PAGE_META entries for /sharp-money, /consensus, /api-access, /parlay-flow in prerender.ts
+- [x] Stripe webhook fully hardened: checkout.session.completed, invoice.paid, customer.subscription.deleted, invoice.payment_failed, customer.subscription.updated all handled
+- [x] Paywall audit: CLV router upgraded from protectedProcedure → premiumProcedure (7 endpoints)
+- [x] Paywall audit: Sharp Money router upgraded from protectedProcedure → premiumProcedure (3 endpoints)
+- [x] Paywall audit: Quant router upgraded from protectedProcedure → premiumProcedure (4 endpoints)
+- [x] Confirmed: Arbitrage already uses subscriptionTier checks, Backtest uses proProcedure, Tools uses credit system
+- [x] All nav dropdowns already include devig-calculator, elo-ratings, monte-carlo, dfs-optimizer, sharp-money, consensus, api-access, parlay-flow

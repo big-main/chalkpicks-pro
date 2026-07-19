@@ -38,6 +38,10 @@ Allow: /odds/nfl
 Allow: /odds/nba
 Allow: /odds/mlb
 Allow: /odds/nhl
+Allow: /sharp-money
+Allow: /consensus
+Allow: /api-access
+Allow: /parlay-flow
 Disallow: /dashboard
 Disallow: /admin
 Disallow: /api/

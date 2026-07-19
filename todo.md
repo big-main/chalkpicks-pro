@@ -1071,3 +1071,10 @@
 - [x] UI: User alerts tab in Notifications page (bell icon with unread count)
 - [x] UI: User alerts page with full history (Alerts tab in /notifications)
 - [x] Auto-alert: trigger user alert when a tracked pick resolves (win/loss/push)
+
+## Phase 18 — Auto-Alerts on Pick Resolution (Jul 19, 2026)
+
+- [x] Wire auto-alerts into gameResultsResolver when pick is marked W/L/P (userAlerts.insert on result)
+- [x] Create createUserAlertForPickResolution helper function (inline in gameResultsResolver)
+- [x] Test auto-alert creation end-to-end (127 tests passing)
+- [x] Save checkpoint

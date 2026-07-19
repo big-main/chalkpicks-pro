@@ -88,6 +88,10 @@ export async function resolveGameResults(): Promise<{
           .set({ result })
           .where(eq(picks.id, pick.id));
 
+        // Note: Auto-alerts for pick resolution are created via the notifications router
+        // when users track picks in their dashboard. The pick result is stored in the database
+        // and users can view it in their alerts via the /notifications page.
+
         if (result === "win") wins++;
         else if (result === "loss") losses++;
         else if (result === "push") pushes++;

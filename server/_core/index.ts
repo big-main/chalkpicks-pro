@@ -25,6 +25,8 @@ import { registerSecurityMiddleware } from "../middleware/security";
 import { registerWorkerRoutes } from "../workerRoutes";
 import { apiReference } from "@scalar/express-api-reference";
 import compression from "compression";
+import { getSitemapXml } from "./sitemap";
+import { registerIndexNowKeyRoute } from "./indexnow";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -637,38 +639,37 @@ async function startServer() {
     }
   });
 
-  // Dynamic sitemap — merges static routes with DB-backed blog post URLs
-  app.get("/sitemap-blog.xml", async (_req, res) => {
-    try {
-      const { getDb } = await import("../db");
-      const { blogPosts } = await import("../../drizzle/schema");
-      const { eq, desc } = await import("drizzle-orm");
-      const db = await getDb();
-      const posts = db
-        ? await db.select({ slug: blogPosts.slug, publishedAt: blogPosts.publishedAt })
-            .from(blogPosts)
-            .where(eq(blogPosts.status, "published"))
-            .orderBy(desc(blogPosts.publishedAt))
-            .limit(500)
-        : [];
-
-      const urls = posts.map(p => {
-        const lastmod = p.publishedAt ? new Date(p.publishedAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0];
-        return `  <url>\n    <loc>https://chalkpicks.live/blog/${p.slug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
-      }).join("\n");
-
-      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
+  // Dynamic sitemap — merges shared/seo-routes.ts static entries with DB-backed
+  // blog post + pick URLs, so a newly published article shows up without a
+  // rebuild/deploy. In-memory cache (~15 min); fails open to the static file
+  // below on any error (DB down, etc).
+  app.get("/sitemap.xml", async (_req, res) => {
+    const xml = await getSitemapXml();
+    if (xml) {
       res.set("Content-Type", "application/xml");
-      res.set("Cache-Control", "public, max-age=3600");
+      res.set("Cache-Control", "public, max-age=900");
       res.send(xml);
-    } catch (err) {
-      console.error("[Sitemap] Blog sitemap error:", err);
-      res.status(500).send("Sitemap generation failed");
+      return;
     }
+    // Fail open to the static, build-time-generated sitemap.
+    import('path').then(({ resolve, join }) => {
+      const publicDir = process.env.NODE_ENV === 'development'
+        ? resolve(process.cwd(), 'client', 'public')
+        : resolve(import.meta.dirname, 'public');
+      res.set('Content-Type', 'application/xml');
+      res.set('Cache-Control', 'public, max-age=3600');
+      res.sendFile(join(publicDir, 'sitemap.xml'), (err) => {
+        if (err) res.status(404).send('Not found');
+      });
+    });
   });
 
+  // IndexNow ownership-proof route (GET /<key>.txt) — must come before SPA catch-all
+  registerIndexNowKeyRoute(app);
+
   // Explicit routes for SEO/verification XML files — must come before SPA catch-all
-  const xmlFiles = ['BingSiteAuth.xml', 'sitemap.xml', 'sitemap.xsl', 'chalkpicks2026indexnow.txt', 'llms.txt', 'robots.txt'];
+  // (chalkpicks2026indexnow.txt is served by registerIndexNowKeyRoute above)
+  const xmlFiles = ['BingSiteAuth.xml', 'sitemap.xsl', 'llms.txt', 'robots.txt'];
   xmlFiles.forEach(filename => {
     app.get(`/${filename}`, (req, res) => {
       import('path').then(({ resolve, join }) => {

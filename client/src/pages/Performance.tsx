@@ -100,12 +100,18 @@ export default function Performance() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
-            <StatCard label="Win Rate" value={`${perf?.overall.winRate ?? 92}%`} sub="All-time settled" color="#39ff14" icon={Target} />
-            <StatCard label="Total Picks" value={(perf?.overall.totalPicks ?? 1241).toLocaleString()} sub="Generated" color="#f0b800" icon={TrendingUp} />
-            <StatCard label="Wins" value={(perf?.overall.wins ?? 1104).toLocaleString()} color="#39ff14" icon={Trophy} />
-            <StatCard label="Losses" value={(perf?.overall.losses ?? 96).toLocaleString()} color="#ff3b3b" icon={Target} />
-            <StatCard label="Streak" value={`${perf?.overall.currentStreak ?? 7}W`} sub="Active" color="#f0b800" icon={Flame} />
-            <StatCard label="ROI" value={`+${perf?.overall.roi ?? 18.4}%`} sub="$100 flat bet" color="#a855f7" icon={TrendingUp} />
+            <StatCard label="Win Rate" value={`${perf?.overall.winRate ?? 0}%`} sub="All-time settled" color="#39ff14" icon={Target} />
+            <StatCard label="Total Picks" value={(perf?.overall.totalPicks ?? 0).toLocaleString()} sub="Generated" color="#f0b800" icon={TrendingUp} />
+            <StatCard label="Wins" value={(perf?.overall.wins ?? 0).toLocaleString()} color="#39ff14" icon={Trophy} />
+            <StatCard label="Losses" value={(perf?.overall.losses ?? 0).toLocaleString()} color="#ff3b3b" icon={Target} />
+            <StatCard label="Streak" value={`${perf?.overall.currentStreak ?? 0}W`} sub="Active" color="#f0b800" icon={Flame} />
+            <StatCard
+              label="ROI"
+              value={`${(perf?.overall.roi ?? 0) >= 0 ? "+" : ""}${perf?.overall.roi ?? 0}%`}
+              sub="$100 flat bet"
+              color="#a855f7"
+              icon={TrendingUp}
+            />
           </div>
         )}
 

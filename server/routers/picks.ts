@@ -276,95 +276,147 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       return { success: true, pick: parsed };
     }),
 
-    // Get performance stats — public, no auth required
+  /**
+   * Public performance stats for the /performance "Verified Track Record" page.
+   * Every number here must be computed from real settled picks — this endpoint
+   * used to fall back to a hardcoded, fabricated record (92% win rate, +18.4%
+   * ROI, invented monthly trend) whenever the DB was unreachable or a bucket
+   * was empty, which is a straight compliance violation on a page whose whole
+   * premise is "no cherry-picking." An empty/unreachable state now returns
+   * honest zeros — never invented numbers.
+   */
   performance: publicProcedure.query(async () => {
-    const FALLBACK = {
-      overall: { wins: 1104, losses: 96, pushes: 41, winRate: 92.0, roi: 18.4, totalPicks: 1241, currentStreak: 7, longestStreak: 14 },
-      bySport: [
-        { sport: "NFL", wins: 281, losses: 42, pushes: 8, winRate: 87.0, roi: 16.8 },
-        { sport: "NBA", wins: 260, losses: 23, pushes: 11, winRate: 91.9, roi: 19.2 },
-        { sport: "MLB", wins: 261, losses: 32, pushes: 9, winRate: 89.1, roi: 18.9 },
-        { sport: "NHL", wins: 276, losses: 24, pushes: 13, winRate: 92.0, roi: 17.6 },
-        { sport: "NCAAF", wins: 26, losses: 4, pushes: 0, winRate: 86.7, roi: 14.2 },
-      ],
-      monthlyTrend: [
-        { month: "Oct", winRate: 88.5, roi: 12.1, picks: 94 },
-        { month: "Nov", winRate: 89.2, roi: 15.3, picks: 112 },
-        { month: "Dec", winRate: 90.8, roi: 19.7, picks: 98 },
-        { month: "Jan", winRate: 91.5, roi: 18.4, picks: 134 },
-        { month: "Feb", winRate: 92.1, roi: 21.3, picks: 118 },
-        { month: "Mar", winRate: 92.8, roi: 23.1, picks: 141 },
-        { month: "Apr", winRate: 91.2, roi: 20.5, picks: 127 },
-        { month: "May", winRate: 93.0, roi: 24.2, picks: 139 },
-        { month: "Jun", winRate: 92.4, roi: 22.8, picks: 148 },
-        { month: "Jul", winRate: 91.8, roi: 21.1, picks: 130 },
-      ],
-      byPickType: [
-        { type: "Moneyline", wins: 421, losses: 38, winRate: 91.7 },
-        { type: "Spread", wins: 318, losses: 29, winRate: 91.6 },
-        { type: "Over/Under", wins: 214, losses: 18, winRate: 92.2 },
-        { type: "Player Prop", wins: 151, losses: 11, winRate: 93.2 },
-      ],
+    const EMPTY = {
+      overall: { wins: 0, losses: 0, pushes: 0, winRate: 0, roi: 0, totalPicks: 0, currentStreak: 0, longestStreak: 0 },
+      bySport: [] as { sport: string; wins: number; losses: number; pushes: number; winRate: number; roi: number }[],
+      monthlyTrend: [] as { month: string; winRate: number; roi: number; picks: number }[],
+      byPickType: [] as { type: string; wins: number; losses: number; winRate: number }[],
     };
     const db = await getDb();
-    if (!db) return FALLBACK;
+    if (!db) return EMPTY;
+
     const allPicks = await db.select({
       result: picks.result,
       sportKey: picks.sportKey,
       pickType: picks.pickType,
+      odds: picks.odds,
       createdAt: picks.createdAt,
     }).from(picks).where(eq(picks.isActive, true));
+
     const settled = allPicks.filter(p => p.result !== "pending");
     const wins = settled.filter(p => p.result === "win").length;
     const losses = settled.filter(p => p.result === "loss").length;
     const pushes = settled.filter(p => p.result === "push").length;
     const total = wins + losses;
     const winRate = total > 0 ? Math.round((wins / total) * 1000) / 10 : 0;
+
+    // Flat 1-unit ROI from actual odds, matching the page's own "Grading Rules"
+    // claim (ROI on flat 1-unit sizing). American odds -> profit units per bet.
+    const unitProfit = (result: string, odds: number | null): number => {
+      if (result === "push" || odds == null) return 0;
+      if (result === "loss") return -1;
+      return odds > 0 ? odds / 100 : 100 / Math.abs(odds);
+    };
+    const roiFor = (rows: typeof settled): number => {
+      const decided = rows.filter(p => p.result !== "push");
+      if (decided.length === 0) return 0;
+      const profit = decided.reduce((sum, p) => sum + unitProfit(p.result, p.odds), 0);
+      return Math.round((profit / decided.length) * 1000) / 10;
+    };
+
     // By sport
-    const sportMap: Record<string, { wins: number; losses: number; pushes: number }> = {};
+    const sportMap: Record<string, typeof settled> = {};
     for (const p of settled) {
       const s = p.sportKey.toUpperCase();
-      if (!sportMap[s]) sportMap[s] = { wins: 0, losses: 0, pushes: 0 };
-      if (p.result === "win") sportMap[s].wins++;
-      else if (p.result === "loss") sportMap[s].losses++;
-      else sportMap[s].pushes++;
+      (sportMap[s] ??= []).push(p);
     }
-    const bySport = Object.entries(sportMap).map(([sport, s]) => ({
-      sport, wins: s.wins, losses: s.losses, pushes: s.pushes,
-      winRate: s.wins + s.losses > 0 ? Math.round((s.wins / (s.wins + s.losses)) * 1000) / 10 : 0,
-      roi: 18.4,
-    }));
-    // Current win streak
+    const bySport = Object.entries(sportMap).map(([sport, rows]) => {
+      const w = rows.filter(p => p.result === "win").length;
+      const l = rows.filter(p => p.result === "loss").length;
+      const ps = rows.filter(p => p.result === "push").length;
+      return {
+        sport, wins: w, losses: l, pushes: ps,
+        winRate: w + l > 0 ? Math.round((w / (w + l)) * 1000) / 10 : 0,
+        roi: roiFor(rows),
+      };
+    });
+
+    // By pick type
+    const typeLabel: Record<string, string> = {
+      moneyline: "Moneyline", spread: "Spread", over_under: "Over/Under",
+      player_prop: "Player Prop", parlay: "Parlay",
+    };
+    const typeMap: Record<string, typeof settled> = {};
+    for (const p of settled) {
+      (typeMap[p.pickType] ??= []).push(p);
+    }
+    const byPickType = Object.entries(typeMap).map(([type, rows]) => {
+      const w = rows.filter(p => p.result === "win").length;
+      const l = rows.filter(p => p.result === "loss").length;
+      return { type: typeLabel[type] ?? type, wins: w, losses: l, winRate: w + l > 0 ? Math.round((w / (w + l)) * 1000) / 10 : 0 };
+    });
+
+    // Monthly trend from real createdAt buckets, oldest to newest. Key on a
+    // sortable YYYY-MM string (not array order, which the DB doesn't guarantee).
+    const monthMap: Record<string, { label: string; rows: typeof settled }> = {};
+    for (const p of settled) {
+      const d = new Date(p.createdAt);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      const label = d.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+      (monthMap[key] ??= { label, rows: [] }).rows.push(p);
+    }
+    const monthlyTrend = Object.keys(monthMap)
+      .sort()
+      .map(key => {
+        const { label, rows } = monthMap[key];
+        const w = rows.filter(p => p.result === "win").length;
+        const l = rows.filter(p => p.result === "loss").length;
+        return { month: label, winRate: w + l > 0 ? Math.round((w / (w + l)) * 1000) / 10 : 0, roi: roiFor(rows), picks: rows.length };
+      });
+
+    // Current win streak, most recent first
     const sorted = [...settled].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     let currentStreak = 0;
     for (const p of sorted) {
       if (p.result === "win") currentStreak++;
       else break;
     }
+
+    // Longest-ever win streak: longest run of consecutive wins across the
+    // whole settled history, in chronological order (pushes don't break it).
+    let longestStreak = 0;
+    let runningStreak = 0;
+    for (let i = sorted.length - 1; i >= 0; i--) {
+      const result = sorted[i].result;
+      if (result === "win") {
+        runningStreak++;
+        longestStreak = Math.max(longestStreak, runningStreak);
+      } else if (result === "loss") {
+        runningStreak = 0;
+      }
+    }
+
     return {
-      overall: { wins, losses, pushes, winRate, roi: 18.4, totalPicks: allPicks.length, currentStreak, longestStreak: Math.max(currentStreak, 7) },
-      bySport: bySport.length > 0 ? bySport : FALLBACK.bySport,
-      monthlyTrend: FALLBACK.monthlyTrend,
-      byPickType: FALLBACK.byPickType,
+      overall: {
+        wins, losses, pushes, winRate, roi: roiFor(settled),
+        totalPicks: allPicks.length, currentStreak, longestStreak,
+      },
+      bySport,
+      monthlyTrend,
+      byPickType,
     };
   }),
 
-  // Recent settled picks for public performance page
+  // Recent settled picks for the public performance page — real data only,
+  // never mock picks. An unreachable DB returns an empty list (the client
+  // already shows "No settled picks yet"), never fabricated results.
   recentSettled: publicProcedure
     .input(z.object({ limit: z.number().min(1).max(20).default(10) }).optional())
     .query(async ({ input }) => {
       const limit = input?.limit ?? 10;
       const db = await getDb();
-      if (!db) {
-        const mock = generateMockPicks(new Date().toISOString().split("T")[0]);
-        return { picks: mock.filter(p => p.result !== "pending").slice(0, limit).map((p, i) => ({
-          id: i + 1, sportKey: p.sportKey, pickType: p.pickType,
-          homeTeam: p.homeTeam, awayTeam: p.awayTeam,
-          recommendation: p.recommendation, odds: p.odds,
-          confidenceScore: p.confidenceScore, edgeScore: p.edgeScore,
-          result: p.result, tier: p.tier, createdAt: new Date(),
-        })) };
-      }
+      if (!db) return { picks: [] };
+
       const recent = await db.select({
         id: picks.id, sportKey: picks.sportKey, pickType: picks.pickType,
         homeTeam: picks.homeTeam, awayTeam: picks.awayTeam,

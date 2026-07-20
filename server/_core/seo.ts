@@ -49,6 +49,8 @@ interface RouteSeo {
   /** One or more JSON-LD blocks, each rendered as its own <script> tag. */
   jsonLd?: object | object[];
   ogType?: string;
+  /** Absolute URL of a per-page branded card (server/_core/ogImage.ts) — overrides the static default. */
+  ogImage?: string;
 }
 
 /**
@@ -162,6 +164,7 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
             canonicalPath: cleanPath,
             ogType: "article",
             jsonLd,
+            ogImage: `${ORIGIN}/api/og/blog/${blogMatch[1]}.png`,
           };
         }
       }
@@ -192,6 +195,7 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
             title: title.slice(0, 70),
             description: description.slice(0, 160),
             canonicalPath: cleanPath,
+            ogImage: `${ORIGIN}/api/og/pick/${pickMatch[1]}.png`,
             jsonLd: {
               "@context": "https://schema.org",
               "@type": "SportsEvent",
@@ -262,6 +266,26 @@ export async function injectSeo(html: string, url: string): Promise<string> {
         /(<meta property="og:type" content=")[^"]*(")/,
         `$1${esc(seo.ogType)}$2`
       );
+    }
+
+    if (seo.ogImage) {
+      out = out
+        .replace(
+          /(<meta property="og:image" content=")[^"]*(")/,
+          `$1${esc(seo.ogImage)}$2`
+        )
+        .replace(
+          /(<meta property="og:image:width" content=")[^"]*(")/,
+          `$11200$2`
+        )
+        .replace(
+          /(<meta property="og:image:height" content=")[^"]*(")/,
+          `$1630$2`
+        )
+        .replace(
+          /(<meta name="twitter:image" content=")[^"]*(")/,
+          `$1${esc(seo.ogImage)}$2`
+        );
     }
 
     if (seo.jsonLd) {

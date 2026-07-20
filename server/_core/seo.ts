@@ -46,8 +46,55 @@ interface RouteSeo {
   title: string;
   description: string;
   canonicalPath: string;
-  jsonLd?: object;
+  /** One or more JSON-LD blocks, each rendered as its own <script> tag. */
+  jsonLd?: object | object[];
   ogType?: string;
+}
+
+/**
+ * Parse a "## FAQ" section's **Q:** / **A:** pairs out of article markdown.
+ * Returns [] if there's no FAQ section or fewer than 2 well-formed pairs —
+ * callers should treat that as "no FAQPage schema for this article".
+ */
+export function parseFaqPairs(markdown: string): { q: string; a: string }[] {
+  // [^\S\n]* (horizontal whitespace only) instead of \s* immediately before an
+  // explicit \n keeps the two quantifiers' character classes disjoint, so the
+  // engine can't backtrack between them — \s* followed by \n+ both accept "\n"
+  // and is exactly the overlapping-quantifier shape regex-DoS scanners flag.
+  const faqSection = markdown.match(/##[^\S\n]*FAQ[^\S\n]*\n([\s\S]*?)(?:\n##[^\S\n]|$)/i);
+  if (!faqSection) return [];
+
+  // Line-oriented split instead of a single greedy/lazy regex over the whole
+  // section: bounded per-line work, no backtracking surface at all.
+  const lines = faqSection[1].split("\n");
+  const pairs: { q: string; a: string }[] = [];
+  let currentQ: string | null = null;
+  let currentA: string[] = [];
+
+  const flush = () => {
+    if (currentQ) {
+      const a = currentA.join(" ").replace(/\s+/g, " ").trim();
+      if (a) pairs.push({ q: currentQ, a });
+    }
+    currentQ = null;
+    currentA = [];
+  };
+
+  for (const line of lines) {
+    const qMatch = line.match(/^\*\*Q:\*\*[^\S\n]*(.+)$/);
+    const aMatch = line.match(/^\*\*A:\*\*[^\S\n]*(.+)$/);
+    if (qMatch) {
+      flush();
+      currentQ = qMatch[1].trim();
+    } else if (aMatch && currentQ) {
+      currentA.push(aMatch[1].trim());
+    } else if (currentQ && line.trim()) {
+      currentA.push(line.trim());
+    }
+  }
+  flush();
+
+  return pairs;
 }
 
 async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
@@ -71,28 +118,50 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
           const body = stripHtml(post.contentHtml || post.content || "").slice(0, 5000);
           const description =
             post.seoDescription || post.excerpt?.slice(0, 158) || body.slice(0, 158);
+          const articleLd = {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: post.title,
+            description,
+            ...(post.heroImage ? { image: post.heroImage } : {}),
+            datePublished: (post.publishedAt ?? post.createdAt).toISOString(),
+            dateModified: post.updatedAt.toISOString(),
+            author: { "@type": "Organization", name: "ChalkPicks" },
+            publisher: {
+              "@type": "Organization",
+              name: "ChalkPicks",
+              url: ORIGIN,
+            },
+            mainEntityOfPage: `${ORIGIN}${cleanPath}`,
+            articleBody: body,
+          };
+
+          // Worker-generated articles end with a "## FAQ" section of 3 real-search
+          // Q&As (see cloud-computer/worker.mjs previewPrompt). Surface it as
+          // FAQPage schema too when there's enough of it to be worth it.
+          const faqs = parseFaqPairs(post.content || "");
+          const jsonLd =
+            faqs.length >= 2
+              ? [
+                  articleLd,
+                  {
+                    "@context": "https://schema.org",
+                    "@type": "FAQPage",
+                    mainEntity: faqs.map(f => ({
+                      "@type": "Question",
+                      name: f.q,
+                      acceptedAnswer: { "@type": "Answer", text: f.a },
+                    })),
+                  },
+                ]
+              : articleLd;
+
           return {
             title: `${post.title} | ChalkPicks`,
             description,
             canonicalPath: cleanPath,
             ogType: "article",
-            jsonLd: {
-              "@context": "https://schema.org",
-              "@type": "Article",
-              headline: post.title,
-              description,
-              ...(post.heroImage ? { image: post.heroImage } : {}),
-              datePublished: (post.publishedAt ?? post.createdAt).toISOString(),
-              dateModified: post.updatedAt.toISOString(),
-              author: { "@type": "Organization", name: "ChalkPicks" },
-              publisher: {
-                "@type": "Organization",
-                name: "ChalkPicks",
-                url: ORIGIN,
-              },
-              mainEntityOfPage: `${ORIGIN}${cleanPath}`,
-              articleBody: body,
-            },
+            jsonLd,
           };
         }
       }
@@ -197,11 +266,14 @@ export async function injectSeo(html: string, url: string): Promise<string> {
 
     if (seo.jsonLd) {
       // JSON-LD in <script> context: escape "</" to keep the parser inside the tag.
-      const json = JSON.stringify(seo.jsonLd).replace(/<\//g, "<\\/");
-      out = out.replace(
-        "</head>",
-        `<script type="application/ld+json" data-ssr-route-schema>${json}</script>\n</head>`
-      );
+      const blocks = Array.isArray(seo.jsonLd) ? seo.jsonLd : [seo.jsonLd];
+      const scripts = blocks
+        .map(
+          block =>
+            `<script type="application/ld+json" data-ssr-route-schema>${JSON.stringify(block).replace(/<\//g, "<\\/")}</script>`
+        )
+        .join("\n");
+      out = out.replace("</head>", `${scripts}\n</head>`);
     }
 
     return out;

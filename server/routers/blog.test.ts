@@ -2,6 +2,30 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { getDb } from "../db";
 import { blogPosts } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { hasComplianceFooter } from "./blog";
+
+describe("hasComplianceFooter", () => {
+  it("passes content with the exact worker.mjs footer", () => {
+    expect(
+      hasComplianceFooter(
+        "Some article body.\n\n*Analytics & education — not betting advice. 21+ | 1-800-GAMBLER*"
+      )
+    ).toBe(true);
+  });
+
+  it("fails content missing the footer entirely", () => {
+    expect(hasComplianceFooter("Some article body with no disclaimer.")).toBe(false);
+  });
+
+  it("fails content with only one of the two required markers", () => {
+    expect(hasComplianceFooter("Must be 21+ to bet.")).toBe(false);
+    expect(hasComplianceFooter("Call 1-800-GAMBLER if you have a problem.")).toBe(false);
+  });
+
+  it("is case-insensitive on the gambler hotline", () => {
+    expect(hasComplianceFooter("21+ | Call 1-800-gambler for help.")).toBe(true);
+  });
+});
 
 describe("Blog Router", () => {
   let db: any;

@@ -16,6 +16,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { LEARN_PAGES_META } from "@shared/learnPagesMeta";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -357,6 +358,27 @@ const PAGE_META: Record<string, PageMeta> = {
   },
 };
 
+// The four /learn/* pages are built from shared/learnPagesMeta.ts instead of
+// hand-written per-page literals here — same orgLd()/breadcrumbLd()/faqLd()
+// shape for every one of them, so writing it out four times was pure
+// copy-paste (and a second, independent place to update their titles/FAQs).
+for (const page of LEARN_PAGES_META) {
+  PAGE_META[page.path] = {
+    title: page.title,
+    description: page.description,
+    canonicalPath: page.path,
+    jsonLd: [
+      orgLd(),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "Learn", path: "/learn" },
+        { name: page.breadcrumbName, path: page.path },
+      ]),
+      faqLd(page.faqs),
+    ],
+  };
+}
+
 // ─── HTML shell builder ───────────────────────────────────────────────────────
 
 function buildPrerenderedHtml(meta: PageMeta): string {
@@ -423,6 +445,18 @@ export function registerPrerenderMiddleware(app: Express): void {
     if (req.path.includes(".")) return next(); // skip static assets
 
     const requestPath = req.path === "/" ? "/" : req.path.replace(/\/$/, "");
+
+    // Blog articles and pick detail pages are DB-backed and change constantly —
+    // the snapshot below is only ever as fresh as the last `vite build`, and
+    // the case-3 fallback has no real content for them at all (generic shell,
+    // wrong title, no Article/FAQ JSON-LD). server/_core/seo.ts's injectSeo
+    // already builds real per-post JSON-LD (with articleBody, so crawlers get
+    // the actual text even without executing JS) straight from the DB on every
+    // request, so let those two routes fall through to it instead of stopping
+    // here.
+    if (/^\/blog\/[a-z0-9-]+$/i.test(requestPath) || /^\/picks\/\d+$/.test(requestPath)) {
+      return next();
+    }
 
     // 1. Try to serve a pre-built static snapshot from dist/public/snapshots/
     const distBase =

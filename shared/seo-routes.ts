@@ -3,6 +3,8 @@
  * Used by the client-side head manager (useRouteSEO) and the
  * server-side bot pre-rendering middleware (server/prerender.ts).
  */
+import { LEARN_PAGES_META } from "./learnPagesMeta";
+
 export interface RouteSEOEntry {
   path: string;
   title: string;
@@ -231,6 +233,18 @@ export const routeSEO: RouteSEOEntry[] = [
     changefreq: "monthly",
     priority: 0.5,
   },
+  // /learn/* pages: title/description come from the shared LEARN_PAGES_META
+  // array (shared/learnPagesMeta.ts) rather than being repeated here.
+  ...LEARN_PAGES_META.map(
+    (page): RouteSEOEntry => ({
+      path: page.path,
+      title: page.title,
+      description: page.description,
+      sitemap: true,
+      changefreq: "monthly",
+      priority: 0.7,
+    })
+  ),
 ];
 
 /** Blog post slugs for sitemap + prerender (metadata lives in client/src/data/blog-posts.ts) */

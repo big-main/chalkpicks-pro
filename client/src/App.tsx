@@ -95,6 +95,7 @@ const MonteCarloSimulator = lazy(() => import("@/pages/MonteCarloSimulator"));
 const SharpMoneyDetector = lazy(() => import("@/pages/SharpMoneyDetector"));
 const ConsensusAggregator = lazy(() => import("@/pages/ConsensusAggregator"));
 const ParlayFlow = lazy(() => import("@/pages/ParlayFlow"));
+const LearnPage = lazy(() => import("@/pages/LearnPage"));
 
 function PageLoader() {
   return (
@@ -174,6 +175,7 @@ function Router() {
           <Route path="/odds-comparison" component={OddsComparison} />
           <Route path="/performance" component={Performance} />
           <Route path="/bet-calculator" component={BetCalculator} />
+          <Route path="/learn/:slug" component={LearnPage} />
           <Route path="/story-generator" component={StoryGenerator} />
           <Route path="/story-history" component={StoryHistory} />
           <Route path="/tools/odds-calculator" component={OddsCalculator} />

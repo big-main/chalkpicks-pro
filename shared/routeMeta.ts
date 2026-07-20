@@ -6,6 +6,8 @@
  *
  * Titles should be 50-60 characters; descriptions 150-160 characters.
  */
+import { LEARN_PAGES_META } from "./learnPagesMeta";
+
 export interface PageMetaConfig {
   title: string;
   description: string;
@@ -147,6 +149,12 @@ export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
       "Track your betting bankroll, manage unit sizing, monitor ROI, and analyze long-term profitability.",
   },
 };
+
+// /learn/* pages: title/description come from the shared LEARN_PAGES_META
+// array (shared/learnPagesMeta.ts) rather than being repeated here.
+for (const page of LEARN_PAGES_META) {
+  PAGE_META_MAP[page.path] = { title: page.title, description: page.description };
+}
 
 /**
  * Resolve the meta config for a pathname, with the same fallback rules the

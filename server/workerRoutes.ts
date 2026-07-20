@@ -1,8 +1,104 @@
 import express, { type Express, type Request, type Response, type NextFunction } from "express";
 import crypto from "crypto";
 import { getDb } from "./db";
-import { blogPosts, picks } from "../drizzle/schema";
-import { and, eq } from "drizzle-orm";
+import { blogPosts, picks, games, oddsSnapshots } from "../drizzle/schema";
+import { and, eq, inArray, asc } from "drizzle-orm";
+
+interface LineMovement {
+  openOdds: number | null;
+  currentOdds: number | null;
+  openTotal: number | null;
+  currentTotal: number | null;
+  lastMoveAt: string | null;
+}
+
+/**
+ * Earliest vs. latest snapshot per market, restricted to one bookmaker (so
+ * "open" and "current" are apples-to-apples), for the given event IDs.
+ * Returns a map keyed by eventId. Never throws — a lookup failure just means
+ * that game's article won't get a line-movement paragraph.
+ */
+async function getLineMovements(
+  db: NonNullable<Awaited<ReturnType<typeof getDb>>>,
+  eventIds: string[],
+  homeTeamByEvent: Map<string, string>
+): Promise<Map<string, LineMovement>> {
+  const result = new Map<string, LineMovement>();
+  if (eventIds.length === 0) return result;
+
+  const rows = await db
+    .select({
+      eventId: oddsSnapshots.eventId,
+      bookmaker: oddsSnapshots.bookmaker,
+      marketKey: oddsSnapshots.marketKey,
+      outcomesJson: oddsSnapshots.outcomesJson,
+      snapshotAt: oddsSnapshots.snapshotAt,
+    })
+    .from(oddsSnapshots)
+    .where(
+      and(
+        inArray(oddsSnapshots.eventId, eventIds),
+        inArray(oddsSnapshots.marketKey, ["h2h", "totals"])
+      )
+    )
+    .orderBy(asc(oddsSnapshots.snapshotAt));
+
+  // Group by event, pick one consistent bookmaker per event (prefer draftkings).
+  const byEvent = new Map<string, typeof rows>();
+  for (const row of rows) {
+    const list = byEvent.get(row.eventId) ?? [];
+    list.push(row);
+    byEvent.set(row.eventId, list);
+  }
+
+  byEvent.forEach((snapshots, eventId) => {
+    const bookmaker =
+      snapshots.find(s => s.bookmaker === "draftkings")?.bookmaker ?? snapshots[0].bookmaker;
+    const forBook = snapshots.filter(s => s.bookmaker === bookmaker);
+    const homeTeam = homeTeamByEvent.get(eventId);
+
+    const h2h = forBook.filter(s => s.marketKey === "h2h");
+    const totals = forBook.filter(s => s.marketKey === "totals");
+
+    const extractPrice = (outcomesJson: string, teamName: string | undefined): number | null => {
+      try {
+        const outcomes = JSON.parse(outcomesJson) as { name: string; price?: number }[];
+        const outcome = teamName ? outcomes.find(o => o.name === teamName) : outcomes[0];
+        return typeof outcome?.price === "number" ? outcome.price : null;
+      } catch {
+        return null;
+      }
+    };
+    const extractPoint = (outcomesJson: string): number | null => {
+      try {
+        const outcomes = JSON.parse(outcomesJson) as { point?: number }[];
+        return typeof outcomes[0]?.point === "number" ? outcomes[0].point : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const openOdds = h2h[0] ? extractPrice(h2h[0].outcomesJson, homeTeam) : null;
+    const currentOdds = h2h[h2h.length - 1]
+      ? extractPrice(h2h[h2h.length - 1].outcomesJson, homeTeam)
+      : null;
+    const openTotal = totals[0] ? extractPoint(totals[0].outcomesJson) : null;
+    const currentTotal = totals[totals.length - 1]
+      ? extractPoint(totals[totals.length - 1].outcomesJson)
+      : null;
+    const last = forBook[forBook.length - 1];
+
+    result.set(eventId, {
+      openOdds,
+      currentOdds,
+      openTotal,
+      currentTotal,
+      lastMoveAt: last ? last.snapshotAt.toISOString() : null,
+    });
+  });
+
+  return result;
+}
 
 /**
  * HTTP surface for the ChalkPicks cloud-computer worker (see cloud-computer/).
@@ -66,12 +162,38 @@ export function registerWorkerRoutes(app: Express) {
         recommendation: picks.recommendation,
         odds: picks.odds,
         confidenceScore: picks.confidenceScore,
+        gameId: picks.gameId,
       })
       .from(picks)
       .where(and(eq(picks.pickDate, today), eq(picks.isActive, true)))
       .limit(20);
 
-    res.json({ date: today, picks: rows });
+    // First-party line movement: join each pick's game to its odds snapshot
+    // history so the worker can cite real open->current numbers instead of
+    // writing generically about "line movement".
+    const gameIds = Array.from(
+      new Set(rows.map(r => r.gameId).filter((id): id is number => id != null))
+    );
+    const gameRows = gameIds.length
+      ? await db
+          .select({ id: games.id, externalId: games.externalId, homeTeamName: games.homeTeamName })
+          .from(games)
+          .where(inArray(games.id, gameIds))
+      : [];
+    const externalIdByGameId = new Map(gameRows.map(g => [g.id, g.externalId]));
+    const homeTeamByEvent = new Map(
+      gameRows.filter(g => g.externalId).map(g => [g.externalId as string, g.homeTeamName ?? ""])
+    );
+    const eventIds = gameRows.map(g => g.externalId).filter((id): id is string => !!id);
+    const movements = await getLineMovements(db, eventIds, homeTeamByEvent);
+
+    const picksWithMovement = rows.map(({ gameId, ...pick }) => {
+      const externalId = gameId != null ? externalIdByGameId.get(gameId) : undefined;
+      const movement = externalId ? movements.get(externalId) : undefined;
+      return { ...pick, lineMovement: movement ?? null };
+    });
+
+    res.json({ date: today, picks: picksWithMovement });
   });
 
   /**

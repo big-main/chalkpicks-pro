@@ -80,15 +80,41 @@ async function generate(prompt, { maxTokens = 1200 } = {}) {
 const slugify = s =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 180);
 
+function formatOdds(n) {
+  if (n === null || n === undefined) return null;
+  return n > 0 ? `+${n}` : `${n}`;
+}
+
+/** Render the line-movement facts block, or "" if we have no snapshot data for this game. */
+function lineMovementBlock(pick) {
+  const m = pick.lineMovement;
+  if (!m) return "";
+  const lines = [];
+  if (m.openOdds != null && m.currentOdds != null && m.openOdds !== m.currentOdds) {
+    lines.push(`- Moneyline moved from ${formatOdds(m.openOdds)} to ${formatOdds(m.currentOdds)}.`);
+  }
+  if (m.openTotal != null && m.currentTotal != null && m.openTotal !== m.currentTotal) {
+    lines.push(`- Total moved from ${m.openTotal} to ${m.currentTotal}.`);
+  }
+  if (lines.length === 0) return "";
+  return [
+    ``,
+    `LINE MOVEMENT (ChalkPicks first-party snapshots — cite these exact numbers, never invent your own):`,
+    ...lines,
+  ].join("\n");
+}
+
 function previewPrompt(pick, date) {
   const matchup = `${pick.awayTeam} @ ${pick.homeTeam}`;
   const sport = (pick.sportKey ?? "").toUpperCase();
   const oddsStr = pick.odds ? (pick.odds > 0 ? `+${pick.odds}` : `${pick.odds}`) : "n/a";
+  const movementBlock = lineMovementBlock(pick);
   return [
     `Write a 400-600 word game preview article for ${matchup} (${sport}) on ${date}.`,
     ``,
     `Facts you may use (do not invent others):`,
     `- ChalkPicks' AI pick for this game: ${pick.recommendation} (market: ${pick.pickType}, odds ${oddsStr}, model confidence ${pick.confidenceScore}%).`,
+    movementBlock,
     ``,
     `Structure:`,
     `- H1 title: catchy but factual, mentioning both teams.`,
@@ -96,7 +122,19 @@ function previewPrompt(pick, date) {
     `- H2 "The Matchup" — what makes this game interesting, written generally (no invented stats).`,
     `- H2 "ChalkPicks' AI Read" — explain the pick above, what ${pick.confidenceScore}% confidence means, and that the full analysis is on chalkpicks.live/picks.`,
     `- H2 "How to Think About the Number" — briefly explain the ${pick.pickType} market and reading odds of ${oddsStr}.`,
+    movementBlock
+      ? `- Weave the LINE MOVEMENT numbers above into "ChalkPicks' AI Read" or its own short paragraph — cite the exact open->current numbers given, nothing else.`
+      : ``,
     `- One-line call to action to see today's full board at chalkpicks.live/picks.`,
+    `- Link (Markdown) to at least one of: chalkpicks.live/clv-tracker, chalkpicks.live/line-movement, chalkpicks.live/bet-calculator, wherever it's genuinely relevant to the surrounding sentence.`,
+    `- H2 "FAQ" as the LAST section, before the closing disclaimer line. It must contain`,
+    `  EXACTLY 3 question/answer pairs, each formatted on its own lines as:`,
+    `  **Q:** <question>`,
+    `  **A:** <answer>`,
+    `  Questions must be phrased the way someone would actually type them into a search`,
+    `  engine or ask ChatGPT (e.g. "Who is favored in ${pick.awayTeam} vs ${pick.homeTeam}?",`,
+    `  "What is the ${pick.pickType} for ${matchup}?"). Answer only from the facts given above —`,
+    `  never invent a stat, injury, or record you don't have.`,
   ].join("\n");
 }
 

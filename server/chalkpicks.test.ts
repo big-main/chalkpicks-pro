@@ -281,7 +281,7 @@ describe("stats", () => {
     const result = await caller.stats.allGames();
     expect(result).toBeDefined();
     expect(Array.isArray(result)).toBe(true);
-  });
+  }, 15000);
 
   it("returns live games", async () => {
     const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "daily", subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) }));

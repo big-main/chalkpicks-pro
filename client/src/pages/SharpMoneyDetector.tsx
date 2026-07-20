@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useSteamMovesStream } from "@/hooks/useLiveStream";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { RefreshCw, TrendingUp, TrendingDown, AlertTriangle, Zap, BarChart3, Users } from "lucide-react";
+import { RefreshCw, TrendingUp, TrendingDown, AlertTriangle, Zap, BarChart3, Users, Wifi } from "lucide-react";
 import { FeatureGate } from "@/components/FeatureGate";
 import { BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
 
@@ -35,6 +36,7 @@ function SteamTypeBadge({ type }: { type: string }) {
 function SharpMoneyContent() {
   const [sport, setSport] = useState("americanfootball_nfl");
   const [tab, setTab] = useState("steam");
+  const { isConnected: wsConnected, lastUpdate: wsLastUpdate } = useSteamMovesStream(true);
 
   const steamQuery = trpc.sharpMoney.getSteamMoves.useQuery({ sport, minMagnitude: 2 }, { refetchInterval: 120000 });
   const consensusQuery = trpc.sharpMoney.getConsensus.useQuery({ sport }, { refetchInterval: 120000 });
@@ -56,7 +58,13 @@ function SharpMoneyContent() {
               <Zap className="h-8 w-8 text-yellow-400" />
               Sharp Money Detector
             </h1>
-            <p className="text-slate-400 mt-1">Real-time steam moves and reverse line movement alerts</p>
+            <p className="text-slate-400 mt-1 flex items-center gap-2">
+              Real-time steam moves and reverse line movement alerts
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider ${wsConnected ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-slate-700/50 text-slate-500 border border-slate-600/30'}`}>
+                <Wifi className="w-3 h-3" />
+                {wsConnected ? 'LIVE' : 'CONNECTING'}
+              </span>
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <Select value={sport} onValueChange={setSport}>
@@ -134,15 +142,15 @@ function SharpMoneyContent() {
                       </div>
                       <div className="text-center">
                         <div className="text-xs text-slate-500 mb-1">Open Line</div>
-                        <div className="text-lg font-bold text-slate-300">{move.openLine > 0 ? `+${move.openLine}` : move.openLine}</div>
+                        <div className="data-table text-lg font-bold text-slate-300">{move.openLine > 0 ? `+${move.openLine}` : move.openLine}</div>
                       </div>
                       <div className="text-center">
                         <div className="text-xs text-slate-500 mb-1">Current Line</div>
-                        <div className="text-lg font-bold text-white">{move.currentLine > 0 ? `+${move.currentLine}` : move.currentLine}</div>
+                        <div className="data-table text-lg font-bold text-white">{move.currentLine > 0 ? `+${move.currentLine}` : move.currentLine}</div>
                       </div>
                       <div className="text-center">
                         <div className="text-xs text-slate-500 mb-1">Line Move</div>
-                        <div className={`text-lg font-bold flex items-center justify-center gap-1 ${move.lineMove < 0 ? "text-red-400" : "text-green-400"}`}>
+                        <div className={`data-table text-lg font-bold flex items-center justify-center gap-1 ${move.lineMove < 0 ? "text-red-400" : "text-green-400"}`}>
                           {move.lineMove < 0 ? <TrendingDown className="h-4 w-4" /> : <TrendingUp className="h-4 w-4" />}
                           {move.lineMove > 0 ? `+${move.lineMove}` : move.lineMove}
                         </div>

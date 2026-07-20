@@ -227,21 +227,21 @@ export default function EVFinder() {
                   <div className="flex items-center gap-4 flex-wrap">
                     <div className="text-center">
                       <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>BOOK ODDS</div>
-                      <div style={{ fontWeight: 700, fontSize: "1.3rem", color: "white" }}>
+                      <div className="data-table" style={{ fontWeight: 700, fontSize: "1.3rem", color: "white" }}>
                         {formatOdds(opp.bookOdds)}
                       </div>
                       <div className="text-xs" style={{ color: "rgba(140,140,170,0.5)" }}>{opp.bookmaker}</div>
                     </div>
                     <div className="text-center">
                       <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>TRUE ODDS</div>
-                      <div style={{ fontWeight: 700, fontSize: "1.3rem", color: "#f0b800" }}>
+                      <div className="data-table" style={{ fontWeight: 700, fontSize: "1.3rem", color: "#f0b800" }}>
                         {formatOdds(opp.trueOdds)}
                       </div>
                       <div className="text-xs" style={{ color: "rgba(140,140,170,0.5)" }}>No-vig</div>
                     </div>
                     <div className="text-center">
                       <div className="text-xs mb-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>TRUE PROB</div>
-                      <div style={{ fontWeight: 700, fontSize: "1.3rem", color: "#d4a017" }}>
+                      <div className="data-table" style={{ fontWeight: 700, fontSize: "1.3rem", color: "var(--accent-cyan)" }}>
                         {(opp.trueProb * 100).toFixed(1)}%
                       </div>
                     </div>
@@ -256,11 +256,11 @@ export default function EVFinder() {
                       }}
                     >
                       <div
-                        className="font-display"
+                        className="data-table"
                         style={{
                           fontWeight: 700,
                           fontSize: "1.5rem",
-                          color: opp.ev >= 10 ? "#39ff14" : opp.ev >= 5 ? "#f0b800" : "#39ff14",
+                          color: opp.ev >= 10 ? "var(--accent-mint)" : opp.ev >= 5 ? "#f0b800" : "var(--accent-mint)",
                         }}
                       >
                         +{opp.ev.toFixed(1)}%

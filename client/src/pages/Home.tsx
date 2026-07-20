@@ -285,10 +285,10 @@ export default function Home() {
                 className="font-display mb-6 leading-[1.05]"
                 style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}
               >
-                <span className="text-white">Beat the Sportsbooks</span>
+                <span className="text-white">Gain a Mathematical Edge</span>
                 <br />
                 <span className="text-white">with </span>
-                <span className="text-emerald-gradient">AI</span>
+                <span className="text-emerald-gradient">AI-Driven Analysis</span>
               </motion.h1>
 
               {/* Subheadline */}
@@ -299,7 +299,7 @@ export default function Home() {
                 className="mb-10 max-w-lg text-lg leading-relaxed"
                 style={{ color: "rgba(255, 255, 255, 0.55)" }}
               >
-                Real-time +EV detection, AI-powered predictions, steam tracking, bankroll optimization, and professional betting analytics in one platform.
+                Real-time +EV detection, predictive modeling, steam tracking, bankroll optimization, and institutional-grade sports analytics in one platform.
               </motion.p>
 
               {/* Single dominant CTA */}
@@ -639,7 +639,7 @@ export default function Home() {
                 style={{ filter: "drop-shadow(0 0 8px rgba(57,255,20,0.3))" }}
               />
               <p className="text-sm text-white/40 leading-relaxed">
-                AI-powered sports betting analytics. Beat the books with data-driven picks and mathematical edge.
+                Institutional-grade sports analysis and predictive modeling. Gain a mathematical edge with AI-driven player projections and market analysis.
               </p>
             </div>
             <div>
@@ -672,10 +672,10 @@ export default function Home() {
           </div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-white/5">
             <div className="text-xs text-white/30">
-              © 2026 ChalkPicks Pro. All rights reserved. Bet responsibly.
+              © 2026 ChalkPicks Pro. All rights reserved. Analyze responsibly.
             </div>
             <div className="text-xs text-white/25">
-              Sports betting involves risk. Past performance is not indicative of future results.
+              Predictive sports analysis involves variance. Past performance does not guarantee future results.
             </div>
           </div>
         </div>

@@ -222,7 +222,7 @@ export default function Performance() {
                         {pick.awayTeam && pick.homeTeam ? `${pick.awayTeam} @ ${pick.homeTeam}` : "—"}
                       </td>
                       <td className="px-3 py-3 font-semibold text-white">{pick.recommendation}</td>
-                      <td className="px-3 py-3 font-mono text-sm" style={{ color: (pick.odds ?? 0) > 0 ? "#39ff14" : "rgba(255,255,255,0.5)" }}>
+                      <td className="px-3 py-3 data-table" style={{ color: (pick.odds ?? 0) > 0 ? "var(--accent-mint)" : "rgba(255,255,255,0.5)" }}>
                         {(pick.odds ?? 0) > 0 ? `+${pick.odds}` : pick.odds}
                       </td>
                       <td className="px-3 py-3">
@@ -230,7 +230,7 @@ export default function Performance() {
                           <div className="w-10 h-1.5 rounded-full overflow-hidden bg-white/5">
                             <div className="h-full rounded-full" style={{ width: `${pick.confidenceScore ?? 0}%`, background: (pick.confidenceScore ?? 0) >= 80 ? "#39ff14" : "#f0b800" }} />
                           </div>
-                          <span className="text-xs font-bold" style={{ color: (pick.confidenceScore ?? 0) >= 80 ? "#39ff14" : "#f0b800" }}>{pick.confidenceScore}%</span>
+                          <span className="data-table text-xs font-bold" style={{ color: (pick.confidenceScore ?? 0) >= 80 ? "var(--accent-cyan)" : "#f0b800" }}>{pick.confidenceScore}%</span>
                         </div>
                       </td>
                       <td className="px-3 py-3">

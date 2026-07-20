@@ -1201,3 +1201,17 @@
 - [x] README security cleanup — removed admin email from public README
 - [x] Add JSON-LD structured data — already existed (StructuredData, OrganizationJsonLd, WebSiteJsonLd, FAQPageJsonLd)
 - [x] Add new pages to shared/seo-routes.ts and sitemap (free-pick, kelly-calculator, ev-calculator, performance)
+
+## Phase 46 — Grok Premium Optimization (Institutional-Grade UI + WebSocket)
+
+- [x] Brand copy upgrade: hero text → "Institutional-Grade Sports Analysis & Predictive Modeling"
+- [x] Brand copy upgrade: footer → "Analyze responsibly" + variance disclaimer
+- [x] Brand copy upgrade: remove "Beat the books" → "Gain a mathematical edge with AI-driven player projections"
+- [x] UI theme: Deep Slate background (#0B0F19) for main bg, #1A2235 for card surfaces, #2A3653 for borders
+- [x] UI theme: Neon Mint (#10B981) for +EV indicators, Electric Cyan (#06B6D4) for AI confidence
+- [x] UI theme: JetBrains Mono for data tables/numbers, Inter for body text
+- [x] UI theme: Glassmorphism mobile bottom nav with backdrop-blur (already exists)
+- [x] WebSocket: steam-moves channel added to liveDataStreamer (existing WS infra at /api/ws)
+- [x] WebSocket: Uses existing PM2 + NGINX setup (no separate ws server needed)
+- [x] WebSocket: useLiveStream + useSteamMovesStream hooks created
+- [x] WebSocket: SharpMoneyDetector wired with live LIVE/CONNECTING badge

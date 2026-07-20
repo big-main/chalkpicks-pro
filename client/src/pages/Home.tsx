@@ -107,11 +107,14 @@ const testimonials = [
   { name: "Chris B.", role: "Bankroll Manager", text: "From $500 to $4,200 in 4 months. The combination of +EV bets and Kelly sizing is unbeatable.", stars: 5, streak: "9W" },
 ];
 
+// Leagues covered by the AI model. Kept intentionally non-numeric — every
+// pick's real result is tracked in-app rather than asserting fixed win rates
+// here (see the softened marketing-claims decision).
 const sportStats = [
-  { label: "NFL", winRate: "72.4%", roi: "+16.8%", games: "1,204" },
-  { label: "NBA", winRate: "73.6%", roi: "+19.2%", games: "2,847" },
-  { label: "MLB", winRate: "73.4%", roi: "+18.9%", games: "3,102" },
-  { label: "NHL", winRate: "73.0%", roi: "+17.6%", games: "892" },
+  { label: "NFL", note: "Spreads, totals & props" },
+  { label: "NBA", note: "Nightly slate coverage" },
+  { label: "MLB", note: "Moneylines, runlines & props" },
+  { label: "NHL", note: "Puck lines & totals" },
 ];
 
 export default function Home() {
@@ -308,22 +311,19 @@ export default function Home() {
                 <span className="text-white/60">Verified Track Record</span>
               </div>
               <h2 className="font-display text-4xl lg:text-5xl mb-5 leading-tight">
-                <span className="text-emerald-gradient">73.1% Win Rate</span>
+                <span className="text-emerald-gradient">Transparent, Verified</span>
                 <br />
-                <span className="text-white">Over 12 Months</span>
+                <span className="text-white">Track Record</span>
               </h2>
               <p className="text-white/50 leading-relaxed mb-8 max-w-lg">
-                Every pick is logged, tracked, and verified. Our AI model has maintained a 73.1% win rate and +18.4% ROI over the past year across all major sports leagues.
+                Every pick is logged, timestamped, and graded — no cherry-picking, no hindsight edits. Our AI model is built to find a real, data-driven edge across all major sports leagues, and you can review the full history yourself.
               </p>
               <div className="grid grid-cols-2 gap-3">
                 {sportStats.map((s) => (
                   <NeonCard key={s.label} className="p-4">
-                    <div className="text-xs text-brand-gold font-semibold mb-1">{s.label}</div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-white">{s.winRate}</span>
-                      <span className="text-xs font-bold text-brand-green">{s.roi}</span>
-                    </div>
-                    <div className="text-xs mt-0.5 text-white/35">{s.games} games</div>
+                    <div className="text-sm text-brand-gold font-bold mb-1">{s.label}</div>
+                    <div className="text-xs text-white/50">{s.note}</div>
+                    <div className="text-xs mt-1.5 text-brand-green font-semibold">Tracked &amp; auto-graded</div>
                   </NeonCard>
                 ))}
               </div>
@@ -332,10 +332,9 @@ export default function Home() {
             <FadeIn direction="right">
             <NeonCard className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-medium text-white/50">Monthly ROI Performance</span>
+                <span className="text-sm font-medium text-white/50">Model ROI — Illustrative</span>
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full glass-card-static text-xs font-semibold">
-                  <span className="live-dot" style={{ width: 6, height: 6 }} />
-                  <span className="text-brand-green">LIVE</span>
+                  <span className="text-white/50">SAMPLE</span>
                 </div>
               </div>
               <ResponsiveContainer width="100%" height={240}>

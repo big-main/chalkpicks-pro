@@ -123,6 +123,7 @@ const primaryLinks = [
   { href: "/performance", label: "Performance" },
   { href: "/ev-finder", label: "+EV Finder" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export default function Navbar() {

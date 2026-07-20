@@ -24,7 +24,7 @@ function ShareCard({ code, link, discount }: { code: string; link: string; disco
   };
 
   const shareTwitter = () => {
-    const text = `🏆 Get ${discount}% off ChalkPicks Pro — AI-powered sports betting picks with 73%+ win rate. Use my code: ${code}`;
+    const text = `🏆 Get ${discount}% off ChalkPicks Pro — AI-powered sports betting picks with a real data-driven edge. Use my code: ${code}`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`, "_blank");
   };
 

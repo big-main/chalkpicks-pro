@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import AuthPageShell from "@/components/AuthPageShell";
+import { safeRedirectPath } from "@shared/utils";
 import { Lock } from "lucide-react";
 
 const inputStyle = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(212,160,23,0.2)", color: "white" };
@@ -19,31 +20,18 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [elevateEmail, setElevateEmail] = useState("");
 
-  const elevateMutation = trpc.auth.elevateToAdmin.useMutation({
-    onSuccess: () => {
-      alert("User elevated to admin successfully!");
-      setElevateEmail("");
-    },
-    onError: (err) => {
-      alert("Elevation failed: " + err.message);
-    }
-  });
-
-  const handleElevate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (elevateEmail) elevateMutation.mutate({ email: elevateEmail });
-  };
+  // Continue to the page the user was headed to (e.g. /pricing) after logging in.
+  const redirectTo = safeRedirectPath(new URLSearchParams(window.location.search).get("redirect"));
 
   useEffect(() => {
-    if (isAuthenticated) setLocation("/");
-  }, [isAuthenticated, setLocation]);
+    if (isAuthenticated) setLocation(redirectTo);
+  }, [isAuthenticated, setLocation, redirectTo]);
 
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: async () => {
       await utils.auth.me.invalidate();
-      setLocation("/");
+      setLocation(redirectTo);
     },
     onError: (err) => setError(err.message || "Invalid email or password"),
   });
@@ -100,19 +88,6 @@ export default function Login() {
             <a style={{ color: "#f0b800", fontWeight: 600, textDecoration: "none" }} className="hover:underline">Sign up here</a>
           </Link>
         </p>
-      </div>
-      {/* Hidden Admin Elevation Tool (Only for setup) */}
-      <div className="fixed bottom-4 right-4 opacity-0 hover:opacity-100 transition-opacity z-50">
-        <form onSubmit={handleElevate} className="flex gap-2 bg-black/80 p-2 rounded border border-white/20">
-          <input 
-            type="email" 
-            placeholder="Email to elevate" 
-            className="bg-zinc-900 text-white text-[10px] p-1 border border-white/20 rounded w-32"
-            value={elevateEmail}
-            onChange={(e) => setElevateEmail(e.target.value)}
-          />
-          <button type="submit" className="text-[10px] bg-brand-green text-black px-2 py-1 rounded font-bold">Elevate</button>
-        </form>
       </div>
     </AuthPageShell>
   );

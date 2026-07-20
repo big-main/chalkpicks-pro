@@ -19,6 +19,7 @@ import Home from "./pages/Home";
 import NotFound from "@/pages/NotFound";
 import { SocialProofTicker } from "@/components/SocialProofTicker";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { AiChatWidget } from "@/components/AiChatWidget";
 import { SwipeNavProvider } from "@/components/SwipeNavProvider";
 import { BackButton } from "@/components/BackButton";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
@@ -31,7 +32,6 @@ const Backtesting = lazy(() => import("./pages/Backtesting"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Pricing = lazy(() => import("./pages/Pricing"));
-const PayPalPricing = lazy(() => import("./pages/PayPalPricing"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const MatchupAnalysis = lazy(() => import("./pages/MatchupAnalysis"));
 const SubscriptionManagement = lazy(() => import("./pages/SubscriptionManagement"));
@@ -134,7 +134,6 @@ function Router() {
           <Route path="/dashboard" component={UserDashboard} />
           <Route path="/leaderboard" component={Leaderboard} />
           <Route path="/pricing" component={Pricing} />
-          <Route path="/pricing-paypal" component={PayPalPricing} />
           <Route path="/payment/success" component={PaymentSuccess} />
           <Route path="/matchup-analysis" component={MatchupAnalysis} />
           <Route path="/subscription-management" component={SubscriptionManagement} />
@@ -231,6 +230,7 @@ function App() {
             <Router />
             <SocialProofTicker />
             <MobileBottomNav />
+            <AiChatWidget />
           </SwipeNavProvider>
         </TooltipProvider>
       </ThemeProvider>

@@ -1199,3 +1199,44 @@
 - [x] analytics.track("pricing_cta_clicked", {tier, variant, authenticated}) fires on click
 - [x] Added ab_experiment_viewed and pricing_cta_clicked to AnalyticsEvent type
 - [x] TypeScript clean (0 errors), 133 business logic tests pass
+
+## Phase 31 — Sport Preferences in Onboarding (Jul 19, 2026) — COMPLETE
+
+- [x] Added sportPreferences column to users table (JSON array: ["nfl","nba","mlb",...]) — migration applied
+- [x] Added sport preferences multi-select step to Onboarding.tsx (checkboxes for NFL, NBA, MLB, NHL, Soccer, MMA, Tennis, Golf, Boxing)
+- [x] Updated completeOnboarding tRPC mutation to accept and save sportPreferences JSON
+- [x] Sport preferences saved to DB on onboarding completion
+
+## Phase 32 — Welcome Email Drip Sequence (Jul 19, 2026) — COMPLETE
+
+- [x] Created email_drip_queue table (userId, emailType, scheduledFor, sentAt, status)
+- [x] Built emailDrip.ts service with 3-email sequence: Day 1 (how to read picks), Day 3 (feature tour), Day 7 (upgrade offer)
+- [x] Wired enqueueWelcomeDrip() into user registration (routers.ts)
+- [x] processDripQueue() runs hourly in scheduler.ts to send due emails
+- [x] Emails use existing sendEmail() helper with branded HTML templates
+
+## Phase 33 — Discord Bot Integration (Jul 19, 2026) — COMPLETE
+
+- [x] Created server/services/discordBot.ts using discord.js v14 (installed)
+- [x] initDiscordBot() wired into server startup (server/_core/index.ts)
+- [x] postFreeDailyPick() posts highest-confidence pick daily to #free-daily-pick after scheduler runs
+- [x] postSteamAlert() posts high/extreme steam moves to #steam-alerts from sharpMoney router
+- [x] Extreme steam moves trigger @everyone ping in #steam-alerts
+- [x] Rich Discord embeds with confidence bar, sport emoji, odds, AI analysis snippet, upgrade CTA
+- [x] Requires: DISCORD_BOT_TOKEN, DISCORD_FREE_PICKS_CHANNEL_ID, DISCORD_STEAM_ALERTS_CHANNEL_ID env vars
+- [x] TypeScript clean (0 errors), 137 tests pass
+
+## Phase 34 — Discord Invite Links on Site (Jul 19, 2026) — COMPLETE
+
+- [x] Discord link already in site footer (Community section)
+- [x] Added Discord Community link to Navbar user dropdown (with Free badge, indigo color)
+- [x] Added full Discord community section to Home page (before Final CTA) with channel list, stats grid, social proof quotes
+- [x] Discord link: https://discord.gg/chalkpicks
+
+## Phase 35 — Ollama LLM Fallback (Jul 19, 2026) — COMPLETE
+
+- [x] Updated invokeLLM helper (server/_core/llm.ts) to catch Anthropic credit exhaustion errors (400 credit balance too low)
+- [x] On credit error: automatically retries with Ollama at http://35.237.81.82:11434/v1 (qwen2.5:7b)
+- [x] Logs fallback: [LLM] Anthropic credits exhausted, falling back to Ollama
+- [x] TypeScript clean (0 errors), 137 tests pass
+- [x] Save checkpoint

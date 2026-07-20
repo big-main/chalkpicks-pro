@@ -41,6 +41,7 @@ export const users = mysqlTable("users", {
   applicationReviewedAt: timestamp("applicationReviewedAt"),
   applicationReviewedBy: int("applicationReviewedBy"),
   onboardingCompletedAt: timestamp("onboardingCompletedAt"),
+  sportPreferences: text("sportPreferences"), // JSON array: ["nfl","nba","mlb",...]
 });
 
 export type User = typeof users.$inferSelect;
@@ -764,3 +765,21 @@ export const userPickTracking = mysqlTable("user_pick_tracking", {
 
 export type UserPickTracking = typeof userPickTracking.$inferSelect;
 export type InsertUserPickTracking = typeof userPickTracking.$inferInsert;
+
+// ─── Email Drip Queue ─────────────────────────────────────────────────────────
+export const emailDripQueue = mysqlTable("email_drip_queue", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  email: varchar("email", { length: 320 }).notNull(),
+  sequence: mysqlEnum("sequence", ["welcome"]).default("welcome").notNull(),
+  step: int("step").default(1).notNull(), // 1 = Day 1, 2 = Day 3, 3 = Day 7
+  sendAt: timestamp("sendAt").notNull(),
+  sentAt: timestamp("sentAt"),
+  status: mysqlEnum("status", ["pending", "sent", "failed", "skipped"]).default("pending").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ([
+  index("idx_drip_user").on(table.userId),
+  index("idx_drip_status_send").on(table.status, table.sendAt),
+]));
+export type EmailDripQueue = typeof emailDripQueue.$inferSelect;
+export type InsertEmailDripQueue = typeof emailDripQueue.$inferInsert;

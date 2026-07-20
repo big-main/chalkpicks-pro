@@ -562,6 +562,94 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── DISCORD COMMUNITY ──────────────────────────────────────────── */}
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div
+            className="absolute animate-orb"
+            style={{
+              top: "20%", right: "-10%",
+              width: "50vw", height: "50vw",
+              background: "radial-gradient(ellipse, rgba(88, 101, 242, 0.08) 0%, transparent 60%)",
+              filter: "blur(80px)",
+            }}
+          />
+        </div>
+        <div className="container relative z-10">
+          <div className="glass-card rounded-2xl border border-white/10 overflow-hidden">
+            <div className="grid md:grid-cols-2 gap-0">
+              <div className="p-10 lg:p-14">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 rounded-full glass-card-static text-xs font-semibold" style={{ color: "#7289da" }}>
+                  <span style={{ fontSize: "16px" }}>💬</span> Free Community
+                </div>
+                <h2 className="font-display text-3xl lg:text-4xl mb-4 text-white leading-tight">
+                  Join the ChalkPicks
+                  <br />
+                  <span style={{ color: "#7289da" }}>Discord Server</span>
+                </h2>
+                <p className="text-white/50 text-base mb-8 leading-relaxed">
+                  Get a free daily pick every morning in{" "}
+                  <span className="text-white/80 font-medium">#free-daily-pick</span> and real-time steam alerts in{" "}
+                  <span className="text-white/80 font-medium">#steam-alerts</span> — fed directly by our AI bot.
+                </p>
+                <div className="space-y-3 mb-8">
+                  {[
+                    { emoji: "🎯", label: "#free-daily-pick", desc: "AI-selected best bet every morning" },
+                    { emoji: "⚡", label: "#steam-alerts", desc: "Real-time sharp money line movement" },
+                    { emoji: "📊", label: "#picks-analysis", desc: "Community discussion and breakdowns" },
+                    { emoji: "💰", label: "#pro-lounge", desc: "Exclusive channel for Pro subscribers" },
+                  ].map((ch) => (
+                    <div key={ch.label} className="flex items-center gap-3">
+                      <span className="text-lg">{ch.emoji}</span>
+                      <div>
+                        <span className="text-sm font-mono font-semibold text-white/80">{ch.label}</span>
+                        <span className="text-sm text-white/40 ml-2">— {ch.desc}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <a
+                  href="https://discord.gg/chalkpicks"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:scale-105"
+                  style={{ background: "#5865F2" }}
+                >
+                  <span style={{ fontSize: "18px" }}>💬</span>
+                  Join Discord — It's Free
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+              <div className="p-10 lg:p-14 border-t md:border-t-0 md:border-l border-white/5 flex flex-col justify-center">
+                <div className="grid grid-cols-2 gap-6 mb-8">
+                  {[
+                    { value: "2,400+", label: "Members" },
+                    { value: "Daily", label: "Free Pick" },
+                    { value: "Live", label: "Steam Alerts" },
+                    { value: "Free", label: "Forever" },
+                  ].map((stat) => (
+                    <div key={stat.label} className="glass-card-static rounded-xl p-5 text-center">
+                      <div className="text-2xl font-display font-bold text-white mb-1">{stat.value}</div>
+                      <div className="text-xs text-white/40">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-3">
+                  {[
+                    '"The steam alerts alone are worth it. Caught a +3 line move before it closed." — @sharpbettor22',
+                    '"Free daily pick went 4-1 last week. Joined Pro after that." — @nflgrinder',
+                  ].map((q, i) => (
+                    <div key={i} className="glass-card-static rounded-xl p-4">
+                      <p className="text-sm text-white/50 italic">{q}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── FINAL CTA ──────────────────────────────────────────── */}
       <section className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">

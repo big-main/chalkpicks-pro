@@ -11,6 +11,7 @@ import { registerStripeWebhook } from "../webhook";
 import { registerStorageProxy } from "./storageProxy";
 import { registerPayPalWebhook } from "../paypal-webhook";
 import { startScheduler } from "../scheduler";
+import { initDiscordBot } from "../services/discordBot";
 import { initializeWebSocket } from "../websocket";
 import { startLiveDataStreaming } from "./liveDataStreamer";
 import { arbitrageRefreshHandler } from "../handlers/arbitrageRefreshHandler";
@@ -680,6 +681,8 @@ async function startServer() {
     startLiveDataStreaming();
     // Start daily picks scheduler
     startScheduler();
+    // Initialize Discord bot (non-blocking)
+    initDiscordBot().catch(err => console.error("[Discord] Init failed:", err));
   });
 }
 

@@ -6,6 +6,8 @@ import { sendDailyPicksToAllUsers, sendDailyDigestToAllUsers } from "./notificat
 import { resolveGameResults, syncGameScores } from "./services/gameResultsResolver";
 import { fetchOdds, type OddsEvent } from "./services/dataService";
 import { sendHighConfidencePickAlert, sendNewPickAlert } from "./services/pushNotifications";
+import { processDripQueue } from "./services/emailDrip";
+import { postFreeDailyPick } from "./services/discordBot";
 
 type PickType = "moneyline" | "spread" | "over_under" | "player_prop";
 type SlateMatchup = { sportKey: string; homeTeam: string; awayTeam: string; pickType: PickType };
@@ -378,6 +380,32 @@ export async function runDailyPicksJob() {
     } catch (err) {
       console.error("[Scheduler] Failed to send daily picks notifications:", err);
     }
+
+    // Post the highest-confidence pick to Discord #free-daily-pick
+    try {
+      const db = await getDb();
+      if (db) {
+        const [topPick] = await db.select().from(picks)
+          .where(and(gte(picks.pickDate, today), lte(picks.pickDate, today)))
+          .orderBy(desc(picks.confidenceScore))
+          .limit(1);
+        if (topPick) {
+          postFreeDailyPick({
+            sport: topPick.sportKey,
+            homeTeam: topPick.homeTeam ?? "",
+            awayTeam: topPick.awayTeam ?? "",
+            pickType: topPick.pickType,
+            recommendation: topPick.recommendation,
+            confidence: topPick.confidenceScore ?? 70,
+            odds: topPick.odds != null ? String(topPick.odds) : undefined,
+            analysis: topPick.aiAnalysis ?? undefined,
+            pickId: topPick.id,
+          }).catch(err => console.error("[Discord] Free daily pick post failed:", err));
+        }
+      }
+    } catch (err) {
+      console.error("[Discord] Failed to fetch top pick for Discord post:", err);
+    }
   }
 }
 
@@ -453,5 +481,13 @@ export function startScheduler() {
   scheduleDaily(20, runGameResultsJob, "Game Results Resolution (Evening)");
   // Schedule daily digest emails at 13:00 UTC (8am EST)
   scheduleDaily(13, sendDailyDigestToAllUsers, "Daily Digest Emails");
+  // Process email drip queue every hour (check for pending drip emails due to send)
+  setInterval(() => {
+    processDripQueue().catch(err => console.error("[Scheduler] Email drip queue failed:", err));
+  }, 60 * 60 * 1000); // every 60 minutes
+  // Run drip queue on startup too (15s delay)
+  setTimeout(() => {
+    processDripQueue().catch(console.error);
+  }, 15000);
   console.log("[Scheduler] All scheduled jobs started");
 }

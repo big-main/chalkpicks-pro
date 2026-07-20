@@ -43,6 +43,7 @@ import { apiKeysRouter } from "./routers/apiKeys";
 import { consensusRouter } from "./routers/consensus";
 import { trackingRouter } from "./routers/tracking";
 import { affiliateClicksRouter } from "./routers/affiliateClicks";
+import { enqueueWelcomeDrip } from "./services/emailDrip";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -86,6 +87,11 @@ export const appRouter = router({
         const user = await db.createUser({ name: input.name, email: input.email, passwordHash });
 
         await issueSessionCookie(ctx.req, ctx.res, user.id, user.name ?? input.name);
+
+        // Enqueue 3-step welcome drip email sequence
+        enqueueWelcomeDrip(user.id, input.email).catch(err =>
+          console.error("[EmailDrip] Failed to enqueue welcome drip:", err)
+        );
 
         return safeUser(user);
       }),
@@ -131,6 +137,7 @@ export const appRouter = router({
         bettingFrequency: z.enum(["occasionally", "few_times_week", "multiple_times_day"]),
         weeklyBetSize: z.enum(["under_100", "100_500", "1000_5000", "over_5000"]),
         onboardingIntent: z.string().min(10),
+        sportPreferences: z.array(z.string()).optional(),
       }))
       .mutation(async ({ input, ctx }) => {
         if (!ctx.user?.id) throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -153,6 +160,7 @@ export const appRouter = router({
           accessTier,
           applicationStatus: "pending",
           onboardingCompletedAt: new Date(),
+          sportPreferences: input.sportPreferences ? JSON.stringify(input.sportPreferences) : null,
         }).where(eq(users.id, ctx.user.id as number));
         return { success: true, accessTier };
       }),

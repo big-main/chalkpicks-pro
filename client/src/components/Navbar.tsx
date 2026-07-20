@@ -469,6 +469,19 @@ export default function Navbar() {
                             );
                           })}
 
+                          <div className="h-px bg-white/5 my-1" />
+                          <a
+                            href="https://discord.gg/chalkpicks"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all duration-150 text-sm text-white/70 hover:text-white hover:bg-white/5"
+                          >
+                            <span style={{ fontSize: "14px", color: "#7289da" }}>💬</span>
+                            <span>Discord Community</span>
+                            <span className="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300">Free</span>
+                          </a>
+
                           {user?.role === "admin" && (
                             <>
                               <div className="h-px bg-white/5 my-1" />

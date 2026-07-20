@@ -1240,3 +1240,16 @@
 - [x] Logs fallback: [LLM] Anthropic credits exhausted, falling back to Ollama
 - [x] TypeScript clean (0 errors), 137 tests pass
 - [x] Save checkpoint
+
+## Phase 36 — Twitter/X Automation via n8n (Jul 19, 2026)
+- [x] Build twitterContentRouter tRPC endpoint with 4 tweet types (morning/afternoon/evening/night)
+- [x] Morning post: Free daily pick (sport, pick, odds, confidence, hashtags)
+- [x] Afternoon post: Top steam alert / sharp money movement
+- [x] Evening post: Yesterday's results recap (W/L record)
+- [x] Night post: Tomorrow's top game preview
+- [x] Protected by TWITTER_CONTENT_SECRET env var (default: chalkpicks-twitter-2026)
+- [x] Router registered in appRouter as twitter: twitterContentRouter
+- [x] n8n workflow JSON created at /home/ubuntu/chalkpicks-twitter-workflow.json
+- [ ] n8n workflow manually imported into bigmain.app.n8n.cloud (requires manual import — n8n API path not accessible)
+- [ ] Twitter OAuth2 credential added in n8n for @chalkpickspro
+- [ ] n8n workflow activated

@@ -43,6 +43,7 @@ import { apiKeysRouter } from "./routers/apiKeys";
 import { consensusRouter } from "./routers/consensus";
 import { trackingRouter } from "./routers/tracking";
 import { affiliateClicksRouter } from "./routers/affiliateClicks";
+import { twitterContentRouter } from "./routers/twitterContent";
 import { enqueueWelcomeDrip } from "./services/emailDrip";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
@@ -201,6 +202,7 @@ export const appRouter = router({
   consensus: consensusRouter,
   tracking: trackingRouter,
   affiliateClicks: affiliateClicksRouter,
+  twitter: twitterContentRouter,
 });
 
 

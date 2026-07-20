@@ -285,10 +285,10 @@ export default function Home() {
                 className="font-display mb-6 leading-[1.05]"
                 style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}
               >
-                <span className="text-white">Gain a Mathematical Edge</span>
+                <span className="text-emerald-gradient">AI-Powered Picks.</span>
                 <br />
-                <span className="text-white">with </span>
-                <span className="text-emerald-gradient">AI-Driven Analysis</span>
+                <span className="text-white">Quantitative Edge. </span>
+                <span className="text-cyan-400">Data-Backed Results.</span>
               </motion.h1>
 
               {/* Subheadline */}

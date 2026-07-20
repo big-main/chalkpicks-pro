@@ -54,6 +54,17 @@
   --color-base-900: oklch(0.06 0.015 250);
   --color-base-800: oklch(0.12 0.015 250);
   --color-base-700: oklch(0.20 0.015 250);
+  /* ─── Full Accent Palette ─── */
+  --color-cp-red: oklch(0.60 0.25 25);
+  --color-cp-red-light: oklch(0.72 0.22 25);
+  --color-cp-purple: oklch(0.62 0.22 290);
+  --color-cp-purple-light: oklch(0.75 0.20 290);
+  --color-cp-blue: oklch(0.65 0.18 240);
+  --color-cp-blue-light: oklch(0.75 0.16 240);
+  --color-cp-green: oklch(0.82 0.30 145);
+  --color-cp-green-light: oklch(0.90 0.25 145);
+  --color-cp-gold: oklch(0.78 0.15 85);
+  --color-cp-gold-light: oklch(0.88 0.18 85);
 }
 
 :root {
@@ -107,6 +118,17 @@
   --accent-mint: #10B981;
   --accent-cyan: #06B6D4;
   --accent-rose: #F43F5E;
+  /* ─── Full Accent Palette (hex) ─── */
+  --cp-red: #ef4444;
+  --cp-red-light: #f87171;
+  --cp-purple: #a855f7;
+  --cp-purple-light: #c084fc;
+  --cp-blue: #3b82f6;
+  --cp-blue-light: #60a5fa;
+  --cp-green: #22c55e;
+  --cp-green-light: #4ade80;
+  --cp-gold: #f59e0b;
+  --cp-gold-light: #fbbf24;
   /* Glass tokens */
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-bg-hover: rgba(255, 255, 255, 0.06);
@@ -192,6 +214,33 @@
   .glow-rose {
     box-shadow: 0 0 15px -3px rgba(244, 63, 94, 0.3);
   }
+
+  /* ─── Full Palette Glow Utilities ─── */
+  .glow-red   { box-shadow: 0 0 15px -3px rgba(239, 68, 68, 0.35); }
+  .glow-purple{ box-shadow: 0 0 15px -3px rgba(168, 85, 247, 0.35); }
+  .glow-blue  { box-shadow: 0 0 15px -3px rgba(59, 130, 246, 0.35); }
+  .glow-green { box-shadow: 0 0 15px -3px rgba(34, 197, 94, 0.35); }
+  .glow-gold  { box-shadow: 0 0 15px -3px rgba(245, 158, 11, 0.35); }
+
+  /* ─── Sport Badge Colors ─── */
+  .badge-nfl   { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.25); }
+  .badge-nba   { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.25); }
+  .badge-mlb   { background: rgba(34, 197, 94, 0.15);  color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.25); }
+  .badge-nhl   { background: rgba(239, 68, 68, 0.15);  color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); }
+  .badge-ncaaf { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); }
+  .badge-ncaab { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); }
+
+  /* ─── Tier Badge Colors ─── */
+  .badge-free     { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid rgba(100,116,139,0.25); }
+  .badge-daily    { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.25); }
+  .badge-monthly  { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.25); }
+  .badge-yearly   { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); }
+  .badge-premium  { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); }
+
+  /* ─── EV Badge Colors ─── */
+  .badge-ev-high   { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); }
+  .badge-ev-pos    { background: rgba(34, 197, 94, 0.15);  color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.25); }
+  .badge-ev-neg    { background: rgba(239, 68, 68, 0.15);  color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); }
 
   /* ─── Glassmorphism Cards ─── */
   .glass-card {

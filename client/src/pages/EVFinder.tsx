@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { getSportBadgeClass } from "@/lib/badges";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
@@ -202,16 +203,8 @@ export default function EVFinder() {
                   {/* Game info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span
-                        className="px-2 py-0.5 text-[10px] font-bold tracking-widest"
-                        style={{
-                          background: "rgba(212,160,23,0.1)",
-                          border: "1px solid rgba(212,160,23,0.25)",
-                          borderRadius: "3px",
-                          color: "#f0b800",
-                        }}
-                      >
-                        {opp.sport?.toUpperCase()}
+                      <span className={`px-2 py-0.5 text-[10px] font-bold tracking-widest rounded-full ${getSportBadgeClass(opp.sport)}`}>
+                        {(opp.sport ?? "").replace(/americanfootball_|basketball_|baseball_|icehockey_/i, "").toUpperCase()}
                       </span>
                       <span className="text-xs" style={{ color: "rgba(140,140,170,0.6)" }}>{opp.commenceTime}</span>
                     </div>
@@ -249,9 +242,9 @@ export default function EVFinder() {
                     <div
                       className="px-4 py-2 text-center"
                       style={{
-                        background: opp.ev >= 10 ? "rgba(57,255,20,0.15)" : opp.ev >= 5 ? "rgba(212,160,23,0.12)" : "rgba(57,255,20,0.08)",
-                        border: `1px solid ${opp.ev >= 10 ? "rgba(57,255,20,0.4)" : opp.ev >= 5 ? "rgba(212,160,23,0.3)" : "rgba(57,255,20,0.2)"}`,
-                        borderRadius: "4px",
+                        background: opp.ev >= 10 ? "rgba(245,158,11,0.15)" : opp.ev >= 5 ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.08)",
+                        border: `1px solid ${opp.ev >= 10 ? "rgba(245,158,11,0.4)" : opp.ev >= 5 ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.2)"}`,
+                        borderRadius: "8px",
                         minWidth: "80px",
                       }}
                     >
@@ -260,7 +253,7 @@ export default function EVFinder() {
                         style={{
                           fontWeight: 700,
                           fontSize: "1.5rem",
-                          color: opp.ev >= 10 ? "var(--accent-mint)" : opp.ev >= 5 ? "#f0b800" : "var(--accent-mint)",
+                          color: opp.ev >= 10 ? "var(--cp-gold)" : opp.ev >= 5 ? "var(--cp-green)" : "var(--cp-red-light)",
                         }}
                       >
                         +{opp.ev.toFixed(1)}%

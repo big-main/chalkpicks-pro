@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getSportBadgeClass } from "@/lib/badges";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import SEO from "@/components/SEO";
@@ -135,7 +136,7 @@ export default function DailyPicks() {
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start mb-2">
                             <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                              {pick.sportKey?.toUpperCase()} · {pick.pickType?.replace("_", "/")}
+                              <span className={`text-xs uppercase font-semibold px-2 py-0.5 rounded-full ${getSportBadgeClass(pick.sportKey)}`}>{(pick.sportKey ?? "").replace(/americanfootball_|basketball_|baseball_|icehockey_/i, "").toUpperCase()}</span> · {pick.pickType?.replace("_", "/")}
                             </span>
                             <span
                               className="text-[10px] font-bold px-2 py-0.5 rounded"

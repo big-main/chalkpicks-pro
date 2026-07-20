@@ -1,3 +1,4 @@
+import { getSportBadgeClass } from "@/lib/badges";
 import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import NeonCard from "@/components/NeonCard";
@@ -103,9 +104,10 @@ export default function FreePick() {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{SPORT_ICONS[pick.sportKey] ?? "🎯"}</span>
                     <div>
-                      <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
-                        {pick.sportKey?.toUpperCase()} • {pick.pickType?.replace("_", " ")}
+                      <span className={`text-xs uppercase font-semibold px-2 py-0.5 rounded-full ${getSportBadgeClass(pick.sportKey)}`}>
+                        {(pick.sportKey ?? "").replace(/americanfootball_|basketball_|baseball_|icehockey_/i, "").toUpperCase()}
                       </span>
+                      <span className="text-xs text-muted-foreground ml-1">{pick.pickType?.replace("_", " ")}</span>
                       <div className="flex items-center gap-2 mt-0.5">
                         <Calendar className="w-3 h-3 text-muted-foreground" />
                         <span className="text-xs text-muted-foreground">{today}</span>

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { getSportBadgeClass, getTierBadgeClass } from "@/lib/badges";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
@@ -86,15 +87,15 @@ function storeFilters(filters: FilterState) {
 }
 
 function ConfidenceBar({ score }: { score: number }) {
-  const color = score >= 80 ? "bg-accent" : score >= 70 ? "bg-primary" : "bg-yellow-500";
+  const color = score >= 80 ? "#22c55e" : score >= 65 ? "#f59e0b" : "#ef4444";
   return (
     <div className="space-y-1">
       <div className="flex justify-between text-xs">
         <span className="text-muted-foreground">Confidence</span>
-        <span className={`font-bold ${score >= 80 ? "text-accent" : "text-primary"}`}>{score}%</span>
+        <span className="font-bold" style={{ color }}>{score}%</span>
       </div>
       <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-        <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${score}%` }} />
+        <div className="h-full rounded-full transition-all" style={{ width: `${score}%`, background: color }} />
       </div>
     </div>
   );
@@ -167,11 +168,11 @@ function PickCard({ pick, isPremiumUser, rank }: { pick: any; isPremiumUser: boo
                   <Crown className="w-3 h-3" /> {topPickLabels[rank!]}
                 </span>
               )}
-              <Badge className={`text-xs ${pick.tier === "premium" ? "badge-premium" : "badge-free"} border-0`}>
-                {pick.tier === "premium" ? "⭐ Premium" : "Free"}
+              <Badge className={`text-xs ${getTierBadgeClass(pick.tier)} border-0 rounded-full px-2`}>
+                {pick.tier === "premium" ? "⭐ Premium" : pick.tier === "monthly" ? "Monthly" : pick.tier === "daily" ? "Daily" : "Free"}
               </Badge>
-              <span className="text-xs text-muted-foreground uppercase font-medium bg-secondary px-2 py-0.5 rounded">
-                {pick.sportKey}
+              <span className={`text-xs uppercase font-semibold px-2 py-0.5 rounded-full ${getSportBadgeClass(pick.sportKey)}`}>
+                {(pick.sportKey ?? "").replace(/americanfootball_|basketball_|baseball_|icehockey_/i, "").toUpperCase()}
               </span>
               <span className="text-xs text-muted-foreground">{PICK_TYPE_LABELS[pick.pickType] ?? pick.pickType}</span>
             </div>

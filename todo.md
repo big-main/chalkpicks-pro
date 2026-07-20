@@ -1215,3 +1215,14 @@
 - [x] WebSocket: Uses existing PM2 + NGINX setup (no separate ws server needed)
 - [x] WebSocket: useLiveStream + useSteamMovesStream hooks created
 - [x] WebSocket: SharpMoneyDetector wired with live LIVE/CONNECTING badge
+
+## Phase 47 — Color Palette Expansion + Next Steps
+
+- [ ] Add red, purple, blue, green, gold CSS variables to index.css @theme block
+- [ ] Apply color palette: red=danger/loss, purple=AI/premium, blue=stats/data, green=win/profit, gold=edge/value
+- [ ] Update sport badges to use sport-specific colors (NFL=blue, NBA=purple, MLB=green, NHL=red)
+- [ ] Update pick confidence bar to use green→gold→red gradient based on confidence level
+- [ ] Update EVFinder EV% badges to use gold for high EV, green for positive, red for negative
+- [ ] Update subscription tier badges: Free=slate, Daily=blue, Monthly=purple, Yearly=gold
+- [ ] Deploy to Cloud Computer (git pull + build + pm2 restart)
+- [ ] n8n drip workflow: blocked on n8n Public API enable (user action required)

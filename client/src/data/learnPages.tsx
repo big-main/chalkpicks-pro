@@ -3,6 +3,7 @@ import {
   type LearnFaq,
   type LearnSection,
 } from "@/components/learn/LearnPageLayout";
+import { LEARN_PAGES_META } from "@shared/learnPagesMeta";
 
 export interface LearnPageContent {
   path: string;
@@ -13,11 +14,18 @@ export interface LearnPageContent {
   faqs: LearnFaq[];
 }
 
+/** FAQ content lives once, in shared/learnPagesMeta.ts — reused for the page body's FAQ section here and for FAQPage JSON-LD on both the client (FaqJsonLd) and the bot-facing server render (server/prerender.ts). */
+function faqsFor(slug: string): LearnFaq[] {
+  const meta = LEARN_PAGES_META.find(p => p.slug === slug);
+  return meta ? meta.faqs.map(f => ({ question: f.q, answer: f.a })) : [];
+}
+
 /**
  * Content for the /learn/:slug evergreen definitional pages, keyed by slug.
  * One shared data map + one dynamic route (client/src/pages/LearnPage.tsx)
  * instead of four near-identical page components — same content, no
- * structural duplication across files.
+ * structural duplication across files. `title` here is the page's reader-
+ * facing H1 (distinct copy from the <title>/meta title in learnPagesMeta.ts).
  */
 export const LEARN_PAGES: Record<string, LearnPageContent> = {
   "closing-line-value": {
@@ -26,28 +34,7 @@ export const LEARN_PAGES: Record<string, LearnPageContent> = {
     title: "What Is Closing Line Value (CLV)?",
     intro:
       "The single strongest predictor of long-term betting profitability — and the metric every professional bettor tracks obsessively.",
-    faqs: [
-      {
-        question: "What is closing line value (CLV)?",
-        answer:
-          "Closing line value (CLV) is the difference between the odds you bet at and the odds available right before the game starts (the closing line). Positive CLV means you got a better price than the market settled on — the strongest long-run predictor of a bettor's skill.",
-      },
-      {
-        question: "How do you calculate CLV?",
-        answer:
-          "Convert both your bet price and the closing price to implied probability, then subtract: CLV = closing implied probability − your implied probability. A positive number means you beat the close. ChalkPicks' CLV Tracker does this automatically for every logged bet.",
-      },
-      {
-        question: "Why does CLV matter more than win rate?",
-        answer:
-          "Win rate is noisy over any single season because of variance — even a +EV bettor can lose more than they win in the short run. CLV isolates whether you're consistently getting better prices than the closing market, which is the market's best available estimate of true probability, so it converges to true skill much faster than win/loss record.",
-      },
-      {
-        question: "Can you have positive CLV and still lose a bet?",
-        answer:
-          "Yes, constantly. A single game's outcome is a coin flip relative to your edge; CLV measures whether the price you got was good, not whether that particular bet won. Professional bettors track CLV over hundreds of bets, not individual results.",
-      },
-    ],
+    faqs: faqsFor("closing-line-value"),
     sections: [
       {
         title: "The Definition",
@@ -124,28 +111,7 @@ export const LEARN_PAGES: Record<string, LearnPageContent> = {
     title: "No-Vig Odds Explained: Finding the True Line",
     intro:
       "How to strip the sportsbook's margin out of any price to see what the market actually thinks will happen.",
-    faqs: [
-      {
-        question: "What does 'no-vig' or 'devigged' odds mean?",
-        answer:
-          "No-vig (or devigged) odds are betting odds with the sportsbook's built-in profit margin — the vig, or juice — mathematically removed, leaving only the market's true, fair probability estimate for each outcome.",
-      },
-      {
-        question: "Why do sportsbook odds add up to more than 100%?",
-        answer:
-          "Every priced market has implied probabilities that sum to slightly over 100% (often 104-108%) because the book bakes in a margin on both sides of the bet. That extra percentage is the vig — the book's guaranteed edge if it takes balanced action on both sides.",
-      },
-      {
-        question: "How do you remove the vig from odds?",
-        answer:
-          "The simplest method (proportional devigging) converts each side's American odds to implied probability, sums them, then divides each individual probability by that sum so they total exactly 100%. More advanced methods (power, Shin) adjust for favorite-longshot bias, but proportional devigging is accurate enough for most two-way markets.",
-      },
-      {
-        question: "Why do bettors care about no-vig odds?",
-        answer:
-          "No-vig odds are the closest available estimate of a game's true probability. Comparing your bet's price to a sharp book's no-vig line is the standard way to check whether a bet is +EV before you place it — if your price implies a lower probability than the no-vig fair number, you likely have an edge.",
-      },
-    ],
+    faqs: faqsFor("no-vig-odds"),
     sections: [
       {
         title: "What Is the Vig?",
@@ -210,28 +176,7 @@ export const LEARN_PAGES: Record<string, LearnPageContent> = {
     title: "The Kelly Criterion: Sizing Bets for Long-Term Growth",
     intro:
       "The formula professional bettors use to turn a real edge into bankroll growth — without betting so big that variance takes you out.",
-    faqs: [
-      {
-        question: "What is the Kelly Criterion in sports betting?",
-        answer:
-          "The Kelly Criterion is a formula for sizing bets that maximizes a bankroll's long-run growth rate given your edge and the odds offered. It tells you what fraction of your bankroll to stake — bet too little and you leave growth on the table; bet too much and variance can wipe you out.",
-      },
-      {
-        question: "What is the Kelly Criterion formula?",
-        answer:
-          "Kelly fraction f = (bp − q) / b, where b is the decimal payout odds minus 1, p is your true win probability, and q is 1 − p. The result is the percentage of your bankroll to wager on that specific bet.",
-      },
-      {
-        question: "Why do bettors use fractional Kelly instead of full Kelly?",
-        answer:
-          "Full Kelly assumes your probability estimate is exactly correct, which it never is in practice. Betting a fraction of full Kelly — commonly 25% (quarter-Kelly) or 50% (half-Kelly) — trades some theoretical growth rate for much lower variance, protecting the bankroll against estimation error.",
-      },
-      {
-        question: "What happens if you bet more than your Kelly fraction?",
-        answer:
-          "Overbetting past full Kelly increases variance faster than it increases expected growth, and betting roughly double the Kelly fraction or more actually reduces long-run bankroll growth toward zero — it's mathematically the same as gambling with no edge at all, despite still having a real edge on the bet.",
-      },
-    ],
+    faqs: faqsFor("kelly-criterion"),
     sections: [
       {
         title: "The Formula",
@@ -312,29 +257,7 @@ export const LEARN_PAGES: Record<string, LearnPageContent> = {
     title: "Line Movement & Steam Moves Explained",
     intro:
       "How to read a moving line, spot sharp money the moment it hits the market, and tell a real steam move from noise.",
-    faqs: [
-      {
-        question: "What is a steam move in sports betting?",
-        answer:
-          'A steam move is a sudden, sharp shift in the betting line — often several points or a large odds jump — that happens nearly simultaneously across multiple sportsbooks. It typically signals that professional ("sharp") money has hit the market hard enough that books are racing to adjust before taking on more of that side.',
-      },
-      {
-        question:
-          "What's the difference between a steam move and reverse line movement?",
-        answer:
-          "A steam move is defined by speed and size — a fast, large shift across books. Reverse line movement (RLM) is defined by direction relative to public betting: the line moves toward a team even though the majority of public bets are on the other side, which suggests sharp money is outweighing public volume.",
-      },
-      {
-        question: "How can bettors track line movement in real time?",
-        answer:
-          "Track the opening line at multiple sportsbooks and monitor it through game time, watching for sudden multi-point or odds jumps that hit several books close together. ChalkPicks' Line Movement Tracker automates this, flagging steam moves and reverse line movement the moment they happen.",
-      },
-      {
-        question: "Should bettors always follow steam moves?",
-        answer:
-          "Not blindly — by the time a steam move is visible, some of its value is often already priced in, and not every steam move is driven by informed money (some reflect large recreational bets or trap lines set by books). Steam is a strong signal worth weighing alongside your own analysis, not a standalone betting system.",
-      },
-    ],
+    faqs: faqsFor("line-movement"),
     sections: [
       {
         title: "What Moves a Betting Line",

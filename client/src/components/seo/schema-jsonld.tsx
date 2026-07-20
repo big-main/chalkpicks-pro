@@ -12,6 +12,22 @@
 
 import React from "react";
 
+/**
+ * Renders one <script type="application/ld+json"> tag for the given object.
+ * JSON.stringify never escapes "<", so a "</script>" substring inside any
+ * string value (a title, an FAQ answer, ...) would otherwise close the tag
+ * early and let the rest of the payload be parsed as HTML — escape "<" as
+ * "<" (the standard technique for safely embedding JSON in HTML) so
+ * that can't happen, matching what server/_core/seo.ts already does for the
+ * server-rendered equivalent of these same blocks.
+ */
+function JsonLdScript({ data }: { data: object }) {
+  const safeJson = JSON.stringify(data).replace(/</g, "\\u003c");
+  return (
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJson }} />
+  );
+}
+
 // ─── Organization ─────────────────────────────────────────────────────────────
 
 export function OrganizationJsonLd() {
@@ -46,12 +62,7 @@ export function OrganizationJsonLd() {
     },
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <JsonLdScript data={data} />;
 }
 
 // ─── WebSite ──────────────────────────────────────────────────────────────────
@@ -76,12 +87,7 @@ export function WebSiteJsonLd() {
     },
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <JsonLdScript data={data} />;
 }
 
 // ─── Breadcrumb ───────────────────────────────────────────────────────────────
@@ -107,12 +113,7 @@ export function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
     })),
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <JsonLdScript data={data} />;
 }
 
 // ─── SportsEvent ──────────────────────────────────────────────────────────────
@@ -166,12 +167,7 @@ export function SportsEventJsonLd({
     };
   }
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <JsonLdScript data={data} />;
 }
 
 // ─── FAQ ──────────────────────────────────────────────────────────────────────
@@ -199,12 +195,7 @@ export function FaqJsonLd({ faqs }: FaqJsonLdProps) {
     })),
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <JsonLdScript data={data} />;
 }
 
 // ─── SoftwareApplication ──────────────────────────────────────────────────────
@@ -228,10 +219,5 @@ export function SoftwareApplicationJsonLd() {
     publisher: { "@id": "https://chalkpicks.live/#organization" },
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <JsonLdScript data={data} />;
 }

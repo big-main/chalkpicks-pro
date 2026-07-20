@@ -16,6 +16,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { LEARN_PAGES_META } from "@shared/learnPagesMeta";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -355,103 +356,28 @@ const PAGE_META: Record<string, PageMeta> = {
       breadcrumbLd([{ name: "Home", path: "/" }, { name: "Parlay Flow", path: "/parlay-flow" }]),
     ],
   },
-  "/learn/closing-line-value": {
-    title: "What Is Closing Line Value (CLV)? | ChalkPicks",
-    description:
-      "Closing line value (CLV) explained: how to calculate it, why it beats win rate as a skill metric, and how to track it on every bet.",
-    canonicalPath: "/learn/closing-line-value",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([
-        { name: "Home", path: "/" },
-        { name: "Learn", path: "/learn" },
-        { name: "Closing Line Value", path: "/learn/closing-line-value" },
-      ]),
-      faqLd([
-        {
-          q: "What is closing line value (CLV)?",
-          a: "Closing line value (CLV) is the difference between the odds you bet at and the odds available right before the game starts (the closing line). Positive CLV means you got a better price than the market settled on — the strongest long-run predictor of a bettor's skill.",
-        },
-        {
-          q: "Why does CLV matter more than win rate?",
-          a: "Win rate is noisy over any single season because of variance. CLV isolates whether you're consistently getting better prices than the closing market, which converges to true skill much faster than win/loss record.",
-        },
-      ]),
-    ],
-  },
-  "/learn/no-vig-odds": {
-    title: "No-Vig Odds Explained | ChalkPicks",
-    description:
-      "How to remove the sportsbook's vig from any odds to find the true, fair probability — and use it to spot +EV bets.",
-    canonicalPath: "/learn/no-vig-odds",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([
-        { name: "Home", path: "/" },
-        { name: "Learn", path: "/learn" },
-        { name: "No-Vig Odds", path: "/learn/no-vig-odds" },
-      ]),
-      faqLd([
-        {
-          q: "What does 'no-vig' or 'devigged' odds mean?",
-          a: "No-vig (or devigged) odds are betting odds with the sportsbook's built-in profit margin — the vig, or juice — mathematically removed, leaving only the market's true, fair probability estimate for each outcome.",
-        },
-        {
-          q: "How do you remove the vig from odds?",
-          a: "Convert each side's American odds to implied probability, sum them, then divide each individual probability by that sum so they total exactly 100%. This is proportional devigging.",
-        },
-      ]),
-    ],
-  },
-  "/learn/kelly-criterion": {
-    title: "The Kelly Criterion for Bet Sizing | ChalkPicks",
-    description:
-      "The Kelly Criterion formula explained: how to size bets for long-term bankroll growth, and why fractional Kelly is the practical choice.",
-    canonicalPath: "/learn/kelly-criterion",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([
-        { name: "Home", path: "/" },
-        { name: "Learn", path: "/learn" },
-        { name: "Kelly Criterion", path: "/learn/kelly-criterion" },
-      ]),
-      faqLd([
-        {
-          q: "What is the Kelly Criterion in sports betting?",
-          a: "The Kelly Criterion is a formula for sizing bets that maximizes a bankroll's long-run growth rate given your edge and the odds offered: f = (bp − q) / b.",
-        },
-        {
-          q: "Why do bettors use fractional Kelly instead of full Kelly?",
-          a: "Full Kelly assumes your probability estimate is exactly correct, which it never is in practice. Betting a fraction of full Kelly — commonly 25% or 50% — trades some theoretical growth for much lower variance.",
-        },
-      ]),
-    ],
-  },
-  "/learn/line-movement": {
-    title: "Line Movement & Steam Moves Explained | ChalkPicks",
-    description:
-      "How betting lines move, what a steam move is, how it differs from reverse line movement, and how to track sharp money in real time.",
-    canonicalPath: "/learn/line-movement",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([
-        { name: "Home", path: "/" },
-        { name: "Learn", path: "/learn" },
-        { name: "Line Movement", path: "/learn/line-movement" },
-      ]),
-      faqLd([
-        {
-          q: "What is a steam move in sports betting?",
-          a: "A steam move is a sudden, sharp shift in the betting line — often several points or a large odds jump — that happens nearly simultaneously across multiple sportsbooks, typically signaling professional money hit the market.",
-        },
-        {
-          q: "What's the difference between a steam move and reverse line movement?",
-          a: "A steam move is defined by speed and size. Reverse line movement (RLM) is defined by direction relative to public betting: the line moves toward a team even though most public bets are on the other side.",
-        },
-      ]),
-    ],
-  },
 };
+
+// The four /learn/* pages are built from shared/learnPagesMeta.ts instead of
+// hand-written per-page literals here — same orgLd()/breadcrumbLd()/faqLd()
+// shape for every one of them, so writing it out four times was pure
+// copy-paste (and a second, independent place to update their titles/FAQs).
+for (const page of LEARN_PAGES_META) {
+  PAGE_META[page.path] = {
+    title: page.title,
+    description: page.description,
+    canonicalPath: page.path,
+    jsonLd: [
+      orgLd(),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "Learn", path: "/learn" },
+        { name: page.breadcrumbName, path: page.path },
+      ]),
+      faqLd(page.faqs),
+    ],
+  };
+}
 
 // ─── HTML shell builder ───────────────────────────────────────────────────────
 

@@ -6,6 +6,8 @@
  *
  * Titles should be 50-60 characters; descriptions 150-160 characters.
  */
+import { LEARN_PAGES_META } from "./learnPagesMeta";
+
 export interface PageMetaConfig {
   title: string;
   description: string;
@@ -146,27 +148,13 @@ export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
     description:
       "Track your betting bankroll, manage unit sizing, monitor ROI, and analyze long-term profitability.",
   },
-  "/learn/closing-line-value": {
-    title: "What Is Closing Line Value (CLV)? | ChalkPicks",
-    description:
-      "Closing line value (CLV) explained: how to calculate it, why it beats win rate as a skill metric, and how to track it on every bet.",
-  },
-  "/learn/no-vig-odds": {
-    title: "No-Vig Odds Explained | ChalkPicks",
-    description:
-      "How to remove the sportsbook's vig from any odds to find the true, fair probability — and use it to spot +EV bets.",
-  },
-  "/learn/kelly-criterion": {
-    title: "The Kelly Criterion for Bet Sizing | ChalkPicks",
-    description:
-      "The Kelly Criterion formula explained: how to size bets for long-term bankroll growth, and why fractional Kelly is the practical choice.",
-  },
-  "/learn/line-movement": {
-    title: "Line Movement & Steam Moves Explained | ChalkPicks",
-    description:
-      "How betting lines move, what a steam move is, how it differs from reverse line movement, and how to track sharp money in real time.",
-  },
 };
+
+// /learn/* pages: title/description come from the shared LEARN_PAGES_META
+// array (shared/learnPagesMeta.ts) rather than being repeated here.
+for (const page of LEARN_PAGES_META) {
+  PAGE_META_MAP[page.path] = { title: page.title, description: page.description };
+}
 
 /**
  * Resolve the meta config for a pathname, with the same fallback rules the

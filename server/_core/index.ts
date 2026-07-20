@@ -16,6 +16,7 @@ import { startLiveDataStreaming } from "./liveDataStreamer";
 import { arbitrageRefreshHandler } from "../handlers/arbitrageRefreshHandler";
 import { dailySocialPostHandler } from "../handlers/dailySocialPostHandler";
 import { weeklyNewsletterHandler } from "../handlers/weeklyNewsletterHandler";
+import { weeklyClvHandler } from "../handlers/weeklyClvHandler";
 import { welcomeDripHandler } from "../handlers/welcomeDripHandler";
 import { blogContentHandler } from "../handlers/blogContentHandler";
 import { picksBlogHandler } from "../handlers/picksBlogHandler";
@@ -28,6 +29,7 @@ import { apiReference } from "@scalar/express-api-reference";
 import compression from "compression";
 import { getSitemapXml } from "./sitemap";
 import { registerIndexNowKeyRoute } from "./indexnow";
+import { registerOgImageRoutes } from "./ogImage";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -625,6 +627,7 @@ async function startServer() {
   app.post("/api/scheduled/refresh-arbitrage", arbitrageRefreshHandler);
   app.post("/api/scheduled/daily-social-post", dailySocialPostHandler);
   app.post("/api/scheduled/weekly-newsletter", weeklyNewsletterHandler);
+  app.post("/api/scheduled/weekly-clv", weeklyClvHandler);
   app.post("/api/scheduled/welcome-drip", welcomeDripHandler);
   app.post("/api/scheduled/blog-content", blogContentHandler);
   app.post("/api/scheduled/picks-blog", picksBlogHandler);
@@ -668,6 +671,9 @@ async function startServer() {
 
   // IndexNow ownership-proof route (GET /<key>.txt) — must come before SPA catch-all
   registerIndexNowKeyRoute(app);
+
+  // Per-page dynamic OG images (GET /api/og/blog/:slug.png, /api/og/pick/:id.png)
+  registerOgImageRoutes(app);
 
   // Explicit routes for SEO/verification XML files — must come before SPA catch-all
   // (chalkpicks2026indexnow.txt is served by registerIndexNowKeyRoute above)

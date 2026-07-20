@@ -334,22 +334,22 @@ async function checkOllamaHealth(): Promise<boolean> {
  * Resolve which LLM provider/endpoint to use.
  *
  * Routing priority (Qwen-first to maximize free usage):
- * 1. Explicit model override → OpenRouter (GPT-4o-mini)
- * 2. JSON schema response_format → OpenRouter GPT-4o-mini (Ollama doesn't support it)
- * 3. Tool/function calling → OpenRouter GPT-4o-mini
- * 4. complexity='high' → OpenRouter GPT-4o-mini
- * 5. Ollama health check fails → OpenRouter GPT-4o-mini (auto-fallback)
- * 6. Everything else → Qwen2.5 7B on Cloud Computer (FREE)
+ * 1. Explicit model override → Forge (Gemini 2.5 Flash)
+ * 2. JSON schema response_format → Forge (Ollama doesn't support json_schema)
+ * 3. Tool/function calling → Forge
+ * 4. complexity='high' → Forge
+ * 5. Ollama health check fails → Forge (auto-fallback)
+ * 6. Everything else → Qwen2.5 7B on Cloud Computer (FREE, simple queries only)
  */
 async function resolveProvider(params: InvokeParams): Promise<{ apiUrl: string; apiKey: string; model: string }> {
   const hasJsonSchema = !!(params.responseFormat?.type === "json_schema" ||
     params.response_format?.type === "json_schema" ||
     params.outputSchema || params.output_schema);
   const hasTools = !!(params.tools && params.tools.length > 0);
-  const forceGpt = params.complexity === "high" || !!params.model;
+  const forceForge = params.complexity === "high" || !!params.model;
 
-  if (!forceGpt && !hasJsonSchema && !hasTools) {
-    // Only ping Ollama when we'd actually use it
+  if (!forceForge && !hasJsonSchema && !hasTools) {
+    // Only ping Ollama when we'd actually use it (simple text completions)
     const ollamaUp = await checkOllamaHealth();
     if (ollamaUp) {
       return {
@@ -358,16 +358,11 @@ async function resolveProvider(params: InvokeParams): Promise<{ apiUrl: string; 
         model: ENV.ollamaModel,
       };
     }
-    // Ollama is down — fall through to GPT-4o-mini
+    // Ollama is down — fall through to Forge
   }
 
-  // Use OpenRouter GPT-4o-mini as the fallback (replaces Gemini)
-  if (ENV.openRouterApiKey) {
-    const model = params.model ?? ENV.openRouterModel;
-    return { apiUrl: ENV.openRouterApiUrl, apiKey: ENV.openRouterApiKey, model };
-  }
-
-  // Final fallback: Forge (only if OpenRouter key is missing)
+  // Primary fallback: Forge (Gemini 2.5 Flash) — handles JSON schema, tools, complex tasks
+  // Forge is free via the platform and much faster than Ollama on CPU for complex prompts
   const model = params.model ?? "gemini-2.5-flash";
   return { apiUrl: resolveApiUrl(), apiKey: ENV.forgeApiKey, model };
 }
@@ -380,10 +375,7 @@ export function getLlmStatus(): { provider: "qwen" | "gpt-4o-mini" | "gemini"; h
   if (_ollamaHealthy === true) {
     return { provider: "qwen", healthy: true, lastCheck: _ollamaLastCheck };
   }
-  // OpenRouter GPT-4o-mini is the primary fallback
-  if (ENV.openRouterApiKey) {
-    return { provider: "gpt-4o-mini", healthy: true, lastCheck: _ollamaLastCheck };
-  }
+  // Forge (Gemini 2.5 Flash) is the primary fallback for JSON schema / complex tasks
   return { provider: "gemini", healthy: true, lastCheck: _ollamaLastCheck };
 }
 

@@ -155,6 +155,7 @@ export const blogRouter = router({
 
       const oddsStr = pick.odds ? (pick.odds > 0 ? `+${pick.odds}` : String(pick.odds)) : "N/A";
       const response = await invokeLLM({
+        complexity: "high", // Force Forge (Gemini) — long-form articles too slow for Ollama on CPU
         messages: [
           { role: "system", content: "You are a professional sports betting analyst. Write detailed, SEO-optimized betting analysis articles in markdown format." },
           { role: "user", content: `Write a 650-750 word SEO article about: ${matchup} | ${pick.sportKey} | ${pick.pickType} | Rec: ${pick.recommendation} | Confidence: ${pick.confidenceScore}% | Odds: ${oddsStr} | Date: ${pick.pickDate}. Use ## H2 headings. Include sections: Why We Like This Pick, Key Factors, Betting Strategy. Return ONLY markdown body.` },

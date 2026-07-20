@@ -58,7 +58,9 @@ export type AnalyticsEvent =
   | "blog_post_viewed"
   | "leaderboard_viewed"
   | "notification_permission_granted"
-  | "notification_permission_denied";
+  | "notification_permission_denied"
+  | "ab_experiment_viewed"
+  | "pricing_cta_clicked";
 
 // ─── Analytics object ─────────────────────────────────────────────────────────
 

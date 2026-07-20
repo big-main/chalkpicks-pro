@@ -1178,3 +1178,24 @@
 - [x] analytics.track("leaderboard_viewed", {period}) on Leaderboard period change
 - [x] TypeScript clean (0 errors), 138 tests pass
 - [x] Save checkpoint
+
+## Phase 28 — Real-Time Pick Alert Push Notifications (Jul 19, 2026) — COMPLETE
+
+- [x] Added sendNewPickAlert() to pushNotifications.ts (fires for ALL picks, not just 85%+)
+- [x] Wired sendNewPickAlert into scheduler.ts after every pick insert
+- [x] Kept sendHighConfidencePickAlert for 85%+ picks (double alert for high-confidence)
+
+## Phase 29 — Onboarding Auto-Redirect for New Signups (Jul 19, 2026) — COMPLETE
+
+- [x] New users redirected to /onboarding after registration (SignUp.tsx)
+- [x] Smart redirect: if already authenticated with onboarding pending, go to /onboarding
+- [x] Existing onboarding page already has 6-step questionnaire (age, experience, frequency, bet size, intent, contact)
+
+## Phase 30 — A/B Test Pricing Page CTA (Jul 19, 2026) — COMPLETE
+
+- [x] A/B variant state added to Pricing.tsx (Variant A: "Get Access Now", Variant B: "Start Free Trial")
+- [x] Variant assigned deterministically by userId (even=A, odd=B) or randomly for unauthenticated
+- [x] analytics.track("ab_experiment_viewed", {experiment, variant}) fires on mount
+- [x] analytics.track("pricing_cta_clicked", {tier, variant, authenticated}) fires on click
+- [x] Added ab_experiment_viewed and pricing_cta_clicked to AnalyticsEvent type
+- [x] TypeScript clean (0 errors), 133 business logic tests pass

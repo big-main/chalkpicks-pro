@@ -189,8 +189,20 @@ function CheckMark({ value, color }: { value: boolean; color: string }) {
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function Pricing() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [showComparison, setShowComparison] = useState(false);
+
+  // A/B test: CTA button text variant
+  // Variant A (even userId or unauthenticated): "Get Access Now"
+  // Variant B (odd userId): "Start Free Trial"
+  const abVariant = useMemo(() => {
+    if (!user) return Math.random() < 0.5 ? 'A' : 'B'; // random for unauthenticated
+    return (user.id as number) % 2 === 0 ? 'A' : 'B';
+  }, [user]);
+
+  useEffect(() => {
+    analytics.track('ab_experiment_viewed', { experiment: 'pricing_cta_v1', variant: abVariant });
+  }, [abVariant]);
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoError, setPromoError] = useState("");
@@ -267,9 +279,11 @@ export default function Pricing() {
 
   const handleSubscribe = (tier: "daily" | "monthly" | "yearly") => {
     if (!isAuthenticated) {
+      analytics.track('pricing_cta_clicked', { tier, variant: abVariant, authenticated: false });
       window.location.href = "/login";
       return;
     }
+    analytics.track('pricing_cta_clicked', { tier, variant: abVariant, authenticated: true });
     setLoadingTier(tier);
     createCheckout.mutate({
       tier,
@@ -564,7 +578,7 @@ export default function Pricing() {
                       ) : !isAuthenticated ? (
                         <><Lock className="w-4 h-4" /> Sign In to Subscribe</>
                       ) : (
-                        <><Zap className="w-4 h-4" /> {hasDiscount ? "Get Discounted Access" : "Get Access Now"}</>
+                        <><Zap className="w-4 h-4" /> {hasDiscount ? "Get Discounted Access" : abVariant === 'B' ? "Start Free Trial" : "Get Access Now"}</>
                       )}
                     </button>
                   )}

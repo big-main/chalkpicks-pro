@@ -141,3 +141,39 @@ export async function sendHighConfidencePickAlert(pick: {
     console.error("[PushNotifications] Failed to send pick alert:", err);
   }
 }
+
+/**
+ * Send a "New Pick Available" push notification to all subscribers.
+ * Fires for every new pick published, regardless of confidence score.
+ */
+export async function sendNewPickAlert(pick: {
+  id: number;
+  recommendation: string;
+  sportKey: string;
+  confidenceScore: number;
+  tier: string;
+  homeTeam?: string | null;
+  awayTeam?: string | null;
+}): Promise<void> {
+  const sport = pick.sportKey.replace(/_/g, " ").toUpperCase();
+  const matchup = pick.homeTeam && pick.awayTeam
+    ? `${pick.awayTeam} @ ${pick.homeTeam}`
+    : sport;
+  const tierLabel = pick.tier === "free" ? "" : ` [${pick.tier.toUpperCase()}]`;
+
+  const payload: PushPayload = {
+    title: `📊 New Pick Available${tierLabel}`,
+    body: `${pick.recommendation} — ${matchup} (${pick.confidenceScore}% confidence)`,
+    icon: "/favicon.ico",
+    badge: "/favicon.ico",
+    url: `/picks/${pick.id}`,
+    tag: `new-pick-${pick.id}`,
+  };
+
+  try {
+    const result = await sendPushToAllSubscribers(payload);
+    console.log(`[PushNotifications] New pick alert #${pick.id}: ${result.sent} sent, ${result.failed} failed`);
+  } catch (err) {
+    console.error("[PushNotifications] Failed to send new pick alert:", err);
+  }
+}

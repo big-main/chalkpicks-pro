@@ -5,7 +5,7 @@ import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 import { sendDailyPicksToAllUsers, sendDailyDigestToAllUsers } from "./notificationService";
 import { resolveGameResults, syncGameScores } from "./services/gameResultsResolver";
 import { fetchOdds, type OddsEvent } from "./services/dataService";
-import { sendHighConfidencePickAlert } from "./services/pushNotifications";
+import { sendHighConfidencePickAlert, sendNewPickAlert } from "./services/pushNotifications";
 
 type PickType = "moneyline" | "spread" | "over_under" | "player_prop";
 type SlateMatchup = { sportKey: string; homeTeam: string; awayTeam: string; pickType: PickType };
@@ -339,16 +339,26 @@ export async function runDailyPicksJob() {
         });
         generated++;
         console.log(`[Scheduler] Generated pick: ${pick.recommendation} (${pick.confidenceScore}% confidence)`);
-        // Fire Web Push alert for high-confidence picks (85%+)
+        // Fire "New Pick" push to all subscribers for every pick
+        sendNewPickAlert({
+          id: 0,
+          recommendation: pick.recommendation,
+          sportKey: pick.sportKey,
+          confidenceScore: pick.confidenceScore,
+          tier: pick.tier,
+          homeTeam: pick.homeTeam,
+          awayTeam: pick.awayTeam,
+        }).catch(err => console.error("[Scheduler] New pick alert failed:", err));
+        // Also fire high-confidence alert for 85%+ picks
         if (pick.confidenceScore >= 85) {
           sendHighConfidencePickAlert({
-            id: 0, // placeholder until DB returns the inserted ID
+            id: 0,
             recommendation: pick.recommendation,
             sportKey: pick.sportKey,
             confidenceScore: pick.confidenceScore,
             homeTeam: pick.homeTeam,
             awayTeam: pick.awayTeam,
-          }).catch(err => console.error("[Scheduler] Push alert failed:", err));
+          }).catch(err => console.error("[Scheduler] High-confidence alert failed:", err));
         }
       } catch (err) {
         console.error(`[Scheduler] Failed to insert pick:`, err);

@@ -1190,3 +1190,14 @@
 - [ ] N8N_DRIP_WEBHOOK_URL secret: set to the webhook URL after enabling n8n API and importing the workflow
 - [x] All 168 tests passing, 0 TS errors
 - [x] Save checkpoint
+
+## Phase 45 — Monica AI Optimization Plan (Traffic & Conversion)
+
+- [x] Free Daily Pick page (/free-pick) — public, indexable, shows 1 full free pick with analysis, email capture CTA
+- [x] Kelly Criterion Calculator (/tools/kelly-calculator) — standalone free tool page for SEO
+- [x] EV Calculator (/tools/ev-calculator) — standalone free tool page for SEO
+- [x] Homepage live results ticker — scrolling recent results at top of homepage
+- [x] Homepage trust bar — already existed (AnimatedCounter section with Units Won, +EV Found, CLV)
+- [x] README security cleanup — removed admin email from public README
+- [x] Add JSON-LD structured data — already existed (StructuredData, OrganizationJsonLd, WebSiteJsonLd, FAQPageJsonLd)
+- [x] Add new pages to shared/seo-routes.ts and sitemap (free-pick, kelly-calculator, ev-calculator, performance)

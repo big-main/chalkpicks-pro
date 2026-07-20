@@ -96,6 +96,9 @@ const SharpMoneyDetector = lazy(() => import("@/pages/SharpMoneyDetector"));
 const ConsensusAggregator = lazy(() => import("@/pages/ConsensusAggregator"));
 const ParlayFlow = lazy(() => import("@/pages/ParlayFlow"));
 const LearnPage = lazy(() => import("@/pages/LearnPage"));
+const FreePick = lazy(() => import("@/pages/FreePick"));
+const KellyCalculator = lazy(() => import("@/pages/KellyCalculator"));
+const EVCalculator = lazy(() => import("@/pages/EVCalculator"));
 
 function PageLoader() {
   return (
@@ -204,6 +207,9 @@ function Router() {
           <Route path="/monte-carlo" component={MonteCarloSimulator} />
           <Route path="/sharp-money" component={SharpMoneyDetector} />
           <Route path="/consensus" component={ConsensusAggregator} />
+          <Route path="/free-pick" component={FreePick} />
+          <Route path="/tools/kelly-calculator" component={KellyCalculator} />
+          <Route path="/tools/ev-calculator" component={EVCalculator} />
           <Route path="/blog" component={Blog} />
           <Route path="/blog/best-sports-betting-picks" component={BlogBestPicks} />
           <Route path="/blog/ai-sports-betting" component={BlogAISportsBetting} />

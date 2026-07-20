@@ -452,4 +452,44 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
         sports: SPORTS_LIST,
       };
     }),
+
+  // Free daily pick — returns today's highest-confidence free pick with full analysis (public, no auth)
+  freeDailyPick: publicProcedure.query(async () => {
+    const db = await getDb();
+    const today = new Date().toISOString().split("T")[0];
+    if (!db) {
+      const mock = generateMockPicks(today).filter(p => p.tier === "free");
+      if (mock.length === 0) return { pick: null, date: today };
+      const best = mock.sort((a, b) => b.confidenceScore - a.confidenceScore)[0];
+      return { pick: { ...best, id: 1, gameId: null, createdAt: new Date(), updatedAt: new Date(), isActive: true }, date: today };
+    }
+    // Get today's highest-confidence free pick
+    const [freePick] = await db
+      .select()
+      .from(picks)
+      .where(and(
+        eq(picks.tier, "free"),
+        eq(picks.isActive, true),
+        eq(picks.pickDate, today)
+      ))
+      .orderBy(desc(picks.confidenceScore))
+      .limit(1);
+    // Fallback: get most recent free pick from last 7 days
+    if (!freePick) {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const [recentFree] = await db
+        .select()
+        .from(picks)
+        .where(and(
+          eq(picks.tier, "free"),
+          eq(picks.isActive, true),
+          gte(picks.pickDate, sevenDaysAgo.toISOString().split("T")[0])
+        ))
+        .orderBy(desc(picks.confidenceScore))
+        .limit(1);
+      return { pick: recentFree ?? null, date: today };
+    }
+    return { pick: freePick, date: today };
+  }),
 });

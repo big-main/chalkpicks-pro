@@ -17,6 +17,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
 import { useEffect, useRef, useState } from "react";
+import { LiveResultsTicker } from "@/components/LiveResultsTicker";
 
 // ─── Animated Counter Component ───────────────────────────────────
 function AnimatedCounter({ value, prefix = "", suffix = "", duration = 2 }: {
@@ -219,8 +220,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-16 md:pb-0">
-      <Navbar />
-
+            <Navbar />
+      <LiveResultsTicker />
       {/* ── HERO ─────────────────────────────────────────────── */}
       <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden">
         {/* Animated gradient orbs */}

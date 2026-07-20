@@ -245,6 +245,38 @@ export const routeSEO: RouteSEOEntry[] = [
       priority: 0.7,
     })
   ),
+  {
+    path: "/free-pick",
+    title: "Free Daily AI Sports Pick with Full Analysis | ChalkPicks",
+    description: "Get one free AI sports pick every day with confidence score, edge rating, and full analysis. No account needed.",
+    sitemap: true,
+    changefreq: "daily",
+    priority: 0.9,
+  },
+  {
+    path: "/tools/kelly-calculator",
+    title: "Kelly Criterion Calculator for Sports Betting | ChalkPicks",
+    description: "Free Kelly Criterion calculator. Calculate optimal bet sizing to maximize bankroll growth while managing risk.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/tools/ev-calculator",
+    title: "Expected Value (EV) Calculator for Sports Betting | ChalkPicks",
+    description: "Free EV calculator. Find +EV bets by comparing market odds to true probabilities and calculate expected profit.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/performance",
+    title: "AI Picks Track Record — Verified Win Rate \& ROI | ChalkPicks",
+    description: "Full transparency on ChalkPicks AI pick performance. View verified win rate, ROI, units won, and graded results.",
+    sitemap: true,
+    changefreq: "daily",
+    priority: 0.9,
+  },
 ];
 
 /** Blog post slugs for sitemap + prerender (metadata lives in client/src/data/blog-posts.ts) */

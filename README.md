@@ -83,8 +83,6 @@ drizzle/
 
 ## Admin Access
 
-Admin account: `admin@chalkpicks.live`
-
 To promote a user to admin via SQL:
 
 ```sql

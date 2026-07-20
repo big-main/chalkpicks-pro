@@ -12,6 +12,7 @@ import {
   Calendar, Clock, BarChart3, Shield, Star, Lock
 } from "lucide-react";
 import { toast } from "sonner";
+import ConfidenceBar from "@/components/ConfidenceBar";
 
 const SPORT_ICONS: Record<string, string> = {
   nfl: "🏈", nba: "🏀", mlb: "⚾", nhl: "🏒",
@@ -148,25 +149,7 @@ export default function FreePick() {
                 </div>
 
                 {/* Confidence Bar */}
-                <div>
-                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                    <span>AI Confidence</span>
-                    <span>{Number(pick.confidenceScore ?? 0)}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-muted overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-1000"
-                      style={{
-                        width: `${Number(pick.confidenceScore ?? 0)}%`,
-                        background: Number(pick.confidenceScore ?? 0) >= 80
-                          ? "linear-gradient(90deg, #39ff14, #22c55e)"
-                          : Number(pick.confidenceScore ?? 0) >= 60
-                          ? "linear-gradient(90deg, #f0b800, #eab308)"
-                          : "linear-gradient(90deg, #ef4444, #dc2626)",
-                      }}
-                    />
-                  </div>
-                </div>
+                <ConfidenceBar score={Number(pick.confidenceScore ?? 0)} height="h-2" />
 
                 {/* AI Analysis */}
                 {pick.aiAnalysis && (

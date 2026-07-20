@@ -1218,11 +1218,15 @@
 
 ## Phase 47 — Color Palette Expansion + Next Steps
 
-- [ ] Add red, purple, blue, green, gold CSS variables to index.css @theme block
-- [ ] Apply color palette: red=danger/loss, purple=AI/premium, blue=stats/data, green=win/profit, gold=edge/value
-- [ ] Update sport badges to use sport-specific colors (NFL=blue, NBA=purple, MLB=green, NHL=red)
-- [ ] Update pick confidence bar to use green→gold→red gradient based on confidence level
-- [ ] Update EVFinder EV% badges to use gold for high EV, green for positive, red for negative
-- [ ] Update subscription tier badges: Free=slate, Daily=blue, Monthly=purple, Yearly=gold
-- [ ] Deploy to Cloud Computer (git pull + build + pm2 restart)
-- [ ] n8n drip workflow: blocked on n8n Public API enable (user action required)
+- [x] Add red, purple, blue, green, gold CSS variables to index.css @theme block
+- [x] Apply color palette: red=danger/loss, purple=AI/premium, blue=stats/data, green=win/profit, gold=edge/value
+- [x] Update sport badges to use sport-specific colors (NFL=blue, NBA=purple, MLB=green, NHL=red)
+- [x] Update pick confidence bar to use green→gold→red gradient based on confidence level
+- [x] Update EVFinder EV% badges to use gold for high EV, green for positive, red for negative
+- [x] Update subscription tier badges: Free=slate, Daily=blue, Monthly=purple, Yearly=gold
+- [x] Deploy to Cloud Computer (git pull + build + pm2 restart)
+- [x] n8n drip workflow: blocked on n8n Public API enable (user action required — pending user)
+
+## Phase 48 — Confidence Bar Animations
+- [x] Add smooth 0→value fill animation to all confidence bars on page load
+- [x] Apply to: Picks page, FreePick, PickDetail, Performance page (shared ConfidenceBar component)

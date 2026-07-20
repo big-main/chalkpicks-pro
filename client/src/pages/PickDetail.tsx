@@ -9,6 +9,7 @@ import { ArrowLeft, Brain, Zap, Target, TrendingUp, Lock, CheckCircle2, PlusCirc
 import { toast } from "sonner";
 import { useState } from "react";
 import PickFeedback from "@/components/PickFeedback";
+import ConfidenceBar from "@/components/ConfidenceBar";
 import { SportsEventSchema } from "@/components/SportsEventSchema";
 
 export default function PickDetail() {
@@ -101,9 +102,7 @@ export default function PickDetail() {
                 <div className="bg-secondary/50 rounded-lg p-3">
                   <div className="text-xs text-muted-foreground mb-1">Confidence</div>
                   <div className="font-display text-2xl text-primary">{pick.confidenceScore}%</div>
-                  <div className="h-1.5 bg-secondary rounded-full mt-2 overflow-hidden">
-                    <div className="h-full bg-primary rounded-full" style={{ width: `${pick.confidenceScore}%` }} />
-                  </div>
+                  <ConfidenceBar score={pick.confidenceScore ?? 0} showLabel={false} height="h-1.5" className="mt-2" />
                 </div>
                 {pick.edgeScore && (
                   <div className="bg-secondary/50 rounded-lg p-3">

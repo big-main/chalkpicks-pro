@@ -17,6 +17,7 @@ import { Brain, Lock, Filter, RefreshCw, Zap, Sparkles, ArrowUpDown, SlidersHori
 import { toast } from "sonner";
 import SharePickCard from "@/components/SharePickCard";
 import PushNotificationBanner from "@/components/PushNotificationBanner";
+import ConfidenceBar from "@/components/ConfidenceBar";
 
 const PICK_TYPE_LABELS: Record<string, string> = {
   moneyline: "Moneyline",
@@ -86,20 +87,6 @@ function storeFilters(filters: FilterState) {
   } catch {}
 }
 
-function ConfidenceBar({ score }: { score: number }) {
-  const color = score >= 80 ? "#22c55e" : score >= 65 ? "#f59e0b" : "#ef4444";
-  return (
-    <div className="space-y-1">
-      <div className="flex justify-between text-xs">
-        <span className="text-muted-foreground">Confidence</span>
-        <span className="font-bold" style={{ color }}>{score}%</span>
-      </div>
-      <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-        <div className="h-full rounded-full transition-all" style={{ width: `${score}%`, background: color }} />
-      </div>
-    </div>
-  );
-}
 
 function PickCard({ pick, isPremiumUser, rank }: { pick: any; isPremiumUser: boolean; rank?: number }) {
   const isFreeUser = !isPremiumUser;

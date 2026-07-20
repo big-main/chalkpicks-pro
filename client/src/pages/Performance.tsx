@@ -7,6 +7,7 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from "recharts";
 import { ArrowRight, Trophy, Target, TrendingUp, Flame, Shield, CheckCircle2 } from "lucide-react";
+import ConfidenceBar from "@/components/ConfidenceBar";
 
 const SPORT_ICONS: Record<string, string> = {
   NFL: "🏈", NBA: "🏀", MLB: "⚾", NHL: "🏒", NCAAF: "🏈", NCAAB: "🏀",
@@ -227,9 +228,7 @@ export default function Performance() {
                       </td>
                       <td className="px-3 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-10 h-1.5 rounded-full overflow-hidden bg-white/5">
-                            <div className="h-full rounded-full" style={{ width: `${pick.confidenceScore ?? 0}%`, background: (pick.confidenceScore ?? 0) >= 80 ? "#39ff14" : "#f0b800" }} />
-                          </div>
+                          <ConfidenceBar score={pick.confidenceScore ?? 0} showLabel={false} height="h-1.5" className="w-10" />
                           <span className="data-table text-xs font-bold" style={{ color: (pick.confidenceScore ?? 0) >= 80 ? "var(--accent-cyan)" : "#f0b800" }}>{pick.confidenceScore}%</span>
                         </div>
                       </td>

@@ -6,6 +6,7 @@ import { picks, playerProps, games, sports } from "../../drizzle/schema";
 import { eq, desc, and, gte, lte, like, sql } from "drizzle-orm";
 import { invokeLLM } from "../_core/llm";
 import { TRPCError } from "@trpc/server";
+import { flatROI } from "@shared/oddsMath";
 
 const SPORTS_LIST = [
   { key: "nfl", name: "NFL", icon: "🏈" },
@@ -311,18 +312,8 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
     const winRate = total > 0 ? Math.round((wins / total) * 1000) / 10 : 0;
 
     // Flat 1-unit ROI from actual odds, matching the page's own "Grading Rules"
-    // claim (ROI on flat 1-unit sizing). American odds -> profit units per bet.
-    const unitProfit = (result: string, odds: number | null): number => {
-      if (result === "push" || odds == null) return 0;
-      if (result === "loss") return -1;
-      return odds > 0 ? odds / 100 : 100 / Math.abs(odds);
-    };
-    const roiFor = (rows: typeof settled): number => {
-      const decided = rows.filter(p => p.result !== "push");
-      if (decided.length === 0) return 0;
-      const profit = decided.reduce((sum, p) => sum + unitProfit(p.result, p.odds), 0);
-      return Math.round((profit / decided.length) * 1000) / 10;
-    };
+    // claim (ROI on flat 1-unit sizing). See @shared/oddsMath for the math.
+    const roiFor = flatROI;
 
     // By sport
     const sportMap: Record<string, typeof settled> = {};

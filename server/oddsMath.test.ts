@@ -14,6 +14,8 @@ import {
   edgeVsFairLine,
   kellyFraction,
   closingLineValue,
+  flatUnitProfit,
+  flatROI,
 } from "@shared/oddsMath";
 
 describe("odds conversions", () => {
@@ -128,5 +130,32 @@ describe("closing line value", () => {
 
   it("is ~zero when you bet the closing number", () => {
     expect(closingLineValue(-110, -110)).toBeCloseTo(0, 9);
+  });
+});
+
+describe("flat 1-unit ROI", () => {
+  it("pays decimal-payout-minus-one on a win, loses exactly 1 unit on a loss, nothing on a push", () => {
+    expect(flatUnitProfit("win", 100)).toBeCloseTo(1, 9); // +100 -> risk 1 to win 1
+    expect(flatUnitProfit("win", -110)).toBeCloseTo(100 / 110, 9);
+    expect(flatUnitProfit("loss", -110)).toBe(-1);
+    expect(flatUnitProfit("push", -110)).toBe(0);
+  });
+
+  it("treats missing odds as zero profit without throwing", () => {
+    expect(flatUnitProfit("win", null)).toBe(0);
+  });
+
+  it("computes ROI as average unit profit across decided bets, excluding pushes from the denominator", () => {
+    const roi = flatROI([
+      { result: "win", odds: 100 }, // +1 unit
+      { result: "loss", odds: -110 }, // -1 unit
+      { result: "push", odds: -110 }, // excluded
+    ]);
+    expect(roi).toBeCloseTo(0, 9); // (+1 - 1) / 2 decided bets = 0%
+  });
+
+  it("returns 0 when there are no decided bets", () => {
+    expect(flatROI([])).toBe(0);
+    expect(flatROI([{ result: "push", odds: -110 }])).toBe(0);
   });
 });

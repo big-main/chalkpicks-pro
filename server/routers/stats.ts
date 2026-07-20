@@ -5,6 +5,7 @@ import { getInjuries } from "../services/globalDataSite";
 import { getDb } from "../db";
 import { picks, users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { flatROI } from "@shared/oddsMath";
 
 // ─── Real-time stats router using ESPN public API ────────────────────────────
 
@@ -81,17 +82,7 @@ export const statsRouter = router({
     const losses = settled.filter(p => p.result === "loss").length;
     const winRate = wins + losses > 0 ? Math.round((wins / (wins + losses)) * 1000) / 10 : 0;
 
-    const unitProfit = (result: string, odds: number | null): number => {
-      if (result === "push" || odds == null) return 0;
-      if (result === "loss") return -1;
-      return odds > 0 ? odds / 100 : 100 / Math.abs(odds);
-    };
-    const roiFor = (rows: typeof settled): number => {
-      const decided = rows.filter(p => p.result !== "push");
-      if (decided.length === 0) return 0;
-      const profit = decided.reduce((sum, p) => sum + unitProfit(p.result, p.odds), 0);
-      return Math.round((profit / decided.length) * 1000) / 10;
-    };
+    const roiFor = flatROI;
 
     const sportMap: Record<string, typeof settled> = {};
     for (const p of settled) (sportMap[p.sportKey.toUpperCase()] ??= []).push(p);

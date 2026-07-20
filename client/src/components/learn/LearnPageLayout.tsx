@@ -6,6 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/schema-jsonld";
 
+/** Styled in-body link to another ChalkPicks page — shared so section prose doesn't repeat the className. */
+export function InternalLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: ReactNode;
+}) {
+  return (
+    <a href={href} className="text-emerald-400 hover:underline">
+      {children}
+    </a>
+  );
+}
+
 export interface LearnFaq {
   question: string;
   answer: string;

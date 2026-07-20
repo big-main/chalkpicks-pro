@@ -57,17 +57,43 @@ interface RouteSeo {
  * callers should treat that as "no FAQPage schema for this article".
  */
 export function parseFaqPairs(markdown: string): { q: string; a: string }[] {
-  const faqSection = markdown.match(/##\s*FAQ\s*\n([\s\S]*?)(?:\n##\s|$)/i);
+  // [^\S\n]* (horizontal whitespace only) instead of \s* immediately before an
+  // explicit \n keeps the two quantifiers' character classes disjoint, so the
+  // engine can't backtrack between them — \s* followed by \n+ both accept "\n"
+  // and is exactly the overlapping-quantifier shape regex-DoS scanners flag.
+  const faqSection = markdown.match(/##[^\S\n]*FAQ[^\S\n]*\n([\s\S]*?)(?:\n##[^\S\n]|$)/i);
   if (!faqSection) return [];
 
-  const pairRe = /\*\*Q:\*\*\s*(.+?)\s*\n+\*\*A:\*\*\s*([\s\S]+?)(?=\n+\*\*Q:\*\*|\n*$)/gi;
+  // Line-oriented split instead of a single greedy/lazy regex over the whole
+  // section: bounded per-line work, no backtracking surface at all.
+  const lines = faqSection[1].split("\n");
   const pairs: { q: string; a: string }[] = [];
-  let match: RegExpExecArray | null;
-  while ((match = pairRe.exec(faqSection[1])) !== null) {
-    const q = match[1].trim();
-    const a = match[2].replace(/\s+/g, " ").trim();
-    if (q && a) pairs.push({ q, a });
+  let currentQ: string | null = null;
+  let currentA: string[] = [];
+
+  const flush = () => {
+    if (currentQ) {
+      const a = currentA.join(" ").replace(/\s+/g, " ").trim();
+      if (a) pairs.push({ q: currentQ, a });
+    }
+    currentQ = null;
+    currentA = [];
+  };
+
+  for (const line of lines) {
+    const qMatch = line.match(/^\*\*Q:\*\*[^\S\n]*(.+)$/);
+    const aMatch = line.match(/^\*\*A:\*\*[^\S\n]*(.+)$/);
+    if (qMatch) {
+      flush();
+      currentQ = qMatch[1].trim();
+    } else if (aMatch && currentQ) {
+      currentA.push(aMatch[1].trim());
+    } else if (currentQ && line.trim()) {
+      currentA.push(line.trim());
+    }
   }
+  flush();
+
   return pairs;
 }
 

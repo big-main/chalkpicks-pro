@@ -108,12 +108,13 @@ function previewPrompt(pick, date) {
   const matchup = `${pick.awayTeam} @ ${pick.homeTeam}`;
   const sport = (pick.sportKey ?? "").toUpperCase();
   const oddsStr = pick.odds ? (pick.odds > 0 ? `+${pick.odds}` : `${pick.odds}`) : "n/a";
+  const movementBlock = lineMovementBlock(pick);
   return [
     `Write a 400-600 word game preview article for ${matchup} (${sport}) on ${date}.`,
     ``,
     `Facts you may use (do not invent others):`,
     `- ChalkPicks' AI pick for this game: ${pick.recommendation} (market: ${pick.pickType}, odds ${oddsStr}, model confidence ${pick.confidenceScore}%).`,
-    lineMovementBlock(pick),
+    movementBlock,
     ``,
     `Structure:`,
     `- H1 title: catchy but factual, mentioning both teams.`,
@@ -121,7 +122,7 @@ function previewPrompt(pick, date) {
     `- H2 "The Matchup" — what makes this game interesting, written generally (no invented stats).`,
     `- H2 "ChalkPicks' AI Read" — explain the pick above, what ${pick.confidenceScore}% confidence means, and that the full analysis is on chalkpicks.live/picks.`,
     `- H2 "How to Think About the Number" — briefly explain the ${pick.pickType} market and reading odds of ${oddsStr}.`,
-    pick.lineMovement && lineMovementBlock(pick)
+    movementBlock
       ? `- Weave the LINE MOVEMENT numbers above into "ChalkPicks' AI Read" or its own short paragraph — cite the exact open->current numbers given, nothing else.`
       : ``,
     `- One-line call to action to see today's full board at chalkpicks.live/picks.`,

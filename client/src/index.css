@@ -564,3 +564,9 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* ─── Confidence Bar Elite Pulse Glow ─── */
+@keyframes cp-pulse-glow {
+  0%, 100% { box-shadow: 0 0 6px 1px rgba(34,197,94,0.35); }
+  50%       { box-shadow: 0 0 16px 5px rgba(34,197,94,0.70); }
+}

@@ -1230,3 +1230,10 @@
 ## Phase 48 — Confidence Bar Animations
 - [x] Add smooth 0→value fill animation to all confidence bars on page load
 - [x] Apply to: Picks page, FreePick, PickDetail, Performance page (shared ConfidenceBar component)
+
+## Phase 49 — Banner, Tooltips, Pulse Glow, Sorting, Skill
+- [x] Site-wide announcement banner (database-driven via announcements table, active record inserted)
+- [x] Confidence bar tooltip: hover shows explanation of the percentage (Info icon + shadcn Tooltip)
+- [x] Pulse glow effect on pick cards with confidence >= 90% (cp-pulse-glow keyframe animation)
+- [x] Sorting dropdown on Picks page already exists (7 options, default: confidence_desc)
+- [x] Package ChalkPicks feature-build process as reusable skill (chalkpicks-builder validated)

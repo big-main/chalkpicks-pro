@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { trpc } from "@/lib/trpc";
-import { analytics } from "@/lib/analytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FeatureGate } from "@/components/FeatureGate";
 import { ArbitrageFilters, type ArbitrageFilterOptions } from "@/components/ArbitrageFilters";
-import { PlaceBetButton } from "@/components/PlaceBetButton";
 import {
   TrendingUp,
   TrendingDown,
@@ -23,11 +21,6 @@ import {
 
 function ArbitrageFinderContent() {
   const [selectedArbitrage, setSelectedArbitrage] = useState<number | null>(null);
-
-  // Track page view
-  useEffect(() => {
-    analytics.track("arbitrage_viewed", {});
-  }, []);
   const [customOddsA, setCustomOddsA] = useState<string>("-110");
   const [customOddsB, setCustomOddsB] = useState<string>("-110");
   const [customStake, setCustomStake] = useState<string>("100");
@@ -255,19 +248,11 @@ function ArbitrageFinderContent() {
                           </div>
                         </div>
 
-                        {/* Place Bet Buttons */}
-                        <div className="grid grid-cols-2 gap-2">
-                          <PlaceBetButton
-                            sportKey={arb.sport}
-                            bestBookmaker={arb.bookA}
-                            compact
-                          />
-                          <PlaceBetButton
-                            sportKey={arb.sport}
-                            bestBookmaker={arb.bookB}
-                            compact
-                          />
-                        </div>
+                        {/* Trade Button */}
+                        <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
+                          <Zap className="w-4 h-4 mr-2" />
+                          Execute Trade
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>

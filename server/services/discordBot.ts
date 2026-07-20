@@ -1,223 +1,342 @@
 /**
- * ChalkPicks Discord Bot
+ * Discord Webhook Service — Posts daily picks, alerts, results, and previews
+ * Uses Discord Webhook API (native fetch, no discord.js dependency)
+ * Rich embed cards with colors, fields, and ChalkPicks branding
  *
- * Posts to two channels:
- *   #free-daily-pick  — one free pick per day for everyone (retention + word-of-mouth)
- *   #steam-alerts     — real-time steam move alerts (sharp money signals)
- *
- * Setup:
- *   1. Create a Discord application at https://discord.com/developers/applications
- *   2. Add a Bot user, copy the token → DISCORD_BOT_TOKEN env var
- *   3. Invite the bot with permissions: Send Messages, Embed Links, Use External Emojis
- *   4. Copy channel IDs (right-click channel → Copy Channel ID) →
- *        DISCORD_FREE_PICKS_CHANNEL_ID
- *        DISCORD_STEAM_ALERTS_CHANNEL_ID
+ * Called by Heartbeat 4x daily (8am, 1pm, 6pm, 9pm PT) via discordPostHandler.ts
  */
-import { Client, GatewayIntentBits, EmbedBuilder, TextChannel } from "discord.js";
+import { getDb } from "../db";
+import { picks } from "../../drizzle/schema";
+import { eq, and, desc } from "drizzle-orm";
+import { ENV } from "../_core/env";
 
-const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
-const FREE_PICKS_CHANNEL_ID = process.env.DISCORD_FREE_PICKS_CHANNEL_ID;
-const STEAM_ALERTS_CHANNEL_ID = process.env.DISCORD_STEAM_ALERTS_CHANNEL_ID;
+// Discord embed color palette (decimal)
+const COLORS = {
+  morning: 0x00ff88,   // Neon green — morning pick
+  afternoon: 0xff6b00, // Orange — sharp money alert
+  evening: 0x5865f2,   // Discord blurple — results
+  night: 0x9b59b6,     // Purple — night preview
+  win: 0x00ff88,
+  loss: 0xff4444,
+};
 
-let client: Client | null = null;
-let isReady = false;
+// --- Helpers ---
+function getSportEmoji(sportKey: string): string {
+  const map: Record<string, string> = {
+    americanfootball_nfl: "🏈",
+    basketball_nba: "🏀",
+    baseball_mlb: "⚾",
+    icehockey_nhl: "🏒",
+    soccer_epl: "⚽",
+    soccer_mls: "⚽",
+    mma_mixed_martial_arts: "🥊",
+    tennis_atp: "🎾",
+    golf_pga: "⛳",
+  };
+  return map[sportKey] ?? "🎯";
+}
 
-// ─── Bot Initialization ───────────────────────────────────────────────────────
+function getConfidenceBar(score: number | null): string {
+  const s = score ?? 0;
+  const filled = Math.round(s / 20);
+  return "█".repeat(filled) + "░".repeat(5 - filled);
+}
 
-export async function initDiscordBot(): Promise<void> {
-  if (!DISCORD_BOT_TOKEN) {
-    console.log("[Discord] DISCORD_BOT_TOKEN not set — bot disabled");
-    return;
+function formatOdds(odds: string | number | null): string {
+  if (!odds) return "N/A";
+  const n = typeof odds === "string" ? parseFloat(odds) : odds;
+  if (isNaN(n)) return String(odds);
+  return n > 0 ? `+${n}` : String(n);
+}
+
+function getPTDate(offsetDays = 0): string {
+  const now = new Date();
+  const pt = new Date(now.getTime() - 7 * 60 * 60 * 1000 + offsetDays * 24 * 60 * 60 * 1000);
+  return pt.toISOString().split("T")[0];
+}
+
+// --- Discord Webhook Sender ---
+async function sendWebhook(payload: object): Promise<{ success: boolean; error?: string }> {
+  const webhookUrl = ENV.discordWebhookUrl;
+  if (!webhookUrl) {
+    return { success: false, error: "DISCORD_WEBHOOK_URL not configured" };
   }
 
   try {
-    client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
-    client.once("ready", (c) => {
-      isReady = true;
-      console.log(`[Discord] Bot ready — logged in as ${c.user.tag}`);
+    const res = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
 
-    client.on("error", (err) => {
-      console.error("[Discord] Client error:", err.message);
-    });
-
-    await client.login(DISCORD_BOT_TOKEN);
-    // Wait up to 10s for ready event
-    await new Promise<void>((resolve) => {
-      if (isReady) return resolve();
-      const timeout = setTimeout(() => resolve(), 10000);
-      client!.once("ready", () => { clearTimeout(timeout); resolve(); });
-    });
-  } catch (err) {
-    console.error("[Discord] Failed to initialize bot:", err);
-    client = null;
+    if (!res.ok) {
+      const text = await res.text();
+      return { success: false, error: `HTTP ${res.status}: ${text}` };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message ?? String(err) };
   }
 }
 
-async function getChannel(channelId: string): Promise<TextChannel | null> {
-  if (!client || !isReady || !channelId) return null;
-  try {
-    const channel = await client.channels.fetch(channelId);
-    if (channel instanceof TextChannel) return channel;
-    return null;
-  } catch {
-    return null;
+// ─── Morning Pick Embed (8am PT) ─────────────────────────────────────────────
+
+export async function postMorningPickToDiscord(): Promise<{ success: boolean; error?: string }> {
+  const today = getPTDate(0);
+  const db = await getDb();
+
+  let embed: object;
+
+  if (db) {
+    const topPick = await db
+      .select()
+      .from(picks)
+      .where(and(eq(picks.pickDate, today), eq(picks.isActive, true)))
+      .orderBy(desc(picks.confidenceScore))
+      .limit(1)
+      .then((r: any[]) => r[0]);
+
+    if (topPick) {
+      const emoji = getSportEmoji(topPick.sportKey);
+      const bar = getConfidenceBar(topPick.confidenceScore);
+      const odds = formatOdds(topPick.odds);
+      const sportName = topPick.sportKey.split("_")[1]?.toUpperCase() ?? "SPORTS";
+
+      embed = {
+        title: `${emoji} FREE DAILY PICK — ${sportName}`,
+        description: `**${topPick.homeTeam ?? "Home"} vs ${topPick.awayTeam ?? "Away"}**\n\n${(topPick.recommendation ?? "").slice(0, 200)}...`,
+        color: COLORS.morning,
+        fields: [
+          { name: "📈 Confidence", value: `${bar} **${topPick.confidenceScore}%**`, inline: true },
+          { name: "💰 Odds", value: `**${odds}**`, inline: true },
+          { name: "🎯 Pick Type", value: topPick.pickType?.toUpperCase() ?? "MONEYLINE", inline: true },
+          { name: "🔓 Full Analysis", value: "[View on ChalkPicks →](https://chalkpicks.live/picks)", inline: false },
+        ],
+        footer: { text: "ChalkPicks Pro • AI-Powered Sports Analytics • chalkpicks.live" },
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      embed = {
+        title: "🎯 FREE DAILY PICK",
+        description: "Our AI is analyzing today's slate. The free daily pick drops shortly!\n\n[View all picks →](https://chalkpicks.live/picks)",
+        color: COLORS.morning,
+        footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+        timestamp: new Date().toISOString(),
+      };
+    }
+  } else {
+    embed = {
+      title: "🎯 FREE DAILY PICK",
+      description: "Today's free pick is live on ChalkPicks!\n\n[View all picks →](https://chalkpicks.live/picks)",
+      color: COLORS.morning,
+      footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+      timestamp: new Date().toISOString(),
+    };
   }
-}
 
-// ─── Free Daily Pick Post ─────────────────────────────────────────────────────
-
-export interface DiscordPickPayload {
-  sport: string;
-  homeTeam: string;
-  awayTeam: string;
-  pickType: string;
-  recommendation: string;
-  confidence: number;
-  odds?: string;
-  analysis?: string;
-  pickId?: number;
-}
-
-export async function postFreeDailyPick(pick: DiscordPickPayload): Promise<boolean> {
-  if (!FREE_PICKS_CHANNEL_ID) {
-    console.log("[Discord] FREE_PICKS_CHANNEL_ID not set — skipping daily pick post");
-    return false;
-  }
-
-  const channel = await getChannel(FREE_PICKS_CHANNEL_ID);
-  if (!channel) {
-    console.warn("[Discord] Could not fetch #free-daily-pick channel");
-    return false;
-  }
-
-  const sportEmoji: Record<string, string> = {
-    nfl: "🏈", nba: "🏀", mlb: "⚾", nhl: "🏒",
-    ncaaf: "🏈", ncaab: "🏀", mma: "🥊", soccer: "⚽",
+  const payload = {
+    username: "ChalkPicks Bot",
+    embeds: [embed],
   };
-  const emoji = sportEmoji[pick.sport?.toLowerCase()] ?? "🎯";
-  const confidenceBar = "█".repeat(Math.round(pick.confidence / 10)) + "░".repeat(10 - Math.round(pick.confidence / 10));
-  const confidenceColor = pick.confidence >= 80 ? 0x39ff14 : pick.confidence >= 65 ? 0xd4a017 : 0x888888;
 
-  const embed = new EmbedBuilder()
-    .setColor(confidenceColor)
-    .setTitle(`${emoji} FREE DAILY PICK — ${pick.sport.toUpperCase()}`)
-    .setDescription(`**${pick.awayTeam} @ ${pick.homeTeam}**`)
-    .addFields(
-      { name: "📋 Pick", value: `\`${pick.recommendation}\``, inline: true },
-      { name: "📊 Type", value: pick.pickType.replace("_", " ").toUpperCase(), inline: true },
-      { name: "💯 Confidence", value: `${pick.confidence}%\n\`${confidenceBar}\``, inline: false },
-    );
-
-  if (pick.odds) {
-    embed.addFields({ name: "💰 Odds", value: pick.odds, inline: true });
-  }
-
-  if (pick.analysis) {
-    const shortAnalysis = pick.analysis.length > 300
-      ? pick.analysis.substring(0, 297) + "..."
-      : pick.analysis;
-    embed.addFields({ name: "🧠 AI Analysis", value: shortAnalysis, inline: false });
-  }
-
-  embed
-    .addFields({
-      name: "🔒 Want ALL picks + Arb Finder + Steam Alerts?",
-      value: "[**Upgrade to ChalkPicks Pro →**](https://chalkpicks.live/pricing)",
-      inline: false,
-    })
-    .setFooter({ text: "ChalkPicks Pro • AI-Powered Sports Betting Analytics" })
-    .setTimestamp();
-
-  try {
-    await channel.send({ embeds: [embed] });
-    console.log(`[Discord] Posted free daily pick: ${pick.recommendation} (${pick.sport})`);
-    return true;
-  } catch (err) {
-    console.error("[Discord] Failed to post daily pick:", err);
-    return false;
-  }
+  const result = await sendWebhook(payload);
+  if (result.success) console.log("[DiscordBot] Morning pick posted successfully");
+  else console.error("[DiscordBot] Morning pick failed:", result.error);
+  return result;
 }
 
-// ─── Steam Move Alert ─────────────────────────────────────────────────────────
+// ─── Afternoon Steam Alert Embed (1pm PT) ────────────────────────────────────
 
-export interface DiscordSteamAlertPayload {
-  sport: string;
-  homeTeam: string;
-  awayTeam: string;
-  market: string;
-  lineMove: string;        // e.g. "-3 → -5.5"
-  percentageMove: number;  // e.g. 8.3
-  bookmaker: string;
-  sharpSide: string;       // e.g. "Chiefs -5.5"
-  severity: "low" | "medium" | "high" | "extreme";
-}
+export async function postAfternoonAlertToDiscord(): Promise<{ success: boolean; error?: string }> {
+  const today = getPTDate(0);
+  const db = await getDb();
 
-export async function postSteamAlert(alert: DiscordSteamAlertPayload): Promise<boolean> {
-  if (!STEAM_ALERTS_CHANNEL_ID) {
-    console.log("[Discord] STEAM_ALERTS_CHANNEL_ID not set — skipping steam alert");
-    return false;
+  let embed: object;
+
+  if (db) {
+    const topEdgePick = await db
+      .select()
+      .from(picks)
+      .where(and(eq(picks.pickDate, today), eq(picks.isActive, true)))
+      .orderBy(desc(picks.edgeScore))
+      .limit(1)
+      .then((r: any[]) => r[0]);
+
+    if (topEdgePick) {
+      const emoji = getSportEmoji(topEdgePick.sportKey);
+      const edgeScore = Number(topEdgePick.edgeScore ?? 0);
+      const edgeDisplay = edgeScore > 0 ? `+${edgeScore.toFixed(1)}%` : `${edgeScore.toFixed(1)}%`;
+
+      embed = {
+        title: `🔥 SHARP MONEY ALERT ${emoji}`,
+        description: `**${topEdgePick.homeTeam ?? "Home"} vs ${topEdgePick.awayTeam ?? "Away"}**\n\n${(topEdgePick.recommendation ?? "Sharp action detected on this line.").slice(0, 200)}...`,
+        color: COLORS.afternoon,
+        fields: [
+          { name: "📊 Edge", value: `**${edgeDisplay}**`, inline: true },
+          { name: "💰 Odds", value: `**${formatOdds(topEdgePick.odds)}**`, inline: true },
+          { name: "⚡ Real-Time Alerts", value: "[Steam Move Tracker →](https://chalkpicks.live/sharp-money)", inline: false },
+        ],
+        footer: { text: "ChalkPicks Pro • Sharp Money Tracker • chalkpicks.live" },
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      embed = {
+        title: "🔥 SHARP MONEY ALERT",
+        description: "Our steam move detector is scanning 40+ sportsbooks for line movement.\n\n[Real-time alerts →](https://chalkpicks.live/sharp-money)",
+        color: COLORS.afternoon,
+        footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+        timestamp: new Date().toISOString(),
+      };
+    }
+  } else {
+    embed = {
+      title: "🔥 SHARP MONEY ALERT",
+      description: "Check the latest sharp money movements on ChalkPicks.\n\n[View alerts →](https://chalkpicks.live/sharp-money)",
+      color: COLORS.afternoon,
+      footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+      timestamp: new Date().toISOString(),
+    };
   }
 
-  const channel = await getChannel(STEAM_ALERTS_CHANNEL_ID);
-  if (!channel) {
-    console.warn("[Discord] Could not fetch #steam-alerts channel");
-    return false;
-  }
-
-  const severityConfig = {
-    low:     { emoji: "🟡", color: 0xd4a017, label: "MILD STEAM" },
-    medium:  { emoji: "🟠", color: 0xff6b00, label: "STEAM MOVE" },
-    high:    { emoji: "🔴", color: 0xff2222, label: "SHARP STEAM" },
-    extreme: { emoji: "🚨", color: 0xff0000, label: "EXTREME STEAM" },
+  const payload = {
+    username: "ChalkPicks Bot",
+    embeds: [embed],
   };
-  const cfg = severityConfig[alert.severity];
 
-  const sportEmoji: Record<string, string> = {
-    nfl: "🏈", nba: "🏀", mlb: "⚾", nhl: "🏒",
-    ncaaf: "🏈", ncaab: "🏀", mma: "🥊", soccer: "⚽",
-  };
-  const sEmoji = sportEmoji[alert.sport?.toLowerCase()] ?? "🎯";
-
-  const embed = new EmbedBuilder()
-    .setColor(cfg.color)
-    .setTitle(`${cfg.emoji} ${cfg.label} DETECTED — ${sEmoji} ${alert.sport.toUpperCase()}`)
-    .setDescription(`**${alert.awayTeam} @ ${alert.homeTeam}**`)
-    .addFields(
-      { name: "📈 Line Move", value: `\`${alert.lineMove}\``, inline: true },
-      { name: "⚡ Move Size", value: `${alert.percentageMove.toFixed(1)}%`, inline: true },
-      { name: "🏦 Book", value: alert.bookmaker, inline: true },
-      { name: "🎯 Sharp Side", value: `**${alert.sharpSide}**`, inline: false },
-      { name: "📊 Market", value: alert.market.replace("_", " ").toUpperCase(), inline: true },
-    )
-    .addFields({
-      name: "🔒 Full Steam Analysis + CLV Tracker",
-      value: "[**ChalkPicks Pro →**](https://chalkpicks.live/sharp-money)",
-      inline: false,
-    })
-    .setFooter({ text: "ChalkPicks Pro • Sharp Money Intelligence" })
-    .setTimestamp();
-
-  try {
-    // For extreme steam, ping @everyone
-    const content = alert.severity === "extreme" ? "@everyone 🚨 EXTREME STEAM DETECTED!" : undefined;
-    await channel.send({ content, embeds: [embed] });
-    console.log(`[Discord] Posted ${cfg.label} for ${alert.awayTeam} @ ${alert.homeTeam}`);
-    return true;
-  } catch (err) {
-    console.error("[Discord] Failed to post steam alert:", err);
-    return false;
-  }
+  const result = await sendWebhook(payload);
+  if (result.success) console.log("[DiscordBot] Afternoon alert posted successfully");
+  else console.error("[DiscordBot] Afternoon alert failed:", result.error);
+  return result;
 }
 
-// ─── Graceful Shutdown ────────────────────────────────────────────────────────
+// ─── Evening Results Embed (6pm PT) ──────────────────────────────────────────
 
-export async function destroyDiscordBot(): Promise<void> {
-  if (client) {
-    await client.destroy();
-    client = null;
-    isReady = false;
-    console.log("[Discord] Bot disconnected");
+export async function postEveningResultsToDiscord(): Promise<{ success: boolean; error?: string }> {
+  const yesterday = getPTDate(-1);
+  const db = await getDb();
+
+  let embed: object;
+
+  if (db) {
+    const yesterdayPicks = await db
+      .select()
+      .from(picks)
+      .where(eq(picks.pickDate, yesterday))
+      .orderBy(desc(picks.confidenceScore));
+
+    const resolved = yesterdayPicks.filter((p: any) => p.result && p.result !== "pending");
+    const wins = resolved.filter((p: any) => p.result === "win").length;
+    const losses = resolved.filter((p: any) => p.result === "loss").length;
+    const pushes = resolved.filter((p: any) => p.result === "push").length;
+    const total = wins + losses + pushes;
+    const winRate = total > 0 ? Math.round((wins / (wins + losses || 1)) * 100) : 0;
+
+    if (total > 0) {
+      const record = `${wins}-${losses}${pushes > 0 ? `-${pushes}` : ""}`;
+      const resultEmoji = winRate >= 60 ? "🔥" : winRate >= 50 ? "✅" : "📊";
+      const color = winRate >= 60 ? COLORS.win : winRate >= 50 ? COLORS.evening : COLORS.loss;
+
+      const fields: object[] = [];
+      if (wins > 0) fields.push({ name: "✅ Wins", value: `**${wins}**`, inline: true });
+      if (losses > 0) fields.push({ name: "❌ Losses", value: `**${losses}**`, inline: true });
+      if (pushes > 0) fields.push({ name: "➡️ Pushes", value: `**${pushes}**`, inline: true });
+      fields.push({ name: "📈 Full History", value: "[Track our record →](https://chalkpicks.live/picks)", inline: false });
+
+      embed = {
+        title: `${resultEmoji} YESTERDAY'S RESULTS`,
+        description: `**Record: ${record}** (${winRate}% win rate)`,
+        color,
+        fields,
+        footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      embed = {
+        title: "📊 DAILY RESULTS",
+        description: "Yesterday's picks are still being graded. Check back soon!\n\n[Track our record →](https://chalkpicks.live/picks)",
+        color: COLORS.evening,
+        footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+        timestamp: new Date().toISOString(),
+      };
+    }
+  } else {
+    embed = {
+      title: "📊 DAILY RESULTS",
+      description: "Check yesterday's pick results on ChalkPicks.\n\n[View results →](https://chalkpicks.live/picks)",
+      color: COLORS.evening,
+      footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+      timestamp: new Date().toISOString(),
+    };
   }
+
+  const payload = {
+    username: "ChalkPicks Bot",
+    embeds: [embed],
+  };
+
+  const result = await sendWebhook(payload);
+  if (result.success) console.log("[DiscordBot] Evening results posted successfully");
+  else console.error("[DiscordBot] Evening results failed:", result.error);
+  return result;
+}
+
+// ─── Night Preview Embed (9pm PT) ────────────────────────────────────────────
+
+export async function postNightPreviewToDiscord(): Promise<{ success: boolean; error?: string }> {
+  const tomorrow = getPTDate(1);
+  const db = await getDb();
+
+  let embed: object;
+
+  if (db) {
+    const tomorrowTopPick = await db
+      .select()
+      .from(picks)
+      .where(and(eq(picks.pickDate, tomorrow), eq(picks.isActive, true)))
+      .orderBy(desc(picks.confidenceScore))
+      .limit(1)
+      .then((r: any[]) => r[0]);
+
+    if (tomorrowTopPick) {
+      const emoji = getSportEmoji(tomorrowTopPick.sportKey);
+      embed = {
+        title: `🌙 TOMORROW'S TOP GAME ${emoji}`,
+        description: `**${tomorrowTopPick.homeTeam ?? "Home"} vs ${tomorrowTopPick.awayTeam ?? "Away"}**\n\n${(tomorrowTopPick.recommendation ?? "AI analysis coming soon.").slice(0, 200)}...`,
+        color: COLORS.night,
+        fields: [
+          { name: "🎯 Confidence", value: `**${tomorrowTopPick.confidenceScore}%**`, inline: true },
+          { name: "💰 Odds", value: `**${formatOdds(tomorrowTopPick.odds)}**`, inline: true },
+          { name: "🔓 Full Pick", value: "[Available at 8am PT →](https://chalkpicks.live/picks)", inline: false },
+        ],
+        footer: { text: "ChalkPicks Pro • Free pick drops at 8am PT • chalkpicks.live" },
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      embed = {
+        title: "🌙 TOMORROW'S PREVIEW",
+        description: "Our AI is analyzing tomorrow's slate overnight. Free daily pick drops at **8am PT**.\n\n[Get notified →](https://chalkpicks.live)",
+        color: COLORS.night,
+        footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+        timestamp: new Date().toISOString(),
+      };
+    }
+  } else {
+    embed = {
+      title: "🌙 TOMORROW'S PREVIEW",
+      description: "Tomorrow's top pick is being analyzed. Free pick drops at **8am PT**.\n\n[Subscribe for alerts →](https://chalkpicks.live)",
+      color: COLORS.night,
+      footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  const payload = {
+    username: "ChalkPicks Bot",
+    embeds: [embed],
+  };
+
+  const result = await sendWebhook(payload);
+  if (result.success) console.log("[DiscordBot] Night preview posted successfully");
+  else console.error("[DiscordBot] Night preview failed:", result.error);
+  return result;
 }

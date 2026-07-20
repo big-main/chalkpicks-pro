@@ -162,20 +162,6 @@
       "when": 1784491710938,
       "tag": "0022_chilly_hulk",
       "breakpoints": true
-    },
-    {
-      "idx": 23,
-      "version": "5",
-      "when": 1784506198626,
-      "tag": "0023_youthful_raza",
-      "breakpoints": true
-    },
-    {
-      "idx": 24,
-      "version": "5",
-      "when": 1784506360667,
-      "tag": "0024_sloppy_mojo",
-      "breakpoints": true
     }
   ]
 }

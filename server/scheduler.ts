@@ -5,9 +5,7 @@ import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 import { sendDailyPicksToAllUsers, sendDailyDigestToAllUsers } from "./notificationService";
 import { resolveGameResults, syncGameScores } from "./services/gameResultsResolver";
 import { fetchOdds, type OddsEvent } from "./services/dataService";
-import { sendHighConfidencePickAlert, sendNewPickAlert } from "./services/pushNotifications";
-import { processDripQueue } from "./services/emailDrip";
-import { postFreeDailyPick } from "./services/discordBot";
+import { sendHighConfidencePickAlert } from "./services/pushNotifications";
 
 type PickType = "moneyline" | "spread" | "over_under" | "player_prop";
 type SlateMatchup = { sportKey: string; homeTeam: string; awayTeam: string; pickType: PickType };
@@ -341,26 +339,16 @@ export async function runDailyPicksJob() {
         });
         generated++;
         console.log(`[Scheduler] Generated pick: ${pick.recommendation} (${pick.confidenceScore}% confidence)`);
-        // Fire "New Pick" push to all subscribers for every pick
-        sendNewPickAlert({
-          id: 0,
-          recommendation: pick.recommendation,
-          sportKey: pick.sportKey,
-          confidenceScore: pick.confidenceScore,
-          tier: pick.tier,
-          homeTeam: pick.homeTeam,
-          awayTeam: pick.awayTeam,
-        }).catch(err => console.error("[Scheduler] New pick alert failed:", err));
-        // Also fire high-confidence alert for 85%+ picks
+        // Fire Web Push alert for high-confidence picks (85%+)
         if (pick.confidenceScore >= 85) {
           sendHighConfidencePickAlert({
-            id: 0,
+            id: 0, // placeholder until DB returns the inserted ID
             recommendation: pick.recommendation,
             sportKey: pick.sportKey,
             confidenceScore: pick.confidenceScore,
             homeTeam: pick.homeTeam,
             awayTeam: pick.awayTeam,
-          }).catch(err => console.error("[Scheduler] High-confidence alert failed:", err));
+          }).catch(err => console.error("[Scheduler] Push alert failed:", err));
         }
       } catch (err) {
         console.error(`[Scheduler] Failed to insert pick:`, err);
@@ -379,32 +367,6 @@ export async function runDailyPicksJob() {
       console.log("[Scheduler] Daily picks notifications sent to subscribed users");
     } catch (err) {
       console.error("[Scheduler] Failed to send daily picks notifications:", err);
-    }
-
-    // Post the highest-confidence pick to Discord #free-daily-pick
-    try {
-      const db = await getDb();
-      if (db) {
-        const [topPick] = await db.select().from(picks)
-          .where(and(gte(picks.pickDate, today), lte(picks.pickDate, today)))
-          .orderBy(desc(picks.confidenceScore))
-          .limit(1);
-        if (topPick) {
-          postFreeDailyPick({
-            sport: topPick.sportKey,
-            homeTeam: topPick.homeTeam ?? "",
-            awayTeam: topPick.awayTeam ?? "",
-            pickType: topPick.pickType,
-            recommendation: topPick.recommendation,
-            confidence: topPick.confidenceScore ?? 70,
-            odds: topPick.odds != null ? String(topPick.odds) : undefined,
-            analysis: topPick.aiAnalysis ?? undefined,
-            pickId: topPick.id,
-          }).catch(err => console.error("[Discord] Free daily pick post failed:", err));
-        }
-      }
-    } catch (err) {
-      console.error("[Discord] Failed to fetch top pick for Discord post:", err);
     }
   }
 }
@@ -481,13 +443,5 @@ export function startScheduler() {
   scheduleDaily(20, runGameResultsJob, "Game Results Resolution (Evening)");
   // Schedule daily digest emails at 13:00 UTC (8am EST)
   scheduleDaily(13, sendDailyDigestToAllUsers, "Daily Digest Emails");
-  // Process email drip queue every hour (check for pending drip emails due to send)
-  setInterval(() => {
-    processDripQueue().catch(err => console.error("[Scheduler] Email drip queue failed:", err));
-  }, 60 * 60 * 1000); // every 60 minutes
-  // Run drip queue on startup too (15s delay)
-  setTimeout(() => {
-    processDripQueue().catch(console.error);
-  }, 15000);
   console.log("[Scheduler] All scheduled jobs started");
 }

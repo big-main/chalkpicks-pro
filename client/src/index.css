@@ -484,9 +484,3 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-
-/* ─── Sportsbook Bonus Banner ─── */
-@keyframes progress-bar {
-  from { width: 0%; }
-  to { width: 100%; }
-}

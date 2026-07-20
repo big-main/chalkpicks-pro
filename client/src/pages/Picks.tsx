@@ -12,12 +12,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Link } from "wouter";
-import { Brain, Lock, Filter, RefreshCw, Zap, Sparkles, ArrowUpDown, SlidersHorizontal, X, ChevronDown, Bell, BellOff, Crown, Bookmark, BookmarkCheck } from "lucide-react";
+import { Brain, Lock, Filter, RefreshCw, Zap, Sparkles, ArrowUpDown, SlidersHorizontal, X, ChevronDown, Bell, BellOff, Crown } from "lucide-react";
 import { toast } from "sonner";
 import SharePickCard from "@/components/SharePickCard";
 import PushNotificationBanner from "@/components/PushNotificationBanner";
-import { PlaceBetButton } from "@/components/PlaceBetButton";
-import { analytics } from "@/lib/analytics";
 
 const PICK_TYPE_LABELS: Record<string, string> = {
   moneyline: "Moneyline",
@@ -99,53 +97,6 @@ function ConfidenceBar({ score }: { score: number }) {
         <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${score}%` }} />
       </div>
     </div>
-  );
-}
-
-function TrackPickButton({ pickId }: { pickId: number }) {
-  const utils = trpc.useUtils();
-  const { user } = useAuth();
-  const { data: trackedPicks } = trpc.tracking.getTrackedPicks.useQuery(undefined, { enabled: !!user });
-  const addMutation = trpc.tracking.addToTracked.useMutation({
-    onSuccess: () => {
-      utils.tracking.getTrackedPicks.invalidate();
-      toast.success("Pick tracked! You'll get notified when it resolves.");
-      analytics.track("pick_tracked", { pickId });
-    },
-    onError: (err: any) => toast.error(err.message || "Failed to track pick"),
-  });
-  const removeMutation = trpc.tracking.removeFromTracked.useMutation({
-    onSuccess: () => {
-      utils.tracking.getTrackedPicks.invalidate();
-      toast.success("Pick untracked");
-      analytics.track("pick_untracked", { pickId });
-    },
-  });
-
-  if (!user) return null;
-
-  const isTracked = trackedPicks?.some((t: any) => t.pickId === pickId);
-
-  return (
-    <button
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (isTracked) {
-          removeMutation.mutate({ pickId });
-        } else {
-          addMutation.mutate({ pickId });
-        }
-      }}
-      className={`p-1.5 rounded-lg transition-all ${
-        isTracked
-          ? "bg-primary/20 text-primary hover:bg-primary/30"
-          : "bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground"
-      }`}
-      title={isTracked ? "Untrack pick" : "Track this pick"}
-    >
-      {isTracked ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
-    </button>
   );
 }
 
@@ -274,16 +225,8 @@ function PickCard({ pick, isPremiumUser, rank }: { pick: any; isPremiumUser: boo
               ))}
             </div>
           )}
-          <div className="mt-3 flex items-center justify-between" onClick={e => e.preventDefault()}>
-            <PlaceBetButton
-              sportKey={pick.sportKey}
-              bestBookmaker={pick.bookmakerName}
-              compact
-            />
-            <div className="flex items-center gap-2">
-              <TrackPickButton pickId={pick.id} />
-              <SharePickCard pick={pick} />
-            </div>
+          <div className="mt-3 flex justify-end" onClick={e => e.preventDefault()}>
+            <SharePickCard pick={pick} />
           </div>
         </CardContent>
       </Card>

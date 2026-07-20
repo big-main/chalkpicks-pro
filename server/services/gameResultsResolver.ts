@@ -5,10 +5,9 @@
  * Runs on a schedule to automatically settle picks based on real game outcomes.
  */
 import { getDb } from "../db";
-import { picks, games, userPickTracking } from "../../drizzle/schema";
+import { picks, games } from "../../drizzle/schema";
 import { eq, and, isNull, sql } from "drizzle-orm";
 import { fetchLiveScores } from "./dataService";
-import { sendPushToUser } from "./pushNotifications";
 
 interface GameResult {
   homeTeam: string;
@@ -89,21 +88,9 @@ export async function resolveGameResults(): Promise<{
           .set({ result })
           .where(eq(picks.id, pick.id));
 
-        // Find users who are tracking this pick and send push notifications
-        const trackedByUsers = await db.select({ userId: userPickTracking.userId })
-          .from(userPickTracking)
-          .where(eq(userPickTracking.pickId, pick.id));
-
-        for (const tracked of trackedByUsers) {
-          const emoji = result === "win" ? "🎉" : result === "loss" ? "❌" : "🔄";
-          const resultText = result === "win" ? "Won" : result === "loss" ? "Lost" : "Pushed";
-          await sendPushToUser(tracked.userId, {
-            title: `Pick ${resultText}! ${emoji}`,
-            body: `${pick.recommendation || "Your pick"} - ${resultText.toUpperCase()}`,
-            tag: `pick-${pick.id}`,
-            url: "/notifications",
-          }).catch(err => console.error(`[Push] Failed to send to user ${tracked.userId}:`, err));
-        }
+        // Note: Auto-alerts for pick resolution are created via the notifications router
+        // when users track picks in their dashboard. The pick result is stored in the database
+        // and users can view it in their alerts via the /notifications page.
 
         if (result === "win") wins++;
         else if (result === "loss") losses++;

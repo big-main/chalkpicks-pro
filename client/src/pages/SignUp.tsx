@@ -19,29 +19,23 @@ const features = [
 
 export default function SignUp() {
   const [, setLocation] = useLocation();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const utils = trpc.useUtils();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+
   useEffect(() => {
-    // If already authenticated and onboarding done, go home; if onboarding pending, go to onboarding
-    if (isAuthenticated) {
-      if (user && !user.onboardingCompletedAt) {
-        setLocation("/onboarding");
-      } else {
-        setLocation("/");
-      }
-    }
-  }, [isAuthenticated, user, setLocation]);
+    if (isAuthenticated) setLocation("/");
+  }, [isAuthenticated, setLocation]);
 
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: async () => {
       await utils.auth.me.invalidate();
-      // New users go to onboarding to personalize their experience
-      setLocation("/onboarding");
+      setLocation("/");
     },
     onError: (err) => setError(err.message || "Registration failed. Please try again."),
   });

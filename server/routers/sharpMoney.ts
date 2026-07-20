@@ -9,7 +9,6 @@ import { z } from "zod/v4";
 import { getDb } from "../db";
 import { oddsSnapshots } from "../../drizzle/schema";
 import { desc, eq, gte, and, sql } from "drizzle-orm";
-import { postSteamAlert } from "../services/discordBot";
 const ODDS_API_BASE = "https://api.the-odds-api.com/v4";
 
 interface OddsApiEvent {
@@ -217,23 +216,6 @@ export const sharpMoneyRouter = router({
         const confOrder = { high: 0, medium: 1, low: 2 };
         return confOrder[a.confidence] - confOrder[b.confidence] || Math.abs(b.lineMove) - Math.abs(a.lineMove);
       });
-
-      // Post high/extreme steam moves to Discord #steam-alerts
-      const highSteamMoves = steamMoves.filter(m => m.confidence === "high");
-      for (const move of highSteamMoves.slice(0, 3)) {
-        const severity = Math.abs(move.lineMove) >= 10 ? "extreme" : "high";
-        postSteamAlert({
-          sport: move.sport,
-          homeTeam: move.homeTeam,
-          awayTeam: move.awayTeam,
-          market: "spread",
-          lineMove: `${move.openLine > 0 ? "+" : ""}${move.openLine} → ${move.currentLine > 0 ? "+" : ""}${move.currentLine}`,
-          percentageMove: Math.abs(move.lineMove),
-          bookmaker: move.bookmaker,
-          sharpSide: move.sharpSide,
-          severity,
-        }).catch(err => console.error("[Discord] Steam alert post failed:", err));
-      }
 
       return {
         steamMoves,

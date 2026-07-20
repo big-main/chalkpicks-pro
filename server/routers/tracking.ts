@@ -1,4 +1,4 @@
-import { router, protectedProcedure } from "../_core/trpc";
+import { router, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { userPickTracking, picks } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
@@ -16,14 +16,15 @@ export const trackingRouter = router({
         notes: z.string().optional(),
       })
     )
-    .mutation(async ({ ctx, input }: any) => {
+    .mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
 
       // Check if pick exists
-      const pick = await db.select().from(picks).where(eq(picks.id, input.pickId)).limit(1);
+      const pick = await db.query.picks.findFirst({
+        where: eq(picks.id, input.pickId),
+      });
 
-      if (!pick || pick.length === 0) {
+      if (!pick) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Pick not found",
@@ -31,14 +32,14 @@ export const trackingRouter = router({
       }
 
       // Check if already tracked
-      const existing = await db.select().from(userPickTracking).where(
-        and(
+      const existing = await db.query.userPickTracking.findFirst({
+        where: and(
           eq(userPickTracking.userId, ctx.user.id),
           eq(userPickTracking.pickId, input.pickId)
-        )
-      ).limit(1);
+        ),
+      });
 
-      if (existing && existing.length > 0) {
+      if (existing) {
         throw new TRPCError({
           code: "CONFLICT",
           message: "Pick already tracked",
@@ -65,9 +66,8 @@ export const trackingRouter = router({
         pickId: z.number(),
       })
     )
-    .mutation(async ({ ctx, input }: any) => {
+    .mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
 
       await db.delete(userPickTracking).where(
         and(
@@ -83,14 +83,29 @@ export const trackingRouter = router({
    * Get all tracked picks for the current user
    */
   getTrackedPicks: protectedProcedure
-    .query(async ({ ctx }: any) => {
-      const db = await getDb();
-      if (!db) return [];
+    .input(
+      z.object({
+        userId: z.number(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      // Users can only view their own tracked picks
+      if (input.userId !== ctx.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Cannot view other users' tracked picks",
+        });
+      }
 
-      const tracked = await db
-        .select()
-        .from(userPickTracking)
-        .where(eq(userPickTracking.userId, ctx.user.id));
+      const db = await getDb();
+
+      const tracked = await db.query.userPickTracking.findMany({
+        where: eq(userPickTracking.userId, ctx.user.id),
+        with: {
+          pick: true,
+        },
+        orderBy: (table, { desc }) => [desc(table.addedAt)],
+      });
 
       return tracked;
     }),
@@ -105,9 +120,8 @@ export const trackingRouter = router({
         notes: z.string(),
       })
     )
-    .mutation(async ({ ctx, input }: any) => {
+    .mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
 
       await db
         .update(userPickTracking)
@@ -127,25 +141,39 @@ export const trackingRouter = router({
    */
   getTrackedStats: protectedProcedure.query(async ({ ctx }: any) => {
     const db = await getDb();
-    if (!db) return { totalPicks: 0, wins: 0, losses: 0, pushes: 0, pending: 0, winRate: '0', pnl: 0 };
 
-    const tracked = await db
-      .select()
-      .from(userPickTracking)
-      .where(eq(userPickTracking.userId, ctx.user.id));
+    const tracked = await db.query.userPickTracking.findMany({
+      where: eq(userPickTracking.userId, ctx.user.id),
+      with: {
+        pick: true,
+      },
+    });
 
-    // For now, return basic stats from tracked picks table
-    // In a real implementation, you'd join with picks table to get result data
     const totalPicks = tracked.length;
+    const wonPicks = tracked.filter((t: any) => t.pick.result === "win");
+    const lostPicks = tracked.filter((t: any) => t.pick.result === "loss");
+    const pushedPicks = tracked.filter((t: any) => t.pick.result === "push");
+    const pendingPicks = tracked.filter((t: any) => t.pick.result === "pending");
+
+    const wins = wonPicks.length;
+    const losses = lostPicks.length;
+    const pushes = pushedPicks.length;
+    const pending = pendingPicks.length;
+
+    const decidedPicks = totalPicks - pushes;
+    const winRate = decidedPicks > 0 ? (wins / decidedPicks) * 100 : 0;
+
+    // Calculate P&L (simplified: 1 unit per pick)
+    const pnl = wins - losses;
 
     return {
       totalPicks,
-      wins: 0,
-      losses: 0,
-      pushes: 0,
-      pending: 0,
-      winRate: '0',
-      pnl: 0,
+      wins,
+      losses,
+      pushes,
+      pending,
+      winRate: winRate.toFixed(1),
+      pnl,
     };
   }),
 });

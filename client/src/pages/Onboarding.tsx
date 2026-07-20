@@ -17,7 +17,6 @@ import {
   DollarSign,
   MessageSquare,
   Mail,
-  Trophy,
 } from "lucide-react";
 
 const questions = [
@@ -88,25 +87,6 @@ const questions = [
     type: "text" as const,
     options: undefined,
   },
-  {
-    id: "sports",
-    title: "Favorite Sports",
-    description: "Which sports do you want picks for? (Select all that apply)",
-    icon: Trophy,
-    type: "multiselect" as const,
-    options: [
-      { value: "nfl", label: "🏈 NFL Football" },
-      { value: "nba", label: "🏀 NBA Basketball" },
-      { value: "mlb", label: "⚾ MLB Baseball" },
-      { value: "nhl", label: "🏒 NHL Hockey" },
-      { value: "ncaaf", label: "🏈 College Football" },
-      { value: "ncaab", label: "🏀 College Basketball" },
-      { value: "soccer", label: "⚽ Soccer / MLS" },
-      { value: "ufc", label: "🥊 UFC / MMA" },
-      { value: "tennis", label: "🎾 Tennis" },
-      { value: "golf", label: "⛳ Golf" },
-    ],
-  },
 ];
 
 export default function Onboarding() {
@@ -114,7 +94,6 @@ export default function Onboarding() {
   const [, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
 
   const completeOnboarding = trpc.auth.completeOnboarding.useMutation({
@@ -153,7 +132,6 @@ export default function Onboarding() {
         bettingFrequency: answers.frequency as any,
         weeklyBetSize: answers.bet_size as any,
         onboardingIntent: answers.intent,
-        sportPreferences: selectedSports.length > 0 ? selectedSports : ["nfl", "nba", "mlb"],
       });
     }
   };
@@ -165,16 +143,9 @@ export default function Onboarding() {
     }
   };
 
-  const toggleSport = (sport: string) => {
-    setSelectedSports(prev =>
-      prev.includes(sport) ? prev.filter(s => s !== sport) : [...prev, sport]
-    );
-  };
-
   const canProceed = () => {
     if (question.type === "textarea") return (answers[question.id]?.trim().length ?? 0) > 10;
     if (question.type === "text") return (answers[question.id]?.trim().length ?? 0) > 0;
-    if (question.type === "multiselect") return selectedSports.length > 0;
     return !!answers[question.id];
   };
 
@@ -306,32 +277,6 @@ export default function Onboarding() {
                   onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })}
                   className="w-full px-4 py-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] text-foreground rounded-xl focus:border-[rgba(57,255,20,0.3)] outline-none placeholder:text-muted-foreground/50"
                 />
-              )}
-
-              {question.type === "multiselect" && (
-                <div className="grid grid-cols-2 gap-2">
-                  {question.options?.map((option) => {
-                    const isSelected = selectedSports.includes(option.value);
-                    return (
-                      <motion.button
-                        key={option.value}
-                        type="button"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => toggleSport(option.value)}
-                        className={`flex items-center gap-2 p-3 rounded-xl border text-sm text-left transition-all ${
-                          isSelected
-                            ? "border-[rgba(57,255,20,0.5)] bg-[rgba(57,255,20,0.08)] text-[#39ff14]"
-                            : "border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] text-foreground/80 hover:border-[rgba(57,255,20,0.2)]"
-                        }`}
-                      >
-                        <span className="text-base">{option.label.split(" ")[0]}</span>
-                        <span className="flex-1 font-medium">{option.label.split(" ").slice(1).join(" ")}</span>
-                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
-                      </motion.button>
-                    );
-                  })}
-                </div>
               )}
             </div>
           </motion.div>

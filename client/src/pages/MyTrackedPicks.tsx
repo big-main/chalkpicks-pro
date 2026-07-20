@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,8 +11,8 @@ export function MyTrackedPicks() {
   const { user } = useAuth();
   const [selectedTab, setSelectedTab] = useState("all");
 
-  const { data: trackedPicks = [], isLoading, refetch } = trpc.tracking.getTrackedPicks.useQuery(
-    undefined,
+  const { data: trackedPicks, isLoading, refetch } = trpc.tracking.getTrackedPicks.useQuery(
+    { userId: user?.id || 0 },
     { enabled: !!user?.id }
   );
 
@@ -24,18 +24,18 @@ export function MyTrackedPicks() {
   if (isLoading) return <div className="text-center py-8">Loading tracked picks...</div>;
 
   const picks = trackedPicks || [];
-  // Note: picks are from userPickTracking table, not full pick objects
-  // For now, we're just tracking the relationship; result data would need a join
-  const wonPicks: any[] = [];
-  const lostPicks: any[] = [];
-  const pushedPicks: any[] = [];
-  const pendingPicks = picks;
+  const wonPicks = picks.filter((p: any) => p.pick.result === "win");
+  const lostPicks = picks.filter((p: any) => p.pick.result === "loss");
+  const pushedPicks = picks.filter((p: any) => p.pick.result === "push");
+  const pendingPicks = picks.filter((p: any) => p.pick.result === "pending");
 
   const totalPicks = picks.length;
   const wins = wonPicks.length;
   const losses = lostPicks.length;
   const pushes = pushedPicks.length;
-  const winRate = totalPicks > 0 && totalPicks - pushes > 0 ? ((wins / (totalPicks - pushes)) * 100).toFixed(1) : "0";
+  const winRate = totalPicks > 0 ? ((wins / (totalPicks - pushes)) * 100).toFixed(1) : "0";
+
+  // Calculate P&L (simplified: assume 1 unit per pick)
   const pnl = wins - losses;
 
   return (

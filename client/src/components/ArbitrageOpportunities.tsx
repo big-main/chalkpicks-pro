@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, TrendingUp, DollarSign, Target } from "lucide-react";
-import { PlaceBetButton } from "@/components/PlaceBetButton";
 
 export function ArbitrageOpportunities() {
   const [sport, setSport] = useState<string>("");
@@ -222,19 +221,10 @@ export function ArbitrageOpportunities() {
               {/* Event Date */}
               <p className="text-xs text-gray-500">Event: {new Date(opp.eventDate).toLocaleString()}</p>
 
-              {/* Place Bet Buttons */}
-              <div className="grid grid-cols-2 gap-2">
-                <PlaceBetButton
-                  sportKey={opp.sport}
-                  bestBookmaker={opp.bookmaker1}
-                  compact
-                />
-                <PlaceBetButton
-                  sportKey={opp.sport}
-                  bestBookmaker={opp.bookmaker2}
-                  compact
-                />
-              </div>
+              {/* Action Button */}
+              <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                View Details & Execute
+              </Button>
             </CardContent>
           </Card>
         ))}

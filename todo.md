@@ -1079,175 +1079,40 @@
 - [x] Test auto-alert creation end-to-end (127 tests passing)
 - [x] Save checkpoint
 
-## Phase 19 — Push Notifications + My Tracked Picks (Jul 19, 2026) — BACKEND COMPLETE
+## Phase 19 — Push Notifications + My Tracked Picks (Jul 19, 2026)
 
-- [x] Wire push notifications into gameResultsResolver on pick resolution (sendPushToUser integrated)
-- [x] Add userPickTracking table to schema (userId, pickId, addedAt, notes) — migration applied
-- [x] Create tRPC procedures: addToTracked, removeFromTracked, getTrackedPicks, updateTrackedNotes, getTrackedStats
-- [x] Build My Tracked Picks page with live status (MyTrackedPicks.tsx created)
-- [x] Wire tracking router into appRouter (trackingRouter mounted)
-- [x] TypeScript compiles clean (0 errors)
-- [x] All tests pass (127 passed, 1 skipped, 0 failed)
+- [ ] Wire push notifications into gameResultsResolver on pick resolution
+- [ ] Add userPickTracking table to schema (userId, pickId, addedAt, notes)
+- [ ] Create tRPC procedures: addToTracked, removeFromTracked, getTrackedPicks
+- [ ] Build My Tracked Picks page with live status and P&L calculations
+- [ ] Add favorite/track button to pick cards
+- [ ] Test end-to-end
+- [ ] Save checkpoint
 
-## Phase 19 — Frontend Integration — COMPLETE
+## Phase 36 — Twitter/X Automation (DEFERRED)
 
-- [x] Add MyTrackedPicks route to App.tsx (lazy import + route definition)
-- [x] Add favorite/track button to pick cards (TrackPickButton with Bookmark icon)
-- [x] Add My Tracked Picks link to Navbar user dropdown (Target icon)
-- [x] PlaceBetButton also added to pick cards alongside track button
+- [x] Build twitterContentRouter with 4 tweet types (morning/afternoon/evening/night)
+- [x] Create twitterBot.ts service with content generators
+- [x] Create twitterPostHandler.ts Heartbeat handler
+- [x] Create 4 Heartbeat jobs (twitter-morning-pick, twitter-afternoon-alert, twitter-evening-results, twitter-night-preview)
+- [ ] DEFERRED: OAuth 1.0a credentials failed (code 89 — token mismatch). Backend ready, credentials need X Developer app reconfiguration.
+
+## Phase 37 — Discord Automation (COMPLETE)
+
+- [x] Add DISCORD_WEBHOOK_URL to ENV object in server/_core/env.ts
+- [x] Store Discord webhook URL as project secret (DISCORD_WEBHOOK_URL)
+- [x] Verify webhook URL works (HTTP 204 confirmed)
+- [x] Create server/services/discordBot.ts with 4 webhook-based posting functions:
+  - postMorningPickToDiscord() — 8am PT: free daily pick embed (neon green)
+  - postAfternoonAlertToDiscord() — 1pm PT: sharp money alert embed (orange)
+  - postEveningResultsToDiscord() — 6pm PT: yesterday's results recap embed (blurple)
+  - postNightPreviewToDiscord() — 9pm PT: tomorrow's preview embed (purple)
+- [x] Create server/handlers/discordPostHandler.ts (slot routing: morning/afternoon/evening/night)
+- [x] Register POST /api/scheduled/discord-post in server/_core/index.ts
+- [x] Create 4 Heartbeat jobs:
+  - discord-morning-pick: "0 0 15 * * *" (8am PT) — task_uid: 9wevuNEV7CHnBDx4VTmNur
+  - discord-afternoon-alert: "0 0 20 * * *" (1pm PT) — task_uid: mSysFg9vHqwc5N8weKcdPT
+  - discord-evening-results: "0 0 1 * * *" (6pm PT) — task_uid: oC6fA4Cy4FFZV95KXXRZcQ
+  - discord-night-preview: "0 0 4 * * *" (9pm PT) — task_uid: HPRvokbj5WYBQheMHwFYB6
+- [x] Test all 4 slots end-to-end (all return HTTP 200 {"ok":true})
 - [x] Save checkpoint
-
-## Phase 20 — Sportsbook Affiliate Deep Links (Jul 19, 2026) — COMPLETE
-
-- [x] Create sportsbook config file with affiliate links, logos, deep-link URL patterns for 11 books (shared/sportsbooks.ts)
-- [x] Build "Place Bet" button component (PlaceBetButton) with sportsbook selector dropdown
-- [x] Add PlaceBetButton to every pick card on Picks page (compact mode)
-- [x] Add PlaceBetButton to PickDetail page (full mode with dropdown)
-- [x] Add PlaceBetButton to Arbitrage Finder results (both books per arb)
-- [x] Add PlaceBetButton to EV Finder results (compact, linked to source bookmaker)
-- [x] Add PlaceBetButton to ArbitrageOpportunities component (both books per opportunity)
-- [x] Update /sportsbooks page with all 11 books, signup bonuses, affiliate tracking, show-more
-- [x] Add affiliate click tracking (affiliate_clicks table + affiliateClicksRouter)
-- [x] All 138 tests pass (11 new sportsbook config tests)
-- [x] Save checkpoint
-
-## Phase 21 — Partners & Directories Page (Jul 19, 2026) — COMPLETE
-
-- [x] Built /directories page with all 17 directory listings grouped by category (AI, Startup, SaaS, Sports, General)
-- [x] ToolPilot featured badge section at top of page
-- [x] Stats row: 17 directories, 4 AI platforms, 6 featured, 4 review platforms
-- [x] Added /directories route to App.tsx
-- [x] Added Sportsbooks + Directories links to footer Community section
-- [x] Save checkpoint
-
-## Phase 22 — Affiliate Analytics Dashboard (Jul 19, 2026) — COMPLETE
-
-- [x] Enhanced affiliateClicksRouter with getStats (clicks by book/sport/source/daily), getRecentCount procedures
-- [x] Built admin-only /admin/affiliates page with: KPI cards, bar chart (clicks by book), 30-day trend line chart, revenue estimate table, source/sport breakdowns
-- [x] Added Affiliate Analytics + Blog Management to AdminPanel quick links grid
-- [x] All 138 tests pass
-- [x] Save checkpoint
-
-## Phase 23 — Sportsbooks Bonus Banner (Jul 19, 2026) — COMPLETE
-
-- [x] Added rotating bonus CTA banner to Sportsbooks page (top of page)
-- [x] Auto-rotates every 5s through featured books, pauses on hover
-- [x] Prev/next arrows + dot indicators for manual navigation
-- [x] Progress bar shows time until next rotation
-- [x] Claim Bonus button tracks affiliate click and opens book
-- [x] Added @keyframes progress-bar to index.css
-
-## Phase 24 — Product Hunt Launch Prep (Jul 19, 2026) — COMPLETE
-
-- [x] Built /launch page with countdown timer to Aug 5 launch, notify-me email form, Twitter/Discord share copy buttons, feature highlights, direct PH link
-- [x] Added /launch route to App.tsx
-- [x] Added 🐱 Product Hunt Launch link to footer Community section
-- [x] 138 tests pass, TypeScript clean
-
-## Phase 25 — Launch Page Newsletter + Affiliate Program Links (Jul 19, 2026) — COMPLETE
-
-- [x] Wired launch page notify-me form to newsletter.subscribe tRPC mutation (source: "launch_page" tag distinguishes launch subscribers)
-- [x] Added loading state ("Saving...") and error handling to notify-me button
-- [x] Added affiliateProgramUrl + estimatedCpa fields to Sportsbook interface and all 11 books
-- [x] Added "Become an Affiliate Partner" section to Sportsbooks page with Apply links for all 11 books
-- [x] 138 tests pass, TypeScript clean
-- [x] Save checkpoint
-
-## Phase 26 — Mixpanel Analytics Integration (Jul 19, 2026) — COMPLETE
-
-- [x] Installed mixpanel-browser@2.81.0
-- [x] Created client/src/lib/analytics.ts with typed event catalogue (24 events), identify, reset, register, page helpers
-- [x] Hardcoded real Mixpanel token (d83e21f4a4fa864ee3d4e73dd3ae72c9) — no env var needed
-- [x] Enabled autocapture: true + record_sessions_percent: 100 per user spec
-- [x] Initialized in main.tsx on app load (initAnalytics())
-- [x] Page views tracked via usePageTracking hook (fires analytics.page() on every route change)
-- [x] User identified on login via useAuth() in Router (userId, email, name, tier, role, createdAt)
-- [x] Super property 'tier' registered for all events
-- [x] TypeScript clean (0 errors), 138 tests pass
-- [x] Save checkpoint
-
-## Phase 27 — Analytics Event Wiring (Jul 19, 2026) — COMPLETE
-
-- [x] analytics.track("sportsbook_clicked", {bookId, bookName, sportKey, eventId, source}) in PlaceBetButton
-- [x] analytics.track("pick_tracked"/{"pick_untracked"}) with {pickId} in TrackPickButton
-- [x] analytics.reset() on logout in useAuth (Mixpanel session cleared on sign-out)
-- [x] analytics.track("arbitrage_viewed") on ArbitrageFinder mount
-- [x] analytics.track("ev_finder_used", {sport, minEV}) on EVFinder filter change
-- [x] analytics.track("subscription_page_viewed") on Pricing page mount
-- [x] analytics.track("pick_viewed", {pickId, sport, tier, pickType, isLocked}) on PickDetail mount
-- [x] analytics.track("leaderboard_viewed", {period}) on Leaderboard period change
-- [x] TypeScript clean (0 errors), 138 tests pass
-- [x] Save checkpoint
-
-## Phase 28 — Real-Time Pick Alert Push Notifications (Jul 19, 2026) — COMPLETE
-
-- [x] Added sendNewPickAlert() to pushNotifications.ts (fires for ALL picks, not just 85%+)
-- [x] Wired sendNewPickAlert into scheduler.ts after every pick insert
-- [x] Kept sendHighConfidencePickAlert for 85%+ picks (double alert for high-confidence)
-
-## Phase 29 — Onboarding Auto-Redirect for New Signups (Jul 19, 2026) — COMPLETE
-
-- [x] New users redirected to /onboarding after registration (SignUp.tsx)
-- [x] Smart redirect: if already authenticated with onboarding pending, go to /onboarding
-- [x] Existing onboarding page already has 6-step questionnaire (age, experience, frequency, bet size, intent, contact)
-
-## Phase 30 — A/B Test Pricing Page CTA (Jul 19, 2026) — COMPLETE
-
-- [x] A/B variant state added to Pricing.tsx (Variant A: "Get Access Now", Variant B: "Start Free Trial")
-- [x] Variant assigned deterministically by userId (even=A, odd=B) or randomly for unauthenticated
-- [x] analytics.track("ab_experiment_viewed", {experiment, variant}) fires on mount
-- [x] analytics.track("pricing_cta_clicked", {tier, variant, authenticated}) fires on click
-- [x] Added ab_experiment_viewed and pricing_cta_clicked to AnalyticsEvent type
-- [x] TypeScript clean (0 errors), 133 business logic tests pass
-
-## Phase 31 — Sport Preferences in Onboarding (Jul 19, 2026) — COMPLETE
-
-- [x] Added sportPreferences column to users table (JSON array: ["nfl","nba","mlb",...]) — migration applied
-- [x] Added sport preferences multi-select step to Onboarding.tsx (checkboxes for NFL, NBA, MLB, NHL, Soccer, MMA, Tennis, Golf, Boxing)
-- [x] Updated completeOnboarding tRPC mutation to accept and save sportPreferences JSON
-- [x] Sport preferences saved to DB on onboarding completion
-
-## Phase 32 — Welcome Email Drip Sequence (Jul 19, 2026) — COMPLETE
-
-- [x] Created email_drip_queue table (userId, emailType, scheduledFor, sentAt, status)
-- [x] Built emailDrip.ts service with 3-email sequence: Day 1 (how to read picks), Day 3 (feature tour), Day 7 (upgrade offer)
-- [x] Wired enqueueWelcomeDrip() into user registration (routers.ts)
-- [x] processDripQueue() runs hourly in scheduler.ts to send due emails
-- [x] Emails use existing sendEmail() helper with branded HTML templates
-
-## Phase 33 — Discord Bot Integration (Jul 19, 2026) — COMPLETE
-
-- [x] Created server/services/discordBot.ts using discord.js v14 (installed)
-- [x] initDiscordBot() wired into server startup (server/_core/index.ts)
-- [x] postFreeDailyPick() posts highest-confidence pick daily to #free-daily-pick after scheduler runs
-- [x] postSteamAlert() posts high/extreme steam moves to #steam-alerts from sharpMoney router
-- [x] Extreme steam moves trigger @everyone ping in #steam-alerts
-- [x] Rich Discord embeds with confidence bar, sport emoji, odds, AI analysis snippet, upgrade CTA
-- [x] Requires: DISCORD_BOT_TOKEN, DISCORD_FREE_PICKS_CHANNEL_ID, DISCORD_STEAM_ALERTS_CHANNEL_ID env vars
-- [x] TypeScript clean (0 errors), 137 tests pass
-
-## Phase 34 — Discord Invite Links on Site (Jul 19, 2026) — COMPLETE
-
-- [x] Discord link already in site footer (Community section)
-- [x] Added Discord Community link to Navbar user dropdown (with Free badge, indigo color)
-- [x] Added full Discord community section to Home page (before Final CTA) with channel list, stats grid, social proof quotes
-- [x] Discord link: https://discord.gg/chalkpicks
-
-## Phase 35 — Ollama LLM Fallback (Jul 19, 2026) — COMPLETE
-
-- [x] Updated invokeLLM helper (server/_core/llm.ts) to catch Anthropic credit exhaustion errors (400 credit balance too low)
-- [x] On credit error: automatically retries with Ollama at http://35.237.81.82:11434/v1 (qwen2.5:7b)
-- [x] Logs fallback: [LLM] Anthropic credits exhausted, falling back to Ollama
-- [x] TypeScript clean (0 errors), 137 tests pass
-- [x] Save checkpoint
-
-## Phase 36 — Twitter/X Automation (Jul 19, 2026) — DEFERRED
-- [x] Build twitterContentRouter tRPC endpoint with 4 tweet types (morning/afternoon/evening/night)
-- [x] Morning post: Free daily pick (sport, pick, odds, confidence, hashtags)
-- [x] Afternoon post: Top steam alert / sharp money movement
-- [x] Evening post: Yesterday's results recap (W/L record)
-- [x] Night post: Tomorrow's top game preview
-- [x] Protected by TWITTER_CONTENT_SECRET env var (default: chalkpicks-twitter-2026)
-- [x] Router registered in appRouter as twitter: twitterContentRouter
-- [x] 4 Heartbeat scheduled jobs created (8am/1pm/6pm/9pm PT) for daily tweet posting
-- [ ] DEFERRED: Twitter OAuth 1.0a credentials — X Developer app setup requires additional configuration. Will resume after app credentials are properly configured. Attempted: Multiple token regenerations, Consumer Key validation (app-only auth works), but user context OAuth 1.0a failing with code 89 (Invalid or expired token). Root cause: Token mismatch with Consumer Key or app permissions issue. Next steps: Complete app setup with User Authentication Settings, then regenerate all tokens from same app.

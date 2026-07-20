@@ -452,68 +452,23 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     }
   }
 
-  const doFetch = async (url: string, key: string, body: Record<string, unknown>): Promise<InvokeResult> => {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${key}`,
-      },
-      body: JSON.stringify(body),
-    });
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify(payload),
+  });
 
-    if (!res.ok) {
-      const errorText = await res.text();
-      const err = new Error(`LLM invoke failed: ${res.status} ${res.statusText} – ${errorText}`);
-      (err as Error & { status?: number; body?: string }).status = res.status;
-      (err as Error & { status?: number; body?: string }).body = errorText;
-      throw err;
-    }
-
-    return (await res.json()) as InvokeResult;
-  };
-
-  // Helper: detect credit/quota exhaustion errors
-  const isCreditError = (err: unknown): boolean => {
-    if (!(err instanceof Error)) return false;
-    const e = err as Error & { status?: number; body?: string };
-    const body = (e.body ?? "").toLowerCase();
-    const msg = e.message.toLowerCase();
-    // Anthropic: 400 with "credit balance is too low"
-    // OpenAI/OpenRouter: 429 with "insufficient_quota" or "rate_limit_exceeded"
-    return (
-      (e.status === 400 && (body.includes("credit balance") || body.includes("insufficient credits"))) ||
-      (e.status === 402 && (body.includes("credit") || body.includes("quota"))) ||
-      (e.status === 429 && (body.includes("insufficient_quota") || body.includes("rate_limit"))) ||
-      msg.includes("credit balance") ||
-      msg.includes("insufficient credits") ||
-      msg.includes("insufficient_quota")
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
     );
-  };
-
-  let result: InvokeResult;
-  try {
-    result = await doFetch(apiUrl, apiKey, payload);
-  } catch (primaryErr) {
-    // If the primary provider ran out of credits, retry with Ollama
-    if (isCreditError(primaryErr)) {
-      const ollamaUp = await checkOllamaHealth();
-      if (ollamaUp && apiKey !== "ollama") {
-        console.warn(`[LLM] Primary provider credit exhausted — falling back to Ollama (${ENV.ollamaModel})`);
-        const ollamaUrl = `${ENV.ollamaApiUrl}/chat/completions`;
-        // Build a stripped payload for Ollama (no response_format, no max_tokens)
-        const ollamaPayload: Record<string, unknown> = {
-          model: ENV.ollamaModel,
-          messages: payload.messages,
-        };
-        result = await doFetch(ollamaUrl, "ollama", ollamaPayload);
-      } else {
-        throw primaryErr;
-      }
-    } else {
-      throw primaryErr;
-    }
   }
+
+  const result = (await response.json()) as InvokeResult;
 
   // Store in cache if cacheable
   if (cacheable) {

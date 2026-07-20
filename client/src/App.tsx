@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/PageTransition";
 import { useLocation } from "wouter";
@@ -13,8 +13,6 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { usePageTracking } from "@/hooks/usePageTracking";
-import { analytics } from "@/lib/analytics";
-import { useAuth } from "@/_core/hooks/useAuth";
 
 // Eagerly loaded (critical path)
 import Home from "./pages/Home";
@@ -97,10 +95,6 @@ const MonteCarloSimulator = lazy(() => import("@/pages/MonteCarloSimulator"));
 const SharpMoneyDetector = lazy(() => import("@/pages/SharpMoneyDetector"));
 const ConsensusAggregator = lazy(() => import("@/pages/ConsensusAggregator"));
 const ParlayFlow = lazy(() => import("@/pages/ParlayFlow"));
-const MyTrackedPicks = lazy(() => import("@/pages/MyTrackedPicks").then(m => ({ default: m.MyTrackedPicks })));
-const Partners = lazy(() => import("@/pages/Partners"));
-const AdminAffiliates = lazy(() => import("@/pages/AdminAffiliates"));
-const Launch = lazy(() => import("@/pages/Launch"));
 
 function PageLoader() {
   return (
@@ -121,21 +115,6 @@ function PageLoader() {
 function Router() {
   usePageTracking();
   const [location] = useLocation();
-  const { user } = useAuth();
-
-  // Identify user in Mixpanel when they log in or on app load
-  useEffect(() => {
-    if (user) {
-      analytics.identify(String(user.id), {
-        email: user.email ?? undefined,
-        name: user.name ?? undefined,
-        tier: (user as Record<string, unknown>).tier as string | undefined,
-        role: user.role ?? undefined,
-        createdAt: (user as Record<string, unknown>).createdAt as string | undefined,
-      });
-      analytics.register({ tier: (user as Record<string, unknown>).tier ?? "free" });
-    }
-  }, [user?.id]);
   return (
     <>
       <PageMeta />
@@ -161,7 +140,6 @@ function Router() {
           <Route path="/subscription-management" component={SubscriptionManagement} />
           <Route path="/feedback-analytics" component={FeedbackAnalytics} />
           <Route path="/notifications" component={Notifications} />
-          <Route path="/my-tracked-picks" component={MyTrackedPicks} />
           <Route path="/ev-finder" component={EVFinder} />
           <Route path="/tools" component={Tools} />
           <Route path="/signup" component={SignUp} />
@@ -190,7 +168,6 @@ function Router() {
           <Route path="/sportsbooks" component={Sportsbooks} />
           <Route path="/sponsors" component={Sponsors} />
           <Route path="/admin" component={AdminPanel} />
-          <Route path="/admin/affiliates" component={AdminAffiliates} />
           <Route path="/credits" component={CreditDashboard} />
           <Route path="/prop-builder" component={PropBuilder} />
           <Route path="/line-movement" component={LineMovement} />
@@ -208,8 +185,6 @@ function Router() {
           <Route path="/tools/parlay-calculator" component={ParlayCalculator} />
           <Route path="/admin/blog" component={BlogManagement} />
           <Route path="/partners" component={MediaPartners} />
-          <Route path="/directories" component={Partners} />
-          <Route path="/launch" component={Launch} />
           <Route path="/nfl-picks" component={SportPicks} />
           <Route path="/nba-picks" component={SportPicks} />
           <Route path="/mlb-picks" component={SportPicks} />

@@ -20,4 +20,6 @@ export const ENV = {
   twitterConsumerSecret: process.env.TWITTER_CONSUMER_SECRET ?? "",
   twitterAccessToken: process.env.TWITTER_ACCESS_TOKEN ?? "",
   twitterAccessSecret: process.env.TWITTER_ACCESS_SECRET ?? "",
+  // Discord Webhook — automated daily picks/alerts/results/previews
+  discordWebhookUrl: process.env.DISCORD_WEBHOOK_URL ?? "",
 };

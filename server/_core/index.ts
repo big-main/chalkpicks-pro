@@ -11,7 +11,6 @@ import { registerStripeWebhook } from "../webhook";
 import { registerStorageProxy } from "./storageProxy";
 import { registerPayPalWebhook } from "../paypal-webhook";
 import { startScheduler } from "../scheduler";
-import { initDiscordBot } from "../services/discordBot";
 import { initializeWebSocket } from "../websocket";
 import { startLiveDataStreaming } from "./liveDataStreamer";
 import { arbitrageRefreshHandler } from "../handlers/arbitrageRefreshHandler";
@@ -20,7 +19,7 @@ import { weeklyNewsletterHandler } from "../handlers/weeklyNewsletterHandler";
 import { welcomeDripHandler } from "../handlers/welcomeDripHandler";
 import { blogContentHandler } from "../handlers/blogContentHandler";
 import { picksBlogHandler } from "../handlers/picksBlogHandler";
-import { twitterPostHandler } from "../handlers/twitterPostHandler";
+import { discordPostHandler } from "../handlers/discordPostHandler";
 import { registerSecurityMiddleware } from "../middleware/security";
 import { apiReference } from "@scalar/express-api-reference";
 import compression from "compression";
@@ -597,7 +596,7 @@ async function startServer() {
   app.post("/api/scheduled/welcome-drip", welcomeDripHandler);
   app.post("/api/scheduled/blog-content", blogContentHandler);
   app.post("/api/scheduled/picks-blog", picksBlogHandler);
-  app.post("/api/scheduled/twitter-post", twitterPostHandler);
+  app.post("/api/scheduled/discord-post", discordPostHandler);
   app.post("/api/scheduled/distribute-payouts", async (req, res) => {
     try {
       console.log("[Payout] Weekly distribution triggered");
@@ -683,8 +682,6 @@ async function startServer() {
     startLiveDataStreaming();
     // Start daily picks scheduler
     startScheduler();
-    // Initialize Discord bot (non-blocking)
-    initDiscordBot().catch(err => console.error("[Discord] Init failed:", err));
   });
 }
 

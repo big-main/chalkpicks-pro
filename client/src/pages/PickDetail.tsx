@@ -7,10 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Brain, Zap, Target, TrendingUp, Lock, CheckCircle2, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import PickFeedback from "@/components/PickFeedback";
-import { PlaceBetButton } from "@/components/PlaceBetButton";
-import { analytics } from "@/lib/analytics";
 
 export default function PickDetail() {
   const { id } = useParams<{ id: string }>();
@@ -25,19 +23,6 @@ export default function PickDetail() {
 
   const isPremiumUser = isAuthenticated && user?.subscriptionTier !== "free";
   const isLocked = pick?.tier === "premium" && !isPremiumUser;
-
-  // Track pick view in Mixpanel
-  useEffect(() => {
-    if (pick) {
-      analytics.track("pick_viewed", {
-        pickId: pick.id,
-        sport: pick.sportKey,
-        tier: pick.tier,
-        pickType: pick.pickType,
-        isLocked,
-      });
-    }
-  }, [pick?.id]);
 
   const resultClass = pick?.result === "win" ? "badge-win" : pick?.result === "loss" ? "badge-loss" : pick?.result === "push" ? "badge-push" : "badge-pending";
 
@@ -125,15 +110,6 @@ export default function PickDetail() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Place Bet CTA */}
-          {!isLocked && (
-            <div className="mb-5 flex items-center gap-3">
-              <PlaceBetButton
-                sportKey={pick.sportKey}
-              />
-            </div>
-          )}
 
           <Card className="bg-card border-border mb-5">
             <CardHeader className="pb-3">

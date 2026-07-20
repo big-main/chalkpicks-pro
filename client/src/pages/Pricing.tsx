@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
-import { analytics } from "@/lib/analytics";
 import NeonCard from "@/components/NeonCard";
 import { Check, Zap, Crown, Star, Shield, Lock, Tag, Loader2, ArrowRight, Sparkles, Gift, Percent, Clock } from "lucide-react";
 
@@ -189,20 +188,8 @@ function CheckMark({ value, color }: { value: boolean; color: string }) {
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function Pricing() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [showComparison, setShowComparison] = useState(false);
-
-  // A/B test: CTA button text variant
-  // Variant A (even userId or unauthenticated): "Get Access Now"
-  // Variant B (odd userId): "Start Free Trial"
-  const abVariant = useMemo(() => {
-    if (!user) return Math.random() < 0.5 ? 'A' : 'B'; // random for unauthenticated
-    return (user.id as number) % 2 === 0 ? 'A' : 'B';
-  }, [user]);
-
-  useEffect(() => {
-    analytics.track('ab_experiment_viewed', { experiment: 'pricing_cta_v1', variant: abVariant });
-  }, [abVariant]);
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoError, setPromoError] = useState("");
@@ -225,11 +212,6 @@ export default function Pricing() {
       retry: false,
     }
   );
-
-  // Track subscription page view
-  useEffect(() => {
-    analytics.track("subscription_page_viewed", {});
-  }, []);
 
   React.useEffect(() => {
     if (!promoValidating) return;
@@ -254,11 +236,6 @@ export default function Pricing() {
   const createCheckout = trpc.subscription.createCheckout.useMutation({
     onSuccess: (data) => {
       if (data.url) {
-        analytics.track("subscription_started", {
-          tier: loadingTier,
-          promoApplied,
-          promoCode: promoApplied ? promoCode.trim() : undefined,
-        });
         window.location.href = data.url;
       }
       setLoadingTier(null);
@@ -279,11 +256,9 @@ export default function Pricing() {
 
   const handleSubscribe = (tier: "daily" | "monthly" | "yearly") => {
     if (!isAuthenticated) {
-      analytics.track('pricing_cta_clicked', { tier, variant: abVariant, authenticated: false });
       window.location.href = "/login";
       return;
     }
-    analytics.track('pricing_cta_clicked', { tier, variant: abVariant, authenticated: true });
     setLoadingTier(tier);
     createCheckout.mutate({
       tier,
@@ -578,7 +553,7 @@ export default function Pricing() {
                       ) : !isAuthenticated ? (
                         <><Lock className="w-4 h-4" /> Sign In to Subscribe</>
                       ) : (
-                        <><Zap className="w-4 h-4" /> {hasDiscount ? "Get Discounted Access" : abVariant === 'B' ? "Start Free Trial" : "Get Access Now"}</>
+                        <><Zap className="w-4 h-4" /> {hasDiscount ? "Get Discounted Access" : "Get Access Now"}</>
                       )}
                     </button>
                   )}

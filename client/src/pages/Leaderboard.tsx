@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { Paywall } from "@/components/Paywall";
-import { analytics } from "@/lib/analytics";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,11 +14,6 @@ export default function Leaderboard() {
   const [period, setPeriod] = useState<"all" | "monthly" | "weekly">("all");
 
   const hasPremiumAccess = subscription?.isActive && (subscription?.tier === 'daily' || subscription?.tier === 'monthly' || subscription?.tier === 'yearly');
-
-  // Track leaderboard view
-  useEffect(() => {
-    analytics.track("leaderboard_viewed", { period });
-  }, [period]);
 
   const { data: entries, isLoading } = trpc.leaderboard.list.useQuery({ period, limit: 25 }, { enabled: hasPremiumAccess });
   const { data: stats } = trpc.leaderboard.stats.useQuery(undefined, { enabled: hasPremiumAccess });

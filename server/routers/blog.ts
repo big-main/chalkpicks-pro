@@ -11,6 +11,9 @@ import { blogPosts, picks } from "../../drizzle/schema";
 import { eq, desc, and, ne, gte } from "drizzle-orm";
 import { invokeLLM } from "../_core/llm";
 import { getDb } from "../db";
+import { invalidateSitemapCache } from "../_core/sitemap";
+import { pingIndexNow } from "../_core/indexnow";
+import { SITE_URL } from "@shared/seo-routes";
 
 export const blogRouter = router({
   /**
@@ -207,6 +210,14 @@ export const blogRouter = router({
           publishedAt: new Date(),
         })
         .where(eq(blogPosts.id, input.id));
+
+      // The sitemap cache now has a stale (pre-publish) snapshot — drop it so
+      // the next /sitemap.xml hit picks up the newly published URL immediately.
+      invalidateSitemapCache();
+
+      // Fire-and-forget: tell Bing/Yandex/etc. about the new URL right away
+      // instead of waiting for their crawlers to rediscover it.
+      pingIndexNow([`${SITE_URL}/blog/${post[0].slug}`, `${SITE_URL}/sitemap.xml`]);
 
       return { success: true };
     }),

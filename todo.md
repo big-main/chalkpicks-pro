@@ -1171,3 +1171,12 @@
 - [x] Added transparent Methodology section to Performance page: Grading Rules (timestamped, auto-graded, push handling, flat unit sizing) + Transparency Guarantees (full history, CLV tracking, sport-by-sport, no cherry-picking)
 - [x] All 168 tests passing, 0 TS errors
 - [x] Save checkpoint
+
+## Phase 43 — Elo Engine, PremiumCard, Push Notification Edge Trigger
+- [x] Cloud Computer verified and redeployed: all services healthy (chalkpicks-prod, nginx, Ollama, quant sidecar, OddsHarvester)
+- [x] Elo engine seeded with 2025 data: 410 games total (150 NBA regular season, 60 NBA playoffs, 200 MLB 2025). OKC Thunder tops NBA at 1786.7, Dodgers tops MLB at 1703.0
+- [x] PremiumCard glassmorphism component created at client/src/components/ui/PremiumCard.tsx
+- [x] EVFinder.tsx updated to use PremiumCard instead of NeonCard
+- [x] Push notification trigger updated in scheduler.ts: now fires on confidenceScore >= 85 OR edgeScore >= 5% (was only confidence >= 85 before)
+- [x] All 168 tests passing, 0 TS errors
+- [x] Save checkpoint

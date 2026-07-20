@@ -339,13 +339,15 @@ export async function runDailyPicksJob() {
         });
         generated++;
         console.log(`[Scheduler] Generated pick: ${pick.recommendation} (${pick.confidenceScore}% confidence)`);
-        // Fire Web Push alert for high-confidence picks (85%+)
-        if (pick.confidenceScore >= 85) {
+        // Fire Web Push alert for high-confidence picks (85%+) OR high-edge picks (5%+)
+        const edgeNum = parseFloat(pick.edgeScore);
+        if (pick.confidenceScore >= 85 || edgeNum >= 5) {
           sendHighConfidencePickAlert({
             id: 0, // placeholder until DB returns the inserted ID
             recommendation: pick.recommendation,
             sportKey: pick.sportKey,
             confidenceScore: pick.confidenceScore,
+            edgeScore: pick.edgeScore,
             homeTeam: pick.homeTeam,
             awayTeam: pick.awayTeam,
           }).catch(err => console.error("[Scheduler] Push alert failed:", err));

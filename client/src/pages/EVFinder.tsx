@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { Paywall } from "@/components/Paywall";
 import { RefreshCw, TrendingUp, Zap, Filter, Lock, ArrowRight, Info } from "lucide-react";
 import { Link } from "wouter";
+import { PremiumCard, EdgeBadge } from "@/components/ui/PremiumCard";
 
 const SPORTS = [
   { key: "all", label: "ALL SPORTS" },
@@ -41,9 +42,9 @@ function formatOdds(american: number): string {
 }
 
 const NeonCard = ({ children, className = "", style = {} }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) => (
-  <div className={`glass-card-static ${className}`} style={style}>
+  <PremiumCard className={`${className}`}>
     {children}
-  </div>
+  </PremiumCard>
 );
 
 export default function EVFinder() {

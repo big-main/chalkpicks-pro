@@ -1154,3 +1154,11 @@
 - [x] Paywall audit: fixed 4 premium tools in tools.ts (propBuilder, lineMovement, correlationFinder, evFinder) + 6 arbitrage endpoints from protectedProcedure → premiumProcedure
 - [x] All 163 tests passing, 0 TS errors
 - [x] Save checkpoint
+
+## Phase 41 — Next Steps: Cloud Deploy + Backtesting UI + n8n Drip
+
+- [x] Deploy latest code (paywall hardening + TS fixes) to Cloud Computer production mirror (git pull + pnpm install + pnpm build + pm2 restart)
+- [x] Wire quant sidecar into Backtesting page UI: fixed field mapping (total_bets, roi_pct, profit, bankroll_history, recent_bets), added bankroll curve chart, Sharpe ratio, max drawdown, recent bets table
+- [x] n8n email drip sequence (Day 0/1/3/7): workflow JSON exported to docs/n8n-email-drip-workflow.json, N8N_DRIP_WEBHOOK_URL added to env.ts, non-blocking webhook fire added to auth.register mutation
+- [x] All 163 tests passing, 0 TS errors
+- [x] Save checkpoint

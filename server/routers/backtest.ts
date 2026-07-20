@@ -40,48 +40,73 @@ export const backtestRouter = router({
           });
           if (resp.ok) {
             const quantResult = await resp.json() as any;
-            const mappedResults = (quantResult.results ?? []).map((r: any, i: number) => ({
-              date: r.date ?? input.dateFrom,
-              pick: r.pick ?? `Pick ${i + 1}`,
-              confidence: r.confidence ?? input.minConfidence,
-              result: r.result ?? "win",
-              profit: r.profit ?? 0,
-              bankroll: r.bankroll ?? input.initialBankroll,
+            // Map bankroll_history (number[]) to chart-friendly objects with cumulativeProfit
+            const bankrollHistory: number[] = quantResult.bankroll_history ?? [];
+            const startBankroll = bankrollHistory[0] ?? input.initialBankroll;
+            const mappedResults = bankrollHistory.map((bankroll: number, i: number) => ({
+              date: `Bet ${i + 1}`,
+              pick: `Bet ${i + 1}`,
+              confidence: input.minConfidence,
+              result: i === 0 ? "start" : bankroll >= bankrollHistory[i - 1] ? "win" : "loss",
+              profit: i === 0 ? 0 : Math.round((bankroll - bankrollHistory[i - 1]) * 100) / 100,
+              bankroll: Math.round(bankroll * 100) / 100,
+              cumulativeProfit: Math.round((bankroll - startBankroll) * 100) / 100,
+            }));
+            // Map recent_bets for the bets table
+            const recentBets = (quantResult.recent_bets ?? []).map((b: any) => ({
+              date: b.date,
+              odds: b.odds,
+              edge: b.edge,
+              won: b.won,
+              betSize: Math.round((b.bet_size ?? 0) * 100) / 100,
+              bankrollAfter: Math.round((b.bankroll_after ?? 0) * 100) / 100,
             }));
             const backtestData = {
               id: Date.now(),
               name: input.name,
               sportKey: input.sportKey ?? "all",
               strategy: input.strategy,
-              totalPicks: quantResult.total_picks ?? 0,
+              totalPicks: quantResult.total_bets ?? 0,
               wins: quantResult.wins ?? 0,
               losses: quantResult.losses ?? 0,
-              pushes: quantResult.pushes ?? 0,
-              winRate: quantResult.win_rate ?? 0,
-              roi: quantResult.roi ?? 0,
-              totalProfit: quantResult.total_profit ?? 0,
+              pushes: 0,
+              winRate: (quantResult.win_rate ?? 0) / 100,
+              roi: quantResult.roi_pct ?? 0,
+              totalProfit: quantResult.profit ?? 0,
+              profit: quantResult.profit ?? 0,
+              startingBankroll: quantResult.starting_bankroll ?? input.initialBankroll,
+              endingBankroll: quantResult.ending_bankroll ?? input.initialBankroll,
+              maxDrawdownPct: quantResult.max_drawdown_pct ?? 0,
+              sharpeRatio: quantResult.sharpe_ratio ?? 0,
+              avgBetSize: quantResult.avg_bet_size ?? 0,
               results: mappedResults,
+              recentBets,
               createdAt: new Date(),
+              source: "quant_sidecar",
             };
             if (db) {
-              const [ins] = await db.insert(backtests).values({
-                userId: ctx.user.id,
-                name: input.name,
-                sportKey: input.sportKey,
-                pickType: input.pickType,
-                minConfidence: input.minConfidence,
-                dateFrom: input.dateFrom,
-                dateTo: input.dateTo,
-                totalPicks: backtestData.totalPicks,
-                wins: backtestData.wins,
-                losses: backtestData.losses,
-                pushes: backtestData.pushes,
-                winRate: String(backtestData.winRate),
-                roi: String(backtestData.roi),
-                totalProfit: String(backtestData.totalProfit),
-                results: mappedResults,
-              });
-              backtestData.id = (ins as any).insertId ?? Date.now();
+              try {
+                const [ins] = await db.insert(backtests).values({
+                  userId: ctx.user.id,
+                  name: input.name,
+                  sportKey: input.sportKey,
+                  pickType: input.pickType,
+                  minConfidence: input.minConfidence,
+                  dateFrom: input.dateFrom,
+                  dateTo: input.dateTo,
+                  totalPicks: backtestData.totalPicks,
+                  wins: backtestData.wins,
+                  losses: backtestData.losses,
+                  pushes: backtestData.pushes,
+                  winRate: String(Math.round(backtestData.winRate * 1000) / 10),
+                  roi: String(backtestData.roi),
+                  totalProfit: String(backtestData.totalProfit),
+                  results: mappedResults.slice(0, 50),
+                });
+                backtestData.id = (ins as any).insertId ?? Date.now();
+              } catch (dbErr) {
+                console.warn("[backtest] DB insert failed:", dbErr);
+              }
             }
             return backtestData;
           }

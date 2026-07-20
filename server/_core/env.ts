@@ -22,4 +22,6 @@ export const ENV = {
   twitterAccessSecret: process.env.TWITTER_ACCESS_SECRET ?? "",
   // Discord Webhook — automated daily picks/alerts/results/previews
   discordWebhookUrl: process.env.DISCORD_WEBHOOK_URL ?? "",
+  // n8n Email Drip Webhook — fires on new user registration (Day 0/1/3/7 sequence)
+  n8nDripWebhookUrl: process.env.N8N_DRIP_WEBHOOK_URL ?? "",
 };

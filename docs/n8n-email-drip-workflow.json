@@ -1,0 +1,185 @@
+{
+  "name": "ChalkPicks Email Drip Sequence (Day 0/1/3/7)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chalkpicks-drip",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "chalkpicks-drip"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ received: true }) }}"
+      },
+      "id": "respond-ok",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [460, 180]
+    },
+    {
+      "parameters": {
+        "fromEmail": "picks@chalkpicks.live",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "🎯 Welcome to ChalkPicks — Your First Free Pick Is Ready",
+        "emailType": "html",
+        "message": "<!DOCTYPE html><html><body style='font-family:Inter,sans-serif;background:#0a0a0a;color:#e5e5e5;margin:0;padding:0'><div style='max-width:600px;margin:0 auto;padding:40px 24px'><div style='text-align:center;margin-bottom:32px'><img src='https://chalkpicks.live/logo.png' alt='ChalkPicks' style='height:40px' /></div><h1 style='color:#22c55e;font-size:28px;margin-bottom:8px'>Welcome to ChalkPicks, {{ $json.body.name }}! 🎯</h1><p style='color:#a3a3a3;font-size:16px;line-height:1.6'>You just joined the sharpest sports betting analytics platform on the internet. Here's what you can do right now:</p><div style='background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:24px;margin:24px 0'><h3 style='color:#22c55e;margin-top:0'>✅ Free Features (Available Now)</h3><ul style='color:#d4d4d4;line-height:2'><li>Today's Free AI Pick</li><li>Live Odds Dashboard</li><li>Basic EV Calculator</li><li>Public Consensus Data</li></ul></div><div style='background:#1a1a1a;border:1px solid #22c55e33;border-radius:12px;padding:24px;margin:24px 0'><h3 style='color:#22c55e;margin-top:0'>⚡ Pro Features (Upgrade to Unlock)</h3><ul style='color:#d4d4d4;line-height:2'><li>All AI Picks (5-10/day across all sports)</li><li>Sharp Money Alerts</li><li>CLV Tracker</li><li>Arbitrage Finder</li><li>Backtesting Engine with Kelly Sizing</li></ul></div><div style='text-align:center;margin:32px 0'><a href='https://chalkpicks.live/picks' style='background:#22c55e;color:#000;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px'>View Today's Free Pick →</a></div><p style='color:#666;font-size:13px;text-align:center'>You're receiving this because you signed up at chalkpicks.live. <a href='#' style='color:#666'>Unsubscribe</a></p></div></body></html>"
+      },
+      "id": "day0-welcome",
+      "name": "Day 0 — Welcome Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [460, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-chalkpicks",
+          "name": "ChalkPicks SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "days"
+      },
+      "id": "wait-day1",
+      "name": "Wait 1 Day",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "picks@chalkpicks.live",
+        "toEmail": "={{ $('Webhook Trigger').item.json.body.email }}",
+        "subject": "📊 How Sharp Bettors Find +EV Edges (ChalkPicks Pro tip)",
+        "emailType": "html",
+        "message": "<!DOCTYPE html><html><body style='font-family:Inter,sans-serif;background:#0a0a0a;color:#e5e5e5;margin:0;padding:0'><div style='max-width:600px;margin:0 auto;padding:40px 24px'><h2 style='color:#22c55e'>Day 1: The Secret Sharp Bettors Use 📊</h2><p style='color:#a3a3a3;line-height:1.6'>Most bettors lose because they bet on who they <em>think</em> will win. Sharp bettors bet on <strong style='color:#22c55e'>mispriced lines</strong>.</p><div style='background:#1a1a1a;border-left:4px solid #22c55e;padding:16px 20px;margin:24px 0;border-radius:0 8px 8px 0'><p style='margin:0;color:#d4d4d4;font-style:italic'>\"The goal isn't to pick winners. It's to find bets where the odds are better than the true probability.\"</p></div><p style='color:#a3a3a3;line-height:1.6'>This is called <strong style='color:#fff'>Expected Value (+EV)</strong>. ChalkPicks calculates it automatically for every game using:</p><ul style='color:#d4d4d4;line-height:2'><li>No-vig fair odds from sharp books (Pinnacle, Circa)</li><li>Closing line value (CLV) tracking</li><li>Steam move detection</li><li>Public vs. sharp money splits</li></ul><div style='text-align:center;margin:32px 0'><a href='https://chalkpicks.live/tools/ev-finder' style='background:#22c55e;color:#000;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px'>Try the EV Finder →</a></div><p style='color:#666;font-size:13px;text-align:center'><a href='#' style='color:#666'>Unsubscribe</a></p></div></body></html>"
+      },
+      "id": "day1-ev-education",
+      "name": "Day 1 — EV Education",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [900, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-chalkpicks",
+          "name": "ChalkPicks SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "days"
+      },
+      "id": "wait-day3",
+      "name": "Wait 2 More Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "picks@chalkpicks.live",
+        "toEmail": "={{ $('Webhook Trigger').item.json.body.email }}",
+        "subject": "⚡ Real results from ChalkPicks Pro members",
+        "emailType": "html",
+        "message": "<!DOCTYPE html><html><body style='font-family:Inter,sans-serif;background:#0a0a0a;color:#e5e5e5;margin:0;padding:0'><div style='max-width:600px;margin:0 auto;padding:40px 24px'><h2 style='color:#22c55e'>Day 3: What Pro Members Get ⚡</h2><p style='color:#a3a3a3;line-height:1.6'>Here's what ChalkPicks Pro members have access to that free users don't:</p><div style='display:grid;gap:16px;margin:24px 0'><div style='background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:20px'><div style='color:#22c55e;font-weight:700;margin-bottom:8px'>🎯 All AI Picks (5-10/day)</div><div style='color:#a3a3a3;font-size:14px'>Every pick across NFL, NBA, MLB, NHL with confidence scores, edge %, and recommended bet size</div></div><div style='background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:20px'><div style='color:#22c55e;font-weight:700;margin-bottom:8px'>🔥 Sharp Money Alerts</div><div style='color:#a3a3a3;font-size:14px'>Real-time alerts when sharp money moves a line 3+ points — the most reliable signal in sports betting</div></div><div style='background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:20px'><div style='color:#22c55e;font-weight:700;margin-bottom:8px'>📈 Backtesting Engine</div><div style='color:#a3a3a3;font-size:14px'>Test Kelly sizing strategies against 2+ years of historical data. See your exact ROI before risking real money</div></div><div style='background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:20px'><div style='color:#22c55e;font-weight:700;margin-bottom:8px'>💰 Arbitrage Finder</div><div style='color:#a3a3a3;font-size:14px'>Guaranteed profit opportunities across books — updated every 5 minutes</div></div></div><div style='text-align:center;margin:32px 0'><a href='https://chalkpicks.live/pricing' style='background:#22c55e;color:#000;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px'>Upgrade to Pro — $29/mo →</a></div><p style='color:#666;font-size:13px;text-align:center'><a href='#' style='color:#666'>Unsubscribe</a></p></div></body></html>"
+      },
+      "id": "day3-social-proof",
+      "name": "Day 3 — Pro Features Showcase",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1340, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-chalkpicks",
+          "name": "ChalkPicks SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 4,
+        "unit": "days"
+      },
+      "id": "wait-day7",
+      "name": "Wait 4 More Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "picks@chalkpicks.live",
+        "toEmail": "={{ $('Webhook Trigger').item.json.body.email }}",
+        "subject": "🏆 Last chance: 7-day free trial ending soon",
+        "emailType": "html",
+        "message": "<!DOCTYPE html><html><body style='font-family:Inter,sans-serif;background:#0a0a0a;color:#e5e5e5;margin:0;padding:0'><div style='max-width:600px;margin:0 auto;padding:40px 24px'><div style='background:#22c55e11;border:1px solid #22c55e33;border-radius:12px;padding:20px;text-align:center;margin-bottom:32px'><div style='color:#22c55e;font-size:32px;font-weight:800'>7 Days In</div><div style='color:#a3a3a3;font-size:14px'>You've been with ChalkPicks for a week</div></div><h2 style='color:#fff'>One last thing, {{ $('Webhook Trigger').item.json.body.name }}</h2><p style='color:#a3a3a3;line-height:1.6'>You've been using ChalkPicks for 7 days. If you haven't upgraded yet, here's the honest truth:</p><div style='background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:24px;margin:24px 0'><p style='color:#d4d4d4;margin:0 0 16px'>The free tier gives you 1 pick per day. Pro gives you <strong style='color:#22c55e'>5-10 picks per day</strong> across all sports — that's 35-70 picks per week with edge scores, Kelly sizing, and sharp money context.</p><p style='color:#d4d4d4;margin:0'>At $29/month, you need to win <strong style='color:#22c55e'>one extra bet per week</strong> to break even. Most Pro members report 3-5x ROI improvement in their first month.</p></div><div style='text-align:center;margin:32px 0'><a href='https://chalkpicks.live/pricing' style='background:#22c55e;color:#000;padding:16px 40px;border-radius:8px;text-decoration:none;font-weight:700;font-size:18px'>Start Pro — $29/mo →</a><div style='color:#666;font-size:12px;margin-top:12px'>Cancel anytime. No contracts.</div></div><p style='color:#666;font-size:13px;text-align:center'><a href='#' style='color:#666'>Unsubscribe</a></p></div></body></html>"
+      },
+      "id": "day7-conversion",
+      "name": "Day 7 — Conversion Push",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1780, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-chalkpicks",
+          "name": "ChalkPicks SMTP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          { "node": "Respond OK", "type": "main", "index": 0 },
+          { "node": "Day 0 — Welcome Email", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Day 0 — Welcome Email": {
+      "main": [[{ "node": "Wait 1 Day", "type": "main", "index": 0 }]]
+    },
+    "Wait 1 Day": {
+      "main": [[{ "node": "Day 1 — EV Education", "type": "main", "index": 0 }]]
+    },
+    "Day 1 — EV Education": {
+      "main": [[{ "node": "Wait 2 More Days", "type": "main", "index": 0 }]]
+    },
+    "Wait 2 More Days": {
+      "main": [[{ "node": "Day 3 — Pro Features Showcase", "type": "main", "index": 0 }]]
+    },
+    "Day 3 — Pro Features Showcase": {
+      "main": [[{ "node": "Wait 4 More Days", "type": "main", "index": 0 }]]
+    },
+    "Wait 4 More Days": {
+      "main": [[{ "node": "Day 7 — Conversion Push", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "pinData": {},
+  "versionId": "1",
+  "triggerCount": 1,
+  "tags": [{ "name": "chalkpicks" }, { "name": "email-drip" }]
+}

@@ -47,6 +47,7 @@ import { trackingRouter } from "./routers/tracking";
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
 import * as db from "./db";
+import { ENV } from "./_core/env";
 import type { User } from "../drizzle/schema";
 import { users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
@@ -86,6 +87,21 @@ export const appRouter = router({
         const user = await db.createUser({ name: input.name, email: input.email, passwordHash });
 
         await issueSessionCookie(ctx.req, ctx.res, user.id, user.name ?? input.name);
+
+        // Fire n8n email drip sequence (non-blocking, best-effort)
+        if (ENV.n8nDripWebhookUrl) {
+          fetch(ENV.n8nDripWebhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: input.email,
+              name: input.name,
+              userId: user.id,
+              registeredAt: new Date().toISOString(),
+            }),
+            signal: AbortSignal.timeout(5000),
+          }).catch((e) => console.warn("[drip] n8n webhook failed:", e));
+        }
 
         return safeUser(user);
       }),

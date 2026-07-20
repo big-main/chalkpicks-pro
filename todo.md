@@ -1131,3 +1131,15 @@
 - [x] Test picks-blog: 6 articles generated and IndexNow pinged
 - [x] 127 tests passing (14 test files)
 - [x] Save checkpoint
+
+## Phase 39 — Recommendations Implementation
+
+- [x] Fix tracking.ts TS errors: rewrite to use standard select queries instead of relational API (db.query.*)
+- [x] Add trackingRouter import and registration in server/routers.ts
+- [x] Fix MyTrackedPicks.tsx useAuth import path
+- [x] Add shared/oddsMath.ts compat exports: noVigProbabilities, noVigProbability, bookmakerHold (decimal), expectedValue (with validation), edgeVsFairLine, kellyFraction (with fraction param), closingLineValue, decimalToImpliedProb, fractionalToDecimal, decimalToFractional
+- [x] All 163 tests passing (1 skipped) — 0 TS errors
+- [x] Deploy latest code to Cloud Computer production mirror (git pull + pnpm build + pm2 restart)
+- [x] Add Ollama warm-up Heartbeat job: POST /api/scheduled/ollama-warmup every 4 minutes (task_uid: 2PgkaJqzhgoCbTcPTHtfjG)
+- [x] Register ollamaWarmupHandler in server/_core/index.ts
+- [x] Tested warm-up endpoint: qwen2.5:7b responds in ~3.3s when warm

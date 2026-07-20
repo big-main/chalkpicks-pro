@@ -20,6 +20,7 @@ import { welcomeDripHandler } from "../handlers/welcomeDripHandler";
 import { blogContentHandler } from "../handlers/blogContentHandler";
 import { picksBlogHandler } from "../handlers/picksBlogHandler";
 import { discordPostHandler } from "../handlers/discordPostHandler";
+import { ollamaWarmupHandler } from "../handlers/ollamaWarmupHandler";
 import { registerSecurityMiddleware } from "../middleware/security";
 import { registerWorkerRoutes } from "../workerRoutes";
 import { apiReference } from "@scalar/express-api-reference";
@@ -625,6 +626,7 @@ async function startServer() {
   app.post("/api/scheduled/blog-content", blogContentHandler);
   app.post("/api/scheduled/picks-blog", picksBlogHandler);
   app.post("/api/scheduled/discord-post", discordPostHandler);
+  app.post("/api/scheduled/ollama-warmup", ollamaWarmupHandler);
   app.post("/api/scheduled/distribute-payouts", async (req, res) => {
     try {
       console.log("[Payout] Weekly distribution triggered");

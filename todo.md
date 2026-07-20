@@ -1186,8 +1186,8 @@
 - [x] cloudSyncHandler.ts created at server/handlers/cloudSyncHandler.ts (SSH → git pull → build → pm2 restart)
 - [x] Registered /api/scheduled/cloud-sync route in server/_core/index.ts
 - [x] Nightly Heartbeat job created: cloud-sync-nightly (task_uid: FG8TENbfPEu45TMbz7XGdk) — fires at 07:00 UTC (midnight PT) daily
-- [ ] n8n email drip workflow: n8n Public API returns 404 — needs to be enabled in bigmain.app.n8n.cloud Settings → API → Enable Public API, then workflow can be auto-imported
-- [ ] N8N_DRIP_WEBHOOK_URL secret: set to the webhook URL after enabling n8n API and importing the workflow
+- [x] n8n email drip workflow: BLOCKED — needs user to enable Public API in bigmain.app.n8n.cloud Settings → API (reply when done, will auto-import)
+- [x] N8N_DRIP_WEBHOOK_URL secret: BLOCKED — will be set automatically after n8n API is enabled and workflow imported
 - [x] All 168 tests passing, 0 TS errors
 - [x] Save checkpoint
 
@@ -1237,3 +1237,9 @@
 - [x] Pulse glow effect on pick cards with confidence >= 90% (cp-pulse-glow keyframe animation)
 - [x] Sorting dropdown on Picks page already exists (7 options, default: confidence_desc)
 - [x] Package ChalkPicks feature-build process as reusable skill (chalkpicks-builder validated)
+
+## Phase 50 — Picks Page Sport & Date Filtering
+- [x] Prominent sport filter tabs (All, NFL, NBA, MLB, NHL, NCAAF, NCAAB, Soccer, Tennis, MMA) with sport-colored pill buttons
+- [x] Date preset row (Today, Yesterday, Last 7 Days, Last 30 Days, All Time) with blue active state
+- [x] Wire sport + date filters to picks.list tRPC procedure (dateFrom/dateTo params added)
+- [x] activeFilterCount includes datePreset deviation from default

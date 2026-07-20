@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Link } from "wouter";
-import { Brain, Lock, Filter, RefreshCw, Zap, Sparkles, ArrowUpDown, SlidersHorizontal, X, ChevronDown, Bell, BellOff, Crown } from "lucide-react";
+import { Brain, Lock, Filter, RefreshCw, Zap, Sparkles, ArrowUpDown, SlidersHorizontal, X, ChevronDown, Bell, BellOff, Crown, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import SharePickCard from "@/components/SharePickCard";
 import PushNotificationBanner from "@/components/PushNotificationBanner";
@@ -51,6 +51,8 @@ const SPORTSBOOKS = [
   { value: "Barstool", label: "Barstool" },
 ];
 
+type DatePreset = "today" | "yesterday" | "last7" | "last30" | "all";
+
 interface FilterState {
   sport: string;
   tier: string;
@@ -60,8 +62,8 @@ interface FilterState {
   minEdge: number;
   sortBy: SortOption;
   sportsbook: string;
+  datePreset: DatePreset;
 }
-
 const DEFAULT_FILTERS: FilterState = {
   sport: "all",
   tier: "all",
@@ -71,7 +73,38 @@ const DEFAULT_FILTERS: FilterState = {
   minEdge: 0,
   sortBy: "confidence_desc",
   sportsbook: "all",
+  datePreset: "last7",
 };
+
+const DATE_PRESETS: { value: DatePreset; label: string; icon: string }[] = [
+  { value: "today", label: "Today", icon: "📅" },
+  { value: "yesterday", label: "Yesterday", icon: "📆" },
+  { value: "last7", label: "Last 7 Days", icon: "📊" },
+  { value: "last30", label: "Last 30 Days", icon: "📈" },
+  { value: "all", label: "All Time", icon: "🗂️" },
+];
+
+function getDateRange(preset: DatePreset): { dateFrom?: string; dateTo?: string } {
+  const today = new Date();
+  const fmt = (d: Date) => d.toISOString().split("T")[0];
+  switch (preset) {
+    case "today": return { dateFrom: fmt(today), dateTo: fmt(today) };
+    case "yesterday": {
+      const y = new Date(today); y.setDate(y.getDate() - 1);
+      return { dateFrom: fmt(y), dateTo: fmt(y) };
+    }
+    case "last7": {
+      const from = new Date(today); from.setDate(from.getDate() - 7);
+      return { dateFrom: fmt(from) };
+    }
+    case "last30": {
+      const from = new Date(today); from.setDate(from.getDate() - 30);
+      return { dateFrom: fmt(from) };
+    }
+    case "all": return {};
+    default: return {};
+  }
+}
 
 function getStoredFilters(): FilterState {
   try {
@@ -324,7 +357,53 @@ function FilterBar({
 
   return (
     <div className="mb-6 space-y-3">
-      {/* Primary controls row — always visible */}
+      {/* Sport Tab Buttons — always visible */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {[{ key: "all", name: "All Sports", icon: "🏆" }, ...(sports ?? [])].map((s: any) => {
+          const isActive = filters.sport === s.key;
+          const sportClass = s.key === "all" ? "" : getSportBadgeClass(s.key);
+          return (
+            <button
+              key={s.key}
+              onClick={() => updateFilter("sport", s.key)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                isActive
+                  ? s.key === "all"
+                    ? "bg-primary/20 border-primary text-primary"
+                    : `${sportClass} border-current opacity-100`
+                  : "bg-transparent border-white/10 text-white/50 hover:border-white/25 hover:text-white/75"
+              }`}
+            >
+              <span>{s.icon}</span>
+              <span>{s.name}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Date Preset Row */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <Calendar className="w-3.5 h-3.5 text-white/40 shrink-0" />
+        {DATE_PRESETS.map((preset) => {
+          const isActive = filters.datePreset === preset.value;
+          return (
+            <button
+              key={preset.value}
+              onClick={() => updateFilter("datePreset", preset.value)}
+              className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all border ${
+                isActive
+                  ? "bg-blue-500/20 border-blue-400 text-blue-300"
+                  : "bg-transparent border-white/10 text-white/50 hover:border-white/25 hover:text-white/75"
+              }`}
+            >
+              <span>{preset.icon}</span>
+              <span>{preset.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Secondary controls row — sort, tier, sportsbook, advanced */}
       <div className="flex items-center gap-3 flex-wrap">
         {/* Sort dropdown */}
         <Select value={filters.sortBy} onValueChange={(v) => updateFilter("sortBy", v)}>
@@ -339,17 +418,6 @@ function FilterBar({
               <SelectItem key={opt.value} value={opt.value}>
                 <span className="flex items-center gap-2"><span>{opt.icon}</span><span>{opt.label}</span></span>
               </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        {/* Sport filter */}
-        <Select value={filters.sport} onValueChange={(v) => updateFilter("sport", v)}>
-          <SelectTrigger className="w-40 h-9 text-xs"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Sports</SelectItem>
-            {sports?.map((s: any) => (
-              <SelectItem key={s.key} value={s.key}>{s.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -586,9 +654,12 @@ export default function Picks() {
   const [filters, setFilters] = useState<FilterState>(getStoredFilters);
   const [generateOpen, setGenerateOpen] = useState(false);
 
+  const dateRange = useMemo(() => getDateRange(filters.datePreset), [filters.datePreset]);
   const { data: picksData, isLoading, refetch } = trpc.picks.list.useQuery({
     sportKey: filters.sport === "all" ? undefined : filters.sport,
     tier: filters.tier === "all" ? undefined : (filters.tier as "free" | "premium" | "all"),
+    dateFrom: dateRange.dateFrom,
+    dateTo: dateRange.dateTo,
   });
   const { data: sports } = trpc.picks.sports.useQuery();
 
@@ -605,6 +676,7 @@ export default function Picks() {
     if (filters.minEdge > 0) count++;
     if (filters.sortBy !== "confidence_desc") count++;
     if (filters.sportsbook !== "all") count++;
+    if (filters.datePreset !== "last7") count++;
     return count;
   }, [filters]);
 

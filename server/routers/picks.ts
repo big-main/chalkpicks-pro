@@ -97,6 +97,8 @@ export const picksRouter = router({
       sportKey: z.string().optional(),
       tier: z.enum(["free", "premium", "all"]).optional().default("all"),
       date: z.string().optional(),
+      dateFrom: z.string().optional(), // YYYY-MM-DD
+      dateTo: z.string().optional(),   // YYYY-MM-DD
       page: z.number().optional().default(1),
       limit: z.number().optional().default(20),
     }))
@@ -110,6 +112,8 @@ export const picksRouter = router({
         let mockData = generateMockPicks(today);
         if (input.sportKey) mockData = mockData.filter(p => p.sportKey === input.sportKey);
         if (input.tier !== "all") mockData = mockData.filter(p => p.tier === input.tier);
+        if (input.dateFrom) mockData = mockData.filter(p => p.pickDate >= input.dateFrom!);
+        if (input.dateTo) mockData = mockData.filter(p => p.pickDate <= input.dateTo!);
         return {
           picks: mockData.slice(offset, offset + input.limit).map((p, i) => ({ ...p, id: i + 1, gameId: null, createdAt: new Date(), updatedAt: new Date(), isActive: true })),
           total: mockData.length,
@@ -120,11 +124,16 @@ export const picksRouter = router({
       const conditions = [eq(picks.isActive, true)];
       if (input.sportKey) conditions.push(eq(picks.sportKey, input.sportKey));
       if (input.tier !== "all") conditions.push(eq(picks.tier, input.tier));
-      // Show picks for today and last 7 days
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      const sevenDaysAgoStr = sevenDaysAgo.toISOString().split("T")[0];
-      conditions.push(gte(picks.pickDate, sevenDaysAgoStr));
+      // Date range filtering
+      if (input.dateFrom) {
+        conditions.push(gte(picks.pickDate, input.dateFrom));
+      } else {
+        // Default: show picks for today and last 7 days
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        conditions.push(gte(picks.pickDate, sevenDaysAgo.toISOString().split("T")[0]));
+      }
+      if (input.dateTo) conditions.push(lte(picks.pickDate, input.dateTo));
 
       const [pickList, countResult] = await Promise.all([
         db.select().from(picks).where(and(...conditions)).orderBy(desc(picks.isFeatured), desc(picks.edgeScore), desc(picks.confidenceScore)).limit(input.limit).offset(offset),

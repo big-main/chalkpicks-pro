@@ -15,4 +15,9 @@ export const ENV = {
   openRouterModel: "openai/gpt-4o-mini",
   // OddsHarvester API on Cloud Computer — OddsPortal scraper for supplemental odds
   oddsHarvesterApiUrl: process.env.ODDSHARVESTER_API_URL ?? "http://35.237.81.82:8090",
+  // Twitter/X API — OAuth 1.0a for automated posting (@chalkpickspro)
+  twitterConsumerKey: process.env.TWITTER_CONSUMER_KEY ?? "",
+  twitterConsumerSecret: process.env.TWITTER_CONSUMER_SECRET ?? "",
+  twitterAccessToken: process.env.TWITTER_ACCESS_TOKEN ?? "",
+  twitterAccessSecret: process.env.TWITTER_ACCESS_SECRET ?? "",
 };

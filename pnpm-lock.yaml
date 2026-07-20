@@ -268,6 +268,9 @@ importers:
       twilio:
         specifier: ^6.0.0
         version: 6.0.0
+      twitter-api-v2:
+        specifier: ^1.29.0
+        version: 1.29.0
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.1(@types/react@19.2.1))(@types/react@19.2.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -5210,6 +5213,9 @@ packages:
   twilio@6.0.0:
     resolution: {integrity: sha512-MAie5DJ3KLpcKlDaYtNzsKMQXcCi+YHWKvZjuSpm27vJAO/l8PanJA0LkkJ03sbh+Kwe5NeL0Q2+y6IjNUYeUA==}
     engines: {node: '>=20.0.0'}
+
+  twitter-api-v2@1.29.0:
+    resolution: {integrity: sha512-v473q5bwme4N+DWSg6qY+JCvfg1nSJRWwui3HUALafxfqCvVkKiYmS/5x/pVeJwTmyeBxexMbzHwnzrH4h6oYQ==}
 
   type-fest@5.8.0:
     resolution: {integrity: sha512-YGYEVz3Fm5iy/AybuA0oyNFq7H4CgQNfRp/qfe8nurE1kuCeNm3/vfm9X4Mtl+qLyaKJUh5xrFZwogr41SMjYA==}
@@ -11129,6 +11135,8 @@ snapshots:
     transitivePeerDependencies:
       - debug
       - supports-color
+
+  twitter-api-v2@1.29.0: {}
 
   type-fest@5.8.0:
     dependencies:

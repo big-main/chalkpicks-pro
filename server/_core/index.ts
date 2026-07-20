@@ -20,6 +20,7 @@ import { weeklyNewsletterHandler } from "../handlers/weeklyNewsletterHandler";
 import { welcomeDripHandler } from "../handlers/welcomeDripHandler";
 import { blogContentHandler } from "../handlers/blogContentHandler";
 import { picksBlogHandler } from "../handlers/picksBlogHandler";
+import { twitterPostHandler } from "../handlers/twitterPostHandler";
 import { registerSecurityMiddleware } from "../middleware/security";
 import { apiReference } from "@scalar/express-api-reference";
 import compression from "compression";
@@ -596,6 +597,7 @@ async function startServer() {
   app.post("/api/scheduled/welcome-drip", welcomeDripHandler);
   app.post("/api/scheduled/blog-content", blogContentHandler);
   app.post("/api/scheduled/picks-blog", picksBlogHandler);
+  app.post("/api/scheduled/twitter-post", twitterPostHandler);
   app.post("/api/scheduled/distribute-payouts", async (req, res) => {
     try {
       console.log("[Payout] Weekly distribution triggered");

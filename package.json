@@ -99,6 +99,7 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "twilio": "^6.0.0",
+    "twitter-api-v2": "^1.29.0",
     "vaul": "^1.1.2",
     "web-push": "^3.6.7",
     "wouter": "^3.3.5",

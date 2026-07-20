@@ -1241,7 +1241,7 @@
 - [x] TypeScript clean (0 errors), 137 tests pass
 - [x] Save checkpoint
 
-## Phase 36 — Twitter/X Automation via n8n (Jul 19, 2026)
+## Phase 36 — Twitter/X Automation (Jul 19, 2026) — DEFERRED
 - [x] Build twitterContentRouter tRPC endpoint with 4 tweet types (morning/afternoon/evening/night)
 - [x] Morning post: Free daily pick (sport, pick, odds, confidence, hashtags)
 - [x] Afternoon post: Top steam alert / sharp money movement
@@ -1249,7 +1249,5 @@
 - [x] Night post: Tomorrow's top game preview
 - [x] Protected by TWITTER_CONTENT_SECRET env var (default: chalkpicks-twitter-2026)
 - [x] Router registered in appRouter as twitter: twitterContentRouter
-- [x] n8n workflow JSON created at /home/ubuntu/chalkpicks-twitter-workflow.json
-- [ ] n8n workflow manually imported into bigmain.app.n8n.cloud (requires manual import — n8n API path not accessible)
-- [ ] Twitter OAuth2 credential added in n8n for @chalkpickspro
-- [ ] n8n workflow activated
+- [x] 4 Heartbeat scheduled jobs created (8am/1pm/6pm/9pm PT) for daily tweet posting
+- [ ] DEFERRED: Twitter OAuth 1.0a credentials — X Developer app setup requires additional configuration. Will resume after app credentials are properly configured. Attempted: Multiple token regenerations, Consumer Key validation (app-only auth works), but user context OAuth 1.0a failing with code 89 (Invalid or expired token). Root cause: Token mismatch with Consumer Key or app permissions issue. Next steps: Complete app setup with User Authentication Settings, then regenerate all tokens from same app.

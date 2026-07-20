@@ -1180,3 +1180,13 @@
 - [x] Push notification trigger updated in scheduler.ts: now fires on confidenceScore >= 85 OR edgeScore >= 5% (was only confidence >= 85 before)
 - [x] All 168 tests passing, 0 TS errors
 - [x] Save checkpoint
+
+## Phase 44 — Cloud Deploy, n8n Drip, Nightly Auto-Sync
+- [x] Deploy Phase 43 changes to Cloud Computer production mirror (git pull + pnpm build + pm2 restart)
+- [x] cloudSyncHandler.ts created at server/handlers/cloudSyncHandler.ts (SSH → git pull → build → pm2 restart)
+- [x] Registered /api/scheduled/cloud-sync route in server/_core/index.ts
+- [x] Nightly Heartbeat job created: cloud-sync-nightly (task_uid: FG8TENbfPEu45TMbz7XGdk) — fires at 07:00 UTC (midnight PT) daily
+- [ ] n8n email drip workflow: n8n Public API returns 404 — needs to be enabled in bigmain.app.n8n.cloud Settings → API → Enable Public API, then workflow can be auto-imported
+- [ ] N8N_DRIP_WEBHOOK_URL secret: set to the webhook URL after enabling n8n API and importing the workflow
+- [x] All 168 tests passing, 0 TS errors
+- [x] Save checkpoint

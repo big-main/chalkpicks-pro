@@ -201,12 +201,12 @@ export function findEVOpportunities(
  * @param americanOdds - Offered American odds
  * @returns Kelly fraction (0-1), e.g. 0.05 = bet 5% of bankroll
  */
-export function kellyFraction(trueProb: number, americanOdds: number): number {
+export function kellyFraction(trueProb: number, americanOdds: number, fraction = 1): number {
   const decimal = americanToDecimal(americanOdds);
   const b = decimal - 1; // net odds (profit per unit)
   const q = 1 - trueProb;
   const kelly = (b * trueProb - q) / b;
-  return Math.max(0, kelly);
+  return Math.max(0, kelly) * fraction;
 }
 
 /**
@@ -524,4 +524,89 @@ export function winRate(bets: Array<{ result: "win" | "loss" | "push" | "pending
  */
 export function breakEvenWinRate(americanOdds: number): number {
   return americanToImplied(americanOdds) * 100;
+}
+
+
+// ─── Compatibility & Extended API ────────────────────────────────────────────
+// These exports satisfy both the oddsMath router and the oddsMath.test.ts file.
+
+/** decimalToImpliedProb: throws if decimal <= 1 */
+export function decimalToImpliedProb(decimal: number): number {
+  if (decimal <= 1) throw new Error("Decimal odds must be > 1");
+  return 1 / decimal;
+}
+
+/** fractionalToDecimal: e.g. 3/1 → 4.0, 1/2 → 1.5 */
+export function fractionalToDecimal(numerator: number, denominator: number): number {
+  if (denominator === 0) throw new Error("Denominator cannot be zero");
+  return numerator / denominator + 1;
+}
+
+/** decimalToFractional: e.g. 4.0 → [3,1], 1.5 → [1,2] */
+export function decimalToFractional(decimal: number): [number, number] {
+  if (decimal <= 1) throw new Error("Decimal odds must be > 1");
+  const profit = decimal - 1;
+  const precision = 1000;
+  const num = Math.round(profit * precision);
+  const den = precision;
+  const g = _gcd(num, den);
+  return [num / g, den / g];
+}
+function _gcd(a: number, b: number): number { return b === 0 ? a : _gcd(b, a % b); }
+
+/**
+ * noVigProbabilities: throws if < 2 outcomes, returns fair probs summing to 1.
+ * Alias for devig() with validation.
+ */
+export function noVigProbabilities(americanOdds: number[]): number[] {
+  if (americanOdds.length < 2) throw new Error("Need at least two outcomes");
+  return devig(americanOdds);
+}
+
+/**
+ * noVigProbability: fair prob for a single outcome given all market odds.
+ * e.g. noVigProbability(-150, 130) → fair prob for the -150 side
+ */
+export function noVigProbability(outcomeOdds: number, ...otherOdds: number[]): number {
+  const allOdds = [outcomeOdds, ...otherOdds];
+  return devig(allOdds)[0];
+}
+
+/**
+ * bookmakerHold: returns hold as a DECIMAL fraction (e.g. 0.0476 for 4.76%).
+ * Note: calculateHold() returns percentage; this returns the decimal form.
+ */
+export function bookmakerHold(americanOdds: number[]): number {
+  const impliedProbs = americanOdds.map(americanToImplied);
+  const totalImplied = impliedProbs.reduce((sum, p) => sum + p, 0);
+  return totalImplied - 1;
+}
+
+/**
+ * expectedValue: throws if trueProb is out of [0,1].
+ * Returns EV as a percentage (positive = +EV).
+ */
+export function expectedValue(trueProb: number, americanOdds: number): number {
+  if (trueProb < 0 || trueProb > 1) throw new Error("Probability must be between 0 and 1");
+  const decimal = americanToDecimal(americanOdds);
+  const payout = decimal - 1;
+  return (trueProb * payout - (1 - trueProb)) * 100;
+}
+
+/**
+ * edgeVsFairLine(sharpOdds, softOdds):
+ * Positive when the soft book offers a better price than the sharp fair line.
+ * e.g. edgeVsFairLine(-120, +110) > 0
+ */
+export function edgeVsFairLine(sharpOdds: number, softOdds: number): number {
+  const [fairProb] = devig([sharpOdds, -sharpOdds]);
+  return expectedValue(fairProb, softOdds);
+}
+
+/**
+ * closingLineValue: positive when you beat the closing line (sharp).
+ * Returns CLV in percentage points of implied probability.
+ */
+export function closingLineValue(bettedOdds: number, closingOdds: number): number {
+  return calculateCLV(bettedOdds, closingOdds);
 }

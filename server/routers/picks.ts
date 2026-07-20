@@ -313,7 +313,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
 
     // Flat 1-unit ROI from actual odds, matching the page's own "Grading Rules"
     // claim (ROI on flat 1-unit sizing). See @shared/oddsMath for the math.
-    const roiFor = flatROI;
 
     // By sport
     const sportMap: Record<string, typeof settled> = {};
@@ -328,7 +327,7 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       return {
         sport, wins: w, losses: l, pushes: ps,
         winRate: w + l > 0 ? Math.round((w / (w + l)) * 1000) / 10 : 0,
-        roi: roiFor(rows),
+        roi: flatROI(rows),
       };
     });
 
@@ -362,7 +361,7 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
         const { label, rows } = monthMap[key];
         const w = rows.filter(p => p.result === "win").length;
         const l = rows.filter(p => p.result === "loss").length;
-        return { month: label, winRate: w + l > 0 ? Math.round((w / (w + l)) * 1000) / 10 : 0, roi: roiFor(rows), picks: rows.length };
+        return { month: label, winRate: w + l > 0 ? Math.round((w / (w + l)) * 1000) / 10 : 0, roi: flatROI(rows), picks: rows.length };
       });
 
     // Current win streak, most recent first
@@ -389,7 +388,7 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
 
     return {
       overall: {
-        wins, losses, pushes, winRate, roi: roiFor(settled),
+        wins, losses, pushes, winRate, roi: flatROI(settled),
         totalPicks: allPicks.length, currentStreak, longestStreak,
       },
       bySport,

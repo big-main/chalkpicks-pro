@@ -82,8 +82,6 @@ export const statsRouter = router({
     const losses = settled.filter(p => p.result === "loss").length;
     const winRate = wins + losses > 0 ? Math.round((wins / (wins + losses)) * 1000) / 10 : 0;
 
-    const roiFor = flatROI;
-
     const sportMap: Record<string, typeof settled> = {};
     for (const p of settled) (sportMap[p.sportKey.toUpperCase()] ??= []).push(p);
     const sportStats = Object.entries(sportMap).map(([sport, rows]) => {
@@ -92,14 +90,14 @@ export const statsRouter = router({
       return {
         label: sport,
         winRate: `${w + l > 0 ? Math.round((w / (w + l)) * 1000) / 10 : 0}%`,
-        roi: `${roiFor(rows) >= 0 ? "+" : ""}${roiFor(rows)}%`,
+        roi: `${flatROI(rows) >= 0 ? "+" : ""}${flatROI(rows)}%`,
         games: rows.length.toLocaleString(),
       };
     });
 
     return {
       winRate: `${winRate}%`,
-      avgRoi: `${roiFor(settled) >= 0 ? "+" : ""}${roiFor(settled)}%`,
+      avgRoi: `${flatROI(settled) >= 0 ? "+" : ""}${flatROI(settled)}%`,
       members: allUsers.length.toLocaleString(),
       picksGenerated: allPicks.length.toLocaleString(),
       sportStats,

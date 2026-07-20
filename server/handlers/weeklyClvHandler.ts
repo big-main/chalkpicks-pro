@@ -65,14 +65,15 @@ export async function weeklyClvHandler(req: Request, res: Response) {
 
       const wins = bets.filter(b => b.result === "win").length;
       const losses = bets.filter(b => b.result === "loss").length;
-      const betsWithClv = bets.filter(b => b.clvValue !== null);
-      const positiveClvBets = bets.filter(b => b.clvValue !== null && parseFloat(b.clvValue.toString()) > 0);
-      const negativeClvBets = bets.filter(b => b.clvValue !== null && parseFloat(b.clvValue.toString()) < 0);
+      const betsWithClv: { bet: typeof bets[number]; clv: number }[] = [];
+      for (const b of bets) {
+        if (b.clvValue !== null) betsWithClv.push({ bet: b, clv: parseFloat(b.clvValue.toString()) });
+      }
+      const positiveClvBets = betsWithClv.filter(b => b.clv > 0);
+      const negativeClvBets = betsWithClv.filter(b => b.clv < 0);
       const avgClv = calculateAverageCLV(bets);
       const totalProfit = bets.reduce((sum, b) => sum + parseFloat(b.profit?.toString() || "0"), 0);
-      const bestBet = [...betsWithClv].sort(
-        (a, b) => parseFloat(b.clvValue!.toString()) - parseFloat(a.clvValue!.toString())
-      )[0];
+      const bestBet = [...betsWithClv].sort((a, b) => b.clv - a.clv)[0];
 
       const emailHtml = `
 <!DOCTYPE html>
@@ -102,7 +103,7 @@ export async function weeklyClvHandler(req: Request, res: Response) {
       ${
         betsWithClv.length === 0
           ? `<p>You tracked ${bets.length} bet${bets.length === 1 ? "" : "s"} this week, but none have closing line data yet. Log the closing odds on your bets to unlock your CLV edge.</p>`
-          : `<p>You beat the closing line on <strong>${positiveClvBets.length} of ${betsWithClv.length}</strong> tracked bets this week${bestBet ? `, with your best line move on <strong>${bestBet.description}</strong> (${parseFloat(bestBet.clvValue!.toString()) > 0 ? "+" : ""}${parseFloat(bestBet.clvValue!.toString()).toFixed(2)}% CLV)` : ""}.</p>
+          : `<p>You beat the closing line on <strong>${positiveClvBets.length} of ${betsWithClv.length}</strong> tracked bets this week${bestBet ? `, with your best line move on <strong>${bestBet.bet.description}</strong> (${bestBet.clv > 0 ? "+" : ""}${bestBet.clv.toFixed(2)}% CLV)` : ""}.</p>
         <p>${avgClv > 0 ? "Positive average CLV means you're consistently getting better numbers than the market closes at — that's the strongest predictor of long-run profitability." : "A negative average CLV this week means the market moved against your bet prices on average — worth a look at bet timing."}</p>`
       }
     </div>

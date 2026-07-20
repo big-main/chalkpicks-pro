@@ -6,7 +6,7 @@ import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from "recharts";
-import { ArrowRight, Trophy, Target, TrendingUp, Flame } from "lucide-react";
+import { ArrowRight, Trophy, Target, TrendingUp, Flame, Shield, CheckCircle2 } from "lucide-react";
 
 const SPORT_ICONS: Record<string, string> = {
   NFL: "🏈", NBA: "🏀", MLB: "⚾", NHL: "🏒", NCAAF: "🏈", NCAAB: "🏀",
@@ -248,6 +248,38 @@ export default function Performance() {
             </div>
           )}
         </NeonCard>
+
+        {/* Methodology Section */}
+        <div className="mb-12">
+          <NeonCard className="p-8" interactive={false}>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(57,255,20,0.08)', border: '1px solid rgba(57,255,20,0.2)' }}>
+                <Shield className="w-5 h-5 text-[#39ff14]" />
+              </div>
+              <h2 className="font-display text-2xl text-white">How We Grade Picks</h2>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-sm font-semibold text-white/70 mb-3 uppercase tracking-wider">Grading Rules</h3>
+                <ul className="space-y-2.5 text-sm text-white/50">
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-[#39ff14] mt-0.5 flex-shrink-0" /> Picks are logged with a timestamp before game start — no retroactive edits</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-[#39ff14] mt-0.5 flex-shrink-0" /> Results are auto-graded against the closing line from the originating sportsbook</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-[#39ff14] mt-0.5 flex-shrink-0" /> Pushes count as no-action (excluded from W/L record)</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-[#39ff14] mt-0.5 flex-shrink-0" /> ROI calculated on flat 1-unit sizing unless Kelly is specified</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-white/70 mb-3 uppercase tracking-wider">Transparency Guarantees</h3>
+                <ul className="space-y-2.5 text-sm text-white/50">
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-[#60a5fa] mt-0.5 flex-shrink-0" /> Full pick history available to all members (free and paid)</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-[#60a5fa] mt-0.5 flex-shrink-0" /> CLV (Closing Line Value) tracked on every bet — the #1 predictor of long-term edge</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-[#60a5fa] mt-0.5 flex-shrink-0" /> Sport-by-sport breakdown with separate W/L records per sport and bet type</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-[#60a5fa] mt-0.5 flex-shrink-0" /> No cherry-picked timeframes — lifetime record shown by default</li>
+                </ul>
+              </div>
+            </div>
+          </NeonCard>
+        </div>
 
         {/* Bottom CTA */}
         <NeonCard className="p-12 text-center" variant="premium" interactive={false}>

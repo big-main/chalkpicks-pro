@@ -1162,3 +1162,12 @@
 - [x] n8n email drip sequence (Day 0/1/3/7): workflow JSON exported to docs/n8n-email-drip-workflow.json, N8N_DRIP_WEBHOOK_URL added to env.ts, non-blocking webhook fire added to auth.register mutation
 - [x] All 163 tests passing, 0 TS errors
 - [x] Save checkpoint
+
+## Phase 42 — Premium $100M SaaS Redesign (AI Model Recommendations)
+
+- [x] Premium visual redesign: retained existing glassmorphism/aurora/glow system, removed badge noise (CORE/EXCLUSIVE/LIVE/NEW/FREE/AI/PRO), cleaner feature cards with icon+text only
+- [x] Hero section overhaul: "Beat the Sportsbooks with AI" headline, live dashboard preview widget (pulls real pick data from DB), animated stats bar (Today's Bets Analyzed, +EV Found, Units Won 30d, Avg CLV)
+- [x] Fix brand inconsistencies: single dominant CTA ("Start Winning Today"), removed competing "View Plans" from hero, nav already 5 primary links (Picks, Performance, +EV Finder, Pricing, Blog), added "How It Works" 3-step section
+- [x] Added transparent Methodology section to Performance page: Grading Rules (timestamped, auto-graded, push handling, flat unit sizing) + Transparency Guarantees (full history, CLV tracking, sport-by-sport, no cherry-picking)
+- [x] All 168 tests passing, 0 TS errors
+- [x] Save checkpoint

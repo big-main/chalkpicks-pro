@@ -3,6 +3,7 @@ import { useRoute } from "wouter";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import { FAQPageJsonLd, SportsEventJsonLd } from "@/components/SportsEventJsonLd";
+import { ComplianceFooter } from "@/components/ComplianceFooter";
 import { TrendingUp, Calendar, Target, BarChart3, Zap, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 
@@ -306,6 +307,7 @@ export default function SportPicks(props: any) {
           Get Started — $19.99/mo <ArrowRight className="w-5 h-5" />
         </Link>
       </section>
+      <ComplianceFooter />
     </div>
   );
 }

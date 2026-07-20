@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { ComplianceFooter } from "@/components/ComplianceFooter";
 import { getSportBadgeClass, getTierBadgeClass } from "@/lib/badges";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -749,6 +750,7 @@ export default function Picks() {
       </div>
 
       <GeneratePickDialog open={generateOpen} onClose={() => setGenerateOpen(false)} onGenerated={() => refetch()} sports={sports || []} />
+      <ComplianceFooter />
     </div>
   );
 }

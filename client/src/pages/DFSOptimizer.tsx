@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
+import { ComplianceFooter } from "@/components/ComplianceFooter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { Paywall } from "@/components/Paywall";
@@ -298,6 +299,7 @@ export default function DFSOptimizer() {
           </div>
         </section>
       </section>
+      <ComplianceFooter />
     </div>
   );
 }

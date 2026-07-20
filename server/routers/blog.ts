@@ -15,6 +15,78 @@ import { invalidateSitemapCache } from "../_core/sitemap";
 import { pingIndexNow } from "../_core/indexnow";
 import { SITE_URL } from "@shared/seo-routes";
 
+/** Responsible-gambling disclaimer every publicly published article must carry. */
+export function hasComplianceFooter(text: string): boolean {
+  return /1-800-gambler/i.test(text) && /21\+/.test(text);
+}
+
+type BlogPostRow = typeof blogPosts.$inferSelect;
+
+/**
+ * Shared publish path for both the single `publish` mutation and the bulk
+ * `publishAllClean` action: compliance-gates on the RG footer, appends the
+ * Related Reading block, then flips the row to published. Never throws —
+ * callers decide whether a failure aborts (single) or is skipped (bulk).
+ */
+async function publishPostRow(
+  db: NonNullable<Awaited<ReturnType<typeof getDb>>>,
+  post: BlogPostRow
+): Promise<{ ok: true } | { ok: false; reason: string }> {
+  if (!hasComplianceFooter(post.content ?? "")) {
+    return {
+      ok: false,
+      reason: "missing the 21+ / 1-800-GAMBLER responsible-gambling footer",
+    };
+  }
+
+  const relatedBlock = await buildRelatedPostsMarkdown(db, post.slug, post.tags);
+  const content = relatedBlock ? `${post.content}${relatedBlock}` : post.content;
+
+  await db
+    .update(blogPosts)
+    .set({ status: "published", publishedAt: new Date(), content })
+    .where(eq(blogPosts.id, post.id));
+
+  return { ok: true };
+}
+
+/**
+ * Markdown "## Related Reading" block linking the 2 most recent published
+ * posts that share a tag with this one (same sport, typically). Returns ""
+ * when there's no tag data or no match — never blocks publishing.
+ */
+async function buildRelatedPostsMarkdown(
+  db: NonNullable<Awaited<ReturnType<typeof getDb>>>,
+  currentSlug: string,
+  tags: string | null
+): Promise<string> {
+  if (!tags) return "";
+  const tagList = tags
+    .split(",")
+    .map(t => t.trim())
+    .filter(Boolean);
+  if (!tagList.length) return "";
+
+  const candidates = await db
+    .select({ title: blogPosts.title, slug: blogPosts.slug, tags: blogPosts.tags })
+    .from(blogPosts)
+    .where(and(eq(blogPosts.status, "published"), ne(blogPosts.slug, currentSlug)))
+    .orderBy(desc(blogPosts.publishedAt))
+    .limit(30);
+
+  const related = candidates
+    .filter(p => {
+      if (!p.tags) return false;
+      const postTags = p.tags.split(",").map(t => t.trim());
+      return tagList.some(t => postTags.includes(t));
+    })
+    .slice(0, 2);
+  if (!related.length) return "";
+
+  const links = related.map(p => `- [${p.title}](${SITE_URL}/blog/${p.slug})`).join("\n");
+  return `\n\n## Related Reading\n${links}\n`;
+}
+
 export const blogRouter = router({
   /**
    * Get published blog posts (public)
@@ -203,13 +275,10 @@ export const blogRouter = router({
 
       if (!post.length) throw new Error("Blog post not found");
 
-      await db
-        .update(blogPosts)
-        .set({
-          status: "published",
-          publishedAt: new Date(),
-        })
-        .where(eq(blogPosts.id, input.id));
+      const result = await publishPostRow(db, post[0]);
+      if (!result.ok) {
+        throw new Error(`Cannot publish: article is ${result.reason}.`);
+      }
 
       // The sitemap cache now has a stale (pre-publish) snapshot — drop it so
       // the next /sitemap.xml hit picks up the newly published URL immediately.
@@ -221,6 +290,40 @@ export const blogRouter = router({
 
       return { success: true };
     }),
+
+  /**
+   * Publish every draft whose content passes the compliance gate (admin only).
+   * Drafts missing the RG footer are skipped, not rejected — this is meant to
+   * run unattended over the review queue, not to block on one bad article.
+   */
+  publishAllClean: adminProcedure.mutation(async () => {
+    const db = await getDb();
+    if (!db) throw new Error("Database unavailable");
+
+    const drafts = await db.select().from(blogPosts).where(eq(blogPosts.status, "draft"));
+
+    const published: string[] = [];
+    const skipped: { slug: string; reason: string }[] = [];
+
+    for (const post of drafts) {
+      const result = await publishPostRow(db, post);
+      if (result.ok) {
+        published.push(post.slug);
+      } else {
+        skipped.push({ slug: post.slug, reason: result.reason });
+      }
+    }
+
+    if (published.length > 0) {
+      invalidateSitemapCache();
+      pingIndexNow([
+        ...published.map(slug => `${SITE_URL}/blog/${slug}`),
+        `${SITE_URL}/sitemap.xml`,
+      ]);
+    }
+
+    return { publishedCount: published.length, published, skipped };
+  }),
 
   /**
    * Get all blog posts including drafts (admin only)

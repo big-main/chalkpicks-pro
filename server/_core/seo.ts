@@ -46,8 +46,29 @@ interface RouteSeo {
   title: string;
   description: string;
   canonicalPath: string;
-  jsonLd?: object;
+  /** One or more JSON-LD blocks, each rendered as its own <script> tag. */
+  jsonLd?: object | object[];
   ogType?: string;
+}
+
+/**
+ * Parse a "## FAQ" section's **Q:** / **A:** pairs out of article markdown.
+ * Returns [] if there's no FAQ section or fewer than 2 well-formed pairs —
+ * callers should treat that as "no FAQPage schema for this article".
+ */
+export function parseFaqPairs(markdown: string): { q: string; a: string }[] {
+  const faqSection = markdown.match(/##\s*FAQ\s*\n([\s\S]*?)(?:\n##\s|$)/i);
+  if (!faqSection) return [];
+
+  const pairRe = /\*\*Q:\*\*\s*(.+?)\s*\n+\*\*A:\*\*\s*([\s\S]+?)(?=\n+\*\*Q:\*\*|\n*$)/gi;
+  const pairs: { q: string; a: string }[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = pairRe.exec(faqSection[1])) !== null) {
+    const q = match[1].trim();
+    const a = match[2].replace(/\s+/g, " ").trim();
+    if (q && a) pairs.push({ q, a });
+  }
+  return pairs;
 }
 
 async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
@@ -71,28 +92,50 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
           const body = stripHtml(post.contentHtml || post.content || "").slice(0, 5000);
           const description =
             post.seoDescription || post.excerpt?.slice(0, 158) || body.slice(0, 158);
+          const articleLd = {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: post.title,
+            description,
+            ...(post.heroImage ? { image: post.heroImage } : {}),
+            datePublished: (post.publishedAt ?? post.createdAt).toISOString(),
+            dateModified: post.updatedAt.toISOString(),
+            author: { "@type": "Organization", name: "ChalkPicks" },
+            publisher: {
+              "@type": "Organization",
+              name: "ChalkPicks",
+              url: ORIGIN,
+            },
+            mainEntityOfPage: `${ORIGIN}${cleanPath}`,
+            articleBody: body,
+          };
+
+          // Worker-generated articles end with a "## FAQ" section of 3 real-search
+          // Q&As (see cloud-computer/worker.mjs previewPrompt). Surface it as
+          // FAQPage schema too when there's enough of it to be worth it.
+          const faqs = parseFaqPairs(post.content || "");
+          const jsonLd =
+            faqs.length >= 2
+              ? [
+                  articleLd,
+                  {
+                    "@context": "https://schema.org",
+                    "@type": "FAQPage",
+                    mainEntity: faqs.map(f => ({
+                      "@type": "Question",
+                      name: f.q,
+                      acceptedAnswer: { "@type": "Answer", text: f.a },
+                    })),
+                  },
+                ]
+              : articleLd;
+
           return {
             title: `${post.title} | ChalkPicks`,
             description,
             canonicalPath: cleanPath,
             ogType: "article",
-            jsonLd: {
-              "@context": "https://schema.org",
-              "@type": "Article",
-              headline: post.title,
-              description,
-              ...(post.heroImage ? { image: post.heroImage } : {}),
-              datePublished: (post.publishedAt ?? post.createdAt).toISOString(),
-              dateModified: post.updatedAt.toISOString(),
-              author: { "@type": "Organization", name: "ChalkPicks" },
-              publisher: {
-                "@type": "Organization",
-                name: "ChalkPicks",
-                url: ORIGIN,
-              },
-              mainEntityOfPage: `${ORIGIN}${cleanPath}`,
-              articleBody: body,
-            },
+            jsonLd,
           };
         }
       }
@@ -197,11 +240,14 @@ export async function injectSeo(html: string, url: string): Promise<string> {
 
     if (seo.jsonLd) {
       // JSON-LD in <script> context: escape "</" to keep the parser inside the tag.
-      const json = JSON.stringify(seo.jsonLd).replace(/<\//g, "<\\/");
-      out = out.replace(
-        "</head>",
-        `<script type="application/ld+json" data-ssr-route-schema>${json}</script>\n</head>`
-      );
+      const blocks = Array.isArray(seo.jsonLd) ? seo.jsonLd : [seo.jsonLd];
+      const scripts = blocks
+        .map(
+          block =>
+            `<script type="application/ld+json" data-ssr-route-schema>${JSON.stringify(block).replace(/<\//g, "<\\/")}</script>`
+        )
+        .join("\n");
+      out = out.replace("</head>", `${scripts}\n</head>`);
     }
 
     return out;

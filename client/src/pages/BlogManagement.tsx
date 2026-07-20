@@ -4,7 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Loader2, Check, Trash2, Eye, Edit2 } from "lucide-react";
+import { Loader2, Check, CheckCheck, Trash2, Eye, Edit2 } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function BlogManagement() {
@@ -34,6 +34,20 @@ export default function BlogManagement() {
   const publishMutation = trpc.blog.publish.useMutation({
     onSuccess: () => {
       refetchPosts();
+    },
+  });
+
+  const publishAllCleanMutation = trpc.blog.publishAllClean.useMutation({
+    onSuccess: (result) => {
+      refetchPosts();
+      const skippedNote =
+        result.skipped.length > 0
+          ? `\nSkipped ${result.skipped.length}: ${result.skipped.map((s) => `${s.slug} (${s.reason})`).join("; ")}`
+          : "";
+      alert(`Published ${result.publishedCount} draft(s).${skippedNote}`);
+    },
+    onError: (error: any) => {
+      alert(`Error: ${error.message}`);
     },
   });
 
@@ -116,9 +130,24 @@ export default function BlogManagement() {
 
         {/* Drafts Section */}
         <Card className="bg-slate-800 border-slate-700 p-6 mb-8">
-          <h2 className="text-xl font-semibold text-white mb-4">
-            Drafts ({drafts.length})
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-white">
+              Drafts ({drafts.length})
+            </h2>
+            <Button
+              size="sm"
+              onClick={() => publishAllCleanMutation.mutate()}
+              disabled={drafts.length === 0 || publishAllCleanMutation.isPending}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+            >
+              {publishAllCleanMutation.isPending ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <CheckCheck className="w-4 h-4 mr-2" />
+              )}
+              Publish All Clean Drafts
+            </Button>
+          </div>
           {isLoadingPosts ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-gray-400" />

@@ -231,6 +231,42 @@ export const routeSEO: RouteSEOEntry[] = [
     changefreq: "monthly",
     priority: 0.5,
   },
+  {
+    path: "/learn/closing-line-value",
+    title: "What Is Closing Line Value (CLV)? | ChalkPicks",
+    description:
+      "Closing line value (CLV) explained: how to calculate it, why it beats win rate as a skill metric, and how to track it on every bet.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.7,
+  },
+  {
+    path: "/learn/no-vig-odds",
+    title: "No-Vig Odds Explained | ChalkPicks",
+    description:
+      "How to remove the sportsbook's vig from any odds to find the true, fair probability — and use it to spot +EV bets.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.7,
+  },
+  {
+    path: "/learn/kelly-criterion",
+    title: "The Kelly Criterion for Bet Sizing | ChalkPicks",
+    description:
+      "The Kelly Criterion formula explained: how to size bets for long-term bankroll growth, and why fractional Kelly is the practical choice.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.7,
+  },
+  {
+    path: "/learn/line-movement",
+    title: "Line Movement & Steam Moves Explained | ChalkPicks",
+    description:
+      "How betting lines move, what a steam move is, how it differs from reverse line movement, and how to track sharp money in real time.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.7,
+  },
 ];
 
 /** Blog post slugs for sitemap + prerender (metadata lives in client/src/data/blog-posts.ts) */

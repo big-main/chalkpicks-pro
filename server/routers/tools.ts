@@ -3,7 +3,7 @@
  * All tools consume credits per use and return real/cached data.
  */
 import { z } from "zod/v4";
-import { router, protectedProcedure, publicProcedure } from "../_core/trpc";
+import { router, protectedProcedure, publicProcedure, premiumProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
@@ -56,7 +56,7 @@ export const toolsRouter = router({
   }),
 
   // ─── Prop Builder ───────────────────────────────────────────────────────
-  propBuilder: protectedProcedure
+  propBuilder: premiumProcedure
     .input(z.object({
       sport: z.enum(["nba", "nfl", "mlb", "nhl"]),
       playerName: z.string().optional(),
@@ -102,7 +102,7 @@ export const toolsRouter = router({
     }),
 
   // ─── Line Movement Tracker ──────────────────────────────────────────────
-  lineMovement: protectedProcedure
+  lineMovement: premiumProcedure
     .input(z.object({
       sport: z.enum(["nba", "nfl", "mlb", "nhl"]),
       sharpOnly: z.boolean().optional().default(false),
@@ -141,7 +141,7 @@ export const toolsRouter = router({
     }),
 
   // ─── Correlation Finder ─────────────────────────────────────────────────
-  correlationFinder: protectedProcedure
+  correlationFinder: premiumProcedure
     .input(z.object({
       sport: z.enum(["nba", "nfl", "mlb", "nhl"]),
       minCorrelation: z.number().min(0).max(1).optional().default(0.3),
@@ -177,7 +177,7 @@ export const toolsRouter = router({
     }),
 
   // ─── Enhanced EV Finder ─────────────────────────────────────────────────
-  evFinder: protectedProcedure
+  evFinder: premiumProcedure
     .input(z.object({
       sport: z.enum(["nba", "nfl", "mlb", "nhl"]),
       minEV: z.number().optional().default(2),

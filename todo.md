@@ -1143,3 +1143,14 @@
 - [x] Add Ollama warm-up Heartbeat job: POST /api/scheduled/ollama-warmup every 4 minutes (task_uid: 2PgkaJqzhgoCbTcPTHtfjG)
 - [x] Register ollamaWarmupHandler in server/_core/index.ts
 - [x] Tested warm-up endpoint: qwen2.5:7b responds in ~3.3s when warm
+
+## Phase 40 — AI Model Recommendations (SEO + Revenue Protection)
+
+- [x] Fix 9 remaining TS errors: SportPicks.tsx accepts any props (wouter RouteComponentProps compatible), canvas package installed
+- [x] Audit sitemap.xml: accessible at chalkpicks.live/sitemap.xml (51 URLs) + /sitemap-blog.xml (12 blog posts)
+- [x] Verify bot pre-rendering: X-Prerendered:1 header present, full static HTML with JSON-LD, OG tags, canonical URLs served to Googlebot
+- [x] Audit robots.txt: all public pages allowed, private routes disallowed, AI crawlers welcomed, both sitemaps referenced
+- [x] Stripe webhooks already hardened: checkout.session.completed, invoice.paid, invoice.payment_succeeded, customer.subscription.deleted, invoice.payment_failed (with email), customer.subscription.updated — all with signature verification
+- [x] Paywall audit: fixed 4 premium tools in tools.ts (propBuilder, lineMovement, correlationFinder, evFinder) + 6 arbitrage endpoints from protectedProcedure → premiumProcedure
+- [x] All 163 tests passing, 0 TS errors
+- [x] Save checkpoint

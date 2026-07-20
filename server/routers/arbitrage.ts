@@ -1,4 +1,4 @@
-import { router, protectedProcedure } from "../_core/trpc";
+import { router, protectedProcedure, premiumProcedure } from "../_core/trpc";
 import { z } from "zod";
 import { getDb } from "../db";
 import { arbitrageOpportunities, userArbitrageTrades } from "../../drizzle/schema";
@@ -50,7 +50,7 @@ export const calculateStakes = (oddsA: number, oddsB: number, totalStake: number
 
 export const arbitrageRouter = router({
   // Get all active arbitrage opportunities with advanced filtering
-  getOpportunities: protectedProcedure
+  getOpportunities: premiumProcedure
     .input(
       z.object({
         sports: z.array(z.string()).default([]),
@@ -147,7 +147,7 @@ export const arbitrageRouter = router({
     }),
 
   // Get single arbitrage opportunity details
-  getOpportunity: protectedProcedure
+  getOpportunity: premiumProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input, ctx }) => {
       if (ctx.user.subscriptionTier === "free") {
@@ -181,7 +181,7 @@ export const arbitrageRouter = router({
     }),
 
   // Calculate custom arbitrage stakes
-  calculateStakes: protectedProcedure
+  calculateStakes: premiumProcedure
     .input(
       z.object({
         oddsA: z.number(),
@@ -210,7 +210,7 @@ export const arbitrageRouter = router({
     }),
 
   // Record a user's arbitrage trade
-  recordTrade: protectedProcedure
+  recordTrade: premiumProcedure
     .input(
       z.object({
         arbitrageId: z.number(),
@@ -243,7 +243,7 @@ export const arbitrageRouter = router({
     }),
 
   // Get user's arbitrage trades
-  getUserTrades: protectedProcedure
+  getUserTrades: premiumProcedure
     .input(
       z.object({
         status: z.enum(["pending", "executed", "completed", "failed"]).optional(),
@@ -281,7 +281,7 @@ export const arbitrageRouter = router({
     }),
 
   // Get arbitrage statistics
-  getStats: protectedProcedure.query(async ({ ctx }) => {
+  getStats: premiumProcedure.query(async ({ ctx }) => {
     if (ctx.user.subscriptionTier === "free") {
       throw new Error("Arbitrage Finder requires a paid subscription");
     }

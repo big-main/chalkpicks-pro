@@ -15,6 +15,17 @@ interface SportConfig {
   faqs: Array<{ question: string; answer: string }>;
 }
 
+export const SPORT_PICKS_CONFIGS = {
+  nfl: "nfl-picks",
+  nba: "nba-picks",
+  mlb: "mlb-picks",
+  nhl: "nhl-picks",
+  ncaaf: "ncaaf-picks",
+  ncaab: "ncaab-picks",
+  mma: "mma-picks",
+  soccer: "soccer-picks",
+} as const;
+
 const SPORT_CONFIGS: Record<string, SportConfig> = {
   "nfl-picks": {
     key: "americanfootball_nfl",
@@ -122,9 +133,11 @@ const SPORT_CONFIGS: Record<string, SportConfig> = {
   },
 };
 
-export default function SportPicks() {
-  const [, params] = useRoute("/:slug");
-  const slug = params?.slug || "";
+export default function SportPicks(props: any) {
+  const configSlug = props?.config as string | undefined;
+  const routeParams = props?.params as Record<string, string> | undefined;
+  const [, hookParams] = useRoute("/:slug");
+  const slug = configSlug || routeParams?.slug || hookParams?.slug || "";
   const config = SPORT_CONFIGS[slug];
 
   useEffect(() => {

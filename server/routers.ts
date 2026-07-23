@@ -147,6 +147,7 @@ export const appRouter = router({
 
     completeOnboarding: publicProcedure
       .input(z.object({
+        ageVerified: z.literal(true),
         experienceLevel: z.enum(["brand_new", "just_started", "few_months", "experienced_unprofitable", "experienced_profitable", "years_in"]),
         bettingFrequency: z.enum(["occasionally", "few_times_week", "multiple_times_day"]),
         weeklyBetSize: z.enum(["under_100", "100_500", "1000_5000", "over_5000"]),
@@ -154,18 +155,19 @@ export const appRouter = router({
       }))
       .mutation(async ({ input, ctx }) => {
         if (!ctx.user?.id) throw new TRPCError({ code: "UNAUTHORIZED" });
-        
+
         const database = await db.getDb();
         if (!database) throw new Error("Database unavailable");
-        
+
         // Determine access tier based on bet size
         let accessTier: "free" | "recreational" | "serious" | "professional" = "free";
         if (input.weeklyBetSize === "under_100") accessTier = "recreational";
         else if (input.weeklyBetSize === "100_500") accessTier = "serious";
         else if (input.weeklyBetSize === "1000_5000" || input.weeklyBetSize === "over_5000") accessTier = "professional";
-        
+
                 // Update user with onboarding data in database
         await database.update(users).set({
+          ageVerified: true,
           experienceLevel: input.experienceLevel,
           bettingFrequency: input.bettingFrequency,
           weeklyBetSize: input.weeklyBetSize,

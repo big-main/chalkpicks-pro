@@ -217,6 +217,7 @@ const sportStats = [
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
+  const { data: platformStats } = trpc.stats.platformStats.useQuery();
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-16 md:pb-0">
@@ -591,8 +592,8 @@ export default function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto mb-12">
             {[
-              { value: "12,847", label: "Active Members", icon: Users, color: "#39ff14" },
-              { value: "847K+", label: "Picks Generated", icon: Brain, color: "#f0b800" },
+              { value: platformStats?.members ?? "—", label: "Active Members", icon: Users, color: "#39ff14" },
+              { value: platformStats?.picksGenerated ?? "—", label: "Picks Generated", icon: Brain, color: "#f0b800" },
               { value: "4.9/5", label: "Member Rating", icon: Star, color: "#60a5fa" },
               { value: "24/7", label: "AI Monitoring", icon: Activity, color: "#06b6d4" },
             ].map((stat) => (

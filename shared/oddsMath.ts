@@ -526,6 +526,28 @@ export function breakEvenWinRate(americanOdds: number): number {
   return americanToImplied(americanOdds) * 100;
 }
 
+/**
+ * Flat 1-unit profit for a single settled bet, from American odds and result.
+ * Push -> 0, loss -> -1 unit, win -> decimal payout minus the unit staked.
+ */
+export function flatUnitProfit(result: string, americanOdds: number | null): number {
+  if (result === "push" || americanOdds == null) return 0;
+  if (result === "loss") return -1;
+  return americanToDecimal(americanOdds) - 1;
+}
+
+/**
+ * Flat 1-unit-sizing ROI (%) across a set of settled bets, rounded to one
+ * decimal place. Pushes are excluded from the denominator; a bet missing
+ * its odds contributes 0 profit but still counts as decided.
+ */
+export function flatROI(bets: Array<{ result: string; odds: number | null }>): number {
+  const decided = bets.filter(b => b.result !== "push");
+  if (decided.length === 0) return 0;
+  const profit = decided.reduce((sum, b) => sum + flatUnitProfit(b.result, b.odds), 0);
+  return Math.round((profit / decided.length) * 1000) / 10;
+}
+
 
 // ─── Compatibility & Extended API ────────────────────────────────────────────
 // These exports satisfy both the oddsMath router and the oddsMath.test.ts file.

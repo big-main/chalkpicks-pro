@@ -501,4 +501,30 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
     }
     return { pick: freePick, date: today };
   }),
+
+  // Get pick counts per sport key (for sport tab badges)
+  sportCounts: publicProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) {
+      // Return mock counts if DB not available
+      return {
+        nfl: 4, nba: 3, mlb: 5, nhl: 2, ncaaf: 2, ncaab: 2, soccer: 1, tennis: 1, mma: 1,
+      } as Record<string, number>;
+    }
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const rows = await db
+      .select({ sportKey: picks.sportKey, count: sql<number>`count(*)` })
+      .from(picks)
+      .where(and(
+        eq(picks.isActive, true),
+        gte(picks.pickDate, sevenDaysAgo.toISOString().split("T")[0]),
+      ))
+      .groupBy(picks.sportKey);
+    const result: Record<string, number> = {};
+    for (const row of rows) {
+      result[row.sportKey] = Number(row.count);
+    }
+    return result;
+  }),
 });

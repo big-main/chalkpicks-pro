@@ -1243,3 +1243,18 @@
 - [x] Date preset row (Today, Yesterday, Last 7 Days, Last 30 Days, All Time) with blue active state
 - [x] Wire sport + date filters to picks.list tRPC procedure (dateFrom/dateTo params added)
 - [x] activeFilterCount includes datePreset deviation from default
+
+## Phase 51 — Logo Update, Sport Count Badges, Purple→Cyan, AI Failover
+- [x] Apply new logo (gold crown + red splatter) to all 6 locations: Navbar, AuthPageShell, AdminPanel, Home footer, schema-jsonld.tsx, index.html
+- [x] Update OG/Twitter image meta tags and Organization JSON-LD logo URL to new CDN
+- [x] Add sportCounts tRPC procedure to picks router (counts per sport key, last 7 days)
+- [x] Wire sport count badges to sport tab pills on Picks page (shows pick count per sport)
+- [x] Remove purple from color theme: NBA badge → cyan, monthly tier badge → cyan, badge-pending → gold
+- [x] Remap --cp-purple and --color-cp-purple CSS variables to cyan
+- [x] Update glow-purple and glow-neon-purple utilities to use cyan
+- [x] Update MobileBottomNav Account icon color: purple → cyan
+- [x] Update SwipeNavProvider NAV_COLORS Account color: purple → cyan
+- [x] Update Navbar Community group color: purple → cyan
+- [x] Update Home.tsx purple accent colors to cyan
+- [x] Wire AI token failover: OpenRouter gpt-4o-mini activates on Forge 429/402/503/quota errors
+- [x] All 176 tests passing (20 test files)

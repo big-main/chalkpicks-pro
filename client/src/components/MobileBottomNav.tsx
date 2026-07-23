@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { path: "/picks", icon: TrendingUp, label: "Picks", color: "#39ff14" },
   { path: "/ev-finder", icon: Zap, label: "+EV", color: "#f0b800" },
   { path: "/performance", icon: BarChart3, label: "Stats", color: "#60a5fa" },
-  { path: "/account-settings", icon: User, label: "Account", color: "#a855f7" },
+  { path: "/account-settings", icon: User, label: "Account", color: "#06b6d4" },
 ];
 
 export function MobileBottomNav() {

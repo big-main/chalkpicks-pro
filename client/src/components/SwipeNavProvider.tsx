@@ -6,7 +6,7 @@ import { useSwipeNavigation } from "@/hooks/useSwipeNavigation";
 
 const NAV_PATHS = ["/", "/picks", "/ev-finder", "/performance", "/account-settings"];
 const NAV_LABELS = ["Home", "Picks", "+EV", "Stats", "Account"];
-const NAV_COLORS = ["#39ff14", "#39ff14", "#f0b800", "#60a5fa", "#a855f7"];
+const NAV_COLORS = ["#39ff14", "#39ff14", "#f0b800", "#60a5fa", "#06b6d4"];
 
 interface SwipeHint {
   direction: "left" | "right";

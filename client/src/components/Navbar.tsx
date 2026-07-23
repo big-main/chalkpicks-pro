@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
-// Logo URLs
-const LOGO_FULL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/cp-logo-navbar-EuWyWqzZKRjh6eatJJ5Sm9.webp";
-const LOGO_ICON = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/cp-logo-icon-a3mVBRaWZeuoNHa3gFxuBp.webp";
+// Logo URLs — gold crown + red splatter
+const LOGO_FULL = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/rAyeQpzVJehdEevP.png";
+const LOGO_ICON = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/rAyeQpzVJehdEevP.png";
 
 function LlmStatusBadge() {
   const { data } = trpc.system.llmStatus.useQuery(undefined, {
@@ -106,7 +106,7 @@ const navGroups = [
   },
   {
     label: "Community",
-    color: "#a855f7",
+    color: "#06b6d4",
     items: [
       { href: "/leaderboard", label: "Leaderboard", icon: Trophy, desc: "Top performers this month" },
       { href: "/backtesting", label: "Backtesting", icon: BookOpen, desc: "Test strategies on historical data" },
@@ -181,32 +181,30 @@ export default function Navbar() {
           {/* ── LOGO ── */}
           <Link href="/" className="flex items-center gap-0 group flex-shrink-0">
             {/* Mobile: icon only */}
-            <div className="md:hidden relative w-14 h-14 overflow-hidden flex items-center justify-center">
+            <div className="md:hidden relative w-16 h-16 overflow-hidden flex items-center justify-center">
               <img
                 src={LOGO_ICON}
                 alt="ChalkPicks"
-                className="w-[68px] h-[68px] object-contain transition-all duration-300 group-hover:scale-105"
+                className="w-[80px] h-[80px] object-contain transition-all duration-300 group-hover:scale-105"
                 style={{
-                  mixBlendMode: "screen",
-                  filter: "brightness(1.1) drop-shadow(0 0 14px rgba(57, 255, 20, 0.5))",
+                  filter: "drop-shadow(0 0 14px rgba(245, 158, 11, 0.6)) drop-shadow(0 0 6px rgba(239, 68, 68, 0.4))",
                 }}
               />
             </div>
             {/* Desktop: full logo */}
-            <div className="hidden md:flex items-center relative overflow-hidden" style={{ width: 220, height: 76 }}>
+            <div className="hidden md:flex items-center relative overflow-hidden" style={{ width: 260, height: 88 }}>
               <img
                 src={LOGO_FULL}
                 alt="ChalkPicks"
                 className="absolute transition-all duration-300 group-hover:scale-[1.04]"
                 style={{
-                  mixBlendMode: "screen",
-                  filter: "brightness(1.15) drop-shadow(0 0 18px rgba(57, 255, 20, 0.45))",
+                  filter: "drop-shadow(0 0 18px rgba(245, 158, 11, 0.55)) drop-shadow(0 0 8px rgba(239, 68, 68, 0.35))",
                   width: "100%",
                   height: "auto",
                   top: "50%",
                   left: "50%",
                   transform: "translate(-50%, -50%)",
-                  maxWidth: 260,
+                  maxWidth: 300,
                 }}
               />
             </div>

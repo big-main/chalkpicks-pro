@@ -336,11 +336,13 @@ function FilterBar({
   setFilters,
   sports,
   activeFilterCount,
+  sportCounts,
 }: {
   filters: FilterState;
   setFilters: (f: FilterState) => void;
   sports: { key: string; name: string; icon: string }[] | undefined;
   activeFilterCount: number;
+  sportCounts?: Record<string, number>;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -376,6 +378,17 @@ function FilterBar({
             >
               <span>{s.icon}</span>
               <span>{s.name}</span>
+              {s.key !== "all" && sportCounts && (sportCounts[s.key] ?? 0) > 0 && (
+                <span
+                  className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold leading-none"
+                  style={{
+                    background: isActive ? "rgba(0,0,0,0.25)" : "rgba(255,255,255,0.12)",
+                    color: isActive ? "inherit" : "rgba(255,255,255,0.6)",
+                  }}
+                >
+                  {sportCounts[s.key]}
+                </span>
+              )}
             </button>
           );
         })}
@@ -662,6 +675,10 @@ export default function Picks() {
     dateTo: dateRange.dateTo,
   });
   const { data: sports } = trpc.picks.sports.useQuery();
+  const { data: sportCounts } = trpc.picks.sportCounts.useQuery(undefined, {
+    staleTime: 60_000,
+    refetchInterval: 120_000,
+  });
 
   const isPremiumUser = !!(user?.subscriptionTier && user.subscriptionTier !== "free");
 
@@ -768,6 +785,7 @@ export default function Picks() {
           setFilters={setFilters}
           sports={sports}
           activeFilterCount={activeFilterCount}
+          sportCounts={sportCounts}
         />
 
         {/* Results count */}

@@ -1,8 +1,8 @@
 /**
  * Badge class helpers — maps sport keys and tier names to CSS badge classes
  * defined in index.css. All classes use the 5-color palette:
- * NFL=blue, NBA=purple, MLB=green, NHL=red, NCAAF/NCAAB=gold
- * Tiers: free=slate, daily=blue, monthly=purple, yearly/premium=gold
+ * NFL=blue, NBA=cyan, MLB=green, NHL=red, NCAAF/NCAAB=gold
+ * Tiers: free=slate, daily=blue, monthly=cyan, yearly/premium=gold
  */
 
 export function getSportBadgeClass(sportKey: string | null | undefined): string {

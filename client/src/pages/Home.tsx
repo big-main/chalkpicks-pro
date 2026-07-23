@@ -116,7 +116,7 @@ function LiveDashboardPreview() {
             <div className="text-[10px] text-white/35 mt-0.5">Kelly Bet</div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-[#a855f7]">
+            <div className="text-xl font-bold text-[#06b6d4]">
               14.2%
             </div>
             <div className="text-[10px] text-white/35 mt-0.5">Exp. ROI</div>
@@ -173,7 +173,7 @@ const features = [
     icon: Eye,
     title: "Public Betting %",
     desc: "See where the public money is going on every game. Fade the public or follow the sharp money.",
-    color: "#a855f7",
+    color: "#06b6d4",
   },
   {
     icon: Calculator,
@@ -203,7 +203,7 @@ const features = [
     icon: Target,
     title: "CLV Tracker",
     desc: "Track your closing line value on every bet. CLV is the #1 predictor of long-term profitability.",
-    color: "#39ff14",
+    color: "#06b6d4",
   },
 ];
 
@@ -368,7 +368,7 @@ export default function Home() {
               <div className="text-sm text-white/50">Units Won (30d)</div>
             </div>
             <div className="text-center">
-              <div className="font-display text-3xl lg:text-4xl text-[#a855f7] mb-1">
+              <div className="font-display text-3xl lg:text-4xl text-[#06b6d4] mb-1">
                 +<AnimatedCounter value={5} suffix=".2%" />
               </div>
               <div className="text-sm text-white/50">Avg Closing Line Value</div>
@@ -554,7 +554,7 @@ export default function Home() {
               { value: "12,847", label: "Active Members", icon: Users, color: "#39ff14" },
               { value: "847K+", label: "Picks Generated", icon: Brain, color: "#f0b800" },
               { value: "4.9/5", label: "Member Rating", icon: Star, color: "#60a5fa" },
-              { value: "24/7", label: "AI Monitoring", icon: Activity, color: "#a855f7" },
+              { value: "24/7", label: "AI Monitoring", icon: Activity, color: "#06b6d4" },
             ].map((stat) => (
               <NeonCard key={stat.label} className="p-5 text-center">
                 <stat.icon className="w-5 h-5 mx-auto mb-3" style={{ color: stat.color }} />
@@ -633,10 +633,10 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-10 mb-10">
             <div>
               <img
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp"
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/rAyeQpzVJehdEevP.png"
                 alt="ChalkPicks"
-                className="h-10 w-auto mb-4"
-                style={{ filter: "drop-shadow(0 0 8px rgba(57,255,20,0.3))" }}
+                className="h-14 w-auto mb-4"
+                style={{ filter: "drop-shadow(0 0 14px rgba(245, 158, 11, 0.5)) drop-shadow(0 0 6px rgba(239, 68, 68, 0.3))" }}
               />
               <p className="text-sm text-white/40 leading-relaxed">
                 Institutional-grade sports analysis and predictive modeling. Gain a mathematical edge with AI-driven player projections and market analysis.

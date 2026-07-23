@@ -633,7 +633,7 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-10 mb-10">
             <div>
               <img
-                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/rAyeQpzVJehdEevP.png"
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-v3-9jdnGD75EjaGvTyNZ6AERw.png"
                 alt="ChalkPicks"
                 className="h-14 w-auto mb-4"
                 style={{ filter: "drop-shadow(0 0 14px rgba(245, 158, 11, 0.5)) drop-shadow(0 0 6px rgba(239, 68, 68, 0.3))" }}

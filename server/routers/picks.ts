@@ -527,4 +527,20 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
     }
     return result;
   }),
+
+  /** Returns sport keys that have had new picks added in the last 24 hours */
+  newPickSports: publicProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) return [] as string[];
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const rows = await db
+      .select({ sportKey: picks.sportKey })
+      .from(picks)
+      .where(and(
+        eq(picks.isActive, true),
+        gte(picks.createdAt, oneDayAgo),
+      ))
+      .groupBy(picks.sportKey);
+    return rows.map((r) => r.sportKey);
+  }),
 });

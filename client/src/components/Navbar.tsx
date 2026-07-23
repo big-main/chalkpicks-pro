@@ -15,8 +15,8 @@ import {
 import { trpc } from "@/lib/trpc";
 
 // Logo URLs — gold crown + red splatter
-const LOGO_FULL = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/rAyeQpzVJehdEevP.png";
-const LOGO_ICON = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/rAyeQpzVJehdEevP.png";
+const LOGO_FULL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-v3-9jdnGD75EjaGvTyNZ6AERw.png";
+const LOGO_ICON = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-v3-9jdnGD75EjaGvTyNZ6AERw.png";
 
 function LlmStatusBadge() {
   const { data } = trpc.system.llmStatus.useQuery(undefined, {
@@ -27,7 +27,7 @@ function LlmStatusBadge() {
   const providerConfig: Record<string, { label: string; color: string; title: string }> = {
     qwen: { label: "Qwen", color: "#39ff14", title: "Qwen 2.5 7B (Local — Free)" },
     "gpt-4o-mini": { label: "GPT-4o", color: "#0ea5e9", title: "GPT-4o-mini (OpenRouter)" },
-    gemini: { label: "Gemini", color: "#f0b800", title: "Gemini Flash (Forge)" },
+    gemini: { label: "Gemini", color: "#06b6d4", title: "Gemini Flash (Forge)" },
   };
   const cfg = providerConfig[data.provider] ?? providerConfig.gemini;
   return (
@@ -62,7 +62,7 @@ const navGroups = [
   },
   {
     label: "Tools",
-    color: "#f0b800",
+    color: "#06b6d4",
     items: [
       { href: "/arbitrage", label: "Arbitrage", icon: GitCompare, desc: "Guaranteed profit opportunities" },
       { href: "/parlay-builder", label: "Parlay Builder", icon: Layers, desc: "AI-optimized correlated parlays" },
@@ -187,7 +187,7 @@ export default function Navbar() {
                 alt="ChalkPicks"
                 className="w-[80px] h-[80px] object-contain transition-all duration-300 group-hover:scale-105"
                 style={{
-                  filter: "drop-shadow(0 0 14px rgba(245, 158, 11, 0.6)) drop-shadow(0 0 6px rgba(239, 68, 68, 0.4))",
+                  filter: "drop-shadow(0 0 14px rgba(57, 255, 20, 0.5)) drop-shadow(0 0 6px rgba(6, 182, 212, 0.35))",
                 }}
               />
             </div>
@@ -198,7 +198,7 @@ export default function Navbar() {
                 alt="ChalkPicks"
                 className="absolute transition-all duration-300 group-hover:scale-[1.04]"
                 style={{
-                  filter: "drop-shadow(0 0 18px rgba(245, 158, 11, 0.55)) drop-shadow(0 0 8px rgba(239, 68, 68, 0.35))",
+                  filter: "drop-shadow(0 0 18px rgba(57, 255, 20, 0.45)) drop-shadow(0 0 8px rgba(6, 182, 212, 0.30))",
                   width: "100%",
                   height: "auto",
                   top: "50%",
@@ -401,7 +401,7 @@ export default function Navbar() {
                     <span className="hidden sm:block text-sm font-medium max-w-24 truncate text-white/80">
                       {user?.name ?? "User"}
                     </span>
-                    {isPremium && <Crown className="w-3.5 h-3.5 hidden sm:block text-brand-gold" />}
+                    {isPremium && <Crown className="w-3.5 h-3.5 hidden sm:block" style={{ color: "#a78bfa" }} />}
                     <motion.div animate={{ rotate: userMenuOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
                       <ChevronDown className="w-3 h-3 text-white/30" />
                     </motion.div>
@@ -451,7 +451,7 @@ export default function Navbar() {
                             { href: "/credits", label: "Credits", icon: Zap, color: "#39ff14" },
                             { href: "/account-settings", label: "Account Settings", icon: Settings },
                             { href: "/tools", label: "Power Tools", icon: Calculator },
-                            { href: "/pricing", label: "Upgrade Plan", icon: Star, color: "#f0b800" },
+                            { href: "/pricing", label: "Upgrade Plan", icon: Star, color: "#a78bfa" },
                           ].map((item) => {
                             const Icon = item.icon;
                             return (

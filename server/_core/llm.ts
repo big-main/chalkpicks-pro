@@ -454,9 +454,35 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   });
 
   if (!response.ok) {
+    const status = response.status;
     const errorText = await response.text();
+    // Failover to OpenRouter (gpt-4o-mini) on quota / rate-limit errors from Forge
+    const isQuotaError = status === 429 || status === 402 || status === 503 ||
+      errorText.toLowerCase().includes("quota") ||
+      errorText.toLowerCase().includes("token") ||
+      errorText.toLowerCase().includes("rate limit");
+    if (isQuotaError && apiKey !== "openrouter" && ENV.openRouterApiKey) {
+      console.warn(`[LLM] Forge quota/rate-limit (${status}) — failing over to OpenRouter gpt-4o-mini`);
+      const orPayload = { ...payload, model: ENV.openRouterModel };
+      const orResponse = await fetch(ENV.openRouterApiUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${ENV.openRouterApiKey}`,
+          "HTTP-Referer": "https://chalkpicks.live",
+          "X-Title": "ChalkPicks",
+        },
+        body: JSON.stringify(orPayload),
+      });
+      if (!orResponse.ok) {
+        const orError = await orResponse.text();
+        throw new Error(`LLM failover also failed: ${orResponse.status} – ${orError}`);
+      }
+      const orResult = (await orResponse.json()) as InvokeResult;
+      return orResult;
+    }
     throw new Error(
-      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
+      `LLM invoke failed: ${status} ${response.statusText} – ${errorText}`
     );
   }
 

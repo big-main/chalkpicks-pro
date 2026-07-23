@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
-// Logo URLs
-const LOGO_FULL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/cp-logo-navbar-EuWyWqzZKRjh6eatJJ5Sm9.webp";
-const LOGO_ICON = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/cp-logo-icon-a3mVBRaWZeuoNHa3gFxuBp.webp";
+// Logo URLs — gold crown + red splatter
+const LOGO_FULL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-v3-9jdnGD75EjaGvTyNZ6AERw.png";
+const LOGO_ICON = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-v3-9jdnGD75EjaGvTyNZ6AERw.png";
 
 function LlmStatusBadge() {
   const { data } = trpc.system.llmStatus.useQuery(undefined, {
@@ -27,7 +27,7 @@ function LlmStatusBadge() {
   const providerConfig: Record<string, { label: string; color: string; title: string }> = {
     qwen: { label: "Qwen", color: "#39ff14", title: "Qwen 2.5 7B (Local — Free)" },
     "gpt-4o-mini": { label: "GPT-4o", color: "#0ea5e9", title: "GPT-4o-mini (OpenRouter)" },
-    gemini: { label: "Gemini", color: "#f0b800", title: "Gemini Flash (Forge)" },
+    gemini: { label: "Gemini", color: "#06b6d4", title: "Gemini Flash (Forge)" },
   };
   const cfg = providerConfig[data.provider] ?? providerConfig.gemini;
   return (
@@ -62,7 +62,7 @@ const navGroups = [
   },
   {
     label: "Tools",
-    color: "#f0b800",
+    color: "#06b6d4",
     items: [
       { href: "/arbitrage", label: "Arbitrage", icon: GitCompare, desc: "Guaranteed profit opportunities" },
       { href: "/parlay-builder", label: "Parlay Builder", icon: Layers, desc: "AI-optimized correlated parlays" },
@@ -106,7 +106,7 @@ const navGroups = [
   },
   {
     label: "Community",
-    color: "#a855f7",
+    color: "#06b6d4",
     items: [
       { href: "/leaderboard", label: "Leaderboard", icon: Trophy, desc: "Top performers this month" },
       { href: "/backtesting", label: "Backtesting", icon: BookOpen, desc: "Test strategies on historical data" },
@@ -181,32 +181,30 @@ export default function Navbar() {
           {/* ── LOGO ── */}
           <Link href="/" className="flex items-center gap-0 group flex-shrink-0">
             {/* Mobile: icon only */}
-            <div className="md:hidden relative w-14 h-14 overflow-hidden flex items-center justify-center">
+            <div className="md:hidden relative w-16 h-16 overflow-hidden flex items-center justify-center">
               <img
                 src={LOGO_ICON}
                 alt="ChalkPicks"
-                className="w-[68px] h-[68px] object-contain transition-all duration-300 group-hover:scale-105"
+                className="w-[80px] h-[80px] object-contain transition-all duration-300 group-hover:scale-105"
                 style={{
-                  mixBlendMode: "screen",
-                  filter: "brightness(1.1) drop-shadow(0 0 14px rgba(57, 255, 20, 0.5))",
+                  filter: "drop-shadow(0 0 14px rgba(57, 255, 20, 0.5)) drop-shadow(0 0 6px rgba(6, 182, 212, 0.35))",
                 }}
               />
             </div>
             {/* Desktop: full logo */}
-            <div className="hidden md:flex items-center relative overflow-hidden" style={{ width: 220, height: 76 }}>
+            <div className="hidden md:flex items-center relative overflow-hidden" style={{ width: 260, height: 88 }}>
               <img
                 src={LOGO_FULL}
                 alt="ChalkPicks"
                 className="absolute transition-all duration-300 group-hover:scale-[1.04]"
                 style={{
-                  mixBlendMode: "screen",
-                  filter: "brightness(1.15) drop-shadow(0 0 18px rgba(57, 255, 20, 0.45))",
+                  filter: "drop-shadow(0 0 18px rgba(57, 255, 20, 0.45)) drop-shadow(0 0 8px rgba(6, 182, 212, 0.30))",
                   width: "100%",
                   height: "auto",
                   top: "50%",
                   left: "50%",
                   transform: "translate(-50%, -50%)",
-                  maxWidth: 260,
+                  maxWidth: 300,
                 }}
               />
             </div>
@@ -403,7 +401,7 @@ export default function Navbar() {
                     <span className="hidden sm:block text-sm font-medium max-w-24 truncate text-white/80">
                       {user?.name ?? "User"}
                     </span>
-                    {isPremium && <Crown className="w-3.5 h-3.5 hidden sm:block text-brand-gold" />}
+                    {isPremium && <Crown className="w-3.5 h-3.5 hidden sm:block" style={{ color: "#a78bfa" }} />}
                     <motion.div animate={{ rotate: userMenuOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
                       <ChevronDown className="w-3 h-3 text-white/30" />
                     </motion.div>
@@ -453,7 +451,7 @@ export default function Navbar() {
                             { href: "/credits", label: "Credits", icon: Zap, color: "#39ff14" },
                             { href: "/account-settings", label: "Account Settings", icon: Settings },
                             { href: "/tools", label: "Power Tools", icon: Calculator },
-                            { href: "/pricing", label: "Upgrade Plan", icon: Star, color: "#f0b800" },
+                            { href: "/pricing", label: "Upgrade Plan", icon: Star, color: "#a78bfa" },
                           ].map((item) => {
                             const Icon = item.icon;
                             return (

@@ -13,7 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Link } from "wouter";
-import { Brain, Lock, Filter, RefreshCw, Zap, Sparkles, ArrowUpDown, SlidersHorizontal, X, ChevronDown, Bell, BellOff, Crown } from "lucide-react";
+import { Brain, Lock, Filter, RefreshCw, Zap, Sparkles, ArrowUpDown, SlidersHorizontal, X, ChevronDown, Bell, BellOff, Crown, Calendar, Star } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import SharePickCard from "@/components/SharePickCard";
 import PushNotificationBanner from "@/components/PushNotificationBanner";
@@ -51,6 +52,8 @@ const SPORTSBOOKS = [
   { value: "Barstool", label: "Barstool" },
 ];
 
+type DatePreset = "today" | "yesterday" | "last7" | "last30" | "all";
+
 interface FilterState {
   sport: string;
   tier: string;
@@ -60,8 +63,8 @@ interface FilterState {
   minEdge: number;
   sortBy: SortOption;
   sportsbook: string;
+  datePreset: DatePreset;
 }
-
 const DEFAULT_FILTERS: FilterState = {
   sport: "all",
   tier: "all",
@@ -71,7 +74,38 @@ const DEFAULT_FILTERS: FilterState = {
   minEdge: 0,
   sortBy: "confidence_desc",
   sportsbook: "all",
+  datePreset: "last7",
 };
+
+const DATE_PRESETS: { value: DatePreset; label: string; icon: string }[] = [
+  { value: "today", label: "Today", icon: "📅" },
+  { value: "yesterday", label: "Yesterday", icon: "📆" },
+  { value: "last7", label: "Last 7 Days", icon: "📊" },
+  { value: "last30", label: "Last 30 Days", icon: "📈" },
+  { value: "all", label: "All Time", icon: "🗂️" },
+];
+
+function getDateRange(preset: DatePreset): { dateFrom?: string; dateTo?: string } {
+  const today = new Date();
+  const fmt = (d: Date) => d.toISOString().split("T")[0];
+  switch (preset) {
+    case "today": return { dateFrom: fmt(today), dateTo: fmt(today) };
+    case "yesterday": {
+      const y = new Date(today); y.setDate(y.getDate() - 1);
+      return { dateFrom: fmt(y), dateTo: fmt(y) };
+    }
+    case "last7": {
+      const from = new Date(today); from.setDate(from.getDate() - 7);
+      return { dateFrom: fmt(from) };
+    }
+    case "last30": {
+      const from = new Date(today); from.setDate(from.getDate() - 30);
+      return { dateFrom: fmt(from) };
+    }
+    case "all": return {};
+    default: return {};
+  }
+}
 
 function getStoredFilters(): FilterState {
   try {
@@ -86,6 +120,34 @@ function storeFilters(filters: FilterState) {
     localStorage.setItem("chalkpicks_pick_filters", JSON.stringify(filters));
   } catch {}
 }
+
+// ─── Favorite Sports (localStorage) ─────────────────────────────────────────
+function getStoredFavorites(): string[] {
+  try {
+    const stored = localStorage.getItem("chalkpicks_fav_sports");
+    if (stored) return JSON.parse(stored) as string[];
+  } catch {}
+  return [];
+}
+function storeFavorites(favs: string[]) {
+  try {
+    localStorage.setItem("chalkpicks_fav_sports", JSON.stringify(favs));
+  } catch {}
+}
+
+// ─── Sport Legend Descriptions ───────────────────────────────────────────────
+const SPORT_LEGEND: Record<string, { color: string; desc: string }> = {
+  all:    { color: "#39ff14", desc: "All sports combined" },
+  nfl:    { color: "#60a5fa", desc: "NFL — National Football League" },
+  nba:    { color: "#22d3ee", desc: "NBA — National Basketball Association" },
+  mlb:    { color: "#34d399", desc: "MLB — Major League Baseball" },
+  nhl:    { color: "#f87171", desc: "NHL — National Hockey League" },
+  ncaaf:  { color: "#fb923c", desc: "NCAAF — College Football" },
+  ncaab:  { color: "#fb923c", desc: "NCAAB — College Basketball" },
+  soccer: { color: "#4ade80", desc: "Soccer — EPL, MLS & international" },
+  tennis: { color: "#facc15", desc: "Tennis — ATP/WTA tour events" },
+  mma:    { color: "#f87171", desc: "MMA/UFC — Mixed Martial Arts" },
+};
 
 
 function PickCard({ pick, isPremiumUser, rank }: { pick: any; isPremiumUser: boolean; rank?: number }) {
@@ -303,11 +365,19 @@ function FilterBar({
   setFilters,
   sports,
   activeFilterCount,
+  sportCounts,
+  newPickSports,
+  favorites,
+  onToggleFavorite,
 }: {
   filters: FilterState;
   setFilters: (f: FilterState) => void;
   sports: { key: string; name: string; icon: string }[] | undefined;
   activeFilterCount: number;
+  sportCounts?: Record<string, number>;
+  newPickSports?: string[];
+  favorites: string[];
+  onToggleFavorite: (key: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -324,7 +394,105 @@ function FilterBar({
 
   return (
     <div className="mb-6 space-y-3">
-      {/* Primary controls row — always visible */}
+      {/* Sport Tab Buttons — always visible */}
+      <TooltipProvider delayDuration={300}>
+      <div className="flex items-center gap-2 flex-wrap">
+        {[{ key: "all", name: "All Sports", icon: "🏆" }, ...(sports ?? [])].map((s: any) => {
+          const isActive = filters.sport === s.key;
+          const sportClass = s.key === "all" ? "" : getSportBadgeClass(s.key);
+          const isFav = favorites.includes(s.key);
+          const hasNew = s.key !== "all" && (newPickSports ?? []).includes(s.key);
+          const legend = SPORT_LEGEND[s.key];
+          return (
+            <Tooltip key={s.key}>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => updateFilter("sport", s.key)}
+                  className={`group relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                    isActive
+                      ? s.key === "all"
+                        ? "bg-primary/20 border-primary text-primary"
+                        : `${sportClass} border-current opacity-100`
+                      : "bg-transparent border-white/10 text-white/50 hover:border-white/25 hover:text-white/75"
+                  }`}
+                >
+                  {/* New pick pulse dot */}
+                  {hasNew && (
+                    <span className="new-pick-dot" title="New pick in last 24h" />
+                  )}
+                  <span>{s.icon}</span>
+                  <span>{s.name}</span>
+                  {/* Count badge */}
+                  {s.key !== "all" && sportCounts && (sportCounts[s.key] ?? 0) > 0 && (
+                    <span
+                      className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold leading-none"
+                      style={{
+                        background: isActive ? "rgba(0,0,0,0.25)" : "rgba(255,255,255,0.10)",
+                        color: isActive ? "inherit" : "rgba(255,255,255,0.55)",
+                      }}
+                    >
+                      {sportCounts[s.key]}
+                    </span>
+                  )}
+                  {/* Favorite star — only on non-all tabs */}
+                  {s.key !== "all" && (
+                    <span
+                      className={`sport-tab-star ${isFav ? "starred" : ""}`}
+                      onClick={(e) => { e.stopPropagation(); onToggleFavorite(s.key); }}
+                      title={isFav ? "Remove from favorites" : "Add to favorites"}
+                    >
+                      <Star className="w-3 h-3" fill={isFav ? "currentColor" : "none"} />
+                    </span>
+                  )}
+                </button>
+              </TooltipTrigger>
+              {legend && (
+                <TooltipContent
+                  side="bottom"
+                  className="rounded-xl px-3 py-2 text-xs"
+                  style={{
+                    background: "rgba(8,8,18,0.97)",
+                    border: `1px solid ${legend.color}25`,
+                    color: "rgba(255,255,255,0.85)",
+                    backdropFilter: "blur(16px)",
+                  }}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: legend.color }} />
+                    <span>{legend.desc}</span>
+                    {hasNew && <span className="ml-1 text-[10px] font-bold" style={{ color: "#22d3ee" }}>● New</span>}
+                  </div>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          );
+        })}
+      </div>
+      </TooltipProvider>
+
+      {/* Date Preset Row */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <Calendar className="w-3.5 h-3.5 text-white/40 shrink-0" />
+        {DATE_PRESETS.map((preset) => {
+          const isActive = filters.datePreset === preset.value;
+          return (
+            <button
+              key={preset.value}
+              onClick={() => updateFilter("datePreset", preset.value)}
+              className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all border ${
+                isActive
+                  ? "bg-blue-500/20 border-blue-400 text-blue-300"
+                  : "bg-transparent border-white/10 text-white/50 hover:border-white/25 hover:text-white/75"
+              }`}
+            >
+              <span>{preset.icon}</span>
+              <span>{preset.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Secondary controls row — sort, tier, sportsbook, advanced */}
       <div className="flex items-center gap-3 flex-wrap">
         {/* Sort dropdown */}
         <Select value={filters.sortBy} onValueChange={(v) => updateFilter("sortBy", v)}>
@@ -339,17 +507,6 @@ function FilterBar({
               <SelectItem key={opt.value} value={opt.value}>
                 <span className="flex items-center gap-2"><span>{opt.icon}</span><span>{opt.label}</span></span>
               </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        {/* Sport filter */}
-        <Select value={filters.sport} onValueChange={(v) => updateFilter("sport", v)}>
-          <SelectTrigger className="w-40 h-9 text-xs"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Sports</SelectItem>
-            {sports?.map((s: any) => (
-              <SelectItem key={s.key} value={s.key}>{s.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -586,11 +743,41 @@ export default function Picks() {
   const [filters, setFilters] = useState<FilterState>(getStoredFilters);
   const [generateOpen, setGenerateOpen] = useState(false);
 
+  const dateRange = useMemo(() => getDateRange(filters.datePreset), [filters.datePreset]);
   const { data: picksData, isLoading, refetch } = trpc.picks.list.useQuery({
     sportKey: filters.sport === "all" ? undefined : filters.sport,
     tier: filters.tier === "all" ? undefined : (filters.tier as "free" | "premium" | "all"),
+    dateFrom: dateRange.dateFrom,
+    dateTo: dateRange.dateTo,
   });
   const { data: sports } = trpc.picks.sports.useQuery();
+  const { data: sportCounts } = trpc.picks.sportCounts.useQuery(undefined, {
+    staleTime: 60_000,
+    refetchInterval: 120_000,
+  });
+  const { data: newPickSports } = trpc.picks.newPickSports.useQuery(undefined, {
+    staleTime: 60_000,
+    refetchInterval: 120_000,
+  });
+
+  // Favorites state (localStorage-backed)
+  const [favorites, setFavorites] = useState<string[]>(getStoredFavorites);
+  const handleToggleFavorite = (key: string) => {
+    setFavorites((prev) => {
+      const next = prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key];
+      storeFavorites(next);
+      return next;
+    });
+  };
+
+  // Sort sports list: favorites pinned first
+  const sortedSports = useMemo(() => {
+    if (!sports) return sports;
+    return [
+      ...sports.filter((s: any) => favorites.includes(s.key)),
+      ...sports.filter((s: any) => !favorites.includes(s.key)),
+    ];
+  }, [sports, favorites]);
 
   const isPremiumUser = !!(user?.subscriptionTier && user.subscriptionTier !== "free");
 
@@ -605,6 +792,7 @@ export default function Picks() {
     if (filters.minEdge > 0) count++;
     if (filters.sortBy !== "confidence_desc") count++;
     if (filters.sportsbook !== "all") count++;
+    if (filters.datePreset !== "last7") count++;
     return count;
   }, [filters]);
 
@@ -694,8 +882,12 @@ export default function Picks() {
         <FilterBar
           filters={filters}
           setFilters={setFilters}
-          sports={sports}
+          sports={sortedSports}
           activeFilterCount={activeFilterCount}
+          sportCounts={sportCounts}
+          newPickSports={newPickSports ?? []}
+          favorites={favorites}
+          onToggleFavorite={handleToggleFavorite}
         />
 
         {/* Results count */}

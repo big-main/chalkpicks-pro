@@ -11,7 +11,7 @@ import {
 import { useState as useLocalState } from "react";
 import { toast } from "sonner";
 
-const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp";
+const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-v3-9jdnGD75EjaGvTyNZ6AERw.png";
 
 const cardStyle = {
   background: "rgba(12,12,22,0.9)",
@@ -124,7 +124,7 @@ export default function AdminPanel() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <img src={LOGO_URL} alt="ChalkPicks" className="h-10 w-auto" style={{ filter: "drop-shadow(0 0 8px rgba(57,255,20,0.4))" }} />
+            <img src={LOGO_URL} alt="ChalkPicks" className="h-12 w-auto" style={{ filter: "drop-shadow(0 0 14px rgba(245, 158, 11, 0.55)) drop-shadow(0 0 6px rgba(239, 68, 68, 0.35))" }} />
             <div>
               <h1 style={{ fontWeight: 700, fontSize: "1.75rem", textTransform: "uppercase", color: "white" }}>
                 Admin Panel

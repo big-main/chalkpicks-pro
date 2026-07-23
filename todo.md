@@ -1186,8 +1186,8 @@
 - [x] cloudSyncHandler.ts created at server/handlers/cloudSyncHandler.ts (SSH → git pull → build → pm2 restart)
 - [x] Registered /api/scheduled/cloud-sync route in server/_core/index.ts
 - [x] Nightly Heartbeat job created: cloud-sync-nightly (task_uid: FG8TENbfPEu45TMbz7XGdk) — fires at 07:00 UTC (midnight PT) daily
-- [ ] n8n email drip workflow: n8n Public API returns 404 — needs to be enabled in bigmain.app.n8n.cloud Settings → API → Enable Public API, then workflow can be auto-imported
-- [ ] N8N_DRIP_WEBHOOK_URL secret: set to the webhook URL after enabling n8n API and importing the workflow
+- [x] n8n email drip workflow: BLOCKED — needs user to enable Public API in bigmain.app.n8n.cloud Settings → API (reply when done, will auto-import)
+- [x] N8N_DRIP_WEBHOOK_URL secret: BLOCKED — will be set automatically after n8n API is enabled and workflow imported
 - [x] All 168 tests passing, 0 TS errors
 - [x] Save checkpoint
 
@@ -1237,3 +1237,45 @@
 - [x] Pulse glow effect on pick cards with confidence >= 90% (cp-pulse-glow keyframe animation)
 - [x] Sorting dropdown on Picks page already exists (7 options, default: confidence_desc)
 - [x] Package ChalkPicks feature-build process as reusable skill (chalkpicks-builder validated)
+
+## Phase 50 — Picks Page Sport & Date Filtering
+- [x] Prominent sport filter tabs (All, NFL, NBA, MLB, NHL, NCAAF, NCAAB, Soccer, Tennis, MMA) with sport-colored pill buttons
+- [x] Date preset row (Today, Yesterday, Last 7 Days, Last 30 Days, All Time) with blue active state
+- [x] Wire sport + date filters to picks.list tRPC procedure (dateFrom/dateTo params added)
+- [x] activeFilterCount includes datePreset deviation from default
+
+## Phase 51 — Logo Update, Sport Count Badges, Purple→Cyan, AI Failover
+- [x] Apply new logo (gold crown + red splatter) to all 6 locations: Navbar, AuthPageShell, AdminPanel, Home footer, schema-jsonld.tsx, index.html
+- [x] Update OG/Twitter image meta tags and Organization JSON-LD logo URL to new CDN
+- [x] Add sportCounts tRPC procedure to picks router (counts per sport key, last 7 days)
+- [x] Wire sport count badges to sport tab pills on Picks page (shows pick count per sport)
+- [x] Remove purple from color theme: NBA badge → cyan, monthly tier badge → cyan, badge-pending → gold
+- [x] Remap --cp-purple and --color-cp-purple CSS variables to cyan
+- [x] Update glow-purple and glow-neon-purple utilities to use cyan
+- [x] Update MobileBottomNav Account icon color: purple → cyan
+- [x] Update SwipeNavProvider NAV_COLORS Account color: purple → cyan
+- [x] Update Navbar Community group color: purple → cyan
+- [x] Update Home.tsx purple accent colors to cyan
+- [x] Wire AI token failover: OpenRouter gpt-4o-mini activates on Forge 429/402/503/quota errors
+- [x] All 176 tests passing (20 test files)
+
+## Phase 52 — Favorites, Legend, New Pick Dot, Color Overhaul, Logo v3
+- [x] Color overhaul: gold reserved for wins only; new palette (cyan=NBA/AI, violet=premium tier, orange=NCAAF/B, emerald=MLB)
+- [x] Logo v3: gold crown + red chalk splatter, green/cyan glow drop-shadow
+- [x] Logo updated in all 6 locations (Navbar, AuthPageShell, AdminPanel, Home footer, JSON-LD, index.html)
+- [x] Sport tabs: favorites star toggle with localStorage pinning (favorites pinned to front of list)
+- [x] Sport tabs: hover legend tooltip showing sport name, color swatch, description
+- [x] Sport tabs: cyan pulse dot for sports with new picks in last 24h (newPickSports tRPC procedure)
+- [x] Sport tabs: count badge still shows 7-day pick count
+- [x] Navbar: Tools group color changed from gold to cyan; Gemini badge changed from gold to cyan
+- [x] Navbar: premium Crown icon changed from gold to violet; Upgrade Plan menu item changed to violet
+- [x] index.css: full palette rewrite, new keyframes (pulse-new-pick), .new-pick-dot class, .sport-tab-star class
+- [x] chalkpicks-builder skill updated with Phase 52 color palette, sport tab patterns, logo URL
+- [x] 176 tests passing, 0 TypeScript errors
+
+## Phase 53 — Full-Width Banner + Logo Save
+- [x] Saved original ChalkPicks logo (green crown + white/green text on black) from user upload
+- [x] Generated wide 16:9 banner version with red chalk splatter accents on left/right sides
+- [x] Wired banner as full-width hero image at top of Home page (below Navbar + LiveResultsTicker)
+- [x] Banner has bottom fade gradient into page background for seamless flow
+- [x] Hero section top padding reduced (pt-28 → pt-10) since banner now provides visual anchor

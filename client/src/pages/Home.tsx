@@ -222,8 +222,30 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground pb-16 md:pb-0">
             <Navbar />
       <LiveResultsTicker />
+
+      {/* ── BANNER ───────────────────────────────────────────── */}
+      <div className="w-full relative overflow-hidden" style={{ marginTop: "64px" }}>
+        <img
+          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-banner-v1_1f2a8abc.png"
+          alt="ChalkPicks Pro — AI-Powered Sports Picks"
+          className="w-full object-cover object-center block"
+          style={{
+            maxHeight: "420px",
+            minHeight: "180px",
+            objectPosition: "center 30%",
+          }}
+        />
+        {/* Bottom fade into page background */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+          style={{
+            background: "linear-gradient(to bottom, transparent, var(--background))",
+          }}
+        />
+      </div>
+
       {/* ── HERO ─────────────────────────────────────────────── */}
-      <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden">
+      <section className="relative pt-10 pb-20 lg:pt-14 lg:pb-28 overflow-hidden">
         {/* Animated gradient orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div

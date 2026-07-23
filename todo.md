@@ -1272,3 +1272,10 @@
 - [x] index.css: full palette rewrite, new keyframes (pulse-new-pick), .new-pick-dot class, .sport-tab-star class
 - [x] chalkpicks-builder skill updated with Phase 52 color palette, sport tab patterns, logo URL
 - [x] 176 tests passing, 0 TypeScript errors
+
+## Phase 53 — Full-Width Banner + Logo Save
+- [x] Saved original ChalkPicks logo (green crown + white/green text on black) from user upload
+- [x] Generated wide 16:9 banner version with red chalk splatter accents on left/right sides
+- [x] Wired banner as full-width hero image at top of Home page (below Navbar + LiveResultsTicker)
+- [x] Banner has bottom fade gradient into page background for seamless flow
+- [x] Hero section top padding reduced (pt-28 → pt-10) since banner now provides visual anchor

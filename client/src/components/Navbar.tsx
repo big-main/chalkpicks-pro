@@ -15,8 +15,8 @@ import {
 import { trpc } from "@/lib/trpc";
 
 // Logo URLs — gold crown + red splatter
-const LOGO_FULL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-v3-9jdnGD75EjaGvTyNZ6AERw.png";
-const LOGO_ICON = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-v3-9jdnGD75EjaGvTyNZ6AERw.png";
+const LOGO_FULL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-red-drips_d2dab3c3.png";
+const LOGO_ICON = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-red-drips_d2dab3c3.png";
 
 function LlmStatusBadge() {
   const { data } = trpc.system.llmStatus.useQuery(undefined, {

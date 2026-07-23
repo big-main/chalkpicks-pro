@@ -224,7 +224,10 @@ export default function Home() {
       <LiveResultsTicker />
 
       {/* ── LOGO HERO (borderless, bleeds into page) ─────────────────────── */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, scale: 0.88 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
         className="w-full relative flex items-center justify-center overflow-visible pointer-events-none select-none"
         style={{ marginTop: "60px", zIndex: 0 }}
         aria-hidden="true"
@@ -245,14 +248,13 @@ export default function Home() {
               height: "100%",
               objectFit: "contain",
               display: "block",
-              // Mask: fade to transparent on all 4 edges so it bleeds into the black page
               WebkitMaskImage: "radial-gradient(ellipse 70% 65% at 50% 48%, black 30%, transparent 80%)",
               maskImage: "radial-gradient(ellipse 70% 65% at 50% 48%, black 30%, transparent 80%)",
               opacity: 0.92,
             }}
           />
         </div>
-        {/* Extra bottom fade just in case */}
+        {/* Extra bottom fade */}
         <div
           className="absolute bottom-0 left-0 right-0 pointer-events-none"
           style={{
@@ -260,7 +262,7 @@ export default function Home() {
             background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)",
           }}
         />
-      </div>
+      </motion.div>
 
       {/* ── HERO ─────────────────────────────────────────────── */}
       <section className="relative pt-0 pb-20 lg:pt-0 lg:pb-28 overflow-hidden" style={{ marginTop: "-120px" }}>
@@ -673,7 +675,7 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-10 mb-10">
             <div>
               <img
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-v3-9jdnGD75EjaGvTyNZ6AERw.png"
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-red-drips_d2dab3c3.png"
                 alt="ChalkPicks"
                 className="h-14 w-auto mb-4"
                 style={{ filter: "drop-shadow(0 0 14px rgba(245, 158, 11, 0.5)) drop-shadow(0 0 6px rgba(239, 68, 68, 0.3))" }}

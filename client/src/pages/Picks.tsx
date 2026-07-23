@@ -854,7 +854,31 @@ export default function Picks() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container pt-24 pb-12">
+      {/* ── PICKS PAGE LOGO HEADER ─────────────────────────────────────── */}
+      <div
+        className="w-full flex items-center justify-center overflow-visible pointer-events-none select-none"
+        style={{ marginTop: "64px", zIndex: 0 }}
+        aria-hidden="true"
+      >
+        <div style={{ position: "relative", width: "min(380px, 75vw)", aspectRatio: "1 / 1" }}>
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-red-drips_d2dab3c3.png"
+            alt=""
+            style={{
+              width: "100%", height: "100%", objectFit: "contain", display: "block",
+              WebkitMaskImage: "radial-gradient(ellipse 68% 62% at 50% 48%, black 25%, transparent 78%)",
+              maskImage: "radial-gradient(ellipse 68% 62% at 50% 48%, black 25%, transparent 78%)",
+              opacity: 0.85,
+            }}
+          />
+          <div
+            className="absolute bottom-0 left-0 right-0 pointer-events-none"
+            style={{ height: "45%", background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)" }}
+          />
+        </div>
+      </div>
+
+      <div className="container pb-12" style={{ marginTop: "-60px" }}>
         {/* Push notification prompt */}
         <PushNotificationBanner />
         {/* Header */}

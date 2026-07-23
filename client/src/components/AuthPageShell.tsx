@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 
-const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-dark-v2-Ey5FDp5iZKArkMRM3n8FwX.webp";
+const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-v3-9jdnGD75EjaGvTyNZ6AERw.png";
 
 interface AuthPageShellProps {
   children: React.ReactNode;
@@ -22,7 +22,8 @@ export default function AuthPageShell({ children, rightLink }: AuthPageShellProp
               <img
                 src={LOGO_URL}
                 alt="ChalkPicks"
-                className="h-12 w-auto transition-all group-hover:scale-105 drop-shadow-[0_0_12px_rgba(57,255,20,0.3)]"
+                className="h-14 w-auto transition-all group-hover:scale-105"
+                style={{ filter: "drop-shadow(0 0 14px rgba(245, 158, 11, 0.55)) drop-shadow(0 0 6px rgba(239, 68, 68, 0.35))" }}
               />
             </a>
           </Link>

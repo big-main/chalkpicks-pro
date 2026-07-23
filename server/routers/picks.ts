@@ -98,6 +98,8 @@ export const picksRouter = router({
       sportKey: z.string().optional(),
       tier: z.enum(["free", "premium", "all"]).optional().default("all"),
       date: z.string().optional(),
+      dateFrom: z.string().optional(), // YYYY-MM-DD
+      dateTo: z.string().optional(),   // YYYY-MM-DD
       page: z.number().optional().default(1),
       limit: z.number().optional().default(20),
     }))
@@ -111,6 +113,8 @@ export const picksRouter = router({
         let mockData = generateMockPicks(today);
         if (input.sportKey) mockData = mockData.filter(p => p.sportKey === input.sportKey);
         if (input.tier !== "all") mockData = mockData.filter(p => p.tier === input.tier);
+        if (input.dateFrom) mockData = mockData.filter(p => p.pickDate >= input.dateFrom!);
+        if (input.dateTo) mockData = mockData.filter(p => p.pickDate <= input.dateTo!);
         return {
           picks: mockData.slice(offset, offset + input.limit).map((p, i) => ({ ...p, id: i + 1, gameId: null, createdAt: new Date(), updatedAt: new Date(), isActive: true })),
           total: mockData.length,
@@ -121,11 +125,16 @@ export const picksRouter = router({
       const conditions = [eq(picks.isActive, true)];
       if (input.sportKey) conditions.push(eq(picks.sportKey, input.sportKey));
       if (input.tier !== "all") conditions.push(eq(picks.tier, input.tier));
-      // Show picks for today and last 7 days
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      const sevenDaysAgoStr = sevenDaysAgo.toISOString().split("T")[0];
-      conditions.push(gte(picks.pickDate, sevenDaysAgoStr));
+      // Date range filtering
+      if (input.dateFrom) {
+        conditions.push(gte(picks.pickDate, input.dateFrom));
+      } else {
+        // Default: show picks for today and last 7 days
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        conditions.push(gte(picks.pickDate, sevenDaysAgo.toISOString().split("T")[0]));
+      }
+      if (input.dateTo) conditions.push(lte(picks.pickDate, input.dateTo));
 
       const [pickList, countResult] = await Promise.all([
         db.select().from(picks).where(and(...conditions)).orderBy(desc(picks.isFeatured), desc(picks.edgeScore), desc(picks.confidenceScore)).limit(input.limit).offset(offset),
@@ -533,5 +542,47 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       return { pick: recentFree ?? null, date: today };
     }
     return { pick: freePick, date: today };
+  }),
+
+  // Get pick counts per sport key (for sport tab badges)
+  sportCounts: publicProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) {
+      // Return mock counts if DB not available
+      return {
+        nfl: 4, nba: 3, mlb: 5, nhl: 2, ncaaf: 2, ncaab: 2, soccer: 1, tennis: 1, mma: 1,
+      } as Record<string, number>;
+    }
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const rows = await db
+      .select({ sportKey: picks.sportKey, count: sql<number>`count(*)` })
+      .from(picks)
+      .where(and(
+        eq(picks.isActive, true),
+        gte(picks.pickDate, sevenDaysAgo.toISOString().split("T")[0]),
+      ))
+      .groupBy(picks.sportKey);
+    const result: Record<string, number> = {};
+    for (const row of rows) {
+      result[row.sportKey] = Number(row.count);
+    }
+    return result;
+  }),
+
+  /** Returns sport keys that have had new picks added in the last 24 hours */
+  newPickSports: publicProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) return [] as string[];
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const rows = await db
+      .select({ sportKey: picks.sportKey })
+      .from(picks)
+      .where(and(
+        eq(picks.isActive, true),
+        gte(picks.createdAt, oneDayAgo),
+      ))
+      .groupBy(picks.sportKey);
+    return rows.map((r) => r.sportKey);
   }),
 });

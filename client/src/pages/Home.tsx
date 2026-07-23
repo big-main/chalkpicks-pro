@@ -223,29 +223,47 @@ export default function Home() {
             <Navbar />
       <LiveResultsTicker />
 
-      {/* ── BANNER ───────────────────────────────────────────── */}
-      <div className="w-full relative overflow-hidden" style={{ marginTop: "64px" }}>
-        <img
-          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-banner-v1_1f2a8abc.png"
-          alt="ChalkPicks Pro — AI-Powered Sports Picks"
-          className="w-full object-cover object-center block"
-          style={{
-            maxHeight: "420px",
-            minHeight: "180px",
-            objectPosition: "center 30%",
-          }}
-        />
-        {/* Bottom fade into page background */}
+      {/* ── LOGO HERO (borderless, bleeds into page) ─────────────────────── */}
+      <div
+        className="w-full relative flex items-center justify-center overflow-visible pointer-events-none select-none"
+        style={{ marginTop: "60px", zIndex: 0 }}
+        aria-hidden="true"
+      >
+        {/* Radial mask: logo fades into black on all sides */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
           style={{
-            background: "linear-gradient(to bottom, transparent, var(--background))",
+            position: "relative",
+            width: "min(700px, 90vw)",
+            aspectRatio: "1 / 1",
+          }}
+        >
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-red-drips_d2dab3c3.png"
+            alt=""
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              display: "block",
+              // Mask: fade to transparent on all 4 edges so it bleeds into the black page
+              WebkitMaskImage: "radial-gradient(ellipse 70% 65% at 50% 48%, black 30%, transparent 80%)",
+              maskImage: "radial-gradient(ellipse 70% 65% at 50% 48%, black 30%, transparent 80%)",
+              opacity: 0.92,
+            }}
+          />
+        </div>
+        {/* Extra bottom fade just in case */}
+        <div
+          className="absolute bottom-0 left-0 right-0 pointer-events-none"
+          style={{
+            height: "40%",
+            background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)",
           }}
         />
       </div>
 
       {/* ── HERO ─────────────────────────────────────────────── */}
-      <section className="relative pt-10 pb-20 lg:pt-14 lg:pb-28 overflow-hidden">
+      <section className="relative pt-0 pb-20 lg:pt-0 lg:pb-28 overflow-hidden" style={{ marginTop: "-120px" }}>
         {/* Animated gradient orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div

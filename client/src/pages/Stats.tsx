@@ -29,7 +29,13 @@ export default function Stats() {
 
   const { data: liveGames, isLoading: gamesLoading } = trpc.stats.liveGames.useQuery({ sportKey: sport }, { enabled: hasPremiumAccess });
   const { data: players, isLoading: playersLoading } = trpc.stats.topPlayers.useQuery({ sportKey: sport, limit: 12 }, { enabled: hasPremiumAccess });
-  const { data: injuries } = trpc.stats.injuryReport.useQuery({ sportKey: sport }, { enabled: hasPremiumAccess });
+  // injuryReport only covers the sports API-Sports.io/ESPN actually report on.
+  const INJURY_SPORTS = ["nfl", "nba", "mlb", "nhl"] as const;
+  const hasInjurySupport = (INJURY_SPORTS as readonly string[]).includes(sport);
+  const { data: injuries } = trpc.stats.injuryReport.useQuery(
+    { sportKey: sport as (typeof INJURY_SPORTS)[number] },
+    { enabled: hasPremiumAccess && hasInjurySupport }
+  );
 
   if (!hasPremiumAccess) {
     return <Paywall tier="daily" title="Live Stats" description="Real-time game scores, odds, and player statistics" />;
@@ -234,7 +240,10 @@ export default function Stats() {
             {/* Injuries */}
             <TabsContent value="injuries">
               <div className="space-y-3">
-                {injuries?.length === 0 && (
+                {!hasInjurySupport && (
+                  <div className="text-center py-12 text-muted-foreground">Injury reports aren't available for this sport yet.</div>
+                )}
+                {hasInjurySupport && injuries?.length === 0 && (
                   <div className="text-center py-12 text-muted-foreground">No injury reports for this sport.</div>
                 )}
                 {injuries?.map((inj: any, i: number) => (

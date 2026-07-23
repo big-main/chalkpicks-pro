@@ -53,8 +53,10 @@ export const statsRouter = router({
   // Real injury data from API-Sports.io (ESPN fallback) — see globalDataSite.ts.
   // Previously returned hand-typed fake players/timestamps to every premium
   // subscriber; that data never changed and wasn't sourced from any real feed.
+  // sportKey is restricted to the sports getInjuries() actually supports
+  // (API_SPORTS_HOSTS in globalDataSite.ts) rather than an open string.
   injuryReport: publicProcedure
-    .input(z.object({ sportKey: z.string().optional().default("nfl") }))
+    .input(z.object({ sportKey: z.enum(["nfl", "nba", "mlb", "nhl"]).optional().default("nfl") }))
     .query(async ({ input }) => {
       try {
         return await getInjuries(input.sportKey);

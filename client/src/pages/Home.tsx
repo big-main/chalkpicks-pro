@@ -241,7 +241,7 @@ export default function Home() {
           }}
         >
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-red-drips_d2dab3c3.png"
+            src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png"
             alt=""
             style={{
               width: "100%",
@@ -675,7 +675,7 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-10 mb-10">
             <div>
               <img
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-red-drips_d2dab3c3.png"
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png"
                 alt="ChalkPicks"
                 className="h-14 w-auto mb-4"
                 style={{ filter: "drop-shadow(0 0 14px rgba(245, 158, 11, 0.5)) drop-shadow(0 0 6px rgba(239, 68, 68, 0.3))" }}

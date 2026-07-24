@@ -57,7 +57,7 @@ function isBot(userAgent: string): boolean {
 
 const BASE_URL = "https://chalkpicks.live";
 const LOGO_URL =
-  "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-red-drips_d2dab3c3.png";
+  "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png";
 
 function orgLd(): object {
   return {

@@ -39,7 +39,7 @@ export function OrganizationJsonLd() {
     url: "https://chalkpicks.live",
     logo: {
       "@type": "ImageObject",
-      url: "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-logo-red-drips_d2dab3c3.png",
+      url: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png",
       width: 512,
       height: 512,
     },

@@ -99,6 +99,9 @@ const LearnPage = lazy(() => import("@/pages/LearnPage"));
 const FreePick = lazy(() => import("@/pages/FreePick"));
 const KellyCalculator = lazy(() => import("@/pages/KellyCalculator"));
 const EVCalculator = lazy(() => import("@/pages/EVCalculator"));
+const Terms = lazy(() => import("@/pages/Terms"));
+const Privacy = lazy(() => import("@/pages/Privacy"));
+const ResponsibleGambling = lazy(() => import("@/pages/ResponsibleGambling"));
 
 function PageLoader() {
   return (
@@ -215,6 +218,9 @@ function Router() {
           <Route path="/blog/ai-sports-betting" component={BlogAISportsBetting} />
           <Route path="/blog/sports-betting-strategy" component={BlogStrategy} />
           <Route path="/blog/:slug" component={BlogPost} />
+          <Route path="/terms" component={Terms} />
+          <Route path="/privacy" component={Privacy} />
+          <Route path="/responsible-gambling" component={ResponsibleGambling} />
           <Route path="/404" component={NotFound} />
           <Route component={NotFound} />
         </Switch>

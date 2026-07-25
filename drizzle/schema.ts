@@ -41,6 +41,13 @@ export const users = mysqlTable("users", {
   applicationReviewedAt: timestamp("applicationReviewedAt"),
   applicationReviewedBy: int("applicationReviewedBy"),
   onboardingCompletedAt: timestamp("onboardingCompletedAt"),
+  // Profile customization
+  displayName: varchar("displayName", { length: 128 }),
+  bio: text("bio"),
+  avatarUrl: text("avatarUrl"),
+  favoriteSports: text("favoriteSports"), // JSON array e.g. ["NFL","NBA"]
+  profileTheme: mysqlEnum("profileTheme", ["dark", "neon", "stealth", "fire"]).default("dark"),
+  isPublicProfile: boolean("isPublicProfile").default(false).notNull(),
 });
 
 export type User = typeof users.$inferSelect;

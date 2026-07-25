@@ -1279,3 +1279,17 @@
 - [x] Wired banner as full-width hero image at top of Home page (below Navbar + LiveResultsTicker)
 - [x] Banner has bottom fade gradient into page background for seamless flow
 - [x] Hero section top padding reduced (pt-28 → pt-10) since banner now provides visual anchor
+
+## Phase 57 — Footer Fix, Legal Pages, Profile Page, Button Wiring
+
+- [ ] Fix footer mobile layout — add spacing between Platform/Community links
+- [ ] Fix footer logo — borderless bleed, no box/border
+- [ ] Make legal links clickable — route to /terms, /privacy, /responsible-gambling
+- [ ] Create /terms page
+- [ ] Create /privacy page
+- [ ] Create /responsible-gambling page
+- [ ] Create member /profile page with avatar, stats, tier badge, customization
+- [ ] Add profile tRPC procedures (getProfile, updateProfile)
+- [ ] Audit and wire all dead CTA buttons site-wide
+- [ ] Fix canonical URLs to use chalkpicks.live domain
+- [ ] Register all new routes in App.tsx

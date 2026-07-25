@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -46,7 +46,7 @@ function StatCard({ label, value, sub }: { label: string; value: string | number
   );
 }
 
-export default function UserProfile() {
+export default function Profile() {
   const { user, loading: authLoading } = useAuth();
   const { data: profile, isLoading, refetch } = trpc.profile.getProfile.useQuery(undefined, {
     enabled: !!user,

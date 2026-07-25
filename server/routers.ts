@@ -43,6 +43,7 @@ import { sharpMoneyRouter } from "./routers/sharpMoney";
 import { apiKeysRouter } from "./routers/apiKeys";
 import { consensusRouter } from "./routers/consensus";
 import { trackingRouter } from "./routers/tracking";
+import { profileRouter } from "./routers/profile";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -213,6 +214,7 @@ export const appRouter = router({
   apiKeys: apiKeysRouter,
   consensus: consensusRouter,
   tracking: trackingRouter,
+  profile: profileRouter,
 });
 
 export type AppRouter = typeof appRouter;

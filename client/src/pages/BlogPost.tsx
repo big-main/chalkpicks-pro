@@ -191,6 +191,13 @@ export default function BlogPost() {
           dangerouslySetInnerHTML={{ __html: post.jsonLd }}
         />
       )}
+      {/* FAQ JSON-LD for Google rich results */}
+      {(post as any).faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: (post as any).faqJsonLd }}
+        />
+      )}
 
       {/* Hero Image */}
       {post.heroImage && (

@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Brain, Zap, Target, TrendingUp, Lock, CheckCircle2, PlusCircle } from "lucide-react";
+import { ArrowLeft, Brain, Zap, Target, TrendingUp, Lock, CheckCircle2, PlusCircle, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import PickFeedback from "@/components/PickFeedback";
@@ -67,11 +67,25 @@ export default function PickDetail() {
       <Navbar />
       <div className="pt-16">
         <div className="container py-8 max-w-3xl mx-auto">
-          <Link href="/picks">
-            <Button variant="ghost" size="sm" className="mb-6 text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Picks
+          <div className="flex items-center justify-between mb-6">
+            <Link href="/picks">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Picks
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                const shareUrl = `${window.location.origin}/picks/${pick.id}/share`;
+                navigator.clipboard.writeText(shareUrl);
+                toast.success("Share link copied!");
+              }}
+            >
+              <Share2 className="w-4 h-4" /> Share Pick
             </Button>
-          </Link>
+          </div>
 
           {/* Header Card */}
           <Card className="bg-card border-border mb-5 overflow-hidden">

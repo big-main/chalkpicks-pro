@@ -646,6 +646,7 @@ export const blogPosts = mysqlTable("blog_posts", {
   heroImage: varchar("heroImage", { length: 512 }),
   seoDescription: varchar("seoDescription", { length: 160 }),
   jsonLd: text("jsonLd"),
+  faqJsonLd: text("faqJsonLd"),
   source: mysqlEnum("source", ["babylovegrowth", "manual", "ai-generated"]).default("babylovegrowth").notNull(),
   sourceArticleId: varchar("sourceArticleId", { length: 128 }),
   status: mysqlEnum("status", ["draft", "published", "archived"]).default("draft").notNull(),

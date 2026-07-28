@@ -1405,3 +1405,30 @@
 - [x] Display referrals table showing email, status, and join date
 - [x] Register /refer route in App.tsx
 - [x] All 176 tests passing, TypeScript clean
+
+
+## Phase 69 — Directory Kit Optimization
+
+- [ ] Add Share button on PickDetail.tsx linking to /picks/:id/share
+- [ ] Add Share button on pick cards (Picks.tsx) linking to /picks/:id/share
+- [ ] Add live member count badge on hero section
+- [ ] Add "Members Online" pulse indicator on hero
+- [ ] Improve email capture on Home page (make it more prominent)
+- [ ] Add /tools/odds-calculator landing page (SEO + Reddit traffic)
+- [ ] Add /tools/roi-calculator landing page (SEO + Reddit traffic)
+- [ ] Add /tools/bankroll-manager landing page (SEO + Reddit traffic)
+- [ ] Wire free tools pages to existing calculator components
+- [ ] Add tools to sitemap.xml
+- [ ] Add tools to Navbar free tools dropdown
+
+
+## Phase 70 — Live Feed Optimization + BabyLoveGrow SEO
+
+- [x] Optimize HorizontalScrollTicker: auto-scroll animation, larger cards, better visual hierarchy
+- [x] Add BabyLoveGrow articles to live feed as "ARTICLE" cards with hero image
+- [x] Wire BabyLoveGrow API to sync 3 existing articles into blog_posts DB table (handler + Heartbeat job EzW2fV7E78Zv5KGtdSzLKU)
+- [x] Add JSON-LD + FAQ JSON-LD structured data to blog post pages
+- [ ] Update routeMeta.ts with BabyLoveGrow article slugs for proper SEO
+- [x] Add /api/scheduled/sync-babylovegrow Heartbeat job to pull new articles daily (3am PT)
+- [ ] Add Navbar + PageMeta + back button to all tools pages (BankrollManager done, ParlayCalculator/Kelly/EV/Devig need check)
+- [x] Fix twitterResultPosted column — confirmed exists in TiDB, dev server restarted, picks queries working

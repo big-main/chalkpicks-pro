@@ -66,7 +66,7 @@ export default function SharePickCard({ pick, className = "" }: SharePickCardPro
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const pickUrl = `${window.location.origin}/picks/${pick.id}`;
+  const pickUrl = `${window.location.origin}/picks/${pick.id}/share`;
   const matchup = pick.homeTeam && pick.awayTeam
     ? `${pick.awayTeam} @ ${pick.homeTeam}`
     : pick.recommendation;

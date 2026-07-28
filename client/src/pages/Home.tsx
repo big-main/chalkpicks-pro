@@ -393,9 +393,17 @@ export default function Home() {
                 transition={{ duration: 0.5 }}
                 className="mb-8"
               >
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card-static text-xs font-semibold tracking-wide">
-                  <span className="live-dot" />
-                  <span style={{ color: "rgba(255, 255, 255, 0.7)" }}>AI-Powered Sports Analytics</span>
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card-static text-xs font-semibold tracking-wide">
+                    <span className="live-dot" />
+                    <span style={{ color: "rgba(255, 255, 255, 0.7)" }}>AI-Powered Sports Analytics</span>
+                  </div>
+                  {siteStats && (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.25)", color: "#39ff14" }}>
+                      <Users className="w-3 h-3" />
+                      <span>{siteStats.totalMembers.toLocaleString()} members</span>
+                    </div>
+                  )}
                 </div>
               </motion.div>
 

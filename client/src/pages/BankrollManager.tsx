@@ -1,5 +1,9 @@
 import { useState, useMemo } from "react";
 import { Link } from "wouter";
+import Navbar from "@/components/Navbar";
+import { PageMeta } from "@/components/PageMeta";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 interface BetEntry {
   id: number;
@@ -62,15 +66,23 @@ export default function BankrollManager() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] py-12 px-4">
+    <div className="min-h-screen bg-background">
+      <PageMeta pathname="/tools/bankroll-manager" />
+      <Navbar />
+      <div className="pt-20 py-8 px-4">
       <div className="max-w-6xl mx-auto">
+        <Link href="/tools">
+          <Button variant="ghost" size="sm" className="mb-6 text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="w-4 h-4 mr-1.5" /> All Tools
+          </Button>
+        </Link>
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
-            Bankroll <span className="text-emerald-400">Manager</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
+            Free Bankroll <span className="text-emerald-400">Manager</span>
           </h1>
-          <p className="text-gray-400 max-w-xl mx-auto">
-            Track your bets, manage your bankroll, and optimize unit sizing with Kelly Criterion calculations.
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            Track your bets, manage your bankroll, and optimize unit sizing with Kelly Criterion calculations. No signup required.
           </p>
         </div>
 
@@ -282,6 +294,7 @@ export default function BankrollManager() {
             </Link>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

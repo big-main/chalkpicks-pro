@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowRightLeft } from "lucide-react";
+import { ArrowRightLeft, ArrowLeft } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import { PageMeta } from "@/components/PageMeta";
 
 export default function OddsCalculator() {
   const [americanOdds, setAmericanOdds] = useState<string>("");
@@ -100,12 +103,20 @@ export default function OddsCalculator() {
   const totalReturn = (parseFloat(stake) || 0) * decimal;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background">
+      <PageMeta pathname="/tools/odds-calculator" />
+      <Navbar />
+      <div className="pt-20 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl">
-        {/* Header */}
+        {/* Back + Header */}
+        <Link href="/tools">
+          <Button variant="ghost" size="sm" className="mb-6 text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="w-4 h-4 mr-1.5" /> All Tools
+          </Button>
+        </Link>
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-white">Odds Calculator</h1>
-          <p className="mt-2 text-slate-400">Convert between American, Decimal, and Fractional odds instantly</p>
+          <h1 className="text-4xl font-bold text-foreground">Free Odds Calculator</h1>
+          <p className="mt-2 text-muted-foreground">Convert between American, Decimal, and Fractional odds instantly. No signup required.</p>
         </div>
 
         {/* Main Calculator */}
@@ -252,12 +263,16 @@ export default function OddsCalculator() {
         </div>
 
         {/* CTA */}
-        <div className="mt-8 text-center">
-          <p className="text-slate-400 mb-4">Want more advanced betting tools?</p>
-          <Button className="bg-emerald-500 hover:bg-emerald-600">
-            Try ChalkPicks Pro Free
-          </Button>
+        <div className="mt-8 p-6 rounded-xl text-center" style={{ background: "rgba(57,255,20,0.05)", border: "1px solid rgba(57,255,20,0.15)" }}>
+          <p className="text-foreground font-semibold mb-1">Get AI-powered picks with 92% win rate</p>
+          <p className="text-muted-foreground text-sm mb-4">Free tier available · Pro from $9.99/mo · No credit card required</p>
+          <Link href="/signup">
+            <Button className="bg-[#39ff14] hover:bg-[#32e012] text-black font-bold px-8">
+              Try ChalkPicks Pro Free →
+            </Button>
+          </Link>
         </div>
+      </div>
       </div>
     </div>
   );

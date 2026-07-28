@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, ArrowLeft } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import { PageMeta } from "@/components/PageMeta";
 
 export default function ROICalculator() {
   const [initialBankroll, setInitialBankroll] = useState<string>("1000");
@@ -39,12 +42,20 @@ export default function ROICalculator() {
   const recommendedUnit = Math.max(initial * 0.02, 10); // 2% of bankroll, minimum $10
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background">
+      <PageMeta pathname="/tools/roi-calculator" />
+      <Navbar />
+      <div className="pt-20 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
+        <Link href="/tools">
+          <Button variant="ghost" size="sm" className="mb-6 text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="w-4 h-4 mr-1.5" /> All Tools
+          </Button>
+        </Link>
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-white">Betting ROI Calculator</h1>
-          <p className="mt-2 text-slate-400">Track your betting performance and project future returns</p>
+          <h1 className="text-4xl font-bold text-foreground">Free Betting ROI Calculator</h1>
+          <p className="mt-2 text-muted-foreground">Track your betting performance and project future returns. No signup required.</p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -267,12 +278,16 @@ export default function ROICalculator() {
         </Card>
 
         {/* CTA */}
-        <div className="mt-8 text-center">
-          <p className="text-slate-400 mb-4">Ready to improve your betting ROI?</p>
-          <Button className="bg-emerald-500 hover:bg-emerald-600">
-            Try ChalkPicks Pro Free
-          </Button>
+        <div className="mt-8 p-6 rounded-xl text-center" style={{ background: "rgba(57,255,20,0.05)", border: "1px solid rgba(57,255,20,0.15)" }}>
+          <p className="text-foreground font-semibold mb-1">Let AI do the analysis for you</p>
+          <p className="text-muted-foreground text-sm mb-4">AI picks with 92% win rate · Free tier available · Pro from $9.99/mo</p>
+          <Link href="/signup">
+            <Button className="bg-[#39ff14] hover:bg-[#32e012] text-black font-bold px-8">
+              Try ChalkPicks Pro Free →
+            </Button>
+          </Link>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -24,6 +24,7 @@ import { twitterPostHandler } from "../handlers/twitterPostHandler";
 import { twitterPickResultHandler } from "../handlers/twitterPickResultHandler";
 import { ollamaWarmupHandler } from "../handlers/ollamaWarmupHandler";
 import { cloudSyncHandler } from "../handlers/cloudSyncHandler";
+import { babyloveGrowSyncHandler } from "../handlers/babyloveGrowSyncHandler";
 import { registerSecurityMiddleware } from "../middleware/security";
 import { registerWorkerRoutes } from "../workerRoutes";
 import { apiReference } from "@scalar/express-api-reference";
@@ -635,6 +636,7 @@ async function startServer() {
 app.post("/api/scheduled/twitter-pick-results", twitterPickResultHandler);
   app.post("/api/scheduled/ollama-warmup", ollamaWarmupHandler);
   app.post("/api/scheduled/cloud-sync", cloudSyncHandler);
+  app.post("/api/scheduled/sync-babylovegrow", babyloveGrowSyncHandler);
   app.post("/api/scheduled/distribute-payouts", async (req, res) => {
     try {
       console.log("[Payout] Weekly distribution triggered");

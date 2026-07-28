@@ -702,32 +702,40 @@ export default function Home() {
                 <strong className="text-brand-green">{siteStats?.paidSubscribers ?? 247}</strong> paid subscribers active
               </span>
             </div>
-            {/* Email capture widget */}
-            <div className="max-w-md mx-auto">
-              {emailSubscribed ? (
-                <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[rgba(57,255,20,0.08)] border border-[rgba(57,255,20,0.25)]">
-                  <CheckCircle2 className="w-4 h-4 text-[#39ff14]" />
-                  <span className="text-sm font-medium text-[#39ff14]">You're in! Daily free pick coming to your inbox.</span>
+            {/* Email capture widget — prominent card */}
+            <div className="max-w-lg mx-auto">
+              <div className="rounded-2xl p-6 border border-[rgba(57,255,20,0.2)] bg-gradient-to-br from-[rgba(57,255,20,0.06)] to-transparent shadow-[0_0_40px_rgba(57,255,20,0.05)]">
+                <p className="text-base font-bold text-white mb-1">Get Today's Free AI Pick</p>
+                <p className="text-sm text-white/40 mb-4">Delivered every morning — free forever, no credit card needed</p>
+                {emailSubscribed ? (
+                  <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[rgba(57,255,20,0.08)] border border-[rgba(57,255,20,0.25)]">
+                    <CheckCircle2 className="w-4 h-4 text-[#39ff14]" />
+                    <span className="text-sm font-medium text-[#39ff14]">You're in! Daily free pick coming to your inbox.</span>
+                  </div>
+                ) : (
+                  <form onSubmit={handleEmailCapture} className="flex gap-2">
+                    <Input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={emailCapture}
+                      onChange={(e) => setEmailCapture(e.target.value)}
+                      className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#39ff14]/50 h-11"
+                    />
+                    <button
+                      type="submit"
+                      disabled={newsletterMutation.isPending}
+                      className="btn-premium px-6 py-2.5 text-sm font-semibold whitespace-nowrap h-11"
+                    >
+                      {newsletterMutation.isPending ? "Sending..." : "Get Free Pick"}
+                    </button>
+                  </form>
+                )}
+                <div className="flex items-center justify-center gap-4 mt-3">
+                  <span className="text-xs text-white/25">✓ Free forever</span>
+                  <span className="text-xs text-white/25">✓ No spam</span>
+                  <span className="text-xs text-white/25">✓ Unsubscribe anytime</span>
                 </div>
-              ) : (
-                <form onSubmit={handleEmailCapture} className="flex gap-2">
-                  <Input
-                    type="email"
-                    placeholder="Get free daily picks → your@email.com"
-                    value={emailCapture}
-                    onChange={(e) => setEmailCapture(e.target.value)}
-                    className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#39ff14]/50"
-                  />
-                  <button
-                    type="submit"
-                    disabled={newsletterMutation.isPending}
-                    className="btn-premium px-5 py-2 text-sm whitespace-nowrap"
-                  >
-                    {newsletterMutation.isPending ? "..." : "Get Free Picks"}
-                  </button>
-                </form>
-              )}
-              <p className="text-xs text-white/25 mt-2">Free daily AI pick · No spam · Unsubscribe anytime</p>
+              </div>
             </div>
           </div>
         </div>

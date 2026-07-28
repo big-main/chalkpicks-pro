@@ -270,6 +270,46 @@ export const routeSEO: RouteSEOEntry[] = [
     priority: 0.8,
   },
   {
+    path: "/tools/odds-calculator",
+    title: "Odds Calculator — Convert American, Decimal & Fractional Odds | ChalkPicks",
+    description: "Free sports betting odds calculator. Convert American, decimal, and fractional odds instantly. Calculate implied probability and payout.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/tools/roi-calculator",
+    title: "Sports Betting ROI Calculator — Track Your Returns | ChalkPicks",
+    description: "Free ROI calculator for sports bettors. Calculate return on investment, profit/loss, and long-term performance across your betting history.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/tools/bankroll-manager",
+    title: "Sports Betting Bankroll Manager — Track & Protect Your Bankroll | ChalkPicks",
+    description: "Free bankroll management tool for sports bettors. Set unit sizes, track deposits and withdrawals, and visualize bankroll growth over time.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/tools/parlay-calculator",
+    title: "Parlay Calculator — Calculate Parlay Odds & Payouts | ChalkPicks",
+    description: "Free parlay calculator. Add multiple legs and instantly calculate combined odds, true probability, and potential payout for any parlay.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/tools/devig-calculator",
+    title: "Devig Calculator — Remove Vig & Find True Odds | ChalkPicks",
+    description: "Free devig calculator. Remove the sportsbook's vig from any line to find the true no-vig probability and fair odds.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.7,
+  },
+  {
     path: "/performance",
     title: "AI Picks Track Record — Verified Win Rate \& ROI | ChalkPicks",
     description: "Full transparency on ChalkPicks AI pick performance. View verified win rate, ROI, units won, and graded results.",
@@ -310,6 +350,25 @@ export const blogSlugs: { slug: string; title: string; description: string }[] =
     title: "AI Sports Picks vs Human Handicappers: Which is Better? | ChalkPicks Blog",
     description:
       "An objective comparison between AI sports betting models and traditional human handicappers. Discover why machine learning is taking over the industry.",
+  },
+  // BabyLoveGrow synced articles
+  {
+    slug: "edge-score-explained-a-bettors-complete-guide",
+    title: "Edge Score Explained: A Bettor's Complete Guide | ChalkPicks Blog",
+    description:
+      "Learn what edge score means in sports betting, how to calculate it, and how to use it to find profitable bets with AI-powered tools.",
+  },
+  {
+    slug: "prop-bet-sites-5-alternatives",
+    title: "Top 5 Prop Bet Sites Alternatives 2026 | ChalkPicks Blog",
+    description:
+      "Discover the best prop bet site alternatives in 2026. Compare features, odds, and bonuses to find the right platform for player prop betting.",
+  },
+  {
+    slug: "public-betting-percentages-a-complete-bettors-guide",
+    title: "Public Betting Percentages: A Complete Bettor's Guide | ChalkPicks Blog",
+    description:
+      "Understand public betting percentages and how to use them to fade the public, identify sharp money, and gain an edge in sports betting.",
   },
 ];
 

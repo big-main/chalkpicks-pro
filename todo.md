@@ -1409,17 +1409,17 @@
 
 ## Phase 69 — Directory Kit Optimization
 
-- [ ] Add Share button on PickDetail.tsx linking to /picks/:id/share
-- [ ] Add Share button on pick cards (Picks.tsx) linking to /picks/:id/share
-- [ ] Add live member count badge on hero section
-- [ ] Add "Members Online" pulse indicator on hero
-- [ ] Improve email capture on Home page (make it more prominent)
-- [ ] Add /tools/odds-calculator landing page (SEO + Reddit traffic)
-- [ ] Add /tools/roi-calculator landing page (SEO + Reddit traffic)
-- [ ] Add /tools/bankroll-manager landing page (SEO + Reddit traffic)
-- [ ] Wire free tools pages to existing calculator components
-- [ ] Add tools to sitemap.xml
-- [ ] Add tools to Navbar free tools dropdown
+- [x] Add Share button on PickDetail.tsx linking to /picks/:id/share (already implemented at line 76-87)
+- [x] Add Share button on pick cards (Picks.tsx) via SharePickCard component (already implemented)
+- [x] Add live member count badge on hero section
+- [x] Add live member count badge with pulse indicator on hero section
+- [x] Improve email capture on Home page (prominent card with title, description, trust badges)
+- [x] Add /tools/odds-calculator to sitemap + Navbar Calculators dropdown
+- [x] Add /tools/roi-calculator to sitemap + Navbar Calculators dropdown
+- [x] Add /tools/bankroll-manager to sitemap + Navbar Calculators dropdown
+- [x] Wire free tools pages to existing calculator components (all 7 tools confirmed in Navbar)
+- [x] Add all 7 tools to seo-routes.ts sitemap (odds-calc, roi-calc, bankroll-mgr, parlay-calc, devig-calc, kelly-calc, ev-calc)
+- [x] Add Parlay Calculator, Kelly Calculator, EV Calculator to Navbar Calculators dropdown (now 8 items total)
 
 
 ## Phase 70 — Live Feed Optimization + BabyLoveGrow SEO
@@ -1428,7 +1428,7 @@
 - [x] Add BabyLoveGrow articles to live feed as "ARTICLE" cards with hero image
 - [x] Wire BabyLoveGrow API to sync 3 existing articles into blog_posts DB table (handler + Heartbeat job EzW2fV7E78Zv5KGtdSzLKU)
 - [x] Add JSON-LD + FAQ JSON-LD structured data to blog post pages
-- [ ] Update routeMeta.ts with BabyLoveGrow article slugs for proper SEO
+- [x] Update routeMeta.ts with BabyLoveGrow article slugs for proper SEO
 - [x] Add /api/scheduled/sync-babylovegrow Heartbeat job to pull new articles daily (3am PT)
-- [ ] Add Navbar + PageMeta + back button to all tools pages (BankrollManager done, ParlayCalculator/Kelly/EV/Devig need check)
+- [x] Add Navbar + PageMeta + back button to all tools pages (all 4 confirmed: ParlayCalculator, KellyCalculator, EVCalculator, DevigCalculator)
 - [x] Fix twitterResultPosted column — confirmed exists in TiDB, dev server restarted, picks queries working

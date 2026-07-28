@@ -88,6 +88,9 @@ const navGroups = [
       { href: "/tools/bankroll-manager", label: "Bankroll Manager", icon: Shield, desc: "Manage your betting bankroll" },
       { href: "/bet-calculator", label: "Bet Calculator", icon: Calculator, desc: "Kelly Criterion & bet sizing" },
       { href: "/tools/devig-calculator", label: "Devig Calculator", icon: Sigma, desc: "Remove vig & find true odds" },
+      { href: "/tools/parlay-calculator", label: "Parlay Calculator", icon: Layers, desc: "Calculate parlay odds & payouts" },
+      { href: "/tools/kelly-calculator", label: "Kelly Calculator", icon: Target, desc: "Optimal bet sizing with Kelly Criterion" },
+      { href: "/tools/ev-calculator", label: "EV Calculator", icon: TrendingUp, desc: "Calculate expected value on any bet" },
     ],
   },
   {

@@ -238,19 +238,30 @@ export default function Home() {
       <HorizontalScrollTicker />
 
       {/* ── LOGO HERO (borderless, bleeds into page) ─────────────────────── */}
+      {/* Background gradient layer */}
+      <div
+        className="absolute inset-0 top-0 h-screen pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse 800px 600px at 50% 30%, rgba(57, 255, 20, 0.08) 0%, rgba(57, 255, 20, 0.02) 40%, transparent 100%)",
+          zIndex: 0,
+        }}
+      />
+
       <motion.div
         initial={{ opacity: 0, scale: 0.88 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full relative flex flex-col items-center justify-center overflow-visible select-none"
-        style={{ marginTop: "60px", zIndex: 0 }}
+        className="w-full relative flex flex-col items-center justify-center overflow-hidden select-none"
+        style={{ marginTop: "20px", zIndex: 1 }}
       >
         {/* Logo — fills full width, bottom-only fade */}
         <div
           style={{
             position: "relative",
-            width: "min(1200px, 100vw)",
-            aspectRatio: "1 / 1",
+            width: "100%",
+            maxWidth: "100vw",
+            aspectRatio: "1 / 0.75",
+            maxHeight: "80vh",
           }}
           aria-hidden="true"
         >
@@ -260,7 +271,7 @@ export default function Home() {
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "cover",
+              objectFit: "contain",
               display: "block",
               opacity: 1,
             }}
@@ -269,14 +280,14 @@ export default function Home() {
           <div
             className="absolute bottom-0 left-0 right-0 pointer-events-none"
             style={{
-              height: "45%",
+              height: "30%",
               background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)",
             }}
           />
           {/* Soft side fades */}
-          <div className="absolute inset-y-0 left-0 w-[12%] pointer-events-none"
+          <div className="absolute inset-y-0 left-0 w-[6%] pointer-events-none"
             style={{ background: "linear-gradient(to right, var(--background), transparent)" }} />
-          <div className="absolute inset-y-0 right-0 w-[12%] pointer-events-none"
+          <div className="absolute inset-y-0 right-0 w-[6%] pointer-events-none"
             style={{ background: "linear-gradient(to left, var(--background), transparent)" }} />
         </div>
 

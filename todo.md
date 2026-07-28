@@ -1380,3 +1380,14 @@
 - [x] Add recent users table showing email, tier, and join date
 - [x] Register /admin/stats route in App.tsx
 - [x] All 176 tests passing, TypeScript clean
+
+
+## Phase 66 — Hero Section Redesign
+
+- [x] Enlarge logo to 80vh max height with 1:0.75 aspect ratio
+- [x] Add radial gradient background behind logo (lime green glow)
+- [x] Reduce side fades from 12% to 6% for more logo visibility
+- [x] Reduce bottom fade from 45% to 30% to fill more space
+- [x] Change objectFit from cover to contain for full logo display
+- [x] Reduce top margin from 60px to 20px to fill more space
+- [x] All TypeScript clean, dev server running

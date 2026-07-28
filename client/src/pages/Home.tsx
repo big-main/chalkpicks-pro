@@ -231,11 +231,11 @@ export default function Home() {
         className="w-full relative flex flex-col items-center justify-center overflow-visible select-none"
         style={{ marginTop: "60px", zIndex: 0 }}
       >
-        {/* Radial mask: logo fades into black on all sides */}
+        {/* Logo — fills full width, bottom-only fade */}
         <div
           style={{
             position: "relative",
-            width: "min(1040px, 98vw)",
+            width: "min(1200px, 100vw)",
             aspectRatio: "1 / 1",
           }}
           aria-hidden="true"
@@ -246,21 +246,24 @@ export default function Home() {
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "contain",
+              objectFit: "cover",
               display: "block",
-              WebkitMaskImage: "radial-gradient(ellipse 84% 78% at 50% 46%, black 38%, transparent 84%)",
-              maskImage: "radial-gradient(ellipse 84% 78% at 50% 46%, black 38%, transparent 84%)",
-              opacity: 0.97,
+              opacity: 1,
             }}
           />
-          {/* Extra bottom fade */}
+          {/* Bottom fade only — blends into page */}
           <div
             className="absolute bottom-0 left-0 right-0 pointer-events-none"
             style={{
-              height: "38%",
+              height: "45%",
               background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)",
             }}
           />
+          {/* Soft side fades */}
+          <div className="absolute inset-y-0 left-0 w-[12%] pointer-events-none"
+            style={{ background: "linear-gradient(to right, var(--background), transparent)" }} />
+          <div className="absolute inset-y-0 right-0 w-[12%] pointer-events-none"
+            style={{ background: "linear-gradient(to left, var(--background), transparent)" }} />
         </div>
 
         {/* ── SOCIAL MEDIA LINKS ── */}

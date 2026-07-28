@@ -38,21 +38,18 @@ export default function Leaderboard() {
         style={{ marginTop: "64px", zIndex: 0 }}
         aria-hidden="true"
       >
-        <div style={{ position: "relative", width: "min(480px, 88vw)", aspectRatio: "1 / 1" }}>
+        <div style={{ position: "relative", width: "min(700px, 100vw)", aspectRatio: "1 / 1" }}>
           <img
             src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png"
             alt=""
-            style={{
-              width: "100%", height: "100%", objectFit: "contain", display: "block",
-              WebkitMaskImage: "radial-gradient(ellipse 82% 76% at 50% 46%, black 35%, transparent 84%)",
-              maskImage: "radial-gradient(ellipse 82% 76% at 50% 46%, black 35%, transparent 84%)",
-              opacity: 0.92,
-            }}
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", opacity: 1 }}
           />
-          <div
-            className="absolute bottom-0 left-0 right-0 pointer-events-none"
-            style={{ height: "45%", background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)" }}
-          />
+          <div className="absolute bottom-0 left-0 right-0 pointer-events-none"
+            style={{ height: "45%", background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)" }} />
+          <div className="absolute inset-y-0 left-0 w-[12%] pointer-events-none"
+            style={{ background: "linear-gradient(to right, var(--background), transparent)" }} />
+          <div className="absolute inset-y-0 right-0 w-[12%] pointer-events-none"
+            style={{ background: "linear-gradient(to left, var(--background), transparent)" }} />
         </div>
       </motion.div>
       <div style={{ marginTop: "-50px" }}>

@@ -129,6 +129,7 @@ const primaryLinks = [
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const { data: newPickSports } = trpc.picks.newPickSports.useQuery(undefined, { refetchInterval: 60_000 });
+  const { data: siteStats } = trpc.system.siteStats.useQuery(undefined, { staleTime: 120_000 });
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -232,7 +233,15 @@ export default function Navbar() {
                   }}
                 >
                   {link.label}
-                  {link.href === "/picks" && newPickSports && newPickSports.length > 0 && (
+                  {link.href === "/picks" && siteStats && siteStats.picksToday > 0 && (
+                    <span
+                      className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
+                      style={{ background: "#39ff14", color: "#000", boxShadow: "0 0 8px rgba(57,255,20,0.7)" }}
+                    >
+                      {siteStats.picksToday}
+                    </span>
+                  )}
+                  {link.href === "/picks" && (!siteStats || siteStats.picksToday === 0) && newPickSports && newPickSports.length > 0 && (
                     <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-cyan-400 animate-pulse" style={{ boxShadow: "0 0 8px rgba(6, 182, 212, 0.8)" }} />
                   )}
                   {isActive && (

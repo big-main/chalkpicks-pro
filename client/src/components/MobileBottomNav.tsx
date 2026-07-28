@@ -27,6 +27,7 @@ export function MobileBottomNav() {
     refetchInterval: 60_000,
   });
   const hasNewPicks = (newPickSports ?? []).length > 0;
+  const { data: siteStats } = trpc.system.siteStats.useQuery(undefined, { staleTime: 120_000 });
 
   const isActive = (path: string) => {
     if (path === "/") return location === "/";
@@ -115,8 +116,16 @@ export function MobileBottomNav() {
                       />
                     </motion.div>
 
-                    {/* New Pick dot for Picks tab */}
-                    {item.path === "/picks" && hasNewPicks && (
+                    {/* Picks count badge for Picks tab */}
+                    {item.path === "/picks" && siteStats && siteStats.picksToday > 0 && (
+                      <span
+                        className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-0.5 rounded-full text-[9px] font-bold flex items-center justify-center"
+                        style={{ background: "#39ff14", color: "#000", boxShadow: "0 0 6px rgba(57,255,20,0.7)" }}
+                      >
+                        {siteStats.picksToday}
+                      </span>
+                    )}
+                    {item.path === "/picks" && (!siteStats || siteStats.picksToday === 0) && hasNewPicks && (
                       <span
                         className="absolute -top-1 -right-1.5 w-2.5 h-2.5 rounded-full animate-pulse"
                         style={{ background: "#06b6d4", boxShadow: "0 0 8px rgba(6, 182, 212, 0.8)" }}

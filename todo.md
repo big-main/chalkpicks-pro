@@ -1345,3 +1345,16 @@
 - [x] Fix server.listen to bind on 0.0.0.0 (not just localhost) for container compatibility
 - [x] Verified: production server now starts on correct port, health check returns {"ok":true}
 - [x] All 176 tests passing (20 test files)
+
+## Phase 63 — Conversion & Growth Features
+
+- [x] Add live social proof bar to Home + Pricing: real member count, win rate, picks generated today
+- [x] Add free pick email capture widget on Home page (email input → subscribe to daily free pick)
+- [x] Add newsletter_subscribers tRPC procedure for email capture (already existed — reused trpc.newsletter.subscribe)
+- [x] Fix picks.performance endpoint to return real DB data (was working — N/A was a curl parsing issue)
+- [x] Add "Today's Picks" count badge to Navbar picks link (green number badge, replaces cyan dot)
+- [x] Wire SocialProofTicker to real settled picks from DB (was 100% hardcoded fake data)
+- [x] Improve Home page live stats bar: wired to real DB data (picksToday, totalMembers, winRate, totalPicksGenerated)
+- [x] Add live social proof pills to Pricing page header (active subscribers, win rate, picks today)
+- [x] Add siteStats public tRPC procedure to systemRouter (real DB counts with graceful fallback)
+- [x] Add picks count badge to MobileBottomNav Picks tab

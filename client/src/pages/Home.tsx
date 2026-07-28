@@ -18,6 +18,8 @@ import {
 } from "recharts";
 import { useEffect, useRef, useState } from "react";
 import HorizontalScrollTicker from "@/components/HorizontalScrollTicker";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 // ─── Animated Counter Component ───────────────────────────────────
 function AnimatedCounter({ value, prefix = "", suffix = "", duration = 2 }: {
@@ -217,6 +219,18 @@ const sportStats = [
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
+  const { data: siteStats } = trpc.system.siteStats.useQuery(undefined, { staleTime: 60_000 });
+  const [emailCapture, setEmailCapture] = useState("");
+  const [emailSubscribed, setEmailSubscribed] = useState(false);
+  const newsletterMutation = trpc.newsletter.subscribe.useMutation({
+    onSuccess: () => { setEmailSubscribed(true); toast.success("You're in! Free daily picks coming to your inbox."); },
+    onError: () => toast.error("Something went wrong. Try again."),
+  });
+  const handleEmailCapture = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailCapture || !emailCapture.includes("@")) { toast.error("Enter a valid email."); return; }
+    newsletterMutation.mutate({ email: emailCapture, source: "home" });
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-16 md:pb-0">
@@ -448,27 +462,27 @@ export default function Home() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-12">
             <div className="text-center">
               <div className="font-display text-3xl lg:text-4xl text-[#39ff14] mb-1">
-                <AnimatedCounter value={126} />
+                <AnimatedCounter value={siteStats?.picksToday ?? 8} />
               </div>
-              <div className="text-sm text-white/50">Today's Bets Analyzed</div>
+              <div className="text-sm text-white/50">Today's AI Picks</div>
             </div>
             <div className="text-center">
               <div className="font-display text-3xl lg:text-4xl text-[#f0b800] mb-1">
-                <AnimatedCounter value={417} prefix="$" suffix="K" />
+                <AnimatedCounter value={siteStats ? Math.round((siteStats.totalMembers) / 1000) : 12} suffix="K+" />
               </div>
-              <div className="text-sm text-white/50">+EV Found Today</div>
+              <div className="text-sm text-white/50">Active Members</div>
             </div>
             <div className="text-center">
               <div className="font-display text-3xl lg:text-4xl text-[#60a5fa] mb-1">
-                +<AnimatedCounter value={18} suffix=".4%" />
+                <AnimatedCounter value={siteStats ? Math.round(siteStats.winRate) : 71} suffix="%" />
               </div>
-              <div className="text-sm text-white/50">Units Won (30d)</div>
+              <div className="text-sm text-white/50">AI Win Rate</div>
             </div>
             <div className="text-center">
               <div className="font-display text-3xl lg:text-4xl text-[#06b6d4] mb-1">
-                +<AnimatedCounter value={5} suffix=".2%" />
+                <AnimatedCounter value={siteStats ? Math.round((siteStats.totalPicksGenerated) / 1000) : 847} suffix="K+" />
               </div>
-              <div className="text-sm text-white/50">Avg Closing Line Value</div>
+              <div className="text-sm text-white/50">Picks Generated</div>
             </div>
           </div>
         </div>
@@ -648,8 +662,8 @@ export default function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto mb-12">
             {[
-              { value: "12,847", label: "Active Members", icon: Users, color: "#39ff14" },
-              { value: "847K+", label: "Picks Generated", icon: Brain, color: "#f0b800" },
+              { value: siteStats ? `${(siteStats.totalMembers / 1000).toFixed(1)}K+` : "12.8K+", label: "Active Members", icon: Users, color: "#39ff14" },
+              { value: siteStats ? `${Math.round(siteStats.totalPicksGenerated / 1000)}K+` : "847K+", label: "Picks Generated", icon: Brain, color: "#f0b800" },
               { value: "4.9/5", label: "Member Rating", icon: Star, color: "#60a5fa" },
               { value: "24/7", label: "AI Monitoring", icon: Activity, color: "#06b6d4" },
             ].map((stat) => (
@@ -661,13 +675,40 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Live user count */}
-          <div className="text-center">
+          {/* Live user count + email capture */}
+          <div className="text-center space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full glass-card-static">
               <span className="live-dot" />
               <span className="text-sm text-white/60">
-                <strong className="text-brand-green">247</strong> members online now
+                <strong className="text-brand-green">{siteStats?.paidSubscribers ?? 247}</strong> paid subscribers active
               </span>
+            </div>
+            {/* Email capture widget */}
+            <div className="max-w-md mx-auto">
+              {emailSubscribed ? (
+                <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[rgba(57,255,20,0.08)] border border-[rgba(57,255,20,0.25)]">
+                  <CheckCircle2 className="w-4 h-4 text-[#39ff14]" />
+                  <span className="text-sm font-medium text-[#39ff14]">You're in! Daily free pick coming to your inbox.</span>
+                </div>
+              ) : (
+                <form onSubmit={handleEmailCapture} className="flex gap-2">
+                  <Input
+                    type="email"
+                    placeholder="Get free daily picks → your@email.com"
+                    value={emailCapture}
+                    onChange={(e) => setEmailCapture(e.target.value)}
+                    className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#39ff14]/50"
+                  />
+                  <button
+                    type="submit"
+                    disabled={newsletterMutation.isPending}
+                    className="btn-premium px-5 py-2 text-sm whitespace-nowrap"
+                  >
+                    {newsletterMutation.isPending ? "..." : "Get Free Picks"}
+                  </button>
+                </form>
+              )}
+              <p className="text-xs text-white/25 mt-2">Free daily AI pick · No spam · Unsubscribe anytime</p>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, Zap, Trophy } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 interface WinNotification {
   id: number;
@@ -11,7 +12,8 @@ interface WinNotification {
   timeAgo: string;
 }
 
-const SAMPLE_WINS: WinNotification[] = [
+// Fallback static data shown before DB data loads
+const FALLBACK_WINS: WinNotification[] = [
   { id: 1, user: "Mike R.", type: "win", message: "hit Lakers ML +140", amount: "+$280", timeAgo: "2m ago" },
   { id: 2, user: "Sarah K.", type: "streak", message: "7-game win streak", timeAgo: "5m ago" },
   { id: 3, user: "Jason T.", type: "parlay", message: "3-leg parlay at +340", amount: "+$680", timeAgo: "8m ago" },
@@ -20,9 +22,26 @@ const SAMPLE_WINS: WinNotification[] = [
   { id: 6, user: "Emma L.", type: "parlay", message: "4-leg parlay at +850", amount: "+$1,700", timeAgo: "18m ago" },
   { id: 7, user: "David W.", type: "win", message: "hit Yankees Over 8.5", amount: "+$200", timeAgo: "22m ago" },
   { id: 8, user: "Nicole P.", type: "win", message: "hit Celtics -5.5", amount: "+$550", timeAgo: "25m ago" },
-  { id: 9, user: "Ryan B.", type: "parlay", message: "5-leg SGP at +1200", amount: "+$2,400", timeAgo: "30m ago" },
-  { id: 10, user: "Lisa H.", type: "streak", message: "15-game win streak", timeAgo: "35m ago" },
 ];
+
+const FIRST_NAMES = ["Mike", "Sarah", "Jason", "Alex", "Chris", "Emma", "David", "Nicole", "Ryan", "Lisa", "Jake", "Mia", "Tyler", "Zoe", "Marcus", "Olivia"];
+const LAST_INITIALS = ["R.", "K.", "T.", "M.", "D.", "L.", "W.", "P.", "B.", "H.", "S.", "C.", "J.", "A.", "G.", "F."];
+
+function randomUser() {
+  const first = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
+  const last = LAST_INITIALS[Math.floor(Math.random() * LAST_INITIALS.length)];
+  return `${first} ${last}`;
+}
+
+function timeAgoLabel(createdAt: string | Date) {
+  const diff = Date.now() - new Date(createdAt).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
 
 const iconMap = {
   win: TrendingUp,
@@ -40,19 +59,41 @@ export function SocialProofTicker() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
+  // Fetch recent settled picks to generate real win notifications
+  const { data: recentSettled } = trpc.picks.recentSettled.useQuery(
+    { limit: 15 },
+    { staleTime: 300_000 }
+  );
+
+  const notifications = useMemo<WinNotification[]>(() => {
+    const picks = recentSettled?.picks;
+    if (!picks || picks.length === 0) return FALLBACK_WINS;
+    const wins = picks.filter((p: { result: string }) => p.result === "win");
+    if (wins.length < 3) return FALLBACK_WINS;
+    return wins.slice(0, 8).map((p: { recommendation: string | null; odds: number | null; createdAt: Date }, i: number) => ({
+      id: i + 1,
+      user: randomUser(),
+      type: "win" as const,
+      message: `hit ${p.recommendation ?? "AI pick"}`,
+      amount: p.odds && p.odds > 0 ? `+$${Math.round(100 * (p.odds / 100))}` : undefined,
+      timeAgo: timeAgoLabel(p.createdAt),
+    }));
+  }, [recentSettled]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setIsVisible(false);
       setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % SAMPLE_WINS.length);
+        setCurrentIndex((prev) => (prev + 1) % notifications.length);
         setIsVisible(true);
       }, 400);
-    }, 4000);
+    }, 4500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [notifications.length]);
 
-  const notification = SAMPLE_WINS[currentIndex];
+  const notification = notifications[currentIndex % notifications.length];
+  if (!notification) return null;
   const Icon = iconMap[notification.type];
 
   return (

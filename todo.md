@@ -1391,3 +1391,17 @@
 - [x] Change objectFit from cover to contain for full logo display
 - [x] Reduce top margin from 60px to 20px to fill more space
 - [x] All TypeScript clean, dev server running
+
+
+## Phase 67 — Referral Page with Earnings Dashboard
+
+- [x] Create ReferralPage.tsx component with earnings dashboard
+- [x] Wire to trpc.referral.getStats for real-time stats (totalReferrals, activeReferrals, totalCommission, earnedCommission, pendingCommission)
+- [x] Wire to trpc.referral.getMyReferrals for referrals list
+- [x] Wire to trpc.referral.getMyRewards for rewards list with claim buttons
+- [x] Display referral link with copy button
+- [x] Show total referrals, total earned, and pending rewards cards
+- [x] Display rewards list with status (claimed/pending) and claim buttons
+- [x] Display referrals table showing email, status, and join date
+- [x] Register /refer route in App.tsx
+- [x] All 176 tests passing, TypeScript clean

@@ -49,6 +49,7 @@ const CLVTracker = lazy(() => import("@/pages/CLVTracker"));
 const ParlayBuilder = lazy(() => import("@/pages/ParlayBuilder"));
 const BankrollTracker = lazy(() => import("@/pages/BankrollTracker"));
 const Referral = lazy(() => import("@/pages/Referral"));
+const ReferralPage = lazy(() => import("@/pages/ReferralPage").then(m => ({ default: m.ReferralPage })));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const SubscriptionDashboard = lazy(() => import("@/pages/SubscriptionDashboard"));
 const ArbitrageFinder = lazy(() => import("@/pages/ArbitrageFinder"));
@@ -162,7 +163,8 @@ function Router() {
           <Route path="/parlay-builder" component={ParlayBuilder} />
           <Route path="/parlay-flow" component={ParlayFlow} />
           <Route path="/bankroll-tracker" component={BankrollTracker} />
-          <Route path="/referral" component={Referral} />
+          <Route path="/refer" component={ReferralPage} />
+      <Route path="/referral" component={Referral} />
           <Route path="/affiliate" component={AffiliateHub} />
           <Route path="/live-leaderboard" component={LiveLeaderboard} />
           <Route path="/community" component={CommunityChat} />

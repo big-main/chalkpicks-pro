@@ -40,6 +40,7 @@ const FeedbackAnalytics = lazy(() => import("./pages/FeedbackAnalytics"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const EVFinder = lazy(() => import("@/pages/EVFinder"));
 const Tools = lazy(() => import("@/pages/Tools"));
+const ToolsHub = lazy(() => import("@/pages/ToolsHub"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const Login = lazy(() => import("@/pages/Login"));
 const AccountSettings = lazy(() => import("@/pages/AccountSettings"));
@@ -103,6 +104,7 @@ const LearnPage = lazy(() => import("@/pages/LearnPage"));
 const FreePick = lazy(() => import("@/pages/FreePick"));
 const KellyCalculator = lazy(() => import("@/pages/KellyCalculator"));
 const EVCalculator = lazy(() => import("@/pages/EVCalculator"));
+
 const Terms = lazy(() => import("@/pages/Terms"));
 const LeaderboardProfile = lazy(() => import("@/pages/LeaderboardProfile"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
@@ -153,7 +155,7 @@ function Router() {
           <Route path="/feedback-analytics" component={FeedbackAnalytics} />
           <Route path="/notifications" component={Notifications} />
           <Route path="/ev-finder" component={EVFinder} />
-          <Route path="/tools" component={Tools} />
+          <Route path="/tools" component={ToolsHub} />
           <Route path="/signup" component={SignUp} />
           <Route path="/login" component={Login} />
           <Route path="/account-settings" component={AccountSettings} />

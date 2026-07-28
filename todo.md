@@ -1432,3 +1432,15 @@
 - [x] Add /api/scheduled/sync-babylovegrow Heartbeat job to pull new articles daily (3am PT)
 - [x] Add Navbar + PageMeta + back button to all tools pages (all 4 confirmed: ParlayCalculator, KellyCalculator, EVCalculator, DevigCalculator)
 - [x] Fix twitterResultPosted column — confirmed exists in TiDB, dev server restarted, picks queries working
+
+
+## Phase 71 — Tools Hub Page
+
+- [x] Create /tools hub page showcasing all 8 calculators in a grid
+- [x] Add icons, descriptions, and CTAs for each tool
+- [x] Wire to existing calculator components (OddsCalculator, ROICalculator, BankrollManager, ParlayCalculator, KellyCalculator, EVCalculator, DevigCalculator)
+- [x] Add hero section with gradient background
+- [x] Add features section explaining benefits
+- [x] Add CTA section linking to Picks and Pricing
+- [x] Register /tools route in App.tsx
+- [x] All 176 tests passing

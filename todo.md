@@ -1282,17 +1282,17 @@
 
 ## Phase 57 — Footer Fix, Legal Pages, Profile Page, Button Wiring
 
-- [ ] Fix footer mobile layout — add spacing between Platform/Community links
-- [ ] Fix footer logo — borderless bleed, no box/border
-- [ ] Make legal links clickable — route to /terms, /privacy, /responsible-gambling
-- [ ] Create /terms page
-- [ ] Create /privacy page
-- [ ] Create /responsible-gambling page
-- [ ] Create member /profile page with avatar, stats, tier badge, customization
-- [ ] Add profile tRPC procedures (getProfile, updateProfile)
-- [ ] Audit and wire all dead CTA buttons site-wide
-- [ ] Fix canonical URLs to use chalkpicks.live domain
-- [ ] Register all new routes in App.tsx
+- [x] Fix footer mobile layout — add spacing between Platform/Community links
+- [x] Fix footer logo — borderless bleed, no box/border (radial-mask, 140px, no border)
+- [x] Make legal links clickable — route to /terms, /privacy, /responsible-gambling
+- [x] Create /terms page
+- [x] Create /privacy page
+- [x] Create /responsible-gambling page
+- [x] Create member /profile page with avatar, stats, tier badge, customization
+- [x] Add profile tRPC procedures (getProfile, updateProfile)
+- [x] Audit and wire all dead CTA buttons site-wide (no orphaned coming-soon CTAs found)
+- [x] Fix canonical URLs to use chalkpicks.live domain (SITE_URL = https://chalkpicks.live in SEO.tsx + seo-routes.ts)
+- [x] Register all new routes in App.tsx (/terms, /privacy, /responsible-gambling, /profile)
 
 ## Phase 58 — Stripe Live Fix, Logo Headers, Streak Badges, Blog Fix
 

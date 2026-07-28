@@ -583,15 +583,15 @@ export default function Tools() {
         style={{ marginTop: "64px", zIndex: 0 }}
         aria-hidden="true"
       >
-        <div style={{ position: "relative", width: "min(320px, 65vw)", aspectRatio: "1 / 1" }}>
+        <div style={{ position: "relative", width: "min(480px, 88vw)", aspectRatio: "1 / 1" }}>
           <img
             src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png"
             alt=""
             style={{
               width: "100%", height: "100%", objectFit: "contain", display: "block",
-              WebkitMaskImage: "radial-gradient(ellipse 68% 62% at 50% 48%, black 25%, transparent 78%)",
-              maskImage: "radial-gradient(ellipse 68% 62% at 50% 48%, black 25%, transparent 78%)",
-              opacity: 0.85,
+              WebkitMaskImage: "radial-gradient(ellipse 82% 76% at 50% 46%, black 35%, transparent 84%)",
+              maskImage: "radial-gradient(ellipse 82% 76% at 50% 46%, black 35%, transparent 84%)",
+              opacity: 0.92,
             }}
           />
           <div

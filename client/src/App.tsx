@@ -23,6 +23,7 @@ import { AiChatWidget } from "@/components/AiChatWidget";
 import { SwipeNavProvider } from "@/components/SwipeNavProvider";
 import { BackButton } from "@/components/BackButton";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
+import PushNotificationBanner from "@/components/PushNotificationBanner";
 
 // Lazy-loaded pages (code splitting)
 const Picks = lazy(() => import("./pages/Picks"));
@@ -100,6 +101,7 @@ const FreePick = lazy(() => import("@/pages/FreePick"));
 const KellyCalculator = lazy(() => import("@/pages/KellyCalculator"));
 const EVCalculator = lazy(() => import("@/pages/EVCalculator"));
 const Terms = lazy(() => import("@/pages/Terms"));
+const LeaderboardProfile = lazy(() => import("@/pages/LeaderboardProfile"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
 const ResponsibleGambling = lazy(() => import("@/pages/ResponsibleGambling"));
 
@@ -140,6 +142,7 @@ function Router() {
           <Route path="/backtesting" component={Backtesting} />
           <Route path="/dashboard" component={UserDashboard} />
           <Route path="/leaderboard" component={Leaderboard} />
+          <Route path="/leaderboard/:username" component={LeaderboardProfile} />
           <Route path="/pricing" component={Pricing} />
           <Route path="/payment/success" component={PaymentSuccess} />
           <Route path="/matchup-analysis" component={MatchupAnalysis} />
@@ -240,6 +243,7 @@ function App() {
           <Toaster richColors position="top-right" />
           <SwipeNavProvider>
             <AnnouncementBar />
+            <PushNotificationBanner />
             <BackButton />
             <Router />
             <SocialProofTicker />

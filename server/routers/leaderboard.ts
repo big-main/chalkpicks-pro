@@ -58,6 +58,36 @@ export const leaderboardRouter = router({
     return entry[0] ?? null;
   }),
 
+  // Public profile lookup by displayName — powers /leaderboard/:username sharing
+  getByUsername: publicProcedure
+    .input(z.object({ displayName: z.string() }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) {
+        const mock = mockLeaderboard.find(m => m.displayName.toLowerCase() === input.displayName.toLowerCase());
+        return mock ?? null;
+      }
+      const [entry] = await db
+        .select({
+          id: leaderboard.id,
+          userId: leaderboard.userId,
+          displayName: leaderboard.displayName,
+          totalBets: leaderboard.totalBets,
+          wins: leaderboard.wins,
+          losses: leaderboard.losses,
+          winRate: leaderboard.winRate,
+          roi: leaderboard.roi,
+          totalProfit: leaderboard.totalProfit,
+          streak: leaderboard.streak,
+          rank: leaderboard.rank,
+          badge: leaderboard.badge,
+        })
+        .from(leaderboard)
+        .where(eq(leaderboard.displayName, input.displayName))
+        .limit(1);
+      return entry ?? null;
+    }),
+
   stats: publicProcedure.query(() => ({
     totalBettors: 12847,
     avgWinRate: 92,

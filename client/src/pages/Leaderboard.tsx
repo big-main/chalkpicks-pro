@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -7,7 +8,8 @@ import { Paywall } from "@/components/Paywall";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trophy, TrendingUp, TrendingDown, Users, Target, DollarSign, Crown } from "lucide-react";
+import { Trophy, TrendingUp, TrendingDown, Users, Target, DollarSign, Crown, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Leaderboard() {
   const { isAuthenticated, user } = useAuth();
@@ -36,15 +38,15 @@ export default function Leaderboard() {
         style={{ marginTop: "64px", zIndex: 0 }}
         aria-hidden="true"
       >
-        <div style={{ position: "relative", width: "min(320px, 65vw)", aspectRatio: "1 / 1" }}>
+        <div style={{ position: "relative", width: "min(480px, 88vw)", aspectRatio: "1 / 1" }}>
           <img
             src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png"
             alt=""
             style={{
               width: "100%", height: "100%", objectFit: "contain", display: "block",
-              WebkitMaskImage: "radial-gradient(ellipse 68% 62% at 50% 48%, black 25%, transparent 78%)",
-              maskImage: "radial-gradient(ellipse 68% 62% at 50% 48%, black 25%, transparent 78%)",
-              opacity: 0.85,
+              WebkitMaskImage: "radial-gradient(ellipse 82% 76% at 50% 46%, black 35%, transparent 84%)",
+              maskImage: "radial-gradient(ellipse 82% 76% at 50% 46%, black 35%, transparent 84%)",
+              opacity: 0.92,
             }}
           />
           <div
@@ -133,6 +135,14 @@ export default function Leaderboard() {
                       <div className="text-xs text-muted-foreground">Bets</div>
                     </div>
                   </div>
+                  {myRank.displayName && (
+                    <Link href={`/leaderboard/${encodeURIComponent(myRank.displayName)}`}>
+                      <Button variant="outline" size="sm" className="gap-1.5 text-xs border-primary/30 text-primary hover:text-primary">
+                        <Share2 className="w-3 h-3" />
+                        Share Profile
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </CardContent>
             </Card>

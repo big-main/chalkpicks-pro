@@ -131,18 +131,11 @@
       "applicationCategory": "SportsApplication",
       "operatingSystem": "Web",
       "description": "AI-powered sports betting picks analyzer with real-time stats, +EV finder, steam move detector, CLV tracker, parlay builder, and community leaderboard",
-      "offers": {
-        "@type": "Offer",
-        "price": "9.99",
-        "priceCurrency": "USD",
-        "priceValidUntil": "2027-12-31"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "ratingCount": "2847",
-        "bestRating": "5"
-      }
+      "offers": [
+        { "@type": "Offer", "name": "Daily Pass", "price": "9.99", "priceCurrency": "USD" },
+        { "@type": "Offer", "name": "Monthly Pro", "price": "19.99", "priceCurrency": "USD" },
+        { "@type": "Offer", "name": "Yearly Elite", "price": "59.99", "priceCurrency": "USD" }
+      ]
     }
     </script>
 
@@ -169,6 +162,22 @@
         "@type": "PostalAddress",
         "addressCountry": "US"
       }
+    }
+    </script>
+
+    <!-- Structured Data: BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://chalkpicks.live/" },
+        { "@type": "ListItem", "position": 2, "name": "AI Picks", "item": "https://chalkpicks.live/picks" },
+        { "@type": "ListItem", "position": 3, "name": "+EV Finder", "item": "https://chalkpicks.live/ev-finder" },
+        { "@type": "ListItem", "position": 4, "name": "Tools", "item": "https://chalkpicks.live/tools" },
+        { "@type": "ListItem", "position": 5, "name": "Leaderboard", "item": "https://chalkpicks.live/leaderboard" },
+        { "@type": "ListItem", "position": 6, "name": "Blog", "item": "https://chalkpicks.live/blog" }
+      ]
     }
     </script>
 

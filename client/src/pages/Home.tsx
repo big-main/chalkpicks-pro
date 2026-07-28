@@ -17,7 +17,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
 import { useEffect, useRef, useState } from "react";
-import { LiveResultsTicker } from "@/components/LiveResultsTicker";
+import HorizontalScrollTicker from "@/components/HorizontalScrollTicker";
 
 // ─── Animated Counter Component ───────────────────────────────────
 function AnimatedCounter({ value, prefix = "", suffix = "", duration = 2 }: {
@@ -221,7 +221,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-16 md:pb-0">
             <Navbar />
-      <LiveResultsTicker />
+      <HorizontalScrollTicker />
 
       {/* ── LOGO HERO (borderless, bleeds into page) ─────────────────────── */}
       <motion.div
@@ -235,7 +235,7 @@ export default function Home() {
         <div
           style={{
             position: "relative",
-            width: "min(880px, 95vw)",
+            width: "min(1040px, 98vw)",
             aspectRatio: "1 / 1",
           }}
           aria-hidden="true"
@@ -248,9 +248,9 @@ export default function Home() {
               height: "100%",
               objectFit: "contain",
               display: "block",
-              WebkitMaskImage: "radial-gradient(ellipse 72% 67% at 50% 48%, black 28%, transparent 78%)",
-              maskImage: "radial-gradient(ellipse 72% 67% at 50% 48%, black 28%, transparent 78%)",
-              opacity: 0.94,
+              WebkitMaskImage: "radial-gradient(ellipse 84% 78% at 50% 46%, black 38%, transparent 84%)",
+              maskImage: "radial-gradient(ellipse 84% 78% at 50% 46%, black 38%, transparent 84%)",
+              opacity: 0.97,
             }}
           />
           {/* Extra bottom fade */}

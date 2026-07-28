@@ -902,6 +902,25 @@ export default function Picks() {
           </div>
         </div>
 
+        {/* My Sports Quick Filter */}
+        {favorites.length > 0 && (
+          <div className="mb-4 flex items-center gap-2">
+            <button
+              onClick={() => {
+                if (filters.sport) {
+                  setFilters(f => ({ ...f, sport: '' }));
+                } else {
+                  setFilters(f => ({ ...f, sport: favorites[0] ?? '' }));
+                }
+              }}
+              className="px-4 py-2 rounded-xl bg-lime-400/10 border border-lime-400/30 hover:bg-lime-400/15 transition-all text-sm font-medium text-lime-400"
+            >
+              ⭐ My Sports {filters.sport && favorites.includes(filters.sport) ? '✓' : ''}
+            </button>
+            <span className="text-xs text-white/40">{favorites.length} favorited</span>
+          </div>
+        )}
+
         {/* Filter & Sort Bar */}
         <FilterBar
           filters={filters}

@@ -213,7 +213,7 @@ export default function UserProfile() {
             { href: "/pricing", icon: "⚡", label: "Upgrade Plan" },
             { href: "/notifications", icon: "🔔", label: "Notifications" },
             { href: "/leaderboard", icon: "🏆", label: "Leaderboard" },
-            { href: "/account", icon: "⚙️", label: "Account Settings" },
+            { href: "/account-settings", icon: "⚙️", label: "Account Settings" },
           ].map(({ href, icon, label }) => (
             <Link key={href} href={href}
               className="flex items-center gap-3 p-4 rounded-2xl bg-white/3 border border-white/8 hover:border-lime-400/30 hover:bg-lime-400/5 transition-all group"
@@ -252,9 +252,27 @@ export default function UserProfile() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-white/50 uppercase tracking-wide mb-1.5 block">Avatar URL</label>
-                  <Input value={form.avatarUrl} onChange={e => setForm(f => ({ ...f, avatarUrl: e.target.value }))}
-                    placeholder="https://..." className="rounded-xl bg-white/5 border-white/10" />
+                  <label className="text-xs text-white/50 uppercase tracking-wide mb-1.5 block">Avatar</label>
+                  <div className="flex gap-3 items-end">
+                    <div className="flex-1">
+                      <p className="text-xs text-white/40 mb-2">Upload a photo or paste a URL</p>
+                      <Input value={form.avatarUrl} onChange={e => setForm(f => ({ ...f, avatarUrl: e.target.value }))}
+                        placeholder="https://..." className="rounded-xl bg-white/5 border-white/10" />
+                    </div>
+                    <label className="px-4 py-2 rounded-xl bg-lime-400/10 border border-lime-400/30 hover:bg-lime-400/15 cursor-pointer transition-all text-sm font-medium text-lime-400">
+                      Upload
+                      <input type="file" accept="image/*" onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (evt) => {
+                            setForm(f => ({ ...f, avatarUrl: evt.target?.result as string }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }} className="hidden" />
+                    </label>
+                  </div>
                 </div>
 
                 <div>

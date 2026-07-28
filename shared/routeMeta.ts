@@ -148,6 +148,11 @@ export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
     description:
       "Track your betting bankroll, manage unit sizing, monitor ROI, and analyze long-term profitability.",
   },
+  "/free-picks": {
+    title: "Free Sports Betting Picks Today | ChalkPicks",
+    description:
+      "Get free AI-generated sports betting picks every day. NFL, NBA, MLB, NHL picks with confidence scores.",
+  },
   "/strategy-builder": {
     title: "AI Betting Strategy Builder | ChalkPicks",
     description:

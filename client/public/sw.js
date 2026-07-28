@@ -1,6 +1,67 @@
-// ChalkPicks Push Notification Service Worker
-// Handles incoming push events and notification clicks
+// ChalkPicks Service Worker — Push Notifications + Offline Caching
+const CACHE_NAME = "chalkpicks-v2";
+const OFFLINE_URL = "/";
 
+// Static assets to pre-cache on install
+const PRECACHE_ASSETS = [
+  "/",
+  "/manifest.json",
+  "/favicon.ico",
+];
+
+// ─── Install: pre-cache shell ────────────────────────────────────────────────
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
+  );
+  self.skipWaiting();
+});
+
+// ─── Activate: clean old caches ──────────────────────────────────────────────
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+// ─── Fetch: network-first for API, cache-first for assets ────────────────────
+self.addEventListener("fetch", (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip non-GET and cross-origin requests
+  if (request.method !== "GET" || url.origin !== self.location.origin) return;
+
+  // API calls: network-only (never cache)
+  if (url.pathname.startsWith("/api/")) return;
+
+  // Navigation: network-first, fallback to cached "/"
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request).catch(() => caches.match(OFFLINE_URL))
+    );
+    return;
+  }
+
+  // Static assets (JS/CSS/images): cache-first, update in background
+  event.respondWith(
+    caches.match(request).then((cached) => {
+      const networkFetch = fetch(request).then((response) => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        }
+        return response;
+      });
+      return cached || networkFetch;
+    })
+  );
+});
+
+// ─── Push Notifications ───────────────────────────────────────────────────────
 self.addEventListener("push", (event) => {
   if (!event.data) return;
 
@@ -19,7 +80,7 @@ self.addEventListener("push", (event) => {
     data: { url: payload.url || "/" },
     vibrate: [200, 100, 200],
     actions: [
-      { action: "open", title: "View" },
+      { action: "open", title: "View Pick" },
       { action: "dismiss", title: "Dismiss" },
     ],
   };
@@ -29,6 +90,7 @@ self.addEventListener("push", (event) => {
   );
 });
 
+// ─── Notification Click ───────────────────────────────────────────────────────
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
@@ -38,20 +100,13 @@ self.addEventListener("notificationclick", (event) => {
 
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
-      // Focus existing window if available
       for (const client of windowClients) {
         if (client.url.includes(self.location.origin) && "focus" in client) {
           client.navigate(url);
           return client.focus();
         }
       }
-      // Open new window
       return clients.openWindow(url);
     })
   );
-});
-
-// Activate immediately
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
 });

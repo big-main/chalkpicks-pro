@@ -3,30 +3,72 @@
   "short_name": "ChalkPicks",
   "description": "AI-powered sports betting picks with confidence scores, +EV finder, steam move detector, and CLV tracker.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#00ff88",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "background_color": "#080814",
+  "theme_color": "#39ff14",
   "orientation": "portrait-primary",
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/logo192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/logo512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "categories": ["sports", "finance", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Today's Picks",
+      "short_name": "Picks",
+      "description": "View today's AI-generated picks",
+      "url": "/picks",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "+EV Finder",
+      "short_name": "+EV",
+      "description": "Find positive expected value bets",
+      "url": "/ev-finder",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Free Picks",
+      "short_name": "Free",
+      "description": "Today's free AI picks",
+      "url": "/free-picks",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    }
+  ],
   "screenshots": [
     {
       "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/chalkpicks-og-image-7aYW8gXvMNjJG4DGWdRwYR.png",
       "sizes": "1200x630",
-      "type": "image/png"
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "ChalkPicks AI Picks Dashboard"
     }
   ]
 }

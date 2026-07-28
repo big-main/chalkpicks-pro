@@ -3,6 +3,7 @@ import { useRoute } from "wouter";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
 import { FAQPageJsonLd, SportsEventJsonLd } from "@/components/SportsEventJsonLd";
+import { BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
 import { TrendingUp, Calendar, Target, BarChart3, Zap, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 
@@ -169,6 +170,13 @@ export default function SportPicks(props: any) {
     <div className="min-h-screen bg-background">
       <Navbar />
       <FAQPageJsonLd faqs={config.faqs} pageId={config.slug} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://chalkpicks.live" },
+          { name: "Picks", url: "https://chalkpicks.live/picks" },
+          { name: `${config.name} Picks`, url: `https://chalkpicks.live/${config.slug}` },
+        ]}
+      />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-border/50">

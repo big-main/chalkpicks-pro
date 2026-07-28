@@ -318,6 +318,14 @@ export const routeSEO: RouteSEOEntry[] = [
     priority: 0.9,
   },
   {
+    path: "/free-picks",
+    title: "Free Sports Betting Picks Today — AI-Powered | ChalkPicks",
+    description: "Get free AI-generated sports betting picks every day. NFL, NBA, MLB, NHL picks with confidence scores. No credit card required.",
+    sitemap: true,
+    changefreq: "daily",
+    priority: 0.95,
+  },
+  {
     path: "/strategy-builder",
     title: "AI Betting Strategy Builder — Build & Backtest Custom Strategies | ChalkPicks",
     description: "Build, configure, and backtest custom sports betting strategies with AI. Define your edge, set filters, and simulate performance before risking real money.",

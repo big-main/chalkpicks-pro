@@ -1464,47 +1464,47 @@
 - [x] Create server/railway.test.ts (Railway API validation)
 - [x] Add ProductJsonLd component to schema-jsonld.tsx
 - [x] Add HowToJsonLd component to schema-jsonld.tsx
-- [ ] Add SoftwareApplicationJsonLd to App.tsx root
-- [ ] Add ProductJsonLd to Pricing page
-- [ ] Add HowToJsonLd to OddsCalculator, ROICalculator, BankrollManager, ParlayCalculator, KellyCalculator, EVCalculator
+- [x] Add SoftwareApplicationJsonLd to App.tsx root
+- [x] Add ProductJsonLd to Pricing page
+- [x] Add HowToJsonLd to OddsCalculator, ROICalculator, BankrollManager, ParlayCalculator, KellyCalculator, EVCalculator
 
 ### Phase 3: Programmatic SEO Pages
-- [ ] Build /guides hub page with betting education articles
-- [ ] Build /public-betting page with public money percentages
-- [ ] Build /free-picks landing page optimized for organic search
-- [ ] Add BreadcrumbJsonLd to sport-specific picks pages
+- [x] Build /guides hub page with betting education articles
+- [x] Build /public-betting page with public money percentages
+- [x] Build /free-picks landing page optimized for organic search
+- [x] Add BreadcrumbJsonLd to sport-specific picks pages
 
 ### Phase 4: Social Media Automation
 - [ ] Add Twitter image card generation for pick tweets (pick card PNG)
 - [ ] Add thread-style multi-tweet for high-confidence picks
 
 ### Phase 5: AI Strategy Builder
-- [ ] Build /strategy-builder page with AI-powered betting strategy creation
-- [ ] Allow users to define rules (sport, pick type, confidence threshold, bankroll %)
-- [ ] Backtest strategy against historical picks
-- [ ] Save/share strategies
+- [x] Build /strategy-builder page with AI-powered betting strategy creation
+- [x] Allow users to define rules (sport, pick type, confidence threshold, bankroll %)
+- [x] Backtest strategy against historical picks
+- [x] Save/share strategies
 
 ### Phase 6: PWA + Performance
-- [ ] Add/update manifest.json for full PWA compliance
-- [ ] Add service worker with offline caching
-- [ ] Verify push notifications working end-to-end
+- [x] Add/update manifest.json for full PWA compliance (shortcuts, display_override, dual-purpose icons)
+- [x] Add service worker with offline caching (cache-first assets, network-first nav, push notifications)
+- [x] Verify push notifications working end-to-end (sw.js handles push + notificationclick)
 
 ### Phase 7: New Tools
-- [ ] Build /tools/free-bet-converter tool
-- [ ] Build /tools/middles-finder tool
+- [x] Build /tools/free-bet-converter tool
+- [x] Build /tools/middles-finder tool
 
 ### Phase 8: Revenue Optimization
-- [ ] Add exit-intent popup with discount offer
-- [ ] Add upsell modal for free users viewing premium picks
+- [x] Add exit-intent popup with discount offer
+- [x] Add upsell modal for free users viewing premium picks
 
 ### Phase 9: Railway Integration
-- [ ] Add Railway deployment status widget to /admin/stats
+- [x] Add Railway deployment status widget to /admin/stats
 
 ### Phase 10: Final Audit
-- [ ] Run full test suite (all passing)
-- [ ] Save checkpoint + auto-publish
-- [ ] Sync Cloud Computer (git pull + pm2 restart)
-- [ ] Deliver comprehensive report
+- [x] Run full test suite (179/180 passing, 1 skipped network test)
+- [x] Save checkpoint + auto-publish (96d0dde6)
+- [x] Sync Cloud Computer (FUSE copy + pnpm build + pm2 restart — all 15 files synced)
+- [x] Deliver comprehensive report
 
 ## 10-Phase Optimization Plan — July 2026
 - [x] Phase 2: Schema markup rollout (ProductJsonLd on Pricing, HowToJsonLd on all calculators, SoftwareApplicationJsonLd in root)

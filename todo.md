@@ -1358,3 +1358,13 @@
 - [x] Add live social proof pills to Pricing page header (active subscribers, win rate, picks today)
 - [x] Add siteStats public tRPC procedure to systemRouter (real DB counts with graceful fallback)
 - [x] Add picks count badge to MobileBottomNav Picks tab
+
+
+## Phase 64 — Pick Result Auto-Tweeting
+
+- [x] Add twitterResultPosted boolean column to picks table schema
+- [x] Generate and apply migration for new column
+- [x] Create twitterPickResultHandler.ts with OAuth 1.0a Twitter API integration
+- [x] Register /api/scheduled/twitter-pick-results endpoint in server/_core/index.ts
+- [x] Auto-tweet pick results (win/loss) with odds, pick details, and running record
+- [x] All 176 tests passing, TypeScript clean

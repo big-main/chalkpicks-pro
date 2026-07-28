@@ -152,12 +152,14 @@ export const picks = mysqlTable("picks", {
   result: mysqlEnum("result", ["win", "loss", "push", "pending"]).default("pending").notNull(),
   isActive: boolean("isActive").default(true).notNull(),
   isFeatured: boolean("isFeatured").default(false).notNull(),
+  twitterResultPosted: boolean("twitterResultPosted").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => ([
   index("idx_picks_date_active").on(table.pickDate, table.isActive),
   index("idx_picks_sport").on(table.sportKey),
   index("idx_picks_result").on(table.result),
+  index("idx_picks_twitter_posted").on(table.twitterResultPosted),
 ]));
 
 export type Pick = typeof picks.$inferSelect;

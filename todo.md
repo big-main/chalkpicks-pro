@@ -1475,8 +1475,8 @@
 - [x] Add BreadcrumbJsonLd to sport-specific picks pages
 
 ### Phase 4: Social Media Automation
-- [ ] Add Twitter image card generation for pick tweets (pick card PNG)
-- [ ] Add thread-style multi-tweet for high-confidence picks
+- [x] Add Twitter image card generation for pick tweets (pick card PNG) — thread format with confidence bar
+- [x] Add thread-style multi-tweet for high-confidence picks (≥80% confidence posts as 3-tweet thread)
 
 ### Phase 5: AI Strategy Builder
 - [x] Build /strategy-builder page with AI-powered betting strategy creation

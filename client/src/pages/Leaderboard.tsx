@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
@@ -26,7 +27,33 @@ export default function Leaderboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-16">
+      {/* ── LEADERBOARD LOGO HEADER ───────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.88 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full flex items-center justify-center overflow-visible pointer-events-none select-none"
+        style={{ marginTop: "64px", zIndex: 0 }}
+        aria-hidden="true"
+      >
+        <div style={{ position: "relative", width: "min(320px, 65vw)", aspectRatio: "1 / 1" }}>
+          <img
+            src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png"
+            alt=""
+            style={{
+              width: "100%", height: "100%", objectFit: "contain", display: "block",
+              WebkitMaskImage: "radial-gradient(ellipse 68% 62% at 50% 48%, black 25%, transparent 78%)",
+              maskImage: "radial-gradient(ellipse 68% 62% at 50% 48%, black 25%, transparent 78%)",
+              opacity: 0.85,
+            }}
+          />
+          <div
+            className="absolute bottom-0 left-0 right-0 pointer-events-none"
+            style={{ height: "45%", background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)" }}
+          />
+        </div>
+      </motion.div>
+      <div style={{ marginTop: "-50px" }}>
         {/* Header */}
         <div className="border-b border-border/50 bg-card/30">
           <div className="container py-8">

@@ -23,6 +23,11 @@ export function MobileBottomNav() {
     refetchInterval: 30000,
   });
 
+  const { data: newPickSports } = trpc.picks.newPickSports.useQuery(undefined, {
+    refetchInterval: 60_000,
+  });
+  const hasNewPicks = (newPickSports ?? []).length > 0;
+
   const isActive = (path: string) => {
     if (path === "/") return location === "/";
     return location.startsWith(path);
@@ -110,7 +115,15 @@ export function MobileBottomNav() {
                       />
                     </motion.div>
 
-                    {/* Notification badge */}
+                    {/* New Pick dot for Picks tab */}
+                    {item.path === "/picks" && hasNewPicks && (
+                      <span
+                        className="absolute -top-1 -right-1.5 w-2.5 h-2.5 rounded-full animate-pulse"
+                        style={{ background: "#06b6d4", boxShadow: "0 0 8px rgba(6, 182, 212, 0.8)" }}
+                      />
+                    )}
+
+                  {/* Notification badge */}
                     {showBadge && (
                       <motion.span
                         initial={{ scale: 0 }}

@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import SharePickCard from "@/components/SharePickCard";
 import PushNotificationBanner from "@/components/PushNotificationBanner";
 import ConfidenceBar from "@/components/ConfidenceBar";
+import { motion } from "framer-motion";
 
 const PICK_TYPE_LABELS: Record<string, string> = {
   moneyline: "Moneyline",
@@ -855,7 +856,10 @@ export default function Picks() {
     <div className="min-h-screen bg-background">
       <Navbar />
       {/* ── PICKS PAGE LOGO HEADER ─────────────────────────────────────── */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, scale: 0.88 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
         className="w-full flex items-center justify-center overflow-visible pointer-events-none select-none"
         style={{ marginTop: "64px", zIndex: 0 }}
         aria-hidden="true"
@@ -876,7 +880,7 @@ export default function Picks() {
             style={{ height: "45%", background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)" }}
           />
         </div>
-      </div>
+      </motion.div>
 
       <div className="container pb-12" style={{ marginTop: "-60px" }}>
         {/* Push notification prompt */}

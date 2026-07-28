@@ -1293,3 +1293,28 @@
 - [ ] Audit and wire all dead CTA buttons site-wide
 - [ ] Fix canonical URLs to use chalkpicks.live domain
 - [ ] Register all new routes in App.tsx
+
+## Phase 58 — Stripe Live Fix, Logo Headers, Streak Badges, Blog Fix
+
+### Stripe Live Mode Fix
+- [x] Create 3 live-mode prices in Stripe (Daily $9.99, Monthly Pro $19.99, Yearly Elite $59.99/yr)
+- [x] Update PLANS in server/routers/subscription.ts with live price IDs
+- [x] Confirm webhook.ts uses amount-based tier detection (no hardcoded price IDs needed)
+- [x] Identify STRIPE_WEBHOOK_SECRET mismatch (test secret vs live webhook)
+- [x] Update STRIPE_WEBHOOK_SECRET to live signing secret (whsec_S9DQb3LN...)
+- [x] Update STRIPE_SECRET_KEY to live key in Manus secrets
+
+### Logo Headers
+- [x] Add 320px borderless bleed logo hero to Leaderboard page
+- [x] Add 320px borderless bleed logo hero to Tools page
+- [ ] Verify logo headers render correctly on all pages
+
+### Streak Badges
+- [ ] Add gold 🔥 streak badge to pick cards for winning streaks (3W+)
+
+### Blog Title Fix
+- [ ] Fix blog post titles — replace test titles with real game matchup data
+
+### Sitemap/IndexNow
+- [ ] Submit sitemap to Google Search Console
+- [ ] Ping IndexNow for new pages

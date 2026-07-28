@@ -30,7 +30,7 @@ export const TRIAL_DAYS = 3;
 export const PLANS = {
   daily: {
     name: "Basic",
-    priceId: "price_1TovuwDksqAHyBc3jOzOvW3p",
+    priceId: "price_1TyE4dJXlShpHPhg9dzcCcI3",
     amountCents: 999,
     interval: "month",
     description: "Essential picks for casual bettors",
@@ -39,7 +39,7 @@ export const PLANS = {
   },
   monthly: {
     name: "Pro",
-    priceId: "price_1TovuxDksqAHyBc3GHCX8Kxx",
+    priceId: "price_1TyE4dJXlShpHPhgkvMuFmfz",
     amountCents: 1999,
     interval: "month",
     description: "Best value for serious bettors",
@@ -49,7 +49,7 @@ export const PLANS = {
   },
   yearly: {
     name: "Elite",
-    priceId: "price_1TovuxDksqAHyBc3yjLLYW9J",
+    priceId: "price_1TyE4dJXlShpHPhg8rAyn1VZ",
     amountCents: 5999,
     interval: "year",
     description: "Maximum savings for pros",

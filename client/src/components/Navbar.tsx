@@ -128,6 +128,7 @@ const primaryLinks = [
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
+  const { data: newPickSports } = trpc.picks.newPickSports.useQuery(undefined, { refetchInterval: 60_000 });
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -231,6 +232,9 @@ export default function Navbar() {
                   }}
                 >
                   {link.label}
+                  {link.href === "/picks" && newPickSports && newPickSports.length > 0 && (
+                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-cyan-400 animate-pulse" style={{ boxShadow: "0 0 8px rgba(6, 182, 212, 0.8)" }} />
+                  )}
                   {isActive && (
                     <span
                       className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-4 h-[2px] rounded-full"

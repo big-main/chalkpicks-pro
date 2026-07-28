@@ -12,7 +12,7 @@ export default function BlogAISportsBetting() {
     document.title = "AI Sports Betting Analysis | Machine Learning Picks | ChalkPicks Pro";
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
-      meta.setAttribute("content", "How AI and machine learning are revolutionizing sports betting. Learn how ChalkPicks Pro uses neural networks to generate picks with 92% accuracy.");
+      meta.setAttribute("content", "How AI and machine learning are revolutionizing sports betting. Learn how ChalkPicks Pro uses neural networks to generate picks with confidence scores and +EV analysis.");
     }
   }, []);
 
@@ -108,7 +108,11 @@ export default function BlogAISportsBetting() {
                     <tr className="border-b border-slate-700"><td className="p-3">Emotional Bias</td><td className="p-3 text-blue-400">None</td><td className="p-3">High</td></tr>
                     <tr className="border-b border-slate-700"><td className="p-3">Consistency</td><td className="p-3 text-blue-400">100%</td><td className="p-3">Variable</td></tr>
                     <tr className="border-b border-slate-700"><td className="p-3">Backtesting</td><td className="p-3 text-blue-400">Automated</td><td className="p-3">Manual</td></tr>
-                    <tr><td className="p-3">Win Rate</td><td className="p-3 text-blue-400">92%</td><td className="p-3">52-55%</td></tr>
+                    {/* A "Win Rate: 92% vs 52-55%" row previously sat here — an
+                        unsubstantiated comparative performance claim. The rest of
+                        this table compares methodology, which is defensible; real
+                        results belong on /performance where they're graded. */}
+                    <tr><td className="p-3">Results</td><td className="p-3 text-blue-400">Publicly graded</td><td className="p-3">Self-reported</td></tr>
                   </tbody>
                 </table>
               </div>

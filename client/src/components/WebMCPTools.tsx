@@ -237,33 +237,54 @@ function useGetPerformanceTool() {
       },
     } as const,
     handler: async ({ sport }) => {
-      const res = await fetch(
-        `/api/trpc/picks.getPerformance?input=${encodeURIComponent(JSON.stringify({ sport }))}`
-      );
-      if (!res.ok) {
-        // Fallback to public stats
-        return {
-          winRate: 92,
-          roi: 18.4,
-          totalPicks: 847,
-          wins: 779,
-          losses: 68,
-          pushes: 0,
-          streak: "W7",
-          period: "All time",
-        };
+      // This tool feeds numbers straight to AI assistants, so it must never
+      // invent them. It previously fetched "picks.getPerformance" — a
+      // procedure that does not exist — so the request always 404'd and the
+      // tool always returned a hardcoded 92% win rate / 18.4% ROI / W7 streak.
+      const EMPTY = {
+        winRate: 0, roi: 0, totalPicks: 0, wins: 0, losses: 0, pushes: 0,
+        streak: "—", period: "No settled picks yet",
+      };
+
+      let json: any;
+      try {
+        const res = await fetch("/api/trpc/picks.performance");
+        if (!res.ok) return EMPTY;
+        json = await res.json();
+      } catch {
+        return EMPTY;
       }
-      const json = await res.json();
-      const d = json?.result?.data ?? {};
+
+      const data = json?.result?.data;
+      const overall = data?.overall;
+      if (!overall) return EMPTY;
+
+      // The procedure reports lifetime totals plus a per-sport breakdown;
+      // narrow to one sport when the caller asked for it.
+      const bySport = Array.isArray(data.bySport) ? data.bySport : [];
+      const scoped = sport
+        ? bySport.find((s: any) => String(s.sport).toUpperCase() === String(sport).toUpperCase())
+        : null;
+
+      if (sport && !scoped) return { ...EMPTY, period: `No settled ${sport} picks yet` };
+
+      const src = scoped ?? overall;
+      const wins = Number(src.wins ?? 0);
+      const losses = Number(src.losses ?? 0);
+      const pushes = Number(src.pushes ?? 0);
+      const currentStreak = Number(overall.currentStreak ?? 0);
+
       return {
-        winRate: Number(d.winRate ?? 92),
-        roi: Number(d.roi ?? 18.4),
-        totalPicks: Number(d.totalPicks ?? 847),
-        wins: Number(d.wins ?? 779),
-        losses: Number(d.losses ?? 68),
-        pushes: Number(d.pushes ?? 0),
-        streak: String(d.streak ?? "W7"),
-        period: String(d.period ?? "All time"),
+        winRate: Number(src.winRate ?? 0),
+        roi: Number(src.roi ?? 0),
+        totalPicks: scoped ? wins + losses + pushes : Number(overall.totalPicks ?? 0),
+        wins,
+        losses,
+        pushes,
+        // currentStreak is a lifetime consecutive-win count, so only report it
+        // when the caller didn't scope the request to a single sport.
+        streak: scoped ? "—" : currentStreak > 0 ? `W${currentStreak}` : "—",
+        period: scoped ? `${scoped.sport} — all time` : "All time",
       };
     },
   });

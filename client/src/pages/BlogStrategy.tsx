@@ -36,7 +36,7 @@ export default function BlogStrategy() {
           <Card className="border-slate-700 bg-slate-800/50">
             <CardHeader><CardTitle className="text-2xl text-amber-400"><DollarSign className="w-6 h-6 inline mr-2" />Bankroll Management</CardTitle></CardHeader>
             <CardContent className="space-y-4 text-slate-300">
-              <p>Bankroll management is the single most important factor in long-term betting success. Even with a 92% win rate, poor bankroll management can lead to ruin. Here are the key principles:</p>
+              <p>Bankroll management is the single most important factor in long-term betting success. Even with a strong long-run win rate, poor bankroll management can lead to ruin. Here are the key principles:</p>
               <div className="space-y-3">
                 <div className="p-3 rounded-lg bg-slate-700/50 border-l-2 border-amber-500"><h4 className="font-semibold text-white text-sm">1-3% Unit Size</h4><p className="text-xs text-slate-400">Never risk more than 1-3% of your total bankroll on a single bet. This protects against variance.</p></div>
                 <div className="p-3 rounded-lg bg-slate-700/50 border-l-2 border-amber-500"><h4 className="font-semibold text-white text-sm">Separate Bankroll</h4><p className="text-xs text-slate-400">Keep betting funds separate from personal finances. Only bet with money you can afford to lose.</p></div>

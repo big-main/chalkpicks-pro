@@ -139,16 +139,6 @@ function LiveDashboardPreview() {
   );
 }
 
-// ─── Performance Chart Data ───────────────────────────────────────
-const performanceData = [
-  { month: "Oct", roi: 12.1 },
-  { month: "Nov", roi: 15.3 },
-  { month: "Dec", roi: 19.7 },
-  { month: "Jan", roi: 18.4 },
-  { month: "Feb", roi: 21.3 },
-  { month: "Mar", roi: 23.1 },
-];
-
 // ─── Features (no badges — let content speak) ────────────────────
 const features = [
   {
@@ -218,6 +208,11 @@ const sportStats = [
 export default function Home() {
   const { isAuthenticated } = useAuth();
   const { data: platformStats } = trpc.stats.platformStats.useQuery();
+  // Real settled-pick history — the "Verified Track Record" section below
+  // claims "no cherry-picking," so the chart has to plot actual results.
+  const { data: performance } = trpc.picks.performance.useQuery();
+  const performanceData = (performance?.monthlyTrend ?? []).slice(-6);
+  const latestRoi = performanceData.at(-1)?.roi;
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-16 md:pb-0">
@@ -506,11 +501,18 @@ export default function Home() {
             <FadeIn direction="right">
               <NeonCard className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium text-white/50">Model ROI — 6 Month</span>
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full glass-card-static text-xs font-semibold text-[#39ff14]">
-                    <Activity className="w-3 h-3" /> +23.1%
-                  </div>
+                  <span className="text-sm font-medium text-white/50">Model ROI — Monthly</span>
+                  {latestRoi !== undefined && (
+                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full glass-card-static text-xs font-semibold ${latestRoi >= 0 ? "text-[#39ff14]" : "text-[#ef4444]"}`}>
+                      <Activity className="w-3 h-3" /> {latestRoi >= 0 ? "+" : ""}{latestRoi}%
+                    </div>
+                  )}
                 </div>
+                {performanceData.length === 0 ? (
+                  <div className="h-[240px] flex items-center justify-center text-center text-sm text-white/40 px-6">
+                    Not enough settled picks yet to chart monthly ROI.
+                  </div>
+                ) : (
                 <ResponsiveContainer width="100%" height={240}>
                   <AreaChart data={performanceData}>
                     <defs>
@@ -530,6 +532,7 @@ export default function Home() {
                     <Area type="monotone" dataKey="roi" stroke="#39ff14" strokeWidth={2.5} fill="url(#roiGradient)" dot={{ fill: "#39ff14", r: 4 }} />
                   </AreaChart>
                 </ResponsiveContainer>
+                )}
               </NeonCard>
             </FadeIn>
           </div>
@@ -648,7 +651,7 @@ export default function Home() {
             {[
               { value: platformStats?.members ?? "—", label: "Active Members", icon: Users, color: "#39ff14" },
               { value: platformStats?.picksGenerated ?? "—", label: "Picks Generated", icon: Brain, color: "#f0b800" },
-              { value: "4.9/5", label: "Member Rating", icon: Star, color: "#60a5fa" },
+              { value: platformStats?.winRate ?? "—", label: "Win Rate", icon: Star, color: "#60a5fa" },
               { value: "24/7", label: "AI Monitoring", icon: Activity, color: "#06b6d4" },
             ].map((stat) => (
               <NeonCard key={stat.label} className="p-5 text-center">

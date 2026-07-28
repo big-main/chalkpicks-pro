@@ -272,7 +272,7 @@ export default function BankrollManager() {
               Get AI-Powered Picks to Grow Your Bankroll
             </h2>
             <p className="text-gray-400 mb-6 max-w-lg mx-auto">
-              Our AI picks have a 92% historical win rate. Combine them with proper bankroll management for consistent profits.
+              Every AI pick is graded and published on our public track record. Combine them with proper bankroll management.
             </p>
             <Link
               href="/pricing"

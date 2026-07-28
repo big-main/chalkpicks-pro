@@ -88,12 +88,14 @@ export default function Stats() {
 
         <div className="container py-6">
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {/* Every tile here is counted from the live query results — the
+              previous "Players Tracked: 2,847" / "Data Points: 1.2M+" values
+              were hardcoded marketing figures with no underlying source. */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
             {[
               { label: "Live Games", value: liveGames?.filter((g: any) => g.status === "live").length ?? 0, sub: "In progress" },
-              { label: "Players Tracked", value: "2,847", sub: "Across all sports" },
-              { label: "Injury Reports", value: injuries?.length ?? 0, sub: "Active injuries" },
-              { label: "Data Points", value: "1.2M+", sub: "Updated live" },
+              { label: "Top Players", value: players?.length ?? 0, sub: "Ranked this week" },
+              { label: "Injury Reports", value: injuries?.length ?? 0, sub: hasInjurySupport ? "Active injuries" : "Not tracked for this sport" },
             ].map(stat => (
               <Card key={stat.label} className="bg-card border-border">
                 <CardContent className="p-4">

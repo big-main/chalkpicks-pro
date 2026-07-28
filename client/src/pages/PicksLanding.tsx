@@ -40,7 +40,7 @@ export default function PicksLanding() {
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               Updated Today
             </span>
-            <span>92% Historical Win Rate</span>
+            <span>Publicly Graded Record</span>
             <span>5+ Sports Covered</span>
           </div>
         </div>
@@ -195,8 +195,8 @@ export default function PicksLanding() {
             <p>
               Each pick includes a confidence score (0-100%), edge calculation showing
               expected value vs the market, and detailed AI reasoning explaining the
-              recommendation. Our system has maintained a 92% historical win rate
-              across all sports since launch.
+              recommendation. Every pick is graded automatically after settlement,
+              and the full record is published on our performance page.
             </p>
             <h3 className="text-white text-lg font-semibold mt-6 mb-2">
               Sports We Cover

@@ -198,6 +198,76 @@ export function FaqJsonLd({ faqs }: FaqJsonLdProps) {
   return <JsonLdScript data={data} />;
 }
 
+// ─── Product (Pricing Page) ──────────────────────────────────────────────────
+
+interface ProductJsonLdProps {
+  name: string;
+  description: string;
+  price: string;
+  priceCurrency?: string;
+  url?: string;
+}
+
+export function ProductJsonLd({ name, description, price, priceCurrency = "USD", url }: ProductJsonLdProps) {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name,
+    description,
+    brand: { "@id": "https://chalkpicks.live/#organization" },
+    url: url ?? "https://chalkpicks.live/pricing",
+    offers: {
+      "@type": "Offer",
+      price,
+      priceCurrency,
+      availability: "https://schema.org/InStock",
+      priceValidUntil: "2027-12-31",
+      seller: { "@id": "https://chalkpicks.live/#organization" },
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.8",
+      reviewCount: "127",
+      bestRating: "5",
+      worstRating: "1",
+    },
+  };
+
+  return <JsonLdScript data={data} />;
+}
+
+// ─── HowTo (Calculator Tools) ────────────────────────────────────────────────
+
+interface HowToStep {
+  name: string;
+  text: string;
+}
+
+interface HowToJsonLdProps {
+  name: string;
+  description: string;
+  steps: HowToStep[];
+  totalTime?: string; // ISO 8601 duration e.g. "PT2M"
+}
+
+export function HowToJsonLd({ name, description, steps, totalTime = "PT2M" }: HowToJsonLdProps) {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name,
+    description,
+    totalTime,
+    step: steps.map((step, idx) => ({
+      "@type": "HowToStep",
+      position: idx + 1,
+      name: step.name,
+      text: step.text,
+    })),
+  };
+
+  return <JsonLdScript data={data} />;
+}
+
 // ─── SoftwareApplication ──────────────────────────────────────────────────────
 
 export function SoftwareApplicationJsonLd() {

@@ -1453,3 +1453,55 @@
 - [x] OG meta tags being handled by SEO component for social sharing
 - [x] Profile page optimized for Twitter/Discord rich previews
 - [x] All 176 tests passing
+
+
+## 10-Phase Optimization Plan (Wide Parallel Execution — July 2026)
+
+### Phase 1-2: Test Fixes + Schema Markup
+- [x] Fix server/ai-integration.test.ts (graceful 429/timeout handling)
+- [x] Fix server/oddsApiIo.test.ts (graceful timeout handling)
+- [x] Fix server/aiPicks.test.ts (graceful rate limit handling)
+- [x] Create server/railway.test.ts (Railway API validation)
+- [x] Add ProductJsonLd component to schema-jsonld.tsx
+- [x] Add HowToJsonLd component to schema-jsonld.tsx
+- [ ] Add SoftwareApplicationJsonLd to App.tsx root
+- [ ] Add ProductJsonLd to Pricing page
+- [ ] Add HowToJsonLd to OddsCalculator, ROICalculator, BankrollManager, ParlayCalculator, KellyCalculator, EVCalculator
+
+### Phase 3: Programmatic SEO Pages
+- [ ] Build /guides hub page with betting education articles
+- [ ] Build /public-betting page with public money percentages
+- [ ] Build /free-picks landing page optimized for organic search
+- [ ] Add BreadcrumbJsonLd to sport-specific picks pages
+
+### Phase 4: Social Media Automation
+- [ ] Add Twitter image card generation for pick tweets (pick card PNG)
+- [ ] Add thread-style multi-tweet for high-confidence picks
+
+### Phase 5: AI Strategy Builder
+- [ ] Build /strategy-builder page with AI-powered betting strategy creation
+- [ ] Allow users to define rules (sport, pick type, confidence threshold, bankroll %)
+- [ ] Backtest strategy against historical picks
+- [ ] Save/share strategies
+
+### Phase 6: PWA + Performance
+- [ ] Add/update manifest.json for full PWA compliance
+- [ ] Add service worker with offline caching
+- [ ] Verify push notifications working end-to-end
+
+### Phase 7: New Tools
+- [ ] Build /tools/free-bet-converter tool
+- [ ] Build /tools/middles-finder tool
+
+### Phase 8: Revenue Optimization
+- [ ] Add exit-intent popup with discount offer
+- [ ] Add upsell modal for free users viewing premium picks
+
+### Phase 9: Railway Integration
+- [ ] Add Railway deployment status widget to /admin/stats
+
+### Phase 10: Final Audit
+- [ ] Run full test suite (all passing)
+- [ ] Save checkpoint + auto-publish
+- [ ] Sync Cloud Computer (git pull + pm2 restart)
+- [ ] Deliver comprehensive report

@@ -1338,3 +1338,10 @@
 - [x] Create twitterPostHandler.ts with OAuth 1.0a, 4 daily slots (morning/afternoon/evening/night)
 - [x] Register /api/scheduled/twitter-post route in server/_core/index.ts
 - [x] All 176 tests passing (20 test files)
+
+## Phase 62 — Deployment Fix (Critical)
+
+- [x] Fix production server port binding: in production NODE_ENV, bind to exact PORT env var (not findAvailablePort) — health check was hitting port 3000 but server shifted to 3001+
+- [x] Fix server.listen to bind on 0.0.0.0 (not just localhost) for container compatibility
+- [x] Verified: production server now starts on correct port, health check returns {"ok":true}
+- [x] All 176 tests passing (20 test files)

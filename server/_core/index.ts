@@ -666,6 +666,31 @@ async function startServer() {
     });
   });
 
+  // Blog-only sitemap — separate XML for blog posts, served before SPA catch-all
+  app.get("/sitemap-blog.xml", async (_req, res) => {
+    try {
+      const { getDb } = await import('../db');
+      const { blogPosts } = await import('../../drizzle/schema');
+      const { desc } = await import('drizzle-orm');
+      const db = await getDb();
+      if (!db) throw new Error('DB unavailable');
+      const posts = await db.select({ slug: blogPosts.slug, updatedAt: blogPosts.updatedAt })
+        .from(blogPosts)
+        .orderBy(desc(blogPosts.updatedAt))
+        .limit(500);
+      const urls = posts.map((p: { slug: string; updatedAt: Date | null }) => {
+        const lastmod = p.updatedAt ? new Date(p.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+        return `  <url>\n    <loc>https://chalkpicks.live/blog/${p.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
+      }).join('\n');
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+      res.set('Content-Type', 'application/xml');
+      res.set('Cache-Control', 'public, max-age=900');
+      res.send(xml);
+    } catch (e) {
+      res.status(500).send('Error generating blog sitemap');
+    }
+  });
+
   // IndexNow ownership-proof route (GET /<key>.txt) — must come before SPA catch-all
   registerIndexNowKeyRoute(app);
 

@@ -155,6 +155,8 @@ function PickCard({ pick, isPremiumUser, rank }: { pick: any; isPremiumUser: boo
   const isFreeUser = !isPremiumUser;
   const resultClass = pick.result === "win" ? "badge-win" : pick.result === "loss" ? "badge-loss" : pick.result === "push" ? "badge-push" : "badge-pending";
   const isTopPick = rank !== undefined && rank < 3;
+  // Streak badge: show 🔥 gold badge when pick has 3+ consecutive wins
+  const winStreak: number = pick.winStreak ?? 0;
 
   // Signal badges
   const signals: { label: string; className: string }[] = [];
@@ -229,9 +231,22 @@ function PickCard({ pick, isPremiumUser, rank }: { pick: any; isPremiumUser: boo
             <Badge className={`text-xs ${resultClass} border-0 capitalize`}>{pick.result}</Badge>
           </div>
 
-          {/* Signal badges */}
-          {signals.length > 0 && (
-            <div className="flex gap-1.5 mb-3">
+          {/* Signal badges + streak badge */}
+          {(signals.length > 0 || winStreak >= 3) && (
+            <div className="flex gap-1.5 mb-3 flex-wrap">
+              {winStreak >= 3 && (
+                <span
+                  className="text-xs font-bold px-2 py-0.5 rounded"
+                  style={{
+                    background: "rgba(255,215,0,0.12)",
+                    color: "#ffd700",
+                    border: "1px solid rgba(255,215,0,0.3)",
+                    textShadow: "0 0 8px rgba(255,215,0,0.5)",
+                  }}
+                >
+                  🔥 {winStreak}W STREAK
+                </span>
+              )}
               {signals.map((s) => (
                 <span key={s.label} className={s.className}>{s.label}</span>
               ))}
@@ -843,14 +858,39 @@ export default function Picks() {
     return new Set(sorted.map((p: any) => p.id));
   }, [picksData?.picks]);
 
+  // Compute per-pick win streak from the full picks list (sorted by date desc)
+  const pickStreakMap = useMemo(() => {
+    const map = new Map<number, number>();
+    if (!picksData?.picks) return map;
+    // Sort all settled wins by date descending to find consecutive win runs
+    const settled = [...picksData.picks]
+      .filter((p: any) => p.result === "win" || p.result === "loss" || p.result === "push")
+      .sort((a: any, b: any) => new Date(b.createdAt ?? b.pickDate ?? 0).getTime() - new Date(a.createdAt ?? a.pickDate ?? 0).getTime());
+    let streak = 0;
+    for (const p of settled) {
+      if (p.result === "win") {
+        streak++;
+        map.set(p.id, streak);
+      } else {
+        streak = 0;
+        map.set(p.id, 0);
+      }
+    }
+    return map;
+  }, [picksData?.picks]);
+
   // When no active filters, pin top picks to the front
   const displayPicks = useMemo(() => {
     const hasActiveFilters = activeFilterCount > 0;
-    if (hasActiveFilters) return filteredAndSortedPicks;
-    const top = filteredAndSortedPicks.filter((p: any) => topPickIds.has(p.id));
-    const rest = filteredAndSortedPicks.filter((p: any) => !topPickIds.has(p.id));
+    const annotated = filteredAndSortedPicks.map((p: any) => ({
+      ...p,
+      winStreak: pickStreakMap.get(p.id) ?? 0,
+    }));
+    if (hasActiveFilters) return annotated;
+    const top = annotated.filter((p: any) => topPickIds.has(p.id));
+    const rest = annotated.filter((p: any) => !topPickIds.has(p.id));
     return [...top, ...rest];
-  }, [filteredAndSortedPicks, topPickIds, activeFilterCount]);
+  }, [filteredAndSortedPicks, topPickIds, activeFilterCount, pickStreakMap]);
 
   return (
     <div className="min-h-screen bg-background">

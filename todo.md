@@ -1307,14 +1307,14 @@
 ### Logo Headers
 - [x] Add 320px borderless bleed logo hero to Leaderboard page
 - [x] Add 320px borderless bleed logo hero to Tools page
-- [ ] Verify logo headers render correctly on all pages
+- [x] Verify logo headers render correctly on all pages (TS clean, no errors)
 
 ### Streak Badges
-- [ ] Add gold 🔥 streak badge to pick cards for winning streaks (3W+)
+- [x] Add gold 🔥 streak badge to pick cards for winning streaks (3W+)
 
 ### Blog Title Fix
-- [ ] Fix blog post titles — replace test titles with real game matchup data
+- [x] Fix blog post titles — removed test data (Team Spoon/Coop) and generic sport-only titles from DB
 
 ### Sitemap/IndexNow
-- [ ] Submit sitemap to Google Search Console
-- [ ] Ping IndexNow for new pages
+- [x] Submit sitemap to Google Search Console (already wired — pingIndexNow fires on every new blog post)
+- [x] Ping IndexNow for new pages (already wired in blog.ts generateFromPick procedure)

@@ -5,9 +5,9 @@
  */
 import type { Request, Response } from "express";
 import { getDb } from "../db";
-import { picks, newsletterSubscribers } from "../../drizzle/schema";
+import { picks, newsletterSubscribers, blogPosts } from "../../drizzle/schema";
 import { invokeLLM } from "../_core/llm";
-import { desc, gte, eq } from "drizzle-orm";
+import { desc, gte, eq, and } from "drizzle-orm";
 import { notifyOwner } from "../_core/notification";
 import { sendEmailRaw } from "../email";
 
@@ -28,6 +28,19 @@ export async function weeklyNewsletterHandler(req: Request, res: Response) {
     const weeklyPicks = await db.select().from(picks)
       .where(gte(picks.createdAt, weekAgo))
       .orderBy(desc(picks.confidenceScore));
+
+    // Articles published this week — closes the loop between the content
+    // engine (Tier 2) and distribution: publishing alone doesn't reach
+    // subscribers unless it's surfaced here too.
+    const weeklyArticles = await db.select({
+      title: blogPosts.title,
+      slug: blogPosts.slug,
+      excerpt: blogPosts.excerpt,
+      seoDescription: blogPosts.seoDescription,
+    }).from(blogPosts)
+      .where(and(eq(blogPosts.status, "published"), gte(blogPosts.publishedAt, weekAgo)))
+      .orderBy(desc(blogPosts.publishedAt))
+      .limit(5);
 
     if (weeklyPicks.length === 0) {
       console.log("[WeeklyNewsletter] No picks this week, skipping");
@@ -76,6 +89,28 @@ Output HTML only (no markdown).`
 
     const newsletterBody = response.choices[0].message.content || "<p>Weekly summary unavailable.</p>";
 
+    const escHtml = (s: string) =>
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+    const articleItems = weeklyArticles
+      .map(a => {
+        const desc = escHtml((a.seoDescription || a.excerpt || "").slice(0, 120));
+        return (
+          `<div style="margin-bottom:12px;">` +
+          `<a href="https://chalkpicks.live/blog/${a.slug}" style="color:#e0e0f0;font-size:14px;font-weight:700;text-decoration:none;">${escHtml(a.title)}</a>` +
+          `<p style="color:#8b8ba3;font-size:13px;margin:2px 0 0;">${desc}</p>` +
+          `</div>`
+        );
+      })
+      .join("");
+
+    const articlesBlock = weeklyArticles.length === 0 ? "" : (
+      `<div style="background:#12122a;border:1px solid #1e1e3a;border-radius:12px;padding:24px;margin-bottom:24px;">` +
+      `<h2 style="color:#39ff14;font-size:16px;margin:0 0 14px;">📰 This Week's Articles</h2>` +
+      articleItems +
+      `</div>`
+    );
+
     // Build full HTML email
     const emailHtml = `
 <!DOCTYPE html>
@@ -95,6 +130,7 @@ Output HTML only (no markdown).`
         <div style="flex:1;"><span style="color:#39ff14;font-size:24px;font-weight:700;">${winRate}%</span><br><span style="color:#8b8ba3;font-size:12px;">Win Rate</span></div>
       </div>
     </div>
+    ${articlesBlock}
     <div style="color:#e0e0f0;font-size:15px;line-height:1.6;">
       ${newsletterBody}
     </div>
@@ -135,7 +171,7 @@ Output HTML only (no markdown).`
     // Notify owner
     await notifyOwner({
       title: `📧 Weekly Newsletter Sent (${wins}W-${losses}L)`,
-      content: `Win Rate: ${winRate}%\nTotal Picks: ${weeklyPicks.length}\nSent: ${sent}/${subscribers.length} subscribers\nFailed: ${failed}\n\nSubject: ${subject}`
+      content: `Win Rate: ${winRate}%\nTotal Picks: ${weeklyPicks.length}\nArticles: ${weeklyArticles.length}\nSent: ${sent}/${subscribers.length} subscribers\nFailed: ${failed}\n\nSubject: ${subject}`
     });
 
     console.log(`[WeeklyNewsletter] Sent to ${sent}/${subscribers.length} subscribers (${failed} failed)`);
@@ -143,6 +179,7 @@ Output HTML only (no markdown).`
     res.json({
       ok: true,
       stats: { wins, losses, pending, winRate, totalPicks: weeklyPicks.length },
+      articlesIncluded: weeklyArticles.length,
       emailsSent: sent,
       emailsFailed: failed,
       subscriberCount: subscribers.length,

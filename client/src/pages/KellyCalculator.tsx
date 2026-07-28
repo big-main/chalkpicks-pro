@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { HowToJsonLd, BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
 import Navbar from "@/components/Navbar";
 import NeonCard from "@/components/NeonCard";
 import { Link } from "wouter";
@@ -63,6 +64,23 @@ export default function KellyCalculator() {
 
   return (
     <div className="min-h-screen bg-background">
+      <HowToJsonLd
+        name="How to Use the Kelly Criterion Calculator"
+        description="Calculate optimal bet sizing using the Kelly Criterion formula with the ChalkPicks free Kelly calculator."
+        totalTime="PT2M"
+        steps={[
+          { name: "Enter your win probability", text: "Input your estimated probability of winning the bet as a percentage (e.g., 55%)." },
+          { name: "Enter the odds", text: "Input the American odds offered by the sportsbook (e.g., -110 or +150)." },
+          { name: "Set your bankroll", text: "Enter your total bankroll amount in dollars." },
+          { name: "Choose a Kelly fraction", text: "Select Full Kelly (aggressive), Half Kelly (moderate), or Quarter Kelly (conservative) based on your risk tolerance." },
+          { name: "Read your recommended bet size", text: "The calculator shows the optimal bet amount and percentage of bankroll to wager." },
+        ]}
+      />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", url: "https://chalkpicks.live" },
+        { name: "Tools", url: "https://chalkpicks.live/tools" },
+        { name: "Kelly Calculator", url: "https://chalkpicks.live/tools/kelly-calculator" },
+      ]} />
       <Navbar />
 
       <section className="relative pt-24 pb-16 overflow-hidden">

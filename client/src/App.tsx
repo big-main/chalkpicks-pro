@@ -5,7 +5,7 @@ import { useLocation } from "wouter";
 import { WebMCPTools } from "@/components/WebMCPTools";
 import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
 import { StructuredData } from "@/components/StructuredData";
-import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo/schema-jsonld";
+import { OrganizationJsonLd, WebSiteJsonLd, SoftwareApplicationJsonLd } from "@/components/seo/schema-jsonld";
 import { PageMeta } from "@/components/PageMeta";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,6 +24,7 @@ import { SwipeNavProvider } from "@/components/SwipeNavProvider";
 import { BackButton } from "@/components/BackButton";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import PushNotificationBanner from "@/components/PushNotificationBanner";
+import ExitIntentPopup from "@/components/ExitIntentPopup";
 
 // Lazy-loaded pages (code splitting)
 const Picks = lazy(() => import("./pages/Picks"));
@@ -105,6 +106,12 @@ const FreePick = lazy(() => import("@/pages/FreePick"));
 const KellyCalculator = lazy(() => import("@/pages/KellyCalculator"));
 const EVCalculator = lazy(() => import("@/pages/EVCalculator"));
 
+const StrategyBuilder = lazy(() => import("@/pages/StrategyBuilder"));
+const FreeBetConverter = lazy(() => import("@/pages/FreeBetConverter"));
+const MiddlesFinder = lazy(() => import("@/pages/MiddlesFinder"));
+const GuidesHub = lazy(() => import("@/pages/GuidesHub"));
+const PublicBetting = lazy(() => import("@/pages/PublicBetting"));
+
 const Terms = lazy(() => import("@/pages/Terms"));
 const LeaderboardProfile = lazy(() => import("@/pages/LeaderboardProfile"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
@@ -134,6 +141,7 @@ function Router() {
       <PageMeta />
       <OrganizationJsonLd />
       <WebSiteJsonLd />
+      <SoftwareApplicationJsonLd />
       <BreadcrumbJsonLd />
       <StructuredData />
       <Suspense fallback={<PageLoader />}>
@@ -224,6 +232,11 @@ function Router() {
           <Route path="/free-pick" component={FreePick} />
           <Route path="/tools/kelly-calculator" component={KellyCalculator} />
           <Route path="/tools/ev-calculator" component={EVCalculator} />
+          <Route path="/strategy-builder" component={StrategyBuilder} />
+          <Route path="/tools/free-bet-converter" component={FreeBetConverter} />
+          <Route path="/tools/middles-finder" component={MiddlesFinder} />
+          <Route path="/guides" component={GuidesHub} />
+          <Route path="/public-betting" component={PublicBetting} />
           <Route path="/blog" component={Blog} />
           <Route path="/blog/best-sports-betting-picks" component={BlogBestPicks} />
           <Route path="/blog/ai-sports-betting" component={BlogAISportsBetting} />
@@ -257,6 +270,7 @@ function App() {
             <SocialProofTicker />
             <MobileBottomNav />
             <AiChatWidget />
+            <ExitIntentPopup />
           </SwipeNavProvider>
         </TooltipProvider>
       </ThemeProvider>

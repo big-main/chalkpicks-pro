@@ -148,6 +148,31 @@ export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
     description:
       "Track your betting bankroll, manage unit sizing, monitor ROI, and analyze long-term profitability.",
   },
+  "/strategy-builder": {
+    title: "AI Betting Strategy Builder | ChalkPicks",
+    description:
+      "Build, configure, and backtest custom sports betting strategies with AI. Define your edge and simulate performance.",
+  },
+  "/tools/free-bet-converter": {
+    title: "Free Bet Converter | Convert Promos to Cash | ChalkPicks",
+    description:
+      "Convert sportsbook free bets into guaranteed cash profit using hedging. Calculate the exact hedge bet needed.",
+  },
+  "/tools/middles-finder": {
+    title: "Middles Finder | Find Middle Opportunities | ChalkPicks",
+    description:
+      "Find middle opportunities where you can win both sides of a bet. Calculate the middle window and expected value.",
+  },
+  "/guides": {
+    title: "Sports Betting Guides | Free Strategy Guides | ChalkPicks",
+    description:
+      "Free sports betting strategy guides covering +EV betting, bankroll management, arbitrage, Kelly Criterion, and more.",
+  },
+  "/public-betting": {
+    title: "Public Betting Percentages | Where Is the Money Going? | ChalkPicks",
+    description:
+      "Track public betting percentages across all sports. See bet % vs money %, identify sharp vs public splits.",
+  },
 };
 
 // /learn/* pages: title/description come from the shared LEARN_PAGES_META

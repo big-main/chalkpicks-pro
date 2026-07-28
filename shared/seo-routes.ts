@@ -317,6 +317,46 @@ export const routeSEO: RouteSEOEntry[] = [
     changefreq: "daily",
     priority: 0.9,
   },
+  {
+    path: "/strategy-builder",
+    title: "AI Betting Strategy Builder — Build & Backtest Custom Strategies | ChalkPicks",
+    description: "Build, configure, and backtest custom sports betting strategies with AI. Define your edge, set filters, and simulate performance before risking real money.",
+    sitemap: true,
+    changefreq: "weekly",
+    priority: 0.85,
+  },
+  {
+    path: "/tools/free-bet-converter",
+    title: "Free Bet Converter — Convert Sportsbook Promos to Cash | ChalkPicks",
+    description: "Convert sportsbook free bet bonuses into guaranteed cash profit using hedging. Calculate the exact hedge bet needed to lock in real money from any free bet.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/tools/middles-finder",
+    title: "Middles Finder — Find Middle Opportunities in Sports Betting | ChalkPicks",
+    description: "Find middle opportunities where you can win both sides of a bet. Calculate the middle window, probability, and expected value for any game.",
+    sitemap: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/guides",
+    title: "Sports Betting Guides — Free Strategy Guides for Bettors | ChalkPicks",
+    description: "Free sports betting strategy guides covering +EV betting, bankroll management, arbitrage, Kelly Criterion, line shopping, and more.",
+    sitemap: true,
+    changefreq: "weekly",
+    priority: 0.85,
+  },
+  {
+    path: "/public-betting",
+    title: "Public Betting Percentages — Where Is the Money Going? | ChalkPicks",
+    description: "Track public betting percentages across all sports. See bet % vs money %, identify sharp vs public splits, and find reverse line movement signals.",
+    sitemap: true,
+    changefreq: "daily",
+    priority: 0.9,
+  },
 ];
 
 /** Blog post slugs for sitemap + prerender (metadata lives in client/src/data/blog-posts.ts) */

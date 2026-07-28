@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
+import RailwayStatusWidget from "@/components/RailwayStatusWidget";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -154,6 +155,11 @@ export function AdminStats() {
               <p className="text-xs text-muted-foreground mt-1">All-time picks</p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Deployment Status */}
+        <div className="mb-8">
+          <RailwayStatusWidget />
         </div>
 
         {/* User List */}

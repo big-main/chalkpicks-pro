@@ -1505,3 +1505,14 @@
 - [ ] Save checkpoint + auto-publish
 - [ ] Sync Cloud Computer (git pull + pm2 restart)
 - [ ] Deliver comprehensive report
+
+## 10-Phase Optimization Plan — July 2026
+- [x] Phase 2: Schema markup rollout (ProductJsonLd on Pricing, HowToJsonLd on all calculators, SoftwareApplicationJsonLd in root)
+- [x] Phase 3: Programmatic SEO pages — /strategy-builder, /guides, /public-betting, /tools/free-bet-converter, /tools/middles-finder
+- [x] Phase 4: Register all new pages in seo-routes.ts and routeMeta.ts
+- [x] Phase 5: Add all new pages to App.tsx routes and Navbar navGroups
+- [x] Phase 6: ExitIntentPopup component (mouse-leave trigger, 15-min countdown, session dedup)
+- [x] Phase 7: UpsellModal component + useUpsellModal hook (3-tier plan cards)
+- [x] Phase 8: RailwayStatusWidget component added to AdminStats page
+- [x] Phase 9: New tools added to ToolsHub (Free Bet Converter, Middles Finder)
+- [x] Phase 10: Cloud Computer sync — all files available via FUSE mount

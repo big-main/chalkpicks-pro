@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { HowToJsonLd, BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,6 +77,22 @@ export default function ParlayCalculator() {
 
   return (
     <div className="min-h-screen bg-background">
+      <HowToJsonLd
+        name="How to Calculate Parlay Payouts"
+        description="Calculate multi-leg parlay payouts instantly using the ChalkPicks free parlay calculator."
+        totalTime="PT2M"
+        steps={[
+          { name: "Add parlay legs", text: "Click 'Add Leg' to add each game to your parlay. Enter American odds (e.g., -110, +150) for each leg." },
+          { name: "Enter your stake", text: "Input the amount you want to wager on the full parlay." },
+          { name: "Review combined odds", text: "See the combined American odds, decimal odds, and implied probability for your full parlay." },
+          { name: "Check your payout", text: "View the total payout, profit, and ROI for your parlay bet instantly." },
+        ]}
+      />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", url: "https://chalkpicks.live" },
+        { name: "Tools", url: "https://chalkpicks.live/tools" },
+        { name: "Parlay Calculator", url: "https://chalkpicks.live/tools/parlay-calculator" },
+      ]} />
       <Navbar />
       <div className="container pt-24 pb-16 max-w-4xl mx-auto">
         {/* Hero */}

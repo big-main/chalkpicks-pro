@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { ProductJsonLd, BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { trpc } from "@/lib/trpc";
@@ -295,6 +296,17 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <ProductJsonLd
+        name="ChalkPicks Pro — AI Sports Betting Analytics"
+        description="AI-powered sports betting picks and analytics platform with +EV finder, CLV tracker, arbitrage detector, and line movement alerts. Daily, Monthly, and Yearly subscription plans."
+        price="19.99"
+        priceCurrency="USD"
+        url="https://chalkpicks.live/pricing"
+      />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", url: "https://chalkpicks.live" },
+        { name: "Pricing", url: "https://chalkpicks.live/pricing" },
+      ]} />
       <Navbar />
 
       {/* Background */}

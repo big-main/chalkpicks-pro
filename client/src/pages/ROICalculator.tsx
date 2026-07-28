@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { HowToJsonLd, BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
 import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -44,6 +45,22 @@ export default function ROICalculator() {
   return (
     <div className="min-h-screen bg-background">
       <PageMeta pathname="/tools/roi-calculator" />
+      <HowToJsonLd
+        name="How to Calculate Betting ROI"
+        description="Track your betting performance and calculate return on investment using the ChalkPicks free ROI calculator."
+        totalTime="PT2M"
+        steps={[
+          { name: "Enter your starting bankroll", text: "Input the amount you started with before placing bets." },
+          { name: "Enter total winnings and losses", text: "Add your cumulative winnings and losses in dollars." },
+          { name: "Set your expected win rate", text: "Enter your historical or expected win percentage to project future performance." },
+          { name: "Review your ROI and projections", text: "See your current ROI, break-even win rate, recommended unit size, and 100-bet profit projection." },
+        ]}
+      />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", url: "https://chalkpicks.live" },
+        { name: "Tools", url: "https://chalkpicks.live/tools" },
+        { name: "ROI Calculator", url: "https://chalkpicks.live/tools/roi-calculator" },
+      ]} />
       <Navbar />
       <div className="pt-20 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { HowToJsonLd, BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
 import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -105,6 +106,22 @@ export default function OddsCalculator() {
   return (
     <div className="min-h-screen bg-background">
       <PageMeta pathname="/tools/odds-calculator" />
+      <HowToJsonLd
+        name="How to Convert Sports Betting Odds"
+        description="Convert American, Decimal, and Fractional odds instantly using the ChalkPicks free odds calculator."
+        totalTime="PT1M"
+        steps={[
+          { name: "Enter your odds", text: "Type your odds value into the American, Decimal, or Fractional input field." },
+          { name: "Select odds format", text: "The calculator automatically detects your format and converts to all other formats in real time." },
+          { name: "Enter your stake", text: "Input your bet amount to see potential profit and total return." },
+          { name: "Read your results", text: "View the converted odds, potential profit, and total payout instantly — no signup required." },
+        ]}
+      />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", url: "https://chalkpicks.live" },
+        { name: "Tools", url: "https://chalkpicks.live/tools" },
+        { name: "Odds Calculator", url: "https://chalkpicks.live/tools/odds-calculator" },
+      ]} />
       <Navbar />
       <div className="pt-20 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl">

@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { HowToJsonLd, BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
 import Navbar from "@/components/Navbar";
 import NeonCard from "@/components/NeonCard";
 import { Link } from "wouter";
@@ -72,6 +73,22 @@ export default function EVCalculator() {
 
   return (
     <div className="min-h-screen bg-background">
+      <HowToJsonLd
+        name="How to Calculate Expected Value (+EV) in Sports Betting"
+        description="Calculate the expected value of any sports bet to find +EV opportunities using the ChalkPicks free EV calculator."
+        totalTime="PT2M"
+        steps={[
+          { name: "Enter the sportsbook odds", text: "Input the American odds offered by the sportsbook for the bet you want to evaluate." },
+          { name: "Enter the fair odds or win probability", text: "Input either the true fair odds (from a sharp market) or your estimated win probability." },
+          { name: "Enter your bet amount", text: "Input the dollar amount you plan to wager." },
+          { name: "Read the expected value", text: "A positive EV means the bet has long-term value. The calculator shows EV per bet and ROI percentage." },
+        ]}
+      />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", url: "https://chalkpicks.live" },
+        { name: "Tools", url: "https://chalkpicks.live/tools" },
+        { name: "EV Calculator", url: "https://chalkpicks.live/tools/ev-calculator" },
+      ]} />
       <Navbar />
 
       <section className="relative pt-24 pb-16 overflow-hidden">

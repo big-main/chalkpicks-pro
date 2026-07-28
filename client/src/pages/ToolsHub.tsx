@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import {
   Calculator, DollarSign, Shield, Layers, Target, TrendingUp, Sigma, Zap,
-  ArrowRight
+  Gift, Crosshair, ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -63,6 +63,20 @@ const tools = [
     icon: Zap,
     desc: "All-in-one calculator for odds conversion, Kelly Criterion, and bet sizing.",
     color: "#f97316",
+  },
+  {
+    href: "/tools/free-bet-converter",
+    label: "Free Bet Converter",
+    icon: Gift,
+    desc: "Convert sportsbook free bets into guaranteed cash profit using hedging. Calculate exact hedge bet needed.",
+    color: "#22d3ee",
+  },
+  {
+    href: "/tools/middles-finder",
+    label: "Middles Finder",
+    icon: Crosshair,
+    desc: "Find middle opportunities where you can win both sides of a bet. Calculate middle window and EV.",
+    color: "#fb923c",
   },
 ];
 

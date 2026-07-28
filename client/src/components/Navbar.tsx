@@ -58,6 +58,8 @@ const navGroups = [
       { href: "/performance", label: "Performance", icon: BarChart3, desc: "Verified track record & ROI stats" },
       { href: "/stats", label: "Live Stats", icon: Activity, desc: "Real-time game data & line movement" },
       { href: "/elo-ratings", label: "Elo Power Ratings", icon: Sigma, desc: "AI team power ratings & win probability" },
+      { href: "/strategy-builder", label: "Strategy Builder", icon: Brain, desc: "Build & backtest custom betting strategies" },
+      { href: "/public-betting", label: "Public Betting %", icon: Users, desc: "See where public money is going" },
     ],
   },
   {
@@ -91,6 +93,8 @@ const navGroups = [
       { href: "/tools/parlay-calculator", label: "Parlay Calculator", icon: Layers, desc: "Calculate parlay odds & payouts" },
       { href: "/tools/kelly-calculator", label: "Kelly Calculator", icon: Target, desc: "Optimal bet sizing with Kelly Criterion" },
       { href: "/tools/ev-calculator", label: "EV Calculator", icon: TrendingUp, desc: "Calculate expected value on any bet" },
+      { href: "/tools/free-bet-converter", label: "Free Bet Converter", icon: DollarSign, desc: "Convert free bets to guaranteed cash" },
+      { href: "/tools/middles-finder", label: "Middles Finder", icon: Target, desc: "Find middle opportunities across books" },
     ],
   },
   {
@@ -116,6 +120,7 @@ const navGroups = [
       { href: "/kalshi", label: "Kalshi Markets", icon: Flame, desc: "Prediction market opportunities" },
       { href: "/sportsbooks", label: "Sportsbooks", icon: Star, desc: "Best books & sign-up bonuses" },
       { href: "/odds-comparison", label: "Odds Compare", icon: GitCompare, desc: "Compare lines across books" },
+      { href: "/guides", label: "Betting Guides", icon: BookOpen, desc: "Free sports betting strategy guides" },
       { href: "/referral", label: "Referral", icon: Users, desc: "Earn rewards by referring friends" },
     ],
   },

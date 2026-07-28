@@ -50,6 +50,7 @@ const ParlayBuilder = lazy(() => import("@/pages/ParlayBuilder"));
 const BankrollTracker = lazy(() => import("@/pages/BankrollTracker"));
 const Referral = lazy(() => import("@/pages/Referral"));
 const ReferralPage = lazy(() => import("@/pages/ReferralPage").then(m => ({ default: m.ReferralPage })));
+const PickShare = lazy(() => import("@/pages/PickShare"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const SubscriptionDashboard = lazy(() => import("@/pages/SubscriptionDashboard"));
 const ArbitrageFinder = lazy(() => import("@/pages/ArbitrageFinder"));
@@ -165,6 +166,7 @@ function Router() {
           <Route path="/bankroll-tracker" component={BankrollTracker} />
           <Route path="/refer" component={ReferralPage} />
       <Route path="/referral" component={Referral} />
+      <Route path="/picks/:id/share" component={PickShare} />
           <Route path="/affiliate" component={AffiliateHub} />
           <Route path="/live-leaderboard" component={LiveLeaderboard} />
           <Route path="/community" component={CommunityChat} />

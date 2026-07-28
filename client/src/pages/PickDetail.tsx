@@ -1,5 +1,6 @@
 import { useParams, Link } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { ComplianceFooter } from "@/components/ComplianceFooter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -222,6 +223,7 @@ export default function PickDetail() {
           </Card>
         </div>
       </div>
+      <ComplianceFooter />
     </div>
   );
 }

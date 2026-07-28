@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ComplianceFooter } from "@/components/ComplianceFooter";
 import { getSportBadgeClass } from "@/lib/badges";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
@@ -201,6 +202,7 @@ export default function DailyPicks() {
           </div>
         </div>
       </main>
+      <ComplianceFooter />
     </div>
   );
 }

@@ -10,7 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Activity, Search, TrendingUp, AlertTriangle, Users, BarChart3 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, Legend
 } from "recharts";
 
 const SPORTS = [
@@ -30,7 +29,13 @@ export default function Stats() {
 
   const { data: liveGames, isLoading: gamesLoading } = trpc.stats.liveGames.useQuery({ sportKey: sport }, { enabled: hasPremiumAccess });
   const { data: players, isLoading: playersLoading } = trpc.stats.topPlayers.useQuery({ sportKey: sport, limit: 12 }, { enabled: hasPremiumAccess });
-  const { data: injuries } = trpc.stats.injuryReport.useQuery({ sportKey: sport }, { enabled: hasPremiumAccess });
+  // injuryReport only covers the sports API-Sports.io/ESPN actually report on.
+  const INJURY_SPORTS = ["nfl", "nba", "mlb", "nhl"] as const;
+  const hasInjurySupport = (INJURY_SPORTS as readonly string[]).includes(sport);
+  const { data: injuries } = trpc.stats.injuryReport.useQuery(
+    { sportKey: sport as (typeof INJURY_SPORTS)[number] },
+    { enabled: hasPremiumAccess && hasInjurySupport }
+  );
 
   if (!hasPremiumAccess) {
     return <Paywall tier="daily" title="Live Stats" description="Real-time game scores, odds, and player statistics" />;
@@ -40,19 +45,14 @@ export default function Stats() {
     !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.team.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Generate trend data for charts
-  const teamTrends = liveGames?.slice(0, 6).map((g: any) => ({
-    team: g.homeTeam.split(" ").pop(),
-    avgScore: g.homeScore ?? Math.floor(Math.random() * 30 + 15),
-    overRate: Math.floor(Math.random() * 30 + 45),
-  })) ?? [];
-
-  const oddsMovement = Array.from({ length: 8 }, (_, i) => ({
-    time: `${i * 3}h`,
-    homeML: -200 + Math.floor(Math.random() * 40) - 20,
-    awayML: 168 + Math.floor(Math.random() * 30) - 15,
-    ou: 224.5 + (Math.random() * 2 - 1),
-  }));
+  // Real team scoring trend from live/final scores only — no synthetic fallback.
+  const teamTrends = liveGames
+    ?.filter((g: any) => g.status !== "scheduled")
+    .slice(0, 6)
+    .map((g: any) => ({
+      team: g.homeTeam.split(" ").pop(),
+      avgScore: g.homeScore ?? 0,
+    })) ?? [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -240,7 +240,10 @@ export default function Stats() {
             {/* Injuries */}
             <TabsContent value="injuries">
               <div className="space-y-3">
-                {injuries?.length === 0 && (
+                {!hasInjurySupport && (
+                  <div className="text-center py-12 text-muted-foreground">Injury reports aren't available for this sport yet.</div>
+                )}
+                {hasInjurySupport && injuries?.length === 0 && (
                   <div className="text-center py-12 text-muted-foreground">No injury reports for this sport.</div>
                 )}
                 {injuries?.map((inj: any, i: number) => (
@@ -253,17 +256,16 @@ export default function Stats() {
                             inj.status === "Questionable" ? "text-brand-gold" : "text-orange-400"
                           }`} />
                           <div>
-                            <div className="font-semibold text-foreground text-sm">{inj.player}</div>
-                            <div className="text-xs text-muted-foreground">{inj.team} · {inj.position}</div>
+                            <div className="font-semibold text-foreground text-sm">{inj.playerName}</div>
+                            <div className="text-xs text-muted-foreground">{inj.team}</div>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <div className="text-xs text-muted-foreground">{inj.injury}</div>
+                          <div className="text-xs text-muted-foreground">{inj.description}</div>
                           <Badge className={`text-xs border-0 ${
                             inj.status === "Out" ? "badge-loss" :
                             inj.status === "Questionable" ? "badge-pending" : "badge-win"
                           }`}>{inj.status}</Badge>
-                          <div className="text-xs text-muted-foreground">{inj.updatedAt}</div>
                         </div>
                       </div>
                     </CardContent>
@@ -294,37 +296,12 @@ export default function Stats() {
 
                 <Card className="bg-card border-border">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Odds Movement (24h)</CardTitle>
+                    <CardTitle className="text-base">Odds Movement & O/U Hit Rate</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <LineChart data={oddsMovement}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.22 0.015 260)" />
-                        <XAxis dataKey="time" tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }} />
-                        <YAxis tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }} />
-                        <Tooltip contentStyle={{ background: "oklch(0.12 0.015 260)", border: "1px solid oklch(0.22 0.015 260)", borderRadius: "8px" }} />
-                        <Legend />
-                        <Line type="monotone" dataKey="homeML" stroke="oklch(0.78 0.18 85)" strokeWidth={2} dot={false} name="Home ML" />
-                        <Line type="monotone" dataKey="awayML" stroke="oklch(0.72 0.19 162)" strokeWidth={2} dot={false} name="Away ML" />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-card border-border lg:col-span-2">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Over/Under Hit Rate by Team</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={200}>
-                      <BarChart data={teamTrends}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.22 0.015 260)" />
-                        <XAxis dataKey="team" tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }} />
-                        <YAxis tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }} domain={[0, 100]} />
-                        <Tooltip contentStyle={{ background: "oklch(0.12 0.015 260)", border: "1px solid oklch(0.22 0.015 260)", borderRadius: "8px" }} formatter={(v: number) => [`${v}%`, "Over Rate"]} />
-                        <Bar dataKey="overRate" fill="oklch(0.72 0.19 162)" radius={[4, 4, 0, 0]} name="Over %" />
-                      </BarChart>
-                    </ResponsiveContainer>
+                    <div className="h-[250px] flex items-center justify-center text-center text-sm text-muted-foreground px-6">
+                      Line-movement and over/under hit-rate tracking are coming soon — we'd rather ship nothing here than simulated numbers.
+                    </div>
                   </CardContent>
                 </Card>
               </div>

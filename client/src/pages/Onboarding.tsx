@@ -118,8 +118,12 @@ export default function Onboarding() {
   const progress = ((currentStep + 1) / questions.length) * 100;
 
   const handleNext = () => {
-    if (currentStep === 0 && answers.age !== "21_plus") {
+    // Re-checked on every step (not just step 0) so going back and changing
+    // the answer can't bypass this on the final submit.
+    if (answers.age !== "21_plus") {
       alert("You must be 21+ to use ChalkPicks");
+      setDirection(-1);
+      setCurrentStep(0);
       return;
     }
 
@@ -128,6 +132,7 @@ export default function Onboarding() {
       setCurrentStep(currentStep + 1);
     } else {
       completeOnboarding.mutate({
+        ageVerified: true,
         experienceLevel: answers.experience as any,
         bettingFrequency: answers.frequency as any,
         weeklyBetSize: answers.bet_size as any,

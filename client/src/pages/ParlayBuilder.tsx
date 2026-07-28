@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ComplianceFooter } from "@/components/ComplianceFooter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -267,6 +268,7 @@ function ParlayBuilderContent() {
           </div>
         )}
       </div>
+      <ComplianceFooter />
     </div>
   );
 }

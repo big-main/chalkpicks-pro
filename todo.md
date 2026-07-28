@@ -1318,3 +1318,23 @@
 ### Sitemap/IndexNow
 - [x] Submit sitemap to Google Search Console (already wired — pingIndexNow fires on every new blog post)
 - [x] Ping IndexNow for new pages (already wired in blog.ts generateFromPick procedure)
+
+## Phase 60 — n8n Social Syndication + Sitemap Fix
+
+- [x] Fix dailySocialPostHandler — add actual n8n webhook dispatch (was only logging to console)
+- [x] Fix /sitemap-blog.xml — server-side route now returns real XML with 33 blog post URLs
+- [x] Logo banner enlarged on all pages — full-width cover, bottom-only fade
+- [x] Horizontal scroll ticker — draggable news + picks cards with chevron navigation
+- [x] SEO structured data — removed fake aggregateRating, added BreadcrumbList schema
+- [x] Stripe live mode fix — correct live price IDs, STRIPE_WEBHOOK_SECRET updated to whsec_S9DQb3LN...
+- [x] Logo headers added to Leaderboard and Tools pages
+- [x] Streak badges on pick cards (gold fire for 3W+ consecutive wins)
+- [x] Blog test data cleaned up (removed Team Spoon/Coop and generic sport-only titles)
+- [x] Leaderboard public profile page /leaderboard/:username with share button
+- [x] PushNotificationBanner mounted globally in App.tsx
+
+## Phase 61 — Twitter Post Handler Fix
+
+- [x] Create twitterPostHandler.ts with OAuth 1.0a, 4 daily slots (morning/afternoon/evening/night)
+- [x] Register /api/scheduled/twitter-post route in server/_core/index.ts
+- [x] All 176 tests passing (20 test files)

@@ -123,16 +123,41 @@ export async function dailySocialPostHandler(req: Request, res: Response) {
     const posts = await generateSocialContent(topPick);
     console.log(`[DailySocialPost] Generated ${posts.length} posts`);
 
-    // Log generated posts (stored in memory for now, can be saved to a dedicated table later)
-    const savedCount = posts.length;
+    // Dispatch posts to n8n social syndication webhook if configured
+    const n8nWebhookUrl = process.env.N8N_SOCIAL_WEBHOOK_URL;
+    let webhookDispatched = false;
+    let webhookError: string | undefined;
+    if (n8nWebhookUrl && posts.length > 0) {
+      try {
+        const payload = {
+          posts,
+          sport: topPick.sportKey || 'sports',
+          date: new Date().toISOString().split('T')[0],
+          pick: `${topPick.homeTeam} vs ${topPick.awayTeam}`,
+          confidence: topPick.confidenceScore,
+        };
+        const webhookRes = await fetch(n8nWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(10000),
+        });
+        webhookDispatched = webhookRes.ok;
+        console.log(`[DailySocialPost] n8n webhook: ${webhookRes.status} ${webhookRes.ok ? 'OK' : 'FAILED'}`);
+      } catch (err: any) {
+        webhookError = err.message;
+        console.warn(`[DailySocialPost] n8n webhook error: ${err.message}`);
+      }
+    } else if (!n8nWebhookUrl) {
+      console.log('[DailySocialPost] N8N_SOCIAL_WEBHOOK_URL not set — skipping webhook dispatch');
+    }
 
-    console.log(`[DailySocialPost] Saved ${savedCount}/${posts.length} posts to queue`);
     res.json({
       ok: true,
       generated: posts.length,
-      saved: savedCount,
       pick: `${topPick.homeTeam} vs ${topPick.awayTeam}`,
       confidence: topPick.confidenceScore,
+      webhook: { dispatched: webhookDispatched, error: webhookError },
     });
   } catch (error: any) {
     console.error("[DailySocialPost] Error:", error);

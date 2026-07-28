@@ -20,6 +20,7 @@ import { welcomeDripHandler } from "../handlers/welcomeDripHandler";
 import { blogContentHandler } from "../handlers/blogContentHandler";
 import { picksBlogHandler } from "../handlers/picksBlogHandler";
 import { discordPostHandler } from "../handlers/discordPostHandler";
+import { twitterPostHandler } from "../handlers/twitterPostHandler";
 import { ollamaWarmupHandler } from "../handlers/ollamaWarmupHandler";
 import { cloudSyncHandler } from "../handlers/cloudSyncHandler";
 import { registerSecurityMiddleware } from "../middleware/security";
@@ -629,6 +630,7 @@ async function startServer() {
   app.post("/api/scheduled/blog-content", blogContentHandler);
   app.post("/api/scheduled/picks-blog", picksBlogHandler);
   app.post("/api/scheduled/discord-post", discordPostHandler);
+  app.post("/api/scheduled/twitter-post", twitterPostHandler);
   app.post("/api/scheduled/ollama-warmup", ollamaWarmupHandler);
   app.post("/api/scheduled/cloud-sync", cloudSyncHandler);
   app.post("/api/scheduled/distribute-payouts", async (req, res) => {

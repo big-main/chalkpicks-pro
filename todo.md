@@ -1368,3 +1368,15 @@
 - [x] Register /api/scheduled/twitter-pick-results endpoint in server/_core/index.ts
 - [x] Auto-tweet pick results (win/loss) with odds, pick details, and running record
 - [x] All 176 tests passing, TypeScript clean
+
+
+## Phase 65 — Admin Dashboard Metrics
+
+- [x] Create AdminStats.tsx component with real-time metrics
+- [x] Wire AdminStats to siteStats tRPC procedure (totalMembers, paidSubscribers, picksToday, winRate, newsletterSubscribers, totalPicksGenerated)
+- [x] Add admin.getUsers query to fetch user list with pagination
+- [x] Display live metrics grid: total members, paid subscribers, picks today, win rate
+- [x] Display secondary metrics: new signups today, newsletter subscribers, total picks generated
+- [x] Add recent users table showing email, tier, and join date
+- [x] Register /admin/stats route in App.tsx
+- [x] All 176 tests passing, TypeScript clean

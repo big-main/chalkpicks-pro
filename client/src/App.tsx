@@ -64,6 +64,7 @@ const UserProfile = lazy(() => import("@/pages/UserProfile"));
 const Sportsbooks = lazy(() => import("@/pages/Sportsbooks"));
 const Sponsors = lazy(() => import("@/pages/Sponsors"));
 const AdminPanel = lazy(() => import("@/pages/AdminPanel"));
+const AdminStats = lazy(() => import("@/pages/AdminStats").then(m => ({ default: m.AdminStats })));
 const CreditDashboard = lazy(() => import("@/pages/CreditDashboard"));
 const PropBuilder = lazy(() => import("@/pages/PropBuilder"));
 const LineMovement = lazy(() => import("@/pages/LineMovement"));
@@ -177,6 +178,7 @@ function Router() {
           <Route path="/sportsbooks" component={Sportsbooks} />
           <Route path="/sponsors" component={Sponsors} />
           <Route path="/admin" component={AdminPanel} />
+      <Route path="/admin/stats" component={AdminStats} />
           <Route path="/credits" component={CreditDashboard} />
           <Route path="/prop-builder" component={PropBuilder} />
           <Route path="/line-movement" component={LineMovement} />

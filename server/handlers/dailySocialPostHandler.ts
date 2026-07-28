@@ -12,6 +12,7 @@ import { getDb } from "../db";
 import { picks } from "../../drizzle/schema";
 import { invokeLLM } from "../_core/llm";
 import { desc, gte } from "drizzle-orm";
+import { ENV } from "../_core/env";
 
 const PLATFORMS = ["reddit", "twitter", "discord"] as const;
 
@@ -123,14 +124,34 @@ export async function dailySocialPostHandler(req: Request, res: Response) {
     const posts = await generateSocialContent(topPick);
     console.log(`[DailySocialPost] Generated ${posts.length} posts`);
 
-    // Log generated posts (stored in memory for now, can be saved to a dedicated table later)
-    const savedCount = posts.length;
+    // Hand off to n8n for actual publishing (Twitter/Reddit/Instagram — see
+    // references/n8n-social-workflow.md). Previously this content was only
+    // logged and returned in the response, with no distribution path beyond
+    // discordPostHandler's separate direct Discord webhook.
+    let syndicated = false;
+    if (ENV.n8nSocialWebhookUrl && posts.length > 0) {
+      try {
+        await fetch(ENV.n8nSocialWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pick: `${topPick.homeTeam} vs ${topPick.awayTeam}`,
+            confidence: topPick.confidenceScore,
+            posts,
+            generatedAt: new Date().toISOString(),
+          }),
+          signal: AbortSignal.timeout(5000),
+        });
+        syndicated = true;
+      } catch (e) {
+        console.warn("[DailySocialPost] n8n social webhook failed:", e);
+      }
+    }
 
-    console.log(`[DailySocialPost] Saved ${savedCount}/${posts.length} posts to queue`);
     res.json({
       ok: true,
       generated: posts.length,
-      saved: savedCount,
+      syndicated,
       pick: `${topPick.homeTeam} vs ${topPick.awayTeam}`,
       confidence: topPick.confidenceScore,
     });

@@ -24,4 +24,8 @@ export const ENV = {
   discordWebhookUrl: process.env.DISCORD_WEBHOOK_URL ?? "",
   // n8n Email Drip Webhook — fires on new user registration (Day 0/1/3/7 sequence)
   n8nDripWebhookUrl: process.env.N8N_DRIP_WEBHOOK_URL ?? "",
+  // n8n Social Syndication Webhook — fires with LLM-generated per-platform post
+  // copy from dailySocialPostHandler; n8n fans out to Twitter/Reddit/Instagram
+  // (see references/n8n-social-workflow.md for the receiving workflow).
+  n8nSocialWebhookUrl: process.env.N8N_SOCIAL_WEBHOOK_URL ?? "",
 };

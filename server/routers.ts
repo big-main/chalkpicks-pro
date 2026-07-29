@@ -46,6 +46,7 @@ import { trackingRouter } from "./routers/tracking";
 import { profileRouter } from "./routers/profile";
 import { railwayRouter } from "./routers/railway";
 import { n8nWebhookRouter } from "./routers/n8nWebhook";
+import { antigravityRouter } from "./routers/antigravity";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -70,6 +71,7 @@ async function issueSessionCookie(req: Request, res: Response, userId: number, n
 export const appRouter = router({
   system: systemRouter,
   ogImage: ogImageRouter,
+  antigravity: antigravityRouter,
   newsletter: newsletterRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

@@ -268,6 +268,8 @@ export default function Navbar() {
               <button
                 className="flex items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium rounded-lg transition-all duration-200"
                 style={{ color: megaOpen ? "#39ff14" : "rgba(255, 255, 255, 0.58)" }}
+                aria-label="Tools & More menu"
+                aria-expanded={megaOpen}
                 onMouseEnter={() => setMegaOpen(true)}
                 onClick={() => setMegaOpen(!megaOpen)}
               >
@@ -430,6 +432,8 @@ export default function Navbar() {
                 <div ref={userMenuRef} className="relative">
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    aria-label="User menu"
+                    aria-expanded={userMenuOpen}
                     className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full transition-all duration-200 hover:bg-white/5"
                   >
                     <Avatar className="w-8 h-8 ring-1 ring-white/10">
@@ -562,6 +566,8 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="icon"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
               className="lg:hidden rounded-full w-9 h-9 hover:bg-white/5"
               style={{ color: "rgba(255, 255, 255, 0.7)" }}
               onClick={() => setMobileOpen(!mobileOpen)}

@@ -706,6 +706,8 @@ export default function Home() {
                       placeholder="your@email.com"
                       value={emailCapture}
                       onChange={(e) => setEmailCapture(e.target.value)}
+                      aria-label="Email address for free daily pick"
+                      autoComplete="email"
                       className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#39ff14]/50 h-11"
                     />
                     <button
@@ -718,9 +720,9 @@ export default function Home() {
                   </form>
                 )}
                 <div className="flex items-center justify-center gap-4 mt-3">
-                  <span className="text-xs text-white/25">✓ Free forever</span>
-                  <span className="text-xs text-white/25">✓ No spam</span>
-                  <span className="text-xs text-white/25">✓ Unsubscribe anytime</span>
+                  <span className="text-xs text-white/50">✓ Free forever</span>
+                  <span className="text-xs text-white/50">✓ No spam</span>
+                  <span className="text-xs text-white/50">✓ Unsubscribe anytime</span>
                 </div>
               </div>
             </div>
@@ -866,10 +868,10 @@ export default function Home() {
             </div>
           </div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-white/5">
-            <div className="text-xs text-white/30">
+            <div className="text-xs text-white/45">
               © 2026 ChalkPicks Pro. All rights reserved. Analyze responsibly.
             </div>
-            <div className="text-xs text-white/25">
+            <div className="text-xs text-white/45">
               Predictive sports analysis involves variance. Past performance does not guarantee future results.
             </div>
           </div>

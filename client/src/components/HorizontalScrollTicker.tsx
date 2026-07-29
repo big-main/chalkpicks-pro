@@ -236,13 +236,15 @@ export default function HorizontalScrollTicker() {
   const articles = (blogData?.posts ?? []).slice(0, 4);
 
   // Interleave: 2 news, 1 pick, 1 article, 2 news, 1 pick...
+  // Cap at 15 items to reduce DOM bloat (was 37+ causing PageSpeed penalty)
+  const MAX_TICKER_ITEMS = 15;
   const combined: Array<{ type: "news"; data: any } | { type: "pick"; data: any } | { type: "article"; data: any }> = [];
   let ni = 0, pi = 0, ai = 0;
-  while (ni < newsItems.length || pi < picks.length || ai < articles.length) {
-    if (ni < newsItems.length) combined.push({ type: "news", data: newsItems[ni++] });
-    if (ni < newsItems.length) combined.push({ type: "news", data: newsItems[ni++] });
-    if (pi < picks.length) combined.push({ type: "pick", data: picks[pi++] });
-    if (ai < articles.length) combined.push({ type: "article", data: articles[ai++] });
+  while ((ni < newsItems.length || pi < picks.length || ai < articles.length) && combined.length < MAX_TICKER_ITEMS) {
+    if (ni < newsItems.length && combined.length < MAX_TICKER_ITEMS) combined.push({ type: "news", data: newsItems[ni++] });
+    if (ni < newsItems.length && combined.length < MAX_TICKER_ITEMS) combined.push({ type: "news", data: newsItems[ni++] });
+    if (pi < picks.length && combined.length < MAX_TICKER_ITEMS) combined.push({ type: "pick", data: picks[pi++] });
+    if (ai < articles.length && combined.length < MAX_TICKER_ITEMS) combined.push({ type: "article", data: articles[ai++] });
   }
 
   const wins = picks.filter((p) => p.result === "win").length;

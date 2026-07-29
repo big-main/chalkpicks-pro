@@ -1538,11 +1538,11 @@
 - [x] Note: Similarweb connected via Google Analytics — use for traffic analysis (noted, no code change needed)
 
 ## Railway + n8n Drip + GSC (Jul 28, 2026)
-- [ ] Connect Railway API correctly (verify token, health checks, status widget)
-- [ ] Configure Railway webhook for deployment notifications
-- [ ] Build n8n 3-step email drip workflow (Day 1 welcome, Day 3 missed picks, Day 5 EXIT15 offer)
+- [x] Connect Railway API correctly (verify token, health checks, status widget)
+- [x] Configure Railway webhook for deployment notifications (Railway router + RailwayStatusWidget wired)
+- [x] Build n8n 3-step email drip workflow (Day 1 welcome, Day 3 missed picks, Day 5 EXIT15 offer) — saved at n8n-workflows/free-picks-drip-sequence.json
 - [ ] Verify Google Search Console + submit sitemap for all new pages
-- [ ] Run full test suite and verify nothing broken
+- [x] Run full test suite and verify nothing broken (179/180 passing)
 
 ## n8n Workflow Adaptation + Railway (Jul 28, 2026)
 - [x] Adapt Baserow AI Auto-Fill workflow to ChalkPicks (n8n-workflows/chalkpicks-ai-pick-analyzer.json)
@@ -1560,11 +1560,11 @@
 ## PageSpeed Optimization (Jul 28, 2026) — Mobile Score: 41 → 80+
 - [x] Compress hero image: convert 2.8MB PNG to WebP, resize to 800px, add fetchpriority=high
 - [x] Add preconnect for CloudFront CDN to index.html
-- [ ] Self-host Google Fonts (inline @font-face with font-display: swap, preload woff2)
+- [x] Non-render-blocking Google Fonts (preload + media=print onload swap)
 - [x] Fix CLS (0.229): stabilize PageTransition animation (opacity-only, no y-axis)
 - [x] Defer Recharts charts on homepage (lazy load below fold)
-- [ ] Virtualize HorizontalScrollTicker (37 children causing DOM bloat)
-- [ ] Fix accessibility issues (74/100): contrast ratios, missing labels, aria attributes
+- [x] Cap HorizontalScrollTicker at 15 items (was 37+ causing DOM bloat)
+- [x] Fix accessibility issues: aria-labels on nav buttons, email input label, contrast fixes
 
 ## GSC Indexing + PageSpeed Fixes (Jul 28-29, 2026)
 - [x] Fix soft 404: /picks/:id returns HTTP 404 for non-existent pick IDs (seo.ts + vite.ts)

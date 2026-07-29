@@ -4,11 +4,11 @@
 
 **Capacitor** wraps the existing Vite/React app so one codebase serves:
 
-| Platform | Delivery |
-|----------|----------|
-| Web | chalkpicks.live |
-| iOS | App Store (WKWebView shell → live site or bundled `dist/public`) |
-| Android | Play Store (same) |
+| Platform | Delivery                                                         |
+| -------- | ---------------------------------------------------------------- |
+| Web      | chalkpicks.live                                                  |
+| iOS      | App Store (WKWebView shell → live site or bundled `dist/public`) |
+| Android  | Play Store (same)                                                |
 
 App ID: `live.chalkpicks.app`
 
@@ -25,19 +25,49 @@ App ID: `live.chalkpicks.app`
 - Apple Developer + Google Play accounts
 - Node 22 + pnpm
 
-## One-time setup
+## One-time setup (DONE — platforms already added)
+
+All Capacitor packages are installed. Android and iOS platforms are already added to the repo.
 
 ```bash
-pnpm add -D @capacitor/cli @capacitor/core
-pnpm add @capacitor/ios @capacitor/android @capacitor/app @capacitor/browser \
-  @capacitor/splash-screen @capacitor/status-bar @capacitor/push-notifications \
-  @capacitor/haptics @capacitor/keyboard @capacitor/network
-
-pnpm build
-npx cap add ios
-npx cap add android
-npx cap sync
+# Already done:
+# pnpm add -w @capacitor/cli @capacitor/android @capacitor/ios \
+#   @capacitor/push-notifications @capacitor/splash-screen @capacitor/status-bar
+# npx cap add android && npx cap add ios
 ```
+
+## Build Android Debug APK
+
+```bash
+export JAVA_HOME=/home/ubuntu/jdk-21.0.5+11   # Temurin JDK 21 (in sandbox)
+export ANDROID_HOME=/home/ubuntu/android-sdk
+export PATH=$JAVA_HOME/bin:$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+
+pnpm run build && npx cap sync
+cd android && ./gradlew assembleDebug
+# Output: android/app/build/outputs/apk/debug/app-debug.apk (7 MB)
+```
+
+## Build Android Release AAB (Google Play)
+
+1. Generate keystore (one-time):
+   ```bash
+   keytool -genkey -v -keystore chalkpicks-release.keystore \
+     -alias chalkpicks -keyalg RSA -keysize 2048 -validity 10000
+   ```
+2. Add signing config to `android/app/build.gradle` (see signingConfigs section)
+3. Build: `./gradlew bundleRelease`
+4. Upload `.aab` to Google Play Console → Internal Testing → Production
+
+## Android App Links (assetlinks.json)
+
+Get your release keystore SHA-256:
+
+```bash
+keytool -list -v -keystore chalkpicks-release.keystore -alias chalkpicks | grep SHA256
+```
+
+Update `client/public/.well-known/assetlinks.json` with the fingerprint, then redeploy.
 
 ## Daily workflow
 

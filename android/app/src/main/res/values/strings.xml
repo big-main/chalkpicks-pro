@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ChalkPicks</string>
+    <string name="title_activity_main">ChalkPicks</string>
+    <string name="package_name">live.chalkpicks.app</string>
+    <string name="custom_url_scheme">live.chalkpicks.app</string>
+</resources>

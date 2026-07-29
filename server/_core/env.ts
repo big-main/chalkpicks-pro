@@ -9,12 +9,17 @@ export const ENV = {
   // Qwen2.5 7B on Cloud Computer (35.237.81.82) — free local inference
   ollamaApiUrl: process.env.OLLAMA_API_URL ?? "http://35.237.81.82:11434/v1",
   ollamaModel: process.env.OLLAMA_MODEL ?? "qwen2.5:7b",
+  // xAI Grok-4 — high-complexity reasoning for strategy-builder and pick analysis
+  xaiApiKey: process.env.XAI_API_KEY ?? "",
+  xaiApiUrl: "https://api.x.ai/v1/chat/completions",
+  xaiModel: "grok-4",
   // OpenRouter — GPT-4o-mini fallback when Qwen is down or JSON schema needed
   openRouterApiKey: process.env.OPENROUTER_API_KEY ?? "",
   openRouterApiUrl: "https://openrouter.ai/api/v1/chat/completions",
   openRouterModel: "openai/gpt-4o-mini",
   // OddsHarvester API on Cloud Computer — OddsPortal scraper for supplemental odds
-  oddsHarvesterApiUrl: process.env.ODDSHARVESTER_API_URL ?? "http://35.237.81.82:8090",
+  oddsHarvesterApiUrl:
+    process.env.ODDSHARVESTER_API_URL ?? "http://35.237.81.82:8090",
   // Twitter/X API — OAuth 1.0a for automated posting (@chalkpickspro)
   twitterConsumerKey: process.env.TWITTER_CONSUMER_KEY ?? "",
   twitterConsumerSecret: process.env.TWITTER_CONSUMER_SECRET ?? "",

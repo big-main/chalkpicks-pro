@@ -19,7 +19,12 @@ export type FileContent = {
   type: "file_url";
   file_url: {
     url: string;
-    mime_type?: "audio/mpeg" | "audio/wav" | "application/pdf" | "audio/mp4" | "video/mp4" ;
+    mime_type?:
+      | "audio/mpeg"
+      | "audio/wav"
+      | "application/pdf"
+      | "audio/mp4"
+      | "video/mp4";
   };
 };
 
@@ -222,7 +227,9 @@ const normalizeToolChoice = (
 
 const resolveApiUrl = () => {
   if (!ENV.forgeApiUrl || ENV.forgeApiUrl.trim().length === 0) {
-    throw new Error("BUILT_IN_FORGE_API_URL is not configured. Set it to an OpenAI-compatible endpoint (e.g. https://api.openai.com).");
+    throw new Error(
+      "BUILT_IN_FORGE_API_URL is not configured. Set it to an OpenAI-compatible endpoint (e.g. https://api.openai.com)."
+    );
   }
   return `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`;
 };
@@ -280,7 +287,10 @@ const normalizeResponseFormat = ({
 
 // In-memory LRU cache for LLM responses (no Redis dependency required)
 // Key: SHA-256 of serialized payload, Value: { result, expiresAt }
-const _llmCache = new Map<string, { result: InvokeResult; expiresAt: number }>();
+const _llmCache = new Map<
+  string,
+  { result: InvokeResult; expiresAt: number }
+>();
 const LLM_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const LLM_CACHE_MAX_SIZE = 500; // max entries
 
@@ -296,7 +306,7 @@ function getLLMCacheKey(payload: Record<string, unknown>): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32bit integer
   }
   return Math.abs(hash).toString(36);
@@ -311,7 +321,10 @@ const OLLAMA_HEALTH_TTL_MS = 30_000;
 
 async function checkOllamaHealth(): Promise<boolean> {
   const now = Date.now();
-  if (_ollamaHealthy !== null && now - _ollamaLastCheck < OLLAMA_HEALTH_TTL_MS) {
+  if (
+    _ollamaHealthy !== null &&
+    now - _ollamaLastCheck < OLLAMA_HEALTH_TTL_MS
+  ) {
     return _ollamaHealthy;
   }
   try {
@@ -334,18 +347,35 @@ async function checkOllamaHealth(): Promise<boolean> {
  * Resolve which LLM provider/endpoint to use.
  *
  * Routing priority (Qwen-first to maximize free usage):
- * 1. Explicit model override → Forge (Gemini 2.5 Flash)
- * 2. JSON schema response_format → Forge (Ollama doesn't support json_schema)
- * 3. Tool/function calling → Forge
- * 4. complexity='high' → Forge
- * 5. Ollama health check fails → Forge (auto-fallback)
- * 6. Everything else → Qwen2.5 7B on Cloud Computer (FREE, simple queries only)
+ * 1. Explicit model 'grok-4' → xAI API (deep reasoning, strategy-builder, pick analysis)
+ * 2. Explicit model override → Forge (Gemini 2.5 Flash)
+ * 3. JSON schema response_format → Forge (Ollama doesn't support json_schema)
+ * 4. Tool/function calling → Forge
+ * 5. complexity='high' → Grok-4 if XAI_API_KEY set, else Forge
+ * 6. Ollama health check fails → Forge (auto-fallback)
+ * 7. Everything else → Qwen2.5 7B on Cloud Computer (FREE, simple queries only)
  */
-async function resolveProvider(params: InvokeParams): Promise<{ apiUrl: string; apiKey: string; model: string }> {
-  const hasJsonSchema = !!(params.responseFormat?.type === "json_schema" ||
+async function resolveProvider(
+  params: InvokeParams
+): Promise<{ apiUrl: string; apiKey: string; model: string }> {
+  const hasJsonSchema = !!(
+    params.responseFormat?.type === "json_schema" ||
     params.response_format?.type === "json_schema" ||
-    params.outputSchema || params.output_schema);
+    params.outputSchema ||
+    params.output_schema
+  );
   const hasTools = !!(params.tools && params.tools.length > 0);
+
+  // Route 1: Explicit grok-4 model → xAI API
+  if (params.model === "grok-4" && ENV.xaiApiKey) {
+    return { apiUrl: ENV.xaiApiUrl, apiKey: ENV.xaiApiKey, model: "grok-4" };
+  }
+
+  // Route 2: High complexity with XAI key available → Grok-4 for deep reasoning
+  if (params.complexity === "high" && ENV.xaiApiKey && !hasJsonSchema) {
+    return { apiUrl: ENV.xaiApiUrl, apiKey: ENV.xaiApiKey, model: "grok-4" };
+  }
+
   const forceForge = params.complexity === "high" || !!params.model;
 
   if (!forceForge && !hasJsonSchema && !hasTools) {
@@ -371,9 +401,16 @@ async function resolveProvider(params: InvokeParams): Promise<{ apiUrl: string; 
  * Get the current LLM provider status for the UI status badge.
  * Returns which provider is active and health state.
  */
-export function getLlmStatus(): { provider: "qwen" | "gpt-4o-mini" | "gemini"; healthy: boolean; lastCheck: number } {
+export function getLlmStatus(): {
+  provider: "qwen" | "gpt-4o-mini" | "gemini" | "grok-4";
+  healthy: boolean;
+  lastCheck: number;
+} {
   if (_ollamaHealthy === true) {
     return { provider: "qwen", healthy: true, lastCheck: _ollamaLastCheck };
+  }
+  if (ENV.xaiApiKey) {
+    return { provider: "grok-4", healthy: true, lastCheck: _ollamaLastCheck };
   }
   // Forge (Gemini 2.5 Flash) is the primary fallback for JSON schema / complex tasks
   return { provider: "gemini", healthy: true, lastCheck: _ollamaLastCheck };
@@ -457,12 +494,17 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     const status = response.status;
     const errorText = await response.text();
     // Failover to OpenRouter (gpt-4o-mini) on quota / rate-limit errors from Forge
-    const isQuotaError = status === 429 || status === 402 || status === 503 ||
+    const isQuotaError =
+      status === 429 ||
+      status === 402 ||
+      status === 503 ||
       errorText.toLowerCase().includes("quota") ||
       errorText.toLowerCase().includes("token") ||
       errorText.toLowerCase().includes("rate limit");
     if (isQuotaError && apiKey !== "openrouter" && ENV.openRouterApiKey) {
-      console.warn(`[LLM] Forge quota/rate-limit (${status}) — failing over to OpenRouter gpt-4o-mini`);
+      console.warn(
+        `[LLM] Forge quota/rate-limit (${status}) — failing over to OpenRouter gpt-4o-mini`
+      );
       const orPayload = { ...payload, model: ENV.openRouterModel };
       const orResponse = await fetch(ENV.openRouterApiUrl, {
         method: "POST",
@@ -476,7 +518,9 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
       });
       if (!orResponse.ok) {
         const orError = await orResponse.text();
-        throw new Error(`LLM failover also failed: ${orResponse.status} – ${orError}`);
+        throw new Error(
+          `LLM failover also failed: ${orResponse.status} – ${orError}`
+        );
       }
       const orResult = (await orResponse.json()) as InvokeResult;
       return orResult;
@@ -491,7 +535,10 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   // Store in cache if cacheable
   if (cacheable) {
     const cacheKey = getLLMCacheKey(payload);
-    _llmCache.set(cacheKey, { result, expiresAt: Date.now() + LLM_CACHE_TTL_MS });
+    _llmCache.set(cacheKey, {
+      result,
+      expiresAt: Date.now() + LLM_CACHE_TTL_MS,
+    });
   }
 
   return result;

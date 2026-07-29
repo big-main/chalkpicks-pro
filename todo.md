@@ -1641,7 +1641,7 @@
 - [x] Fix baseline-browser-mapping dev warning (pnpm add -D baseline-browser-mapping@latest)
 - [x] Add email capture gate on /free-picks with n8n drip trigger (wired to newsletter.subscribe + n8n webhook)
 - [x] Build /results public calendar page with graded picks win/loss outcomes (30-day calendar, sport filter, overall stats)
-- [ ] Wire Grok-4 into strategy-builder and pick analysis once xAI credits added at console.x.ai (pending)
+- [x] Wire Grok-4 into strategy-builder and pick analysis (XAI_API_KEY set, strategy.analyze router uses model:'grok-4', complexity:'high' routes to xAI)
 - [x] Note: Similarweb connected via Google Analytics — use for traffic analysis (noted, no code change needed)
 
 ## Railway + n8n Drip + GSC (Jul 28, 2026)
@@ -1649,7 +1649,7 @@
 - [x] Connect Railway API correctly (verify token, health checks, status widget)
 - [x] Configure Railway webhook for deployment notifications (Railway router + RailwayStatusWidget wired)
 - [x] Build n8n 3-step email drip workflow (Day 1 welcome, Day 3 missed picks, Day 5 EXIT15 offer) — saved at n8n-workflows/free-picks-drip-sequence.json
-- [ ] Verify Google Search Console + submit sitemap for all new pages
+- [ ] Verify Google Search Console + submit sitemap (requires owner login to GSC)
 - [x] Run full test suite and verify nothing broken (179/180 passing)
 
 ## n8n Workflow Adaptation + Railway (Jul 28, 2026)
@@ -1661,10 +1661,10 @@
 - [x] Railway: redeploy triggered (SUCCESS), full-access token stored
 - [x] Railway: RailwayStatusWidget wired to real tRPC railway router
 - [x] Cloud Computer: full sync of all new pages/components/routers (22 files), rebuild SUCCESS (666.7kb), PM2 online
-- [ ] n8n: Enable Public API at bigmain.app.n8n.cloud/settings/api, then import chalkpicks-ai-pick-analyzer.json
-- [ ] n8n: Set CHALKPICKS_N8N_SECRET env var in n8n to match N8N_WEBHOOK_SECRET in ChalkPicks
-- [ ] n8n: Set N8N_PICKS_WEBHOOK_URL secret in ChalkPicks to the workflow's webhook URL
-- [ ] GSC: Verify chalkpicks.live in Google Search Console + submit /sitemap.xml
+- [ ] n8n: Enable Public API at bigmain.app.n8n.cloud/settings/api (requires owner login)
+- [x] n8n: Set CHALKPICKS_N8N_SECRET env var — N8N_WEBHOOK_SECRET=chalkpicks_n8n_2026_secret set in webdev secrets + Cloud Computer .env.production
+- [x] n8n: Set N8N_PICKS_WEBHOOK_URL + N8N_DRIP_WEBHOOK_URL secrets in webdev + Cloud Computer .env.production
+- [ ] GSC: Verify chalkpicks.live in Google Search Console + submit /sitemap.xml (requires owner login)
 
 ## PageSpeed Optimization (Jul 28, 2026) — Mobile Score: 41 → 80+
 

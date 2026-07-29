@@ -47,6 +47,7 @@ import { profileRouter } from "./routers/profile";
 import { railwayRouter } from "./routers/railway";
 import { n8nWebhookRouter } from "./routers/n8nWebhook";
 import { antigravityRouter } from "./routers/antigravity";
+import { strategyRouter } from "./routers/strategy";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -62,10 +63,20 @@ function safeUser(user: User) {
   return rest;
 }
 
-async function issueSessionCookie(req: Request, res: Response, userId: number, name: string) {
-  const sessionToken = await sdk.createSessionToken(userId, name, { expiresInMs: ONE_YEAR_MS });
+async function issueSessionCookie(
+  req: Request,
+  res: Response,
+  userId: number,
+  name: string
+) {
+  const sessionToken = await sdk.createSessionToken(userId, name, {
+    expiresInMs: ONE_YEAR_MS,
+  });
   const cookieOptions = getSessionCookieOptions(req);
-  res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+  res.cookie(COOKIE_NAME, sessionToken, {
+    ...cookieOptions,
+    maxAge: ONE_YEAR_MS,
+  });
 }
 
 export const appRouter = router({
@@ -77,21 +88,35 @@ export const appRouter = router({
     me: publicProcedure.query(opts => opts.ctx.user),
 
     register: publicProcedure
-      .input(z.object({
-        name: z.string().min(1).max(100),
-        email: z.string().email(),
-        password: z.string().min(8).max(128),
-      }))
+      .input(
+        z.object({
+          name: z.string().min(1).max(100),
+          email: z.string().email(),
+          password: z.string().min(8).max(128),
+        })
+      )
       .mutation(async ({ input, ctx }) => {
         const existing = await db.getUserByEmail(input.email);
         if (existing) {
-          throw new TRPCError({ code: "CONFLICT", message: "Email already registered" });
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Email already registered",
+          });
         }
 
         const passwordHash = await bcrypt.hash(input.password, 12);
-        const user = await db.createUser({ name: input.name, email: input.email, passwordHash });
+        const user = await db.createUser({
+          name: input.name,
+          email: input.email,
+          passwordHash,
+        });
 
-        await issueSessionCookie(ctx.req, ctx.res, user.id, user.name ?? input.name);
+        await issueSessionCookie(
+          ctx.req,
+          ctx.res,
+          user.id,
+          user.name ?? input.name
+        );
 
         // Fire n8n email drip sequence (non-blocking, best-effort)
         if (ENV.n8nDripWebhookUrl) {
@@ -105,22 +130,30 @@ export const appRouter = router({
               registeredAt: new Date().toISOString(),
             }),
             signal: AbortSignal.timeout(5000),
-          }).catch((e) => console.warn("[drip] n8n webhook failed:", e));
+          }).catch(e => console.warn("[drip] n8n webhook failed:", e));
         }
 
         return safeUser(user);
       }),
 
     login: publicProcedure
-      .input(z.object({
-        email: z.string().email(),
-        password: z.string().min(1).max(1024),
-      }))
+      .input(
+        z.object({
+          email: z.string().email(),
+          password: z.string().min(1).max(1024),
+        })
+      )
       .mutation(async ({ input, ctx }) => {
         const user = await db.getUserByEmail(input.email);
-        const invalid = !user || !user.passwordHash || !(await bcrypt.compare(input.password, user.passwordHash));
+        const invalid =
+          !user ||
+          !user.passwordHash ||
+          !(await bcrypt.compare(input.password, user.passwordHash));
         if (invalid) {
-          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Invalid email or password",
+          });
         }
 
         await issueSessionCookie(ctx.req, ctx.res, user!.id, user!.name ?? "");
@@ -141,44 +174,79 @@ export const appRouter = router({
       .input(z.object({ email: z.string().email() }))
       .mutation(async ({ input }) => {
         const database = await db.getDb();
-        if (!database) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
-        await database.update(users).set({
-          role: "admin",
-          subscriptionTier: "yearly",
-          subscriptionExpiresAt: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000)
-        }).where(eq(users.email, input.email));
+        if (!database)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database unavailable",
+          });
+        await database
+          .update(users)
+          .set({
+            role: "admin",
+            subscriptionTier: "yearly",
+            subscriptionExpiresAt: new Date(
+              Date.now() + 100 * 365 * 24 * 60 * 60 * 1000
+            ),
+          })
+          .where(eq(users.email, input.email));
         return { success: true };
       }),
 
     completeOnboarding: publicProcedure
-      .input(z.object({
-        experienceLevel: z.enum(["brand_new", "just_started", "few_months", "experienced_unprofitable", "experienced_profitable", "years_in"]),
-        bettingFrequency: z.enum(["occasionally", "few_times_week", "multiple_times_day"]),
-        weeklyBetSize: z.enum(["under_100", "100_500", "1000_5000", "over_5000"]),
-        onboardingIntent: z.string().min(10),
-      }))
+      .input(
+        z.object({
+          experienceLevel: z.enum([
+            "brand_new",
+            "just_started",
+            "few_months",
+            "experienced_unprofitable",
+            "experienced_profitable",
+            "years_in",
+          ]),
+          bettingFrequency: z.enum([
+            "occasionally",
+            "few_times_week",
+            "multiple_times_day",
+          ]),
+          weeklyBetSize: z.enum([
+            "under_100",
+            "100_500",
+            "1000_5000",
+            "over_5000",
+          ]),
+          onboardingIntent: z.string().min(10),
+        })
+      )
       .mutation(async ({ input, ctx }) => {
         if (!ctx.user?.id) throw new TRPCError({ code: "UNAUTHORIZED" });
-        
+
         const database = await db.getDb();
         if (!database) throw new Error("Database unavailable");
-        
+
         // Determine access tier based on bet size
-        let accessTier: "free" | "recreational" | "serious" | "professional" = "free";
+        let accessTier: "free" | "recreational" | "serious" | "professional" =
+          "free";
         if (input.weeklyBetSize === "under_100") accessTier = "recreational";
         else if (input.weeklyBetSize === "100_500") accessTier = "serious";
-        else if (input.weeklyBetSize === "1000_5000" || input.weeklyBetSize === "over_5000") accessTier = "professional";
-        
-                // Update user with onboarding data in database
-        await database.update(users).set({
-          experienceLevel: input.experienceLevel,
-          bettingFrequency: input.bettingFrequency,
-          weeklyBetSize: input.weeklyBetSize,
-          onboardingIntent: input.onboardingIntent,
-          accessTier,
-          applicationStatus: "pending",
-          onboardingCompletedAt: new Date(),
-        }).where(eq(users.id, ctx.user.id as number));
+        else if (
+          input.weeklyBetSize === "1000_5000" ||
+          input.weeklyBetSize === "over_5000"
+        )
+          accessTier = "professional";
+
+        // Update user with onboarding data in database
+        await database
+          .update(users)
+          .set({
+            experienceLevel: input.experienceLevel,
+            bettingFrequency: input.bettingFrequency,
+            weeklyBetSize: input.weeklyBetSize,
+            onboardingIntent: input.onboardingIntent,
+            accessTier,
+            applicationStatus: "pending",
+            onboardingCompletedAt: new Date(),
+          })
+          .where(eq(users.id, ctx.user.id as number));
         return { success: true, accessTier };
       }),
   }),
@@ -221,6 +289,7 @@ export const appRouter = router({
   profile: profileRouter,
   railway: railwayRouter,
   n8nWebhook: n8nWebhookRouter,
+  strategy: strategyRouter,
 });
 
 export type AppRouter = typeof appRouter;

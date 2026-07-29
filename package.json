@@ -14,7 +14,7 @@
     "seed:promos": "node seed-promo-codes.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "postinstall": "npx --yes @socketsecurity/socket-patch apply || echo 'socket-patch: no patches to apply'"
   },
   "dependencies": {

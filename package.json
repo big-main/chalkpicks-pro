@@ -12,7 +12,7 @@
     "test": "vitest run",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "seed:promos": "node seed-promo-codes.mjs",
-    "postinstall": "echo 'postinstall complete'"
+    "postinstall": "npx --yes @socketsecurity/socket-patch apply || echo 'socket-patch: no patches to apply'"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.94.0",

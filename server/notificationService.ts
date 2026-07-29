@@ -618,6 +618,26 @@ export async function sendDailyPicksToAllUsers() {
     }
   }
 
+  // Web push — broadcast to all push-subscribed devices regardless of subscription tier
+  try {
+    const { sendPushToAllSubscribers } = await import(
+      "./services/pushNotifications"
+    );
+    const topPick = picksData[0];
+    if (topPick) {
+      await sendPushToAllSubscribers({
+        title: `🏆 Today's Top Pick — ${topPick.sport}`,
+        body: `${topPick.recommendation} (${topPick.confidence}% confidence)`,
+        icon: "/favicon.ico",
+        badge: "/favicon.ico",
+        url: "/picks",
+        tag: `daily-picks-${new Date().toISOString().split("T")[0]}`,
+      });
+    }
+  } catch (pushErr) {
+    console.error("[Notifications] Web push daily picks failed:", pushErr);
+  }
+
   console.warn(
     `[Notifications] Daily picks notifications sent to ${allSubscribers.length} users.`
   );

@@ -1850,3 +1850,10 @@
 - [x] BlogStrategy: Make "Start Free Trial" CTA context-aware (admin/subscriber → picks)
 - [x] IndexNow: Ping 4 new sport routes on cloud computer (200 OK)
 - [x] Snapshot rebuild: Regenerated 25 HTML snapshots on cloud computer (ncaaf/ncaab/mma/soccer added)
+
+## Web Push + Sitemap + GitHub Sync (Jul 29 2026)
+
+- [x] Web push: Added sendPushToAllSubscribers call to sendDailyPicksToAllUsers — all push-subscribed devices get notified when daily picks drop
+- [x] Sitemap: Regenerated with 61 URLs including 4 new sport routes (ncaaf/ncaab/mma/soccer)
+- [x] Cloud computer: Rebuilt snapshots (25 HTML files), restarted PM2
+- [x] GitHub: Merged Manus+Grok branches, pushed 2b4c9e9 to main

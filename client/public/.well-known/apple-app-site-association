@@ -1,0 +1,26 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAMID.live.chalkpicks.app",
+        "paths": [
+          "/free-picks",
+          "/picks",
+          "/performance",
+          "/verify/*",
+          "/pricing",
+          "/blog/*",
+          "/daily-picks",
+          "/nfl-picks",
+          "/nba-picks",
+          "/mlb-picks",
+          "/nhl-picks"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["TEAMID.live.chalkpicks.app"]
+  }
+}

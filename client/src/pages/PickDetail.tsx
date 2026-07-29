@@ -9,6 +9,7 @@ import { ArrowLeft, Brain, Zap, Target, TrendingUp, Lock, CheckCircle2, PlusCirc
 import { toast } from "sonner";
 import { useState } from "react";
 import PickFeedback from "@/components/PickFeedback";
+import { Loader2, RefreshCw } from "lucide-react";
 import ConfidenceBar from "@/components/ConfidenceBar";
 import { SportsEventSchema } from "@/components/SportsEventSchema";
 
@@ -16,6 +17,8 @@ export default function PickDetail() {
   const { id } = useParams<{ id: string }>();
   const { isAuthenticated, user } = useAuth();
   const [addingBet, setAddingBet] = useState(false);
+  const [liveAnalysis, setLiveAnalysis] = useState<string | null>(null);
+  const [analyzingLive, setAnalyzingLive] = useState(false);
 
   const { data: pick, isLoading } = trpc.picks.byId.useQuery({ id: parseInt(id ?? "0") });
   const addBet = trpc.bets.add.useMutation({
@@ -27,6 +30,15 @@ export default function PickDetail() {
   const isLocked = pick?.tier === "premium" && !isPremiumUser;
 
   const resultClass = pick?.result === "win" ? "badge-win" : pick?.result === "loss" ? "badge-loss" : pick?.result === "push" ? "badge-push" : "badge-pending";
+
+  const analyzePick = trpc.antigravity.analyzePick.useMutation({
+    onSuccess: (data) => {
+      if (data.success) setLiveAnalysis(data.analysis ?? null);
+      else toast.error(data.error ?? "Analysis failed");
+      setAnalyzingLive(false);
+    },
+    onError: () => { toast.error("AI analysis unavailable"); setAnalyzingLive(false); },
+  });
 
   if (isLoading) {
     return (
@@ -153,7 +165,30 @@ export default function PickDetail() {
                   </Link>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground leading-relaxed">{pick.aiAnalysis ?? "AI analysis not available for this pick."}</p>
+                <div className="space-y-3">
+                  {liveAnalysis ? (
+                    <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap bg-primary/5 border border-primary/20 rounded-lg p-3">
+                      {liveAnalysis}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground leading-relaxed">{pick.aiAnalysis ?? "AI analysis not available for this pick."}</p>
+                  )}
+                  {isPremiumUser && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-2 text-xs"
+                      disabled={analyzingLive}
+                      onClick={() => {
+                        setAnalyzingLive(true);
+                        analyzePick.mutate({ pickId: pick.id });
+                      }}
+                    >
+                      {analyzingLive ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                      {liveAnalysis ? "Re-analyze with Gemini" : "Live Gemini Analysis"}
+                    </Button>
+                  )}
+                </div>
               )}
             </CardContent>
           </Card>

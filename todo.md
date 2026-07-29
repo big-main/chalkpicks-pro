@@ -1871,3 +1871,15 @@
 - [x] Generate iOS Xcode project (requires macOS/Xcode to build IPA)
 - [x] Document app store submission steps (Google Play + Apple App Store) in docs/MOBILE.md
 - [x] Push to GitHub with mobile platform files (ef3b7d3)
+
+## Mobile Release Build (Jul 29 2026)
+
+- [x] Generate release keystore (chalkpicks-release.keystore, alias=chalkpicks, 10000 days)
+- [x] Update assetlinks.json with real SHA-256 fingerprint from keystore
+- [x] Add signingConfig to android/app/build.gradle for release builds
+- [x] Build signed release AAB (5.4 MB, BUILD SUCCESSFUL)
+- [x] Replace all Android mipmap icons (mdpi/hdpi/xhdpi/xxhdpi/xxxhdpi) with ChalkPicks neon logo
+- [x] Replace iOS AppIcon-512@2x.png (1024x1024) with ChalkPicks neon logo
+- [x] Document iOS Xcode build steps in docs/MOBILE.md
+- [x] Add keystore to .gitignore (never commit)
+- [x] Push to GitHub (bdcca82)

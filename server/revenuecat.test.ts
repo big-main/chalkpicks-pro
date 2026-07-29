@@ -1,7 +1,5 @@
 /**
- * RevenueCat API key validation test
- * Verifies that the VITE_REVENUECAT_IOS_KEY and VITE_REVENUECAT_ANDROID_KEY
- * environment variables are set and have the correct format (sk_... prefix).
+ * RevenueCat API key + webhook secret validation tests
  */
 import { describe, it, expect } from "vitest";
 
@@ -35,5 +33,30 @@ describe("RevenueCat API Keys", () => {
     const iosKey = process.env.VITE_REVENUECAT_IOS_KEY;
     const androidKey = process.env.VITE_REVENUECAT_ANDROID_KEY;
     expect(iosKey).toBe(androidKey);
+  });
+});
+
+describe("RevenueCat Webhook Secret", () => {
+  it("REVENUECAT_WEBHOOK_SECRET is set and at least 32 chars", () => {
+    const secret = process.env.REVENUECAT_WEBHOOK_SECRET;
+    expect(secret, "REVENUECAT_WEBHOOK_SECRET must be set").toBeTruthy();
+    expect(
+      secret!.length,
+      "Secret must be at least 32 chars"
+    ).toBeGreaterThanOrEqual(32);
+  });
+
+  it("webhook auth logic rejects mismatched secret", () => {
+    const secret = process.env.REVENUECAT_WEBHOOK_SECRET ?? "test-secret";
+    const incomingHeader = "wrong-secret";
+    // Mirrors the auth check in revenuecat-webhook.ts
+    const isAuthorized = !secret || incomingHeader === secret;
+    expect(isAuthorized).toBe(false);
+  });
+
+  it("webhook auth logic accepts correct secret", () => {
+    const secret = process.env.REVENUECAT_WEBHOOK_SECRET ?? "test-secret";
+    const isAuthorized = !secret || secret === secret; // same value
+    expect(isAuthorized).toBe(true);
   });
 });

@@ -1909,3 +1909,10 @@
 - [x] server/revenuecat-webhook.ts: handles INITIAL_PURCHASE/RENEWAL/CANCELLATION/EXPIRATION events
 - [x] registerRevenueCatWebhook registered in server/\_core/index.ts at /api/revenuecat/webhook
 - [x] server/revenuecat.test.ts: 3 tests validating key format and presence (185/185 passing)
+
+## Next Batch (Jul 29 2026)
+
+- [x] Pricing page: replace raw subscribe button with NativePurchaseButton component (smart Stripe/RevenueCat routing)
+- [x] Add REVENUECAT_WEBHOOK_SECRET env var for webhook security (auto-generated 64-char hex)
+- [x] Discord bot: already running — 4 heartbeat slots (morning pick, afternoon alert, evening results, night preview)
+- [x] Discord bot: heartbeat jobs already registered (discord-morning-pick, discord-afternoon-alert, discord-evening-results, discord-night-preview)

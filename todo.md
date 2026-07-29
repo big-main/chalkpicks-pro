@@ -1883,3 +1883,11 @@
 - [x] Document iOS Xcode build steps in docs/MOBILE.md
 - [x] Add keystore to .gitignore (never commit)
 - [x] Push to GitHub (bdcca82)
+
+## App Store Listings + FCM + Splash (Jul 29 2026)
+
+- [x] Play Store listing: title, short desc (80 chars), long desc (4000 chars), category, keywords
+- [x] Play Store feature graphic (1024x500) — generated with neon logo + analytics overlay
+- [x] App Store Connect metadata: description, keywords, privacy URL, categories, screenshots spec
+- [x] Firebase Cloud Messaging: full setup guide in docs/FCM_SETUP.md (requires Firebase project creation)
+- [x] Branded splash screen: ChalkPicks neon logo on dark bg, all densities + iOS asset catalog

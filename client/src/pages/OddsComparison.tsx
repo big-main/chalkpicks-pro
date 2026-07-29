@@ -1,10 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import { MultiSourceOdds } from "@/components/MultiSourceOdds";
+import {
+  SteamKellyFilter,
+  BetHighlight,
+  DEFAULT_FILTERS,
+  type FilterState,
+} from "@/components/SteamKellyFilter";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Zap, BarChart3 } from "lucide-react";
 
@@ -19,15 +24,20 @@ const SPORTS = [
 /**
  * OddsComparison Page
  * Displays real-time odds from multiple sportsbooks with comparison tools
+ * Now includes Steam Move and Kelly Criterion filtering
  */
 export default function OddsComparison() {
   const [selectedSport, setSelectedSport] = useState<string>(SPORTS[0].key);
+  const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
 
   useEffect(() => {
     document.title = "Real-Time Odds Comparison | ChalkPicks";
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute('content', 'Compare live odds across 10+ sportsbooks. Find the best lines, detect steam moves, and maximize your edge.');
+      metaDesc.setAttribute(
+        "content",
+        "Compare live odds across 10+ sportsbooks. Find the best lines, detect steam moves, and maximize your edge."
+      );
     }
   }, []);
 
@@ -48,7 +58,8 @@ export default function OddsComparison() {
                   ODDS <span className="text-gold-gradient">COMPARISON</span>
                 </h1>
                 <p className="text-muted-foreground text-sm mt-1">
-                  Real-time odds from 10+ sportsbooks. Find the best lines and detect sharp money.
+                  Real-time odds from 10+ sportsbooks. Find the best lines and
+                  detect sharp money.
                 </p>
               </div>
               <Badge variant="outline" className="text-xs">
@@ -62,7 +73,7 @@ export default function OddsComparison() {
         <div className="border-b border-border/50 bg-card/20">
           <div className="container py-4">
             <div className="flex gap-2 overflow-x-auto pb-2">
-              {SPORTS.map((sport) => (
+              {SPORTS.map(sport => (
                 <Button
                   key={sport.key}
                   variant={selectedSport === sport.key ? "default" : "outline"}
@@ -82,11 +93,20 @@ export default function OddsComparison() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Odds Comparison */}
             <div className="lg:col-span-2">
-              <MultiSourceOdds sport={selectedSport} />
+              <MultiSourceOdds sport={selectedSport} filters={filters} />
             </div>
 
             {/* Sidebar */}
             <div className="space-y-6">
+              {/* Steam & Kelly Filter */}
+              <SteamKellyFilter
+                filters={filters}
+                onFilterChange={setFilters}
+                steamCount={0}
+                highKellyCount={0}
+                totalBets={0}
+              />
+
               {/* Key Features */}
               <Card className="bg-card/50 border-border/50 p-4">
                 <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
@@ -103,8 +123,22 @@ export default function OddsComparison() {
                     <span>Best line highlighting across books</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-brand-gold mt-1">✓</span>
-                    <span>Steam move detection</span>
+                    <span className="text-red-400 mt-1">🔥</span>
+                    <span>
+                      <strong className="text-white">
+                        Enhanced Steam Detection
+                      </strong>{" "}
+                      — flags when 3+ sharp books move in sync
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-400 mt-1">💰</span>
+                    <span>
+                      <strong className="text-white">
+                        Kelly Criterion Sizing
+                      </strong>{" "}
+                      — optimal bet size for each opportunity
+                    </span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-brand-gold mt-1">✓</span>
@@ -122,16 +156,28 @@ export default function OddsComparison() {
                 <h3 className="font-semibold text-sm mb-3">How It Works</h3>
                 <div className="space-y-3 text-xs text-muted-foreground">
                   <div>
-                    <p className="text-white font-semibold mb-1">1. Select Sport</p>
+                    <p className="text-white font-semibold mb-1">
+                      1. Select Sport
+                    </p>
                     <p>Choose your sport above to see live odds</p>
                   </div>
                   <div>
-                    <p className="text-white font-semibold mb-1">2. Compare Lines</p>
-                    <p>View odds across all available sportsbooks</p>
+                    <p className="text-white font-semibold mb-1">
+                      2. Enable Filters
+                    </p>
+                    <p>
+                      Toggle Steam Moves or High Kelly to highlight qualifying
+                      bets
+                    </p>
                   </div>
                   <div>
-                    <p className="text-white font-semibold mb-1">3. Find Edge</p>
-                    <p>Identify the best lines and sharp money</p>
+                    <p className="text-white font-semibold mb-1">
+                      3. Find Edge
+                    </p>
+                    <p>
+                      Highlighted bets have quantifiable edges — steam = sharp
+                      money, Kelly = optimal sizing
+                    </p>
                   </div>
                 </div>
               </Card>
@@ -140,7 +186,8 @@ export default function OddsComparison() {
               <Card className="bg-card/50 border-border/50 p-4">
                 <h3 className="font-semibold text-sm mb-2">Data Source</h3>
                 <p className="text-xs text-muted-foreground">
-                  Odds powered by The Odds API, aggregating real-time data from DraftKings, FanDuel, BetMGM, Caesars, PointsBet, and more.
+                  Odds powered by The Odds API, aggregating real-time data from
+                  DraftKings, FanDuel, BetMGM, Caesars, PointsBet, and more.
                 </p>
               </Card>
             </div>

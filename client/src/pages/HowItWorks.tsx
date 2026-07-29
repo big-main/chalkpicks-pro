@@ -8,6 +8,67 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { FaqJsonLd } from "@/components/seo/schema-jsonld";
+import { AIModelFlowDiagram } from "@/components/AIModelFlowDiagram";
+
+// Platform flow nodes for the How It Works page
+const PLATFORM_FLOW_NODES = [
+  {
+    id: "odds",
+    label: "Odds API",
+    x: 50,
+    y: 60,
+    color: "#3b82f6",
+    description: "15+ sportsbooks polled every 60s",
+  },
+  {
+    id: "data",
+    label: "Data Lake",
+    x: 200,
+    y: 60,
+    color: "#8b5cf6",
+    description: "50K+ data points/day stored",
+  },
+  {
+    id: "ensemble",
+    label: "AI Ensemble",
+    x: 350,
+    y: 60,
+    color: "#f59e0b",
+    description: "4 models vote on each game",
+  },
+  {
+    id: "filter",
+    label: "Edge Filter",
+    x: 500,
+    y: 60,
+    color: "#10b981",
+    description: "Only EV > 3% passes",
+  },
+  {
+    id: "ledger",
+    label: "Pick Ledger",
+    x: 650,
+    y: 60,
+    color: "#ef4444",
+    description: "SHA-256 hash locked",
+  },
+  {
+    id: "delivery",
+    label: "You",
+    x: 800,
+    y: 60,
+    color: "#06b6d4",
+    description: "Push notification + dashboard",
+  },
+];
+
+const PLATFORM_FLOW_EDGES = [
+  { from: "odds", to: "data" },
+  { from: "data", to: "ensemble" },
+  { from: "ensemble", to: "filter" },
+  { from: "filter", to: "ledger" },
+  { from: "ledger", to: "delivery" },
+];
 
 const steps = [
   {
@@ -121,6 +182,21 @@ export default function HowItWorks() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Interactive Platform Flow Diagram */}
+        <div className="mt-16 mb-16">
+          <h2 className="text-xl font-bold mb-4">Platform Flow Diagram</h2>
+          <p className="text-muted-foreground text-sm mb-6">
+            Hover over each node to see what happens at each stage of the
+            pipeline.
+          </p>
+          <AIModelFlowDiagram
+            nodes={PLATFORM_FLOW_NODES}
+            edges={PLATFORM_FLOW_EDGES}
+            title="ChalkPicks Platform Flow"
+            height={200}
+          />
         </div>
 
         {/* After delivery - grading */}

@@ -9,6 +9,11 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { FaqJsonLd } from "@/components/seo/schema-jsonld";
+import {
+  AIModelFlowDiagram,
+  AI_MODEL_PIPELINE_NODES,
+  AI_MODEL_PIPELINE_EDGES,
+} from "@/components/AIModelFlowDiagram";
 
 const faqs = [
   {
@@ -109,6 +114,27 @@ export default function Methodology() {
               ))}
             </div>
           </div>
+        </section>
+
+        {/* Interactive Pipeline Diagram */}
+        <section className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 rounded-lg bg-brand-gold/10">
+              <Zap className="h-6 w-6 text-brand-gold" />
+            </div>
+            <h2 className="text-2xl font-bold">Data Pipeline Flow</h2>
+          </div>
+          <p className="text-muted-foreground leading-relaxed mb-6">
+            Hover over each node to see how data flows through our AI pipeline —
+            from raw odds ingestion to final pick generation. Each stage adds
+            signal and reduces noise.
+          </p>
+          <AIModelFlowDiagram
+            nodes={AI_MODEL_PIPELINE_NODES}
+            edges={AI_MODEL_PIPELINE_EDGES}
+            title="AI Model Pipeline"
+            height={340}
+          />
         </section>
 
         {/* CLV Tracking */}

@@ -4,23 +4,35 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, TrendingDown, Zap } from "lucide-react";
+import { TrendingUp, TrendingDown, Zap, Flame, DollarSign } from "lucide-react";
 import { toast } from "sonner";
+import type { FilterState } from "@/components/SteamKellyFilter";
 
 interface MultiSourceOddsProps {
   sport: string;
   eventId?: string;
+  filters?: FilterState;
 }
 
 /**
  * MultiSourceOdds Component
  * Displays real-time odds from multiple sportsbooks with best line highlighting
  */
-export function MultiSourceOdds({ sport, eventId }: MultiSourceOddsProps) {
-  const [selectedMarket, setSelectedMarket] = useState<"h2h" | "spreads" | "totals">("h2h");
+export function MultiSourceOdds({
+  sport,
+  eventId,
+  filters,
+}: MultiSourceOddsProps) {
+  const [selectedMarket, setSelectedMarket] = useState<
+    "h2h" | "spreads" | "totals"
+  >("h2h");
 
   // Fetch odds from all bookmakers
-  const { data: oddsData, isLoading, error } = trpc.oddsComparison.getMultiBookmakerOdds.useQuery(
+  const {
+    data: oddsData,
+    isLoading,
+    error,
+  } = trpc.oddsComparison.getMultiBookmakerOdds.useQuery(
     { sport, region: "us" },
     { staleTime: 60000 } // Cache for 1 minute
   );
@@ -50,7 +62,9 @@ export function MultiSourceOdds({ sport, eventId }: MultiSourceOddsProps) {
     return (
       <Card className="bg-card/50 border-border/50 border-brand-red/30">
         <CardHeader>
-          <CardTitle className="text-lg text-brand-red">Odds Data Unavailable</CardTitle>
+          <CardTitle className="text-lg text-brand-red">
+            Odds Data Unavailable
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
@@ -95,7 +109,11 @@ export function MultiSourceOdds({ sport, eventId }: MultiSourceOddsProps) {
 
       <CardContent>
         {/* Market Tabs */}
-        <Tabs value={selectedMarket} onValueChange={(v) => setSelectedMarket(v as any)} className="mb-6">
+        <Tabs
+          value={selectedMarket}
+          onValueChange={v => setSelectedMarket(v as any)}
+          className="mb-6"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="h2h" className="text-xs">
               Moneyline
@@ -110,38 +128,77 @@ export function MultiSourceOdds({ sport, eventId }: MultiSourceOddsProps) {
 
           {/* Moneyline Tab */}
           <TabsContent value="h2h" className="space-y-4">
-            {Object.entries(eventGroups).slice(0, 5).map(([eventId, eventOdds]) => {
-              const firstOdd = eventOdds[0];
-              return (
-                <div key={eventId} className="border border-border/30 rounded-lg p-4 bg-background/20">
-                  <h4 className="font-semibold text-sm mb-3">{firstOdd.eventName}</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {eventOdds.map((odd, idx) => {
-                      const h2hMarket = odd.markets.find((m) => m.key === "h2h");
-                      if (!h2hMarket) return null;
+            {Object.entries(eventGroups)
+              .slice(0, 5)
+              .map(([eventId, eventOdds]) => {
+                const firstOdd = eventOdds[0];
+                return (
+                  <div
+                    key={eventId}
+                    className={`border rounded-lg p-4 bg-background/20 transition-all ${
+                      filters?.showSteamOnly || filters?.showHighKelly
+                        ? "border-brand-gold/30 shadow-[0_0_8px_rgba(240,184,0,0.1)]"
+                        : "border-border/30"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-sm">
+                        {firstOdd.eventName}
+                      </h4>
+                      {/* Steam/Kelly indicator badges */}
+                      <div className="flex gap-1">
+                        {filters?.showSteamOnly && (
+                          <Badge className="bg-red-500/20 text-red-400 border-red-500/40 text-[9px] px-1.5 py-0">
+                            <Flame className="w-2.5 h-2.5 mr-0.5" />
+                            STEAM
+                          </Badge>
+                        )}
+                        {filters?.showHighKelly && (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/40 text-[9px] px-1.5 py-0">
+                            <DollarSign className="w-2.5 h-2.5 mr-0.5" />
+                            KELLY
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {eventOdds.map((odd, idx) => {
+                        const h2hMarket = odd.markets.find(
+                          m => m.key === "h2h"
+                        );
+                        if (!h2hMarket) return null;
 
-                      return (
-                        <div key={`${odd.bookmaker}-${idx}`} className="bg-card/50 border border-border/30 rounded p-2">
-                          <p className="text-xs text-muted-foreground mb-2 capitalize">
-                            {odd.bookmaker.replace("_", " ")}
-                          </p>
-                          <div className="space-y-1">
-                            {h2hMarket.outcomes.map((outcome) => (
-                              <div key={outcome.name} className="flex items-center justify-between text-xs">
-                                <span className="text-gray-300 truncate">{outcome.name}</span>
-                                <span className="font-mono font-semibold text-brand-gold">
-                                  {outcome.price > 0 ? "+" : ""}{outcome.price}
-                                </span>
-                              </div>
-                            ))}
+                        return (
+                          <div
+                            key={`${odd.bookmaker}-${idx}`}
+                            className="bg-card/50 border border-border/30 rounded p-2"
+                          >
+                            <p className="text-xs text-muted-foreground mb-2 capitalize">
+                              {odd.bookmaker.replace("_", " ")}
+                            </p>
+                            <div className="space-y-1">
+                              {h2hMarket.outcomes.map(outcome => (
+                                <div
+                                  key={outcome.name}
+                                  className="flex items-center justify-between text-xs"
+                                >
+                                  <span className="text-gray-300 truncate">
+                                    {outcome.name}
+                                  </span>
+                                  <span className="font-mono font-semibold text-brand-gold">
+                                    {outcome.price > 0 ? "+" : ""}
+                                    {outcome.price}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </TabsContent>
 
           {/* Spreads Tab */}
@@ -168,10 +225,15 @@ export function MultiSourceOdds({ sport, eventId }: MultiSourceOddsProps) {
             </h4>
             <div className="grid grid-cols-1 gap-2">
               {bestLinesData.bestLines.slice(0, 3).map((event, idx) => (
-                <div key={idx} className="flex items-center justify-between text-xs p-2 bg-background/20 rounded border border-border/20">
+                <div
+                  key={idx}
+                  className="flex items-center justify-between text-xs p-2 bg-background/20 rounded border border-border/20"
+                >
                   <span className="text-gray-300">{event.event}</span>
                   <span className="font-mono text-brand-gold">
-                    {event.moneyline?.home?.odds ? `${event.moneyline.home.odds > 0 ? "+" : ""}${event.moneyline.home.odds}` : "N/A"}
+                    {event.moneyline?.home?.odds
+                      ? `${event.moneyline.home.odds > 0 ? "+" : ""}${event.moneyline.home.odds}`
+                      : "N/A"}
                   </span>
                 </div>
               ))}

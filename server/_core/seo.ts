@@ -49,6 +49,10 @@ interface RouteSeo {
   /** One or more JSON-LD blocks, each rendered as its own <script> tag. */
   jsonLd?: object | object[];
   ogType?: string;
+  /** HTTP status code to set on the response (default 200). */
+  status?: number;
+  /** Robots directive override (e.g. "noindex, follow"). */
+  robots?: string;
 }
 
 /**
@@ -171,6 +175,8 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
   }
 
   // Pick detail: matchup title + SportsEvent JSON-LD.
+  // Individual pick pages are paywall-gated — noindex them so Google doesn't
+  // see thin/duplicate content. Non-existent picks return 404.
   const pickMatch = cleanPath.match(/^\/picks\/(\d+)$/);
   if (pickMatch) {
     try {
@@ -184,7 +190,17 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
           .where(eq(picks.id, parseInt(pickMatch[1], 10)))
           .limit(1);
         const pick = rows[0];
-        if (pick && pick.homeTeam && pick.awayTeam) {
+        if (!pick) {
+          // Pick does not exist → 404
+          return {
+            title: "Pick Not Found | ChalkPicks",
+            description: "The requested pick could not be found.",
+            canonicalPath: "/picks",
+            status: 404,
+            robots: "noindex, nofollow",
+          };
+        }
+        if (pick.homeTeam && pick.awayTeam) {
           const sport = pick.sportKey?.toUpperCase() ?? "";
           const title = `${pick.awayTeam} @ ${pick.homeTeam} ${sport} Pick | ChalkPicks`;
           const description = `AI pick for ${pick.awayTeam} @ ${pick.homeTeam}: ${pick.recommendation}. Confidence ${pick.confidenceScore}%. Full analysis, odds and edge on ChalkPicks.`;
@@ -192,6 +208,7 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
             title: title.slice(0, 70),
             description: description.slice(0, 160),
             canonicalPath: cleanPath,
+            robots: "noindex, follow",
             jsonLd: {
               "@context": "https://schema.org",
               "@type": "SportsEvent",
@@ -218,11 +235,18 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
   return { title: meta.title, description: meta.description, canonicalPath: cleanPath };
 }
 
+/** Result of SEO injection including the rewritten HTML and optional status code. */
+export interface SeoResult {
+  html: string;
+  status?: number;
+}
+
 /**
  * Rewrite the SPA HTML shell's head for the given request URL. Safe to call on
  * every HTML navigation; returns the input unchanged on any failure.
+ * Now also returns a status code when the route signals 404.
  */
-export async function injectSeo(html: string, url: string): Promise<string> {
+export async function injectSeo(html: string, url: string): Promise<SeoResult> {
   try {
     const pathname = new URL(url, ORIGIN).pathname;
     const seo = await resolveRouteSeo(pathname);
@@ -264,6 +288,14 @@ export async function injectSeo(html: string, url: string): Promise<string> {
       );
     }
 
+    // Override robots directive if specified (e.g. noindex for paywall/404 pages)
+    if (seo.robots) {
+      out = out.replace(
+        /(<meta name="robots" content=")[^"]*(")/, 
+        `$1${esc(seo.robots)}$2`
+      );
+    }
+
     if (seo.jsonLd) {
       // JSON-LD in <script> context: escape "</" to keep the parser inside the tag.
       const blocks = Array.isArray(seo.jsonLd) ? seo.jsonLd : [seo.jsonLd];
@@ -276,8 +308,8 @@ export async function injectSeo(html: string, url: string): Promise<string> {
       out = out.replace("</head>", `${scripts}\n</head>`);
     }
 
-    return out;
+    return { html: out, status: seo.status };
   } catch {
-    return html;
+    return { html };
   }
 }

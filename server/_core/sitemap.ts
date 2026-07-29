@@ -7,11 +7,11 @@
  * table was missing from the sitemap until the next rebuild + deploy.
  *
  * buildSitemapXml() is a pure function (unit-tested, no I/O). getSitemapXml()
- * assembles the live entry list from three sources:
+ * assembles the live entry list from two sources:
  *   - shared/seo-routes.ts entries flagged `sitemap: true` (evergreen pages)
  *   - blogPosts WHERE status = 'published'  (lastmod = updatedAt)
- *   - active picks (/picks/:id)             (optional detail pages)
- * and caches the rendered XML in memory for ~15 minutes.
+ * Individual pick pages are excluded (paywall-gated, noindex).
+ * Caches the rendered XML in memory for ~15 minutes.
  *
  * Fail-open by design: getSitemapXml() returns null on any error so the route
  * handler can serve the static client/public/sitemap.xml exactly as before.
@@ -99,29 +99,14 @@ async function blogEntries(): Promise<SitemapEntry[]> {
   }
 }
 
-/** Active pick detail pages (/picks/:id). Never throws — returns [] on failure. */
+/**
+ * Individual pick detail pages (/picks/:id) are now excluded from the sitemap.
+ * Reason: they are paywall-gated (Google sees thin/duplicate content) and marked
+ * noindex. Including them bloated the sitemap from ~77 to 564 URLs, causing
+ * duplicate/soft-404 issues in GSC. The /picks listing page remains indexed.
+ */
 async function pickEntries(): Promise<SitemapEntry[]> {
-  try {
-    const { getDb } = await import("../db");
-    const { picks } = await import("../../drizzle/schema");
-    const { eq, desc } = await import("drizzle-orm");
-    const db = await getDb();
-    if (!db) return [];
-    const rows = await db
-      .select({ id: picks.id, updatedAt: picks.updatedAt })
-      .from(picks)
-      .where(eq(picks.isActive, true))
-      .orderBy(desc(picks.updatedAt))
-      .limit(500);
-    return rows.map(r => ({
-      loc: `${SITE_URL}/picks/${r.id}`,
-      lastmod: isoDate(r.updatedAt),
-      changefreq: "daily",
-      priority: 0.6,
-    }));
-  } catch {
-    return [];
-  }
+  return [];
 }
 
 const CACHE_TTL_MS = 15 * 60 * 1000;

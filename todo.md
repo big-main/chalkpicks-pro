@@ -1556,3 +1556,26 @@
 - [ ] n8n: Set CHALKPICKS_N8N_SECRET env var in n8n to match N8N_WEBHOOK_SECRET in ChalkPicks
 - [ ] n8n: Set N8N_PICKS_WEBHOOK_URL secret in ChalkPicks to the workflow's webhook URL
 - [ ] GSC: Verify chalkpicks.live in Google Search Console + submit /sitemap.xml
+
+## PageSpeed Optimization (Jul 28, 2026) — Mobile Score: 41 → 80+
+- [x] Compress hero image: convert 2.8MB PNG to WebP, resize to 800px, add fetchpriority=high
+- [x] Add preconnect for CloudFront CDN to index.html
+- [ ] Self-host Google Fonts (inline @font-face with font-display: swap, preload woff2)
+- [x] Fix CLS (0.229): stabilize PageTransition animation (opacity-only, no y-axis)
+- [x] Defer Recharts charts on homepage (lazy load below fold)
+- [ ] Virtualize HorizontalScrollTicker (37 children causing DOM bloat)
+- [ ] Fix accessibility issues (74/100): contrast ratios, missing labels, aria attributes
+
+## GSC Indexing + PageSpeed Fixes (Jul 28-29, 2026)
+- [x] Fix soft 404: /picks/:id returns HTTP 404 for non-existent pick IDs (seo.ts + vite.ts)
+- [x] Add noindex to all individual pick pages (paywall-gated, thin content for Google)
+- [x] Remove 487 individual pick pages from sitemap (564 → 77 URLs)
+- [x] Add robots directive override support to injectSeo (SeoResult type)
+- [x] Replace 2.8MB PNG hero with WebP srcset (65KB 800w + 18KB 400w) via <picture>
+- [x] Add fetchpriority="high" and loading="eager" to hero image
+- [x] Add preconnect for d2xsxph8kpxj0f.cloudfront.net CDN
+- [x] Add dns-prefetch for fonts.googleapis.com
+- [x] Fix CLS: Remove y-axis animation from PageTransition (opacity-only)
+- [x] Defer Recharts: Extract to LazyRechartsChart with React.lazy + Suspense
+- [x] Hide HeroBackground on mobile (md:block) to reduce TBT
+- [x] All 179/180 tests passing, 0 TS errors

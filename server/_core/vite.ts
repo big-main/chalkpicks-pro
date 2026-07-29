@@ -2,7 +2,7 @@ import express, { type Express } from "express";
 import fs from "fs";
 import { type Server } from "http";
 import path from "path";
-import { injectSeo } from "./seo";
+import { injectSeo, type SeoResult } from "./seo";
 
 export async function setupVite(app: Express, server: Server) {
   // Dynamic imports: vite + nanoid are devDependencies. Static imports here
@@ -43,8 +43,8 @@ export async function setupVite(app: Express, server: Server) {
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`
       );
-      const page = await injectSeo(await vite.transformIndexHtml(url, template), url);
-      res.status(200).set({ "Content-Type": "text/html" }).end(page);
+      const result = await injectSeo(await vite.transformIndexHtml(url, template), url);
+      res.status(result.status ?? 200).set({ "Content-Type": "text/html" }).end(result.html);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
       next(e);
@@ -115,9 +115,9 @@ export function serveStatic(app: Express) {
           "utf-8"
         );
       }
-      const page = await injectSeo(indexTemplate, req.originalUrl);
+      const result = await injectSeo(indexTemplate, req.originalUrl);
       res.set("Cache-Control", "no-cache");
-      res.status(200).set({ "Content-Type": "text/html" }).end(page);
+      res.status(result.status ?? 200).set({ "Content-Type": "text/html" }).end(result.html);
     } catch {
       // Fail open: serve the raw file exactly as before.
       res.set("Cache-Control", "no-cache");

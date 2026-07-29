@@ -1,24 +1,25 @@
 import { motion, type Variants } from "framer-motion";
 import { ReactNode } from "react";
 
+/**
+ * Page transition wrapper — opacity-only to prevent CLS (Cumulative Layout Shift).
+ * Previously used y:12 → y:0 animation which caused a 0.229 CLS score on mobile.
+ */
 const pageVariants: Variants = {
   initial: {
     opacity: 0,
-    y: 12,
   },
   enter: {
     opacity: 1,
-    y: 0,
     transition: {
-      duration: 0.3,
+      duration: 0.25,
       ease: [0.25, 0.4, 0.25, 1],
     },
   },
   exit: {
     opacity: 0,
-    y: -8,
     transition: {
-      duration: 0.2,
+      duration: 0.15,
       ease: [0.4, 0, 1, 1],
     },
   },

@@ -486,7 +486,6 @@ export const blogSlugs: { slug: string; title: string; description: string }[] =
       description:
         "An objective comparison between AI sports betting models and traditional human handicappers. Discover why machine learning is taking over the industry.",
     },
-    // BabyLoveGrow synced articles
     {
       slug: "edge-score-explained-a-bettors-complete-guide",
       title:
@@ -506,6 +505,27 @@ export const blogSlugs: { slug: string; title: string; description: string }[] =
         "Public Betting Percentages: A Complete Bettor's Guide | ChalkPicks Blog",
       description:
         "Understand public betting percentages and how to use them to fade the public, identify sharp money, and gain an edge in sports betting.",
+    },
+    {
+      slug: "closing-line-value-clv-explained",
+      title:
+        "Closing Line Value (CLV) Explained: The #1 Metric for Profitable Bettors | ChalkPicks Blog",
+      description:
+        "Learn what Closing Line Value is, why sharp bettors obsess over it, and how to track CLV to measure your betting edge over time.",
+    },
+    {
+      slug: "steam-moves-in-sports-betting",
+      title:
+        "Steam Moves in Sports Betting: How to Follow Sharp Money | ChalkPicks Blog",
+      description:
+        "Understand what steam moves are, how to detect them, and how following sharp money action can give you a significant edge.",
+    },
+    {
+      slug: "kelly-criterion-sports-betting-calculator",
+      title:
+        "Kelly Criterion Calculator for Sports Betting: Optimal Bet Sizing | ChalkPicks Blog",
+      description:
+        "Master the Kelly Criterion formula for sports betting. Learn how to calculate optimal bet size and avoid common sizing mistakes.",
     },
   ];
 

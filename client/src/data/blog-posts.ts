@@ -13,7 +13,8 @@ export const blogPosts: BlogPost[] = [
   {
     slug: "best-ai-sports-betting-tools-2026",
     title: "Best AI Sports Betting Tools 2026: Revolutionizing How We Bet",
-    description: "Discover the top AI sports betting tools of 2026. Learn how machine learning, +EV finders, and predictive models are giving bettors a massive edge.",
+    description:
+      "Discover the top AI sports betting tools of 2026. Learn how machine learning, +EV finders, and predictive models are giving bettors a massive edge.",
     date: "2026-07-05",
     author: "ChalkPicks Team",
     category: "AI & Technology",
@@ -68,12 +69,13 @@ AI arbitrage scanners monitor odds across the entire market, instantly alerting 
 The sports betting market is highly efficient, and beating it requires sophisticated tools. Whether you are utilizing predictive models, hunting for +EV bets, or building correlated parlays, AI is no longer just a luxury—it is a necessity for serious bettors.
 
 Ready to gain a mathematical edge over the sportsbooks? [Sign up for ChalkPicks today](/pricing) and unlock the full power of AI-driven sports analytics.
-    `
+    `,
   },
   {
     slug: "what-is-plus-ev-betting",
     title: "What is +EV Betting and How to Find +EV Bets",
-    description: "Master the concept of Positive Expected Value (+EV) betting. Learn how to calculate EV, beat the closing line, and use tools to find profitable bets.",
+    description:
+      "Master the concept of Positive Expected Value (+EV) betting. Learn how to calculate EV, beat the closing line, and use tools to find profitable bets.",
     date: "2026-07-03",
     author: "ChalkPicks Analytics",
     category: "Betting Strategy",
@@ -127,12 +129,13 @@ Finding +EV bets manually is incredibly tedious and often impossible, as lines m
 The [ChalkPicks +EV Finder](/ev-finder) continuously scans real-time odds across all major sportsbooks, comparing them against sharp market consensus and our proprietary AI models. It instantly surfaces the most profitable bets available, allowing you to build a mathematically sound betting portfolio in minutes.
 
 Stop guessing and start investing. [Join ChalkPicks today](/pricing) and let the math work for you.
-    `
+    `,
   },
   {
     slug: "how-to-find-arbitrage-bets",
     title: "How to Find Arbitrage Bets in Sports Betting",
-    description: "Learn the mechanics of arbitrage betting (arbing) to guarantee risk-free profits. Discover how to use tools to find and execute arbs before lines move.",
+    description:
+      "Learn the mechanics of arbitrage betting (arbing) to guarantee risk-free profits. Discover how to use tools to find and execute arbs before lines move.",
     date: "2026-07-01",
     author: "ChalkPicks Analytics",
     category: "Betting Strategy",
@@ -193,12 +196,13 @@ The tool provides the exact amounts you need to wager on each side to guarantee 
 Arbitrage betting is the only true way to guarantee risk-free profit in sports betting. While the margins are small, consistent arbing can yield steady, compounding returns over time. 
 
 Ready to start locking in guaranteed profits? Access our real-time [Arbitrage Finder](/arbitrage) and take the risk out of betting.
-    `
+    `,
   },
   {
     slug: "sports-betting-bankroll-management",
     title: "Sports Betting Bankroll Management Strategy",
-    description: "The ultimate guide to bankroll management. Learn about unit sizing, the Kelly Criterion, and how to protect your bankroll from variance.",
+    description:
+      "The ultimate guide to bankroll management. Learn about unit sizing, the Kelly Criterion, and how to protect your bankroll from variance.",
     date: "2026-06-28",
     author: "ChalkPicks Strategy Team",
     category: "Bankroll Management",
@@ -260,12 +264,13 @@ Use the [ChalkPicks Bankroll Tracker](/bankroll-tracker) to automatically log yo
 Discipline is the hardest skill to master in sports betting. Sticking to strict bankroll management when you are on a 5-game losing streak requires immense psychological control. However, it is the only path to long-term success.
 
 Establish your bankroll, define your unit size, track your bets, and let the [ChalkPicks analytics tools](/tools) provide the mathematical edge you need to grow your capital.
-    `
+    `,
   },
   {
     slug: "ai-picks-vs-handicappers",
     title: "AI Sports Picks vs Human Handicappers: Which is Better?",
-    description: "An objective comparison between AI sports betting models and traditional human handicappers. Discover why machine learning is taking over the industry.",
+    description:
+      "An objective comparison between AI sports betting models and traditional human handicappers. Discover why machine learning is taking over the industry.",
     date: "2026-06-25",
     author: "ChalkPicks Team",
     category: "AI & Technology",
@@ -308,6 +313,309 @@ For example, the ChalkPicks AI might flag a highly profitable +EV play on an NBA
 At ChalkPicks, we don't just provide raw data. Our platform is designed to give you the ultimate hybrid advantage. We provide the heavy mathematical lifting—the AI confidence scores, the +EV scanning, the arbitrage detection—and present it in a clear, actionable dashboard.
 
 Stop paying expensive touts for gut-feeling picks. Upgrade to a data-driven approach. [Explore ChalkPicks Premium](/pricing) and see the power of AI analytics for yourself.
-    `
-  }
+    `,
+  },
+  {
+    slug: "closing-line-value-clv-explained",
+    title:
+      "Closing Line Value (CLV) Explained: The #1 Metric for Profitable Bettors",
+    description:
+      "Learn what Closing Line Value is, why sharp bettors obsess over it, and how to track CLV to measure your betting edge over time.",
+    date: "2026-07-29",
+    author: "ChalkPicks Analytics",
+    category: "Betting Strategy",
+    readTime: 9,
+    content: `
+# Closing Line Value (CLV) Explained: The #1 Metric for Profitable Bettors
+
+If you ask any professional sports bettor what single metric best predicts long-term profitability, the answer is almost always the same: **Closing Line Value (CLV)**. Not win rate, not units won last week, not a flashy streak — CLV.
+
+In this deep dive, we will explain exactly what CLV is, why it matters more than your win-loss record, and how to use it to objectively measure whether your betting process is sound.
+
+## What is Closing Line Value?
+
+Closing Line Value measures whether the odds you bet at were better than the final odds (the "closing line") just before the game starts. The closing line is considered the most efficient price in the market because it incorporates all available information — sharp money, public action, injury updates, and algorithmic adjustments.
+
+**Example:** You bet the Lakers moneyline at +150 on Tuesday. By tip-off on Thursday, the line has moved to +130. You captured CLV because you got a better price than the market's final assessment.
+
+### The Formula
+
+CLV is typically expressed as the percentage edge over the closing line:
+
+\`\`\`
+CLV% = (Your Implied Probability - Closing Implied Probability) / Closing Implied Probability × 100
+\`\`\`
+
+For the Lakers example:
+- Your odds: +150 → implied probability = 40.0%
+- Closing odds: +130 → implied probability = 43.5%
+- CLV% = (43.5% - 40.0%) / 43.5% × 100 = **8.05% CLV**
+
+## Why CLV Matters More Than Win Rate
+
+Here is the uncomfortable truth: **you can have a 60% win rate and still be a losing bettor** if you are consistently betting at bad prices. Conversely, you can have a 48% win rate and be highly profitable if you are consistently beating the closing line on plus-money underdogs.
+
+### The Math Behind It
+
+Sportsbooks track CLV religiously. If a bettor consistently beats the closing line by even 2-3%, that bettor will be limited or banned — because the books know that positive CLV is the strongest predictor of long-term profitability.
+
+Research from Pinnacle (the sharpest sportsbook in the world) has shown that bettors with consistent positive CLV are profitable over thousands of bets, regardless of short-term variance.
+
+## How to Track CLV
+
+Tracking CLV manually is tedious. You need to record:
+1. The odds you placed your bet at
+2. The closing odds just before game time
+3. Calculate the difference for every single bet
+
+This is where tools like the [ChalkPicks CLV Tracker](/clv-tracker) become invaluable. Our platform automatically records your entry price and compares it against the closing line, giving you a real-time CLV dashboard that shows whether your process is generating edge — even during losing streaks.
+
+## What Good CLV Looks Like
+
+| CLV Range | Assessment |
+|-----------|-----------|
+| +3% or higher | Elite — you are consistently finding significant market inefficiencies |
+| +1% to +3% | Strong — sustainable long-term profitability |
+| 0% to +1% | Marginal — profitable but thin edge, watch for vig erosion |
+| Negative CLV | Warning — your process is not generating edge regardless of recent results |
+
+## How to Improve Your CLV
+
+1. **Bet early.** Lines are least efficient when they first open. The [ChalkPicks Line Movement Tracker](/line-movement) shows you exactly when lines open and how they move.
+2. **Follow steam moves.** When sharp money hits a line, get in before the market adjusts. Our [Steam Move Alerts](/steam-moves) notify you in real-time.
+3. **Use +EV tools.** The [ChalkPicks +EV Finder](/ev-finder) identifies bets where your expected value is positive relative to the sharpest lines in the market.
+4. **Avoid public sides.** Heavy public action inflates lines on popular teams. Fading the public often yields positive CLV.
+
+## The Bottom Line
+
+If you are serious about sports betting as an investment rather than entertainment, CLV is your north star. It removes the noise of variance and tells you objectively whether your betting process has edge.
+
+Stop chasing win streaks. Start tracking CLV. [Sign up for ChalkPicks](/pricing) and get automated CLV tracking on every bet you place.
+    `,
+  },
+  {
+    slug: "steam-moves-in-sports-betting",
+    title: "Steam Moves in Sports Betting: How to Follow Sharp Money",
+    description:
+      "Understand what steam moves are, how to detect them, and how following sharp money action can give you a significant edge in sports betting.",
+    date: "2026-07-29",
+    author: "ChalkPicks Team",
+    category: "Line Movement",
+    readTime: 8,
+    content: `
+# Steam Moves in Sports Betting: How to Follow Sharp Money
+
+In the world of sports betting, information is currency. And the most valuable information comes from watching what professional bettors — "sharps" — are doing with their money. The clearest signal of sharp action? **Steam moves.**
+
+## What is a Steam Move?
+
+A steam move occurs when a betting line moves rapidly and uniformly across multiple sportsbooks within a very short time frame (usually seconds to minutes). This synchronized movement indicates that large, coordinated sharp money has entered the market on one side.
+
+### Key Characteristics of Steam Moves
+
+- **Speed:** The line moves within seconds across 3+ books simultaneously
+- **Uniformity:** All books move in the same direction by similar amounts
+- **Volume:** Triggered by significant dollar amounts, not recreational bet counts
+- **Irreversibility:** Unlike public money moves, steam moves rarely reverse
+
+## Steam Moves vs. Public Money Moves
+
+Understanding the difference is critical:
+
+| Feature | Steam Move | Public Money Move |
+|---------|-----------|-------------------|
+| Speed | Seconds | Hours to days |
+| Direction | Sharp (contrarian) | Popular (favorites, overs) |
+| Books affected | All simultaneously | Gradual, one by one |
+| Reversal likelihood | Very low | Often reverses |
+| Signal strength | Extremely high | Low to moderate |
+
+## How to Detect Steam Moves
+
+### Manual Detection (Difficult)
+
+You would need to monitor odds at 10+ sportsbooks simultaneously, watching for coordinated 0.5-1 point moves within a 60-second window. This is virtually impossible for a human to do consistently.
+
+### Automated Detection (Recommended)
+
+AI-powered tools like the [ChalkPicks Steam Move Detector](/steam-moves) continuously monitor odds across the entire market. When our algorithms detect the signature pattern of a steam move — simultaneous, uniform, high-velocity line movement — we send instant alerts so you can act before the line settles at its new equilibrium.
+
+## The Science Behind Steam Moves
+
+Professional betting syndicates operate with sophisticated models. When their models identify a significant edge, they deploy capital across multiple sportsbooks simultaneously to:
+
+1. **Maximize volume** before the line moves
+2. **Avoid detection** by spreading bets across books
+3. **Lock in the best price** before market efficiency kicks in
+
+The resulting line movement is the "steam" — and it is the market's way of telling you that the smartest money in the world just took a position.
+
+## How to Profit from Steam Moves
+
+### Strategy 1: Tail the Steam (React Fast)
+
+The most straightforward approach: when you receive a steam alert, immediately bet the same side at any book that hasn't yet adjusted. Your window is typically 30-120 seconds.
+
+**Pros:** High win rate historically (55-58% against the spread)
+**Cons:** Requires instant execution; some books may have already moved
+
+### Strategy 2: Anticipate the Steam (Bet Early)
+
+If you can identify the same edges that syndicates are targeting — before they bet — you get the best possible price. This requires your own sharp model or access to tools like the [ChalkPicks AI Engine](/picks) that identify the same mathematical edges.
+
+### Strategy 3: Fade Stale Lines (Arbitrage Adjacent)
+
+After a steam move, some slower books take minutes to adjust. During this window, you can often find arbitrage-adjacent situations where the moved line at one book and the stale line at another create a near-guaranteed profit.
+
+## Common Steam Move Patterns
+
+### NFL Steam Patterns
+- **Sunday morning (9-10 AM ET):** Injury report finalizations trigger sharp action
+- **Thursday/Monday night:** Lower limits mean steam hits harder and faster
+- **Totals market:** Sharps often target totals more than sides in NFL
+
+### NBA Steam Patterns
+- **4-5 PM ET:** Injury reports and lineup confirmations
+- **Live betting:** In-game steam moves on momentum shifts
+- **Second half lines:** Less efficient, more steam opportunity
+
+### MLB Steam Patterns
+- **Lineup confirmations (1-2 hours pre-game):** Starting pitcher changes trigger massive steam
+- **Run lines:** Sharps exploit mispriced run lines more than moneylines
+
+## Tracking Your Steam Move Performance
+
+Like any strategy, you need to track results. The [ChalkPicks Pick Ledger](/picks) automatically tags which of your bets were steam-triggered, allowing you to measure your steam move win rate, CLV, and ROI separately from your other bets.
+
+## The Bottom Line
+
+Steam moves are the single clearest signal of where professional money is going. By detecting and acting on them quickly, you align yourself with the sharpest bettors in the world.
+
+Stop guessing. Start following the money. [Get real-time steam alerts with ChalkPicks](/pricing).
+    `,
+  },
+  {
+    slug: "kelly-criterion-sports-betting-calculator",
+    title: "Kelly Criterion Calculator for Sports Betting: Optimal Bet Sizing",
+    description:
+      "Master the Kelly Criterion formula for sports betting. Learn how to calculate optimal bet size, use fractional Kelly, and avoid common sizing mistakes.",
+    date: "2026-07-29",
+    author: "ChalkPicks Analytics",
+    category: "Bankroll Management",
+    readTime: 10,
+    content: `
+# Kelly Criterion Calculator for Sports Betting: Optimal Bet Sizing
+
+Every profitable bettor eventually faces the same question: "I found an edge — but how much should I bet?" Bet too little and you leave money on the table. Bet too much and a losing streak can wipe you out. The **Kelly Criterion** is the mathematically optimal answer.
+
+## What is the Kelly Criterion?
+
+The Kelly Criterion is a formula developed by John L. Kelly Jr. at Bell Labs in 1956. It calculates the optimal fraction of your bankroll to wager on a bet with positive expected value, maximizing long-term growth while minimizing the risk of ruin.
+
+### The Formula
+
+\`\`\`
+Kelly % = (bp - q) / b
+
+Where:
+b = decimal odds - 1 (net odds received on the bet)
+p = probability of winning
+q = probability of losing (1 - p)
+\`\`\`
+
+### Example Calculation
+
+You believe an NFL team has a 55% chance of covering the spread at -110 odds.
+
+- b = (1/1.10) = 0.909
+- p = 0.55
+- q = 0.45
+- Kelly % = (0.909 × 0.55 - 0.45) / 0.909 = **0.055 or 5.5% of bankroll**
+
+## Why Kelly Criterion Works
+
+The Kelly Criterion is mathematically proven to:
+
+1. **Maximize the geometric growth rate** of your bankroll over time
+2. **Never risk ruin** (you never bet 100% of your bankroll)
+3. **Automatically scale** — bet more when your edge is larger, less when it is smaller
+4. **Outperform flat betting** over any sufficiently long time horizon
+
+### The Proof
+
+Over N bets, the Kelly bettor's bankroll grows at the maximum possible rate. No other fixed-fraction strategy can beat it in the long run. This has been proven mathematically and validated through decades of use by professional gamblers, hedge funds, and investment managers.
+
+## Full Kelly vs. Fractional Kelly
+
+While full Kelly is mathematically optimal, it produces extreme volatility. Most professional bettors use **fractional Kelly** — typically 25-50% of the full Kelly recommendation.
+
+| Approach | Bet Size | Volatility | Growth Rate | Risk of 50% Drawdown |
+|----------|----------|-----------|-------------|----------------------|
+| Full Kelly | 100% of formula | Very High | Maximum | ~25% over 100 bets |
+| Half Kelly | 50% of formula | Moderate | 75% of max | ~6% over 100 bets |
+| Quarter Kelly | 25% of formula | Low | 50% of max | ~1.5% over 100 bets |
+| Flat 1 unit | Fixed | Low | Suboptimal | Depends on unit size |
+
+### Our Recommendation
+
+For most bettors, **quarter to half Kelly** provides the best balance of growth and psychological comfort. The [ChalkPicks Bankroll Manager](/bankroll) automatically calculates fractional Kelly sizing for every bet based on your confidence score and the odds available.
+
+## Common Kelly Criterion Mistakes
+
+### Mistake 1: Overestimating Your Edge
+
+The Kelly formula assumes you know your true win probability. If you think you have a 60% edge but actually have 52%, full Kelly will destroy your bankroll. This is the #1 reason to use fractional Kelly.
+
+### Mistake 2: Ignoring Correlation
+
+If you bet on 5 games that are correlated (e.g., all NFL favorites), your effective bankroll risk is much higher than 5 independent Kelly bets suggest. Treat correlated bets as a single larger bet.
+
+### Mistake 3: Not Adjusting for Vig
+
+The Kelly formula needs your TRUE win probability, not the implied probability from the odds. Always calculate your edge relative to the no-vig line, not the -110 standard.
+
+### Mistake 4: Applying Kelly to Parlays
+
+Kelly for parlays requires a different calculation because the odds and probabilities compound. The [ChalkPicks Parlay Builder](/parlay-builder) handles this automatically.
+
+## Kelly Criterion Calculator
+
+Here is a quick reference table for common sports betting scenarios:
+
+| Your Edge (True Win%) | Odds | Kelly % | Half Kelly % | Suggested Unit |
+|-----------------------|------|---------|--------------|----------------|
+| 53% | -110 | 1.2% | 0.6% | 0.5 units |
+| 55% | -110 | 5.5% | 2.75% | 2.5 units |
+| 57% | -110 | 9.7% | 4.85% | 4.5 units |
+| 55% | +150 | 5.0% | 2.5% | 2.5 units |
+| 60% | +150 | 16.0% | 8.0% | 5 units (max) |
+| 52% | -110 | 0.0% | 0.0% | Pass (no edge) |
+
+## Integrating Kelly with ChalkPicks
+
+Every pick on ChalkPicks comes with a **Confidence Score** (1-100) and an **Edge Score** that directly maps to your estimated win probability. Combined with the live odds, our platform automatically calculates the Kelly-optimal bet size for your bankroll.
+
+Here is how to use it:
+1. Set your total bankroll in [Settings](/settings)
+2. Choose your Kelly fraction (we default to 0.25x)
+3. When you see a pick, the recommended bet size is calculated automatically
+4. Track your actual sizing vs. Kelly-optimal in the [Pick Ledger](/picks)
+
+## Advanced: Kelly for Multiple Simultaneous Bets
+
+When you have multiple bets open simultaneously, the standard Kelly formula needs adjustment. The simultaneous Kelly problem requires solving a system of equations. For most bettors, a practical approximation is:
+
+1. Calculate individual Kelly for each bet
+2. Sum all Kelly percentages
+3. If the sum exceeds 20-25% of bankroll, scale all bets proportionally down
+
+The [ChalkPicks Portfolio View](/dashboard) shows your total Kelly exposure across all open positions.
+
+## The Bottom Line
+
+The Kelly Criterion removes emotion from bet sizing. It tells you exactly how much to risk based on your edge and the odds — no more, no less. Combined with positive CLV and a disciplined process, Kelly sizing is the final piece of the profitable betting puzzle.
+
+Ready to size your bets like a professional? [Start using ChalkPicks](/pricing) and get automated Kelly calculations on every pick.
+    `,
+  },
 ];

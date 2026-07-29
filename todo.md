@@ -1741,3 +1741,30 @@
 
 - [x] TypeScript: 0 errors, Tests: 179 passing
 - [x] Save checkpoint and push to GitHub
+
+## Quant Engine Integration (Jul 29, 2026)
+
+- [x] Created shared/quantEngine.ts — Shin Devig, Power Devig, Fractional Kelly, Poisson Matrix, Elo+MoV, Monte Carlo, Steam Detection
+- [x] Extended oddsMath router with 7 new endpoints: shinDevig, powerDevig, kellyCalculator, poissonMatrix, eloPredictAdvanced, steamMoveCheck
+- [x] TypeScript compiles with 0 errors
+
+## Multi-Platform Distribution (Jul 29, 2026)
+
+- [x] Discord webhook post — blog article announcements (204 success)
+- [x] SaaSHub submission — already listed, verification pending
+- [ ] Twitter/X — tokens expired (401), need regeneration at developer.x.com
+- [ ] Reddit — manual submission needed (r/sportsbetting, r/sportsbook)
+- [x] Directory submission tracker created at docs/directory-submissions.md
+
+## GitHub Repo Profile (Jul 29, 2026)
+
+- [x] Description + 20 topics updated
+- [x] README rewritten with architecture diagram, badges, feature table
+- [x] CHANGELOG updated with v2.6.0
+- [x] Social preview image generated
+- [x] Branch protection re-enabled after push
+
+## GSC Verification (Jul 29, 2026)
+
+- [x] Google Search Console verified for www.chalkpicks.live
+- [x] Sitemap submitted — 88 pages discovered

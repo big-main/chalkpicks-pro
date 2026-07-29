@@ -83,6 +83,42 @@ export const routeSEO: RouteSEOEntry[] = [
     priority: 0.8,
   },
   {
+    path: "/ncaaf-picks",
+    title: "NCAAF Picks Today — College Football AI Predictions | ChalkPicks",
+    description:
+      "AI-powered NCAAF picks using SP+ ratings, recruiting data, and tempo metrics. Daily college football predictions with confidence scores and edge ratings.",
+    sitemap: true,
+    changefreq: "daily",
+    priority: 0.8,
+  },
+  {
+    path: "/ncaab-picks",
+    title: "NCAAB Picks Today — College Basketball AI Picks | ChalkPicks",
+    description:
+      "AI-powered NCAAB picks using KenPom ratings, tempo analysis, and ATS trends. Daily college basketball predictions and March Madness picks.",
+    sitemap: true,
+    changefreq: "daily",
+    priority: 0.8,
+  },
+  {
+    path: "/mma-picks",
+    title: "MMA Picks Today — UFC & Bellator AI Predictions | ChalkPicks",
+    description:
+      "AI-powered MMA picks analyzing fighter stats, striking accuracy, grappling metrics, and historical matchup data for UFC and Bellator events.",
+    sitemap: true,
+    changefreq: "weekly",
+    priority: 0.7,
+  },
+  {
+    path: "/soccer-picks",
+    title: "Soccer Picks Today — EPL, MLS & Champions League AI | ChalkPicks",
+    description:
+      "AI-powered soccer picks for EPL, MLS, Champions League, and more. Daily predictions with expected goals, form analysis, and edge scores.",
+    sitemap: true,
+    changefreq: "daily",
+    priority: 0.8,
+  },
+  {
     path: "/stats",
     title: "Live Sports Stats & Scores Dashboard | ChalkPicks",
     description:

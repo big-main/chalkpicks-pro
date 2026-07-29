@@ -1817,10 +1817,10 @@
 
 ## Stats Page Accuracy + Auto-Refresh (Jul 29, 2026)
 
-- [ ] Audit Stats page: verify Win Rate, Total Picks, Wins, Losses, Streak, ROI all pull from live DB
-- [ ] Fix bets.summary: ensure Win Rate = wins/(wins+losses), ROI = net profit / total staked, Streak = consecutive wins/losses from most recent settled bets
-- [ ] Add refetchInterval (30s) to Stats page queries so cards auto-refresh without reload
-- [ ] Add staleTime config so data never shows stale values on revisit
+- [x] Audit Stats page: verify Win Rate, Total Picks, Wins, Losses, Streak, ROI all pull from live DB
+- [x] Fix bets.summary: ensure Win Rate = wins/(wins+losses), ROI = net profit / total staked, Streak = consecutive wins/losses from most recent settled bets
+- [x] Add refetchInterval (30s) to Stats page queries so cards auto-refresh without reload
+- [x] Add staleTime config so data never shows stale values on revisit
 
 ## Stats Page Accuracy Fixes (Jul 29, 2026)
 
@@ -1831,3 +1831,14 @@
 - [x] Performance page: Remove hardcoded ?? fallbacks from StatCard renders
 - [x] Performance page + FreePick: Add refetchInterval 30s + staleTime 0 for auto-refresh
 - [x] Streak card: Show W/L suffix correctly based on sign of currentStreak
+
+## Context-Aware CTAs + Next Steps (Jul 29, 2026)
+
+- [x] Performance page: Show "View My Dashboard" for admin/subscriber, "Start Free 3-Day Trial" for others
+- [x] Home page: Show "Go to Dashboard" for admin/subscriber, "Upgrade to Pro" for free users, "Get Started Free" for guests
+- [x] FreePick page: Show "View Today's Picks" for admin/subscriber, "View Plans" for others
+- [x] BlogPost page: Show "View Today's Picks" for admin/subscriber, "View Plans" for others
+- [x] DailyPicks page: Show "VIEW TODAY'S PICKS" for admin/subscriber, "VIEW PLANS" for others
+- [x] SEO routeMeta: Add NCAAF/NCAAB/MMA/Soccer pick page meta entries
+- [x] seo-routes.ts: Add NCAAF/NCAAB/MMA/Soccer routes with sitemap entries
+- [x] generate-snapshots.mjs: Add NCAAF/NCAAB/MMA/Soccer to prerenderPaths + body copy

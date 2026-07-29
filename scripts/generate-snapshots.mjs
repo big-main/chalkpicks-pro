@@ -271,6 +271,22 @@ const ROUTE_BODIES = {
 <h2>NHL AI Picks — Puck Lines, Totals & Moneylines</h2>
 <p>ChalkPicks' NHL model analyzes goaltender form, expected goals (xG) metrics, special teams efficiency, back-to-back scheduling, and line movement to generate daily NHL picks with confidence scores and edge ratings.</p>
 <p>Hockey's volatility makes disciplined <a href="/blog/sports-betting-bankroll-management">bankroll management</a> essential — track it with the <a href="/bankroll-tracker">bankroll tracker</a>. See all picks in the <a href="/daily-picks">archive</a> or <a href="/signup">start free</a>.</p>`,
+  "/ncaaf-picks": `
+<h2>NCAAF AI Picks — College Football Spreads & Totals</h2>
+<p>ChalkPicks' NCAAF model uses SP+ efficiency ratings, recruiting composite rankings, transfer portal impact scores, returning production metrics, and conference strength adjustments to generate daily college football picks with confidence scores.</p>
+<p>Browse the full <a href="/daily-picks">daily picks archive</a>, find value with the <a href="/ev-finder">+EV finder</a>, or <a href="/signup">start free</a>.</p>`,
+  "/ncaab-picks": `
+<h2>NCAAB AI Picks — College Basketball Spreads & Totals</h2>
+<p>ChalkPicks' NCAAB model leverages KenPom ratings, tempo analysis, ATS trends, and tournament projections to generate daily college basketball picks. Our models target mispriced lines in mid-major and conference games.</p>
+<p>Build props with the <a href="/prop-builder">prop builder</a>, find value with the <a href="/ev-finder">+EV finder</a>, or <a href="/signup">start free</a>.</p>`,
+  "/mma-picks": `
+<h2>MMA AI Picks — UFC & Bellator Predictions</h2>
+<p>ChalkPicks' MMA model analyzes fighter stats, striking accuracy, grappling metrics, submission rates, reach advantages, and historical matchup data to generate UFC and Bellator picks with confidence scores.</p>
+<p>Browse results in the <a href="/daily-picks">daily archive</a> or <a href="/signup">start free</a>.</p>`,
+  "/soccer-picks": `
+<h2>Soccer AI Picks — EPL, MLS & Champions League</h2>
+<p>ChalkPicks' soccer model uses expected goals (xG), form analysis, home/away splits, head-to-head records, and injury data to generate daily picks for EPL, MLS, Champions League, and more.</p>
+<p>Browse results in the <a href="/daily-picks">daily archive</a> or <a href="/signup">start free</a>.</p>`,
   "/blog": "", // filled dynamically with post list
 };
 
@@ -313,6 +329,10 @@ ${blogPosts
     "/nba-picks",
     "/mlb-picks",
     "/nhl-picks",
+    "/ncaaf-picks",
+    "/ncaab-picks",
+    "/mma-picks",
+    "/soccer-picks",
     "/blog",
   ];
 

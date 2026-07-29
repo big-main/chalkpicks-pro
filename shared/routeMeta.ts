@@ -220,6 +220,26 @@ export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
     description:
       "AI-powered NHL picks with puck line, moneyline, and over/under analysis. Daily picks with confidence scores and edge ratings.",
   },
+  "/ncaaf-picks": {
+    title: "NCAAF Picks Today | College Football AI Picks",
+    description:
+      "AI-powered NCAAF picks using SP+ ratings, recruiting data, and tempo metrics. Daily college football predictions with confidence scores.",
+  },
+  "/ncaab-picks": {
+    title: "NCAAB Picks Today | College Basketball AI Picks",
+    description:
+      "AI-powered NCAAB picks using KenPom ratings, tempo analysis, and ATS trends. Daily college basketball predictions and March Madness picks.",
+  },
+  "/mma-picks": {
+    title: "MMA Picks Today | UFC & Bellator AI Predictions",
+    description:
+      "AI-powered MMA picks analyzing fighter stats, striking accuracy, grappling metrics, and historical matchup data for UFC and Bellator events.",
+  },
+  "/soccer-picks": {
+    title: "Soccer Picks Today | EPL, MLS & Champions League AI",
+    description:
+      "AI-powered soccer picks for EPL, MLS, Champions League, and more. Daily predictions with expected goals, form analysis, and edge scores.",
+  },
 };
 
 // /learn/* pages: title/description come from the shared LEARN_PAGES_META

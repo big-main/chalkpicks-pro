@@ -2,6 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import NeonCard from "@/components/NeonCard";
+import { useAuth } from "@/_core/hooks/useAuth";
 import {
   AreaChart,
   Area,
@@ -100,6 +101,17 @@ function StatCard({
 }
 
 export default function Performance() {
+  const { user } = useAuth();
+  const { data: subscription } = trpc.subscription.mySubscription.useQuery(
+    undefined,
+    {
+      enabled: !!user,
+    }
+  );
+  const hasAccess =
+    user?.role === "admin" ||
+    (subscription?.isActive && subscription?.tier !== "free");
+
   const { data: perf, isLoading: perfLoading } =
     trpc.picks.performance.useQuery(undefined, {
       refetchInterval: 30_000,
@@ -149,11 +161,19 @@ export default function Performance() {
             is the full record.
           </p>
 
-          <Link href="/pricing">
-            <button className="btn-premium">
-              Start Free 3-Day Trial <ArrowRight className="w-4 h-4" />
-            </button>
-          </Link>
+          {hasAccess ? (
+            <Link href="/dashboard">
+              <button className="btn-premium">
+                View My Dashboard <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
+          ) : (
+            <Link href="/pricing">
+              <button className="btn-premium">
+                Start Free 3-Day Trial <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
+          )}
         </div>
       </section>
 

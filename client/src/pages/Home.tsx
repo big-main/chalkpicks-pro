@@ -242,7 +242,16 @@ const sportStats = [
 ];
 
 export default function Home() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const { data: subscription } = trpc.subscription.mySubscription.useQuery(
+    undefined,
+    {
+      enabled: isAuthenticated,
+    }
+  );
+  const hasFullAccess =
+    user?.role === "admin" ||
+    (subscription?.isActive && subscription?.tier !== "free");
   const { data: siteStats } = trpc.system.siteStats.useQuery(undefined, {
     staleTime: 60_000,
   });
@@ -819,7 +828,13 @@ export default function Home() {
             mathematical edge over the sportsbooks.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            {isAuthenticated ? (
+            {hasFullAccess ? (
+              <Link href="/dashboard">
+                <button className="btn-premium text-base px-8 py-4">
+                  Go to Dashboard <ArrowRight className="w-4 h-4" />
+                </button>
+              </Link>
+            ) : isAuthenticated ? (
               <Link href="/pricing">
                 <button className="btn-premium text-base px-8 py-4">
                   Upgrade to Pro <ArrowRight className="w-4 h-4" />

@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import NeonCard from "@/components/NeonCard";
 import { Link } from "wouter";
 import { useState } from "react";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,16 @@ const SPORT_ICONS: Record<string, string> = {
 };
 
 export default function FreePick() {
+  const { isAuthenticated, user } = useAuth();
+  const { data: subscription } = trpc.subscription.mySubscription.useQuery(
+    undefined,
+    {
+      enabled: isAuthenticated,
+    }
+  );
+  const hasFullAccess =
+    user?.role === "admin" ||
+    (subscription?.isActive && subscription?.tier !== "free");
   const { data, isLoading } = trpc.picks.freeDailyPick.useQuery();
   const { data: perfData } = trpc.picks.performance.useQuery(undefined, {
     refetchInterval: 30_000,
@@ -396,11 +407,19 @@ export default function FreePick() {
                   DFS Optimizer
                 </li>
               </ul>
-              <Link href="/pricing">
-                <Button className="w-full mt-4 btn-cta">
-                  View Plans <ArrowRight className="w-4 h-4 ml-1" />
-                </Button>
-              </Link>
+              {hasFullAccess ? (
+                <Link href="/picks">
+                  <Button className="w-full mt-4 btn-cta">
+                    View Today's Picks <ArrowRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/pricing">
+                  <Button className="w-full mt-4 btn-cta">
+                    View Plans <ArrowRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </Link>
+              )}
             </NeonCard>
           </div>
         </div>

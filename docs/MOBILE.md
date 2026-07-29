@@ -110,6 +110,39 @@ npx cap open android  # Android Studio
 4. Optional: reduce web chrome (hide marketing nav) when `Capacitor.isNativePlatform()`
 5. Offline cache of free picks / last performance snapshot
 
+## App Icons
+
+Icons are generated from `client/public/logo512.png` (neon green lightning bolt on black).
+
+To regenerate all icon sizes:
+
+```bash
+python3 /home/ubuntu/gen_icons.py
+# Outputs:
+#   android/app/src/main/res/mipmap-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/ic_launcher.png
+#   ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png (1024x1024)
+```
+
+## iOS Build (requires macOS)
+
+1. Clone the repo on a Mac with Xcode 15+
+2. Install deps: `pnpm install && pnpm run build && npx cap sync`
+3. Open Xcode: `npx cap open ios` (or `open ios/App/App.xcworkspace`)
+4. Select `App` target → Signing & Capabilities → set your Apple Developer Team
+5. Bundle ID: `live.chalkpicks.app`
+6. Add capabilities: **Push Notifications** + **Associated Domains** (`applinks:chalkpicks.live`)
+7. Product → Archive → Distribute App → App Store Connect → Upload
+
+## Release Keystore (Android)
+
+Keystore file: `chalkpicks-release.keystore` (in project root — **DO NOT commit to git**)
+
+- Alias: `chalkpicks`
+- SHA-256: `12:DA:DF:AC:43:88:56:B0:E7:92:7A:FA:8F:8B:4D:D5:09:57:1A:E4:CB:7C:3A:46:4B:AF:3A:85:70:3C:59:B1`
+- This fingerprint is already in `client/public/.well-known/assetlinks.json`
+
+**Back up the keystore file securely** — losing it means you cannot update the app on Google Play.
+
 ## Feature-detect in React
 
 ```ts

@@ -115,3 +115,4 @@ client/public/__manus__/version.json
 .env.production
 .env.staging
 .env.staging.local
+chalkpicks-release.keystore

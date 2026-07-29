@@ -125,9 +125,9 @@ export default function Methodology() {
             <h2 className="text-2xl font-bold">Data Pipeline Flow</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed mb-6">
-            Hover over each node to see how data flows through our AI pipeline —
-            from raw odds ingestion to final pick generation. Each stage adds
-            signal and reduces noise.
+            Click each node to see how data flows through our AI pipeline — from
+            raw odds ingestion to final pick generation. Each stage adds signal
+            and reduces noise.
           </p>
           <AIModelFlowDiagram
             nodes={AI_MODEL_PIPELINE_NODES}

@@ -1799,3 +1799,11 @@
 - [x] Diagram nodes: Make clickable with Dialog modal showing detailed process explanation
 - [x] Dashboard: Add DateRangePicker + SportSelector to filter Monte Carlo/Poisson visualizations
 - [x] Navbar: Reduce logo size (260x88 → 180x60), remove social icons from nav
+
+## Live Feed Fix + Next Steps (Jul 29, 2026)
+
+- [x] Live feed: Redesign HorizontalScrollTicker — cleaner card layout, no mixed heights, consistent spacing
+- [x] Dashboard filters: Wire analyticsDateRange + analyticsSport to filtered bets.list query for Monte Carlo/Poisson
+- [x] SEO: Add missing route meta for /odds-comparison, /methodology, /how-it-works, /ai-leaderboard, /nfl-picks, /nba-picks, /mlb-picks, /nhl-picks
+- [x] Back button: Already global via BackButton.tsx — verified it shows on all sub-pages
+- [x] Methodology page: Update "hover over" copy to "click each node"

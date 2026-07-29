@@ -12,29 +12,56 @@ function calcPayout(stake: number, odds: number): number {
 
 export const betsRouter = router({
   list: protectedProcedure
-    .input(z.object({
-      result: z.enum(["win", "loss", "push", "pending", "all"]).optional().default("all"),
-      sportKey: z.string().optional(),
-      limit: z.number().optional().default(20),
-      offset: z.number().optional().default(0),
-    }))
+    .input(
+      z.object({
+        result: z
+          .enum(["win", "loss", "push", "pending", "all"])
+          .optional()
+          .default("all"),
+        sportKey: z.string().optional(),
+        dateFrom: z.string().optional(), // ISO date string YYYY-MM-DD
+        limit: z.number().optional().default(20),
+        offset: z.number().optional().default(0),
+      })
+    )
     .query(async ({ input, ctx }) => {
       const db = await getDb();
-      if (!db) return { bets: [], total: 0, stats: { wins: 0, losses: 0, roi: 0, totalProfit: 0 } };
+      if (!db)
+        return {
+          bets: [],
+          total: 0,
+          stats: { wins: 0, losses: 0, roi: 0, totalProfit: 0 },
+        };
 
       const conditions = [eq(userBets.userId, ctx.user.id)];
-      if (input.result !== "all") conditions.push(eq(userBets.result, input.result));
-      if (input.sportKey) conditions.push(eq(userBets.sportKey, input.sportKey));
+      if (input.result !== "all")
+        conditions.push(eq(userBets.result, input.result));
+      if (input.sportKey)
+        conditions.push(eq(userBets.sportKey, input.sportKey));
+      if (input.dateFrom)
+        conditions.push(sql`${userBets.betDate} >= ${input.dateFrom}`);
 
       const [betList, countResult, aggResult] = await Promise.all([
-        db.select().from(userBets).where(and(...conditions)).orderBy(desc(userBets.createdAt)).limit(input.limit).offset(input.offset),
-        db.select({ count: sql<number>`count(*)` }).from(userBets).where(and(...conditions)),
-        db.select({
-          wins: sql<number>`sum(case when result = 'win' then 1 else 0 end)`,
-          losses: sql<number>`sum(case when result = 'loss' then 1 else 0 end)`,
-          totalProfit: sql<number>`sum(cast(profit as decimal(10,2)))`,
-          totalStaked: sql<number>`sum(cast(stake as decimal(10,2)))`,
-        }).from(userBets).where(eq(userBets.userId, ctx.user.id)),
+        db
+          .select()
+          .from(userBets)
+          .where(and(...conditions))
+          .orderBy(desc(userBets.createdAt))
+          .limit(input.limit)
+          .offset(input.offset),
+        db
+          .select({ count: sql<number>`count(*)` })
+          .from(userBets)
+          .where(and(...conditions)),
+        db
+          .select({
+            wins: sql<number>`sum(case when result = 'win' then 1 else 0 end)`,
+            losses: sql<number>`sum(case when result = 'loss' then 1 else 0 end)`,
+            totalProfit: sql<number>`sum(cast(profit as decimal(10,2)))`,
+            totalStaked: sql<number>`sum(cast(stake as decimal(10,2)))`,
+          })
+          .from(userBets)
+          .where(eq(userBets.userId, ctx.user.id)),
       ]);
 
       const agg = aggResult[0];
@@ -52,22 +79,34 @@ export const betsRouter = router({
           losses,
           roi: Math.round(roi * 100) / 100,
           totalProfit: Math.round(totalProfit * 100) / 100,
-          winRate: wins + losses > 0 ? Math.round((wins / (wins + losses)) * 1000) / 10 : 0,
+          winRate:
+            wins + losses > 0
+              ? Math.round((wins / (wins + losses)) * 1000) / 10
+              : 0,
         },
       };
     }),
 
   add: protectedProcedure
-    .input(z.object({
-      pickId: z.number().optional(),
-      sportKey: z.string(),
-      description: z.string().min(1).max(256),
-      betType: z.enum(["moneyline", "spread", "over_under", "player_prop", "parlay", "other"]),
-      stake: z.number().positive(),
-      odds: z.number(),
-      notes: z.string().optional(),
-      betDate: z.string(),
-    }))
+    .input(
+      z.object({
+        pickId: z.number().optional(),
+        sportKey: z.string(),
+        description: z.string().min(1).max(256),
+        betType: z.enum([
+          "moneyline",
+          "spread",
+          "over_under",
+          "player_prop",
+          "parlay",
+          "other",
+        ]),
+        stake: z.number().positive(),
+        odds: z.number(),
+        notes: z.string().optional(),
+        betDate: z.string(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
@@ -93,15 +132,21 @@ export const betsRouter = router({
     }),
 
   settle: protectedProcedure
-    .input(z.object({
-      id: z.number(),
-      result: z.enum(["win", "loss", "push"]),
-    }))
+    .input(
+      z.object({
+        id: z.number(),
+        result: z.enum(["win", "loss", "push"]),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-      const [bet] = await db.select().from(userBets).where(and(eq(userBets.id, input.id), eq(userBets.userId, ctx.user.id))).limit(1);
+      const [bet] = await db
+        .select()
+        .from(userBets)
+        .where(and(eq(userBets.id, input.id), eq(userBets.userId, ctx.user.id)))
+        .limit(1);
       if (!bet) throw new TRPCError({ code: "NOT_FOUND" });
 
       const stake = Number(bet.stake);
@@ -110,11 +155,14 @@ export const betsRouter = router({
       if (input.result === "win") profit = calcPayout(stake, odds) - stake;
       else if (input.result === "loss") profit = -stake;
 
-      await db.update(userBets).set({
-        result: input.result,
-        profit: String(Math.round(profit * 100) / 100),
-        settledAt: new Date(),
-      }).where(eq(userBets.id, input.id));
+      await db
+        .update(userBets)
+        .set({
+          result: input.result,
+          profit: String(Math.round(profit * 100) / 100),
+          settledAt: new Date(),
+        })
+        .where(eq(userBets.id, input.id));
 
       return { success: true, profit };
     }),
@@ -124,19 +172,41 @@ export const betsRouter = router({
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-      await db.delete(userBets).where(and(eq(userBets.id, input.id), eq(userBets.userId, ctx.user.id)));
+      await db
+        .delete(userBets)
+        .where(
+          and(eq(userBets.id, input.id), eq(userBets.userId, ctx.user.id))
+        );
       return { success: true };
     }),
 
   summary: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
-    if (!db) return { totalBets: 0, wins: 0, losses: 0, pushes: 0, winRate: 0, roi: 0, totalProfit: 0, totalStaked: 0, streak: 0 };
+    if (!db)
+      return {
+        totalBets: 0,
+        wins: 0,
+        losses: 0,
+        pushes: 0,
+        winRate: 0,
+        roi: 0,
+        totalProfit: 0,
+        totalStaked: 0,
+        streak: 0,
+      };
 
-    const allBets = await db.select().from(userBets).where(eq(userBets.userId, ctx.user.id)).orderBy(desc(userBets.createdAt));
+    const allBets = await db
+      .select()
+      .from(userBets)
+      .where(eq(userBets.userId, ctx.user.id))
+      .orderBy(desc(userBets.createdAt));
     const wins = allBets.filter(b => b.result === "win").length;
     const losses = allBets.filter(b => b.result === "loss").length;
     const pushes = allBets.filter(b => b.result === "push").length;
-    const totalProfit = allBets.reduce((sum, b) => sum + Number(b.profit ?? 0), 0);
+    const totalProfit = allBets.reduce(
+      (sum, b) => sum + Number(b.profit ?? 0),
+      0
+    );
     const totalStaked = allBets.reduce((sum, b) => sum + Number(b.stake), 0);
     const roi = totalStaked > 0 ? (totalProfit / totalStaked) * 100 : 0;
     const winRate = wins + losses > 0 ? (wins / (wins + losses)) * 100 : 0;
@@ -145,7 +215,10 @@ export const betsRouter = router({
     let streak = 0;
     for (const bet of allBets) {
       if (bet.result === "pending") continue;
-      if (streak === 0) { streak = bet.result === "win" ? 1 : -1; continue; }
+      if (streak === 0) {
+        streak = bet.result === "win" ? 1 : -1;
+        continue;
+      }
       if (streak > 0 && bet.result === "win") streak++;
       else if (streak < 0 && bet.result === "loss") streak--;
       else break;
@@ -154,12 +227,19 @@ export const betsRouter = router({
     // Projected P&L YTD: extrapolate current ROI over full year
     const now = new Date();
     const startOfYear = new Date(now.getFullYear(), 0, 1);
-    const dayOfYear = Math.ceil((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+    const dayOfYear = Math.ceil(
+      (now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
+    );
     const ytdBets = allBets.filter(b => {
-      const d = b.betDate ?? (b.createdAt ? new Date(b.createdAt).toISOString().split("T")[0] : "");
+      const d =
+        b.betDate ??
+        (b.createdAt ? new Date(b.createdAt).toISOString().split("T")[0] : "");
       return d >= `${now.getFullYear()}-01-01`;
     });
-    const ytdProfit = ytdBets.reduce((sum, b) => sum + Number(b.profit ?? 0), 0);
+    const ytdProfit = ytdBets.reduce(
+      (sum, b) => sum + Number(b.profit ?? 0),
+      0
+    );
     const avgDailyProfit = dayOfYear > 0 ? ytdProfit / dayOfYear : 0;
     const projectedPLYTD = Math.round(avgDailyProfit * 365 * 100) / 100;
 
@@ -190,9 +270,21 @@ export const betsExportRouter = router({
       .where(eq(userBets.userId, ctx.user.id))
       .orderBy(desc(userBets.createdAt));
 
-    const header = ["Date", "Description", "Sport", "Type", "Odds", "Stake", "Payout", "Result", "Profit/Loss", "Notes"];
-    const rows = allBets.map((b) => [
-      b.betDate ?? (b.createdAt ? new Date(b.createdAt).toISOString().split("T")[0] : ""),
+    const header = [
+      "Date",
+      "Description",
+      "Sport",
+      "Type",
+      "Odds",
+      "Stake",
+      "Payout",
+      "Result",
+      "Profit/Loss",
+      "Notes",
+    ];
+    const rows = allBets.map(b => [
+      b.betDate ??
+        (b.createdAt ? new Date(b.createdAt).toISOString().split("T")[0] : ""),
       `"${(b.description ?? "").replace(/"/g, '""')}"`,
       b.sportKey ?? "",
       b.betType ?? "",
@@ -204,7 +296,10 @@ export const betsExportRouter = router({
       `"${(b.notes ?? "").replace(/"/g, '""')}"`,
     ]);
 
-    const csv = [header.join(","), ...rows.map((r) => r.join(","))].join("\n");
-    return { csv, filename: `chalkpicks-bets-${new Date().toISOString().split("T")[0]}.csv` };
+    const csv = [header.join(","), ...rows.map(r => r.join(","))].join("\n");
+    return {
+      csv,
+      filename: `chalkpicks-bets-${new Date().toISOString().split("T")[0]}.csv`,
+    };
   }),
 });

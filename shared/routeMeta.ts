@@ -136,7 +136,8 @@ export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
   },
   "/login": {
     title: "Login | ChalkPicks Account",
-    description: "Log in to your ChalkPicks account to access AI picks, analytics, and premium tools.",
+    description:
+      "Log in to your ChalkPicks account to access AI picks, analytics, and premium tools.",
   },
   "/dashboard": {
     title: "Dashboard | Your ChalkPicks Account",
@@ -174,16 +175,60 @@ export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
       "Free sports betting strategy guides covering +EV betting, bankroll management, arbitrage, Kelly Criterion, and more.",
   },
   "/public-betting": {
-    title: "Public Betting Percentages | Where Is the Money Going? | ChalkPicks",
+    title:
+      "Public Betting Percentages | Where Is the Money Going? | ChalkPicks",
     description:
       "Track public betting percentages across all sports. See bet % vs money %, identify sharp vs public splits.",
+  },
+  "/odds-comparison": {
+    title: "Live Odds Comparison | Best Lines Across Books | ChalkPicks",
+    description:
+      "Compare live odds from 10+ sportsbooks side by side. Detect steam moves, find best lines, and sort by Kelly %, edge %, or steam score.",
+  },
+  "/methodology": {
+    title: "AI Picks Methodology | How ChalkPicks Works",
+    description:
+      "See exactly how ChalkPicks AI generates picks: data ingestion, Elo ratings, Poisson modeling, Kelly Criterion sizing, and edge scoring.",
+  },
+  "/how-it-works": {
+    title: "How ChalkPicks Works | AI Sports Betting Platform",
+    description:
+      "Step-by-step walkthrough of the ChalkPicks platform: real-time odds, AI analysis, confidence scores, and bankroll management tools.",
+  },
+  "/ai-leaderboard": {
+    title: "AI Picks Leaderboard | Top Performing Models | ChalkPicks",
+    description:
+      "Track AI model performance across sports. Compare win rates, ROI, CLV, and confidence accuracy for each ChalkPicks model.",
+  },
+  "/nfl-picks": {
+    title: "NFL Picks Today | AI Football Betting Picks | ChalkPicks",
+    description:
+      "AI-generated NFL picks with confidence scores, spread analysis, and edge ratings. Updated daily for every NFL game.",
+  },
+  "/nba-picks": {
+    title: "NBA Picks Today | AI Basketball Betting Picks | ChalkPicks",
+    description:
+      "AI-powered NBA picks with moneyline, spread, and over/under analysis. Daily picks with confidence scores and edge ratings.",
+  },
+  "/mlb-picks": {
+    title: "MLB Picks Today | AI Baseball Betting Picks | ChalkPicks",
+    description:
+      "Daily AI-generated MLB picks with pitcher matchup analysis, run line, and over/under recommendations with edge scores.",
+  },
+  "/nhl-picks": {
+    title: "NHL Picks Today | AI Hockey Betting Picks | ChalkPicks",
+    description:
+      "AI-powered NHL picks with puck line, moneyline, and over/under analysis. Daily picks with confidence scores and edge ratings.",
   },
 };
 
 // /learn/* pages: title/description come from the shared LEARN_PAGES_META
 // array (shared/learnPagesMeta.ts) rather than being repeated here.
 for (const page of LEARN_PAGES_META) {
-  PAGE_META_MAP[page.path] = { title: page.title, description: page.description };
+  PAGE_META_MAP[page.path] = {
+    title: page.title,
+    description: page.description,
+  };
 }
 
 /**
@@ -194,6 +239,8 @@ export function resolvePageMeta(pathname: string): PageMetaConfig {
   const cleanPath = pathname.split("?")[0].replace(/\/$/, "") || "/";
   return (
     PAGE_META_MAP[cleanPath] ??
-    (cleanPath.startsWith("/picks/") ? PAGE_META_MAP["/picks"] : PAGE_META_MAP["/"])
+    (cleanPath.startsWith("/picks/")
+      ? PAGE_META_MAP["/picks"]
+      : PAGE_META_MAP["/"])
   );
 }

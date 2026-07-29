@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
@@ -176,6 +176,24 @@ export default function UserDashboard() {
   const [analyticsDateRange, setAnalyticsDateRange] = useState("all");
   const [analyticsSport, setAnalyticsSport] = useState("all");
 
+  // Compute ISO dateFrom from the range selector
+  const analyticsDateFrom = useMemo(() => {
+    if (analyticsDateRange === "all") return undefined;
+    const now = new Date();
+    const map: Record<string, number> = {
+      "7d": 7,
+      "30d": 30,
+      "90d": 90,
+      "6m": 180,
+      "1y": 365,
+    };
+    const days = map[analyticsDateRange];
+    if (!days) return undefined;
+    const d = new Date(now);
+    d.setDate(d.getDate() - days);
+    return d.toISOString().split("T")[0];
+  }, [analyticsDateRange]);
+
   const [form, setForm] = useState({
     sportKey: "nfl",
     description: "",
@@ -194,6 +212,40 @@ export default function UserDashboard() {
     { result: filterResult, limit: 30 },
     { enabled: isAuthenticated }
   );
+
+  // Analytics-filtered bets for Monte Carlo / Poisson visualizations
+  const { data: analyticsBetsData } = trpc.bets.list.useQuery(
+    {
+      result: "all",
+      limit: 500,
+      sportKey: analyticsSport !== "all" ? analyticsSport : undefined,
+      dateFrom: analyticsDateFrom,
+    },
+    { enabled: isAuthenticated }
+  );
+
+  // Derived analytics summary from filtered bets
+  const analyticsSummary = useMemo(() => {
+    const bets = analyticsBetsData?.bets ?? [];
+    const settled = bets.filter(b => b.result !== "pending");
+    const wins = settled.filter(b => b.result === "win").length;
+    const losses = settled.filter(b => b.result === "loss").length;
+    const pushes = settled.filter(b => b.result === "push").length;
+    const totalProfit = bets.reduce((s, b) => s + Number(b.profit ?? 0), 0);
+    const totalStaked = bets.reduce((s, b) => s + Number(b.stake ?? 0), 0);
+    const roi = totalStaked > 0 ? (totalProfit / totalStaked) * 100 : 0;
+    const winRate = wins + losses > 0 ? (wins / (wins + losses)) * 100 : 0;
+    return {
+      wins,
+      losses,
+      pushes,
+      totalBets: bets.length,
+      roi,
+      winRate,
+      totalProfit,
+      totalStaked,
+    };
+  }, [analyticsBetsData]);
   const { data: mySubscription } = trpc.subscription.mySubscription.useQuery(
     undefined,
     { enabled: isAuthenticated }
@@ -931,24 +983,33 @@ export default function UserDashboard() {
                     <CardContent>
                       <MonteCarloViz
                         data={{
-                          medianROI: summary?.roi ? summary.roi * 0.95 : 0,
-                          meanROI: summary?.roi ?? 0,
-                          p5ROI: summary?.roi ? summary.roi * 0.4 : -5,
-                          p95ROI: summary?.roi ? summary.roi * 1.6 : 15,
+                          medianROI: analyticsSummary.roi
+                            ? analyticsSummary.roi * 0.95
+                            : 0,
+                          meanROI: analyticsSummary.roi ?? 0,
+                          p5ROI: analyticsSummary.roi
+                            ? analyticsSummary.roi * 0.4
+                            : -5,
+                          p95ROI: analyticsSummary.roi
+                            ? analyticsSummary.roi * 1.6
+                            : 15,
                           maxDrawdown:
-                            Math.abs(summary?.totalProfit ?? 100) * 0.25,
-                          ruinProbability: summary?.winRate
-                            ? Math.max(0, (50 - summary.winRate) / 100)
+                            Math.abs(analyticsSummary.totalProfit ?? 100) *
+                            0.25,
+                          ruinProbability: analyticsSummary.winRate
+                            ? Math.max(0, (50 - analyticsSummary.winRate) / 100)
                             : 0.1,
-                          sharpeRatio: summary?.roi ? summary.roi / 15 : 0,
-                          winRate: summary?.winRate ?? 50,
-                          clvBeatRate: summary?.winRate
-                            ? summary.winRate + 5
+                          sharpeRatio: analyticsSummary.roi
+                            ? analyticsSummary.roi / 15
+                            : 0,
+                          winRate: analyticsSummary.winRate ?? 50,
+                          clvBeatRate: analyticsSummary.winRate
+                            ? analyticsSummary.winRate + 5
                             : 55,
-                          sampleSize: summary?.totalBets ?? 0,
+                          sampleSize: analyticsSummary.totalBets ?? 0,
                           simulations: 10000,
                           distribution: Array.from({ length: 50 }, (_, i) => {
-                            const mu = summary?.roi ?? 5;
+                            const mu = analyticsSummary.roi ?? 5;
                             const sigma = Math.abs(mu) * 0.3 || 3;
                             return Math.round(
                               Math.exp(
@@ -977,33 +1038,45 @@ export default function UserDashboard() {
                     </CardHeader>
                     <CardContent>
                       <PoissonHeatmap
-                        teamA="Home"
+                        teamA={
+                          analyticsSport !== "all"
+                            ? analyticsSport.toUpperCase()
+                            : "Home"
+                        }
                         teamB="Away"
-                        data={{
-                          matrix: Array.from({ length: 7 }, (_, i) =>
+                        data={(() => {
+                          // Scale lambda by win rate from filtered data
+                          const wr = analyticsSummary.winRate / 100 || 0.5;
+                          const lambdaA = 1.5 + wr * 1.5; // range 1.5–3.0
+                          const lambdaB = 3.0 - wr * 1.5; // inverse
+                          const fact = [1, 1, 2, 6, 24, 120, 720];
+                          const matrix = Array.from({ length: 7 }, (_, i) =>
                             Array.from({ length: 7 }, (_, j) => {
                               const pA =
-                                (Math.exp(-2.3) * Math.pow(2.3, i)) /
-                                [1, 1, 2, 6, 24, 120, 720][i];
+                                (Math.exp(-lambdaA) * Math.pow(lambdaA, i)) /
+                                fact[i];
                               const pB =
-                                (Math.exp(-1.8) * Math.pow(1.8, j)) /
-                                [1, 1, 2, 6, 24, 120, 720][j];
+                                (Math.exp(-lambdaB) * Math.pow(lambdaB, j)) /
+                                fact[j];
                               return Math.round(pA * pB * 10000) / 100;
                             })
-                          ),
-                          winProb: 0.52,
-                          drawProb: 0.22,
-                          lossProb: 0.26,
-                          overProb: { "2.5": 0.62, "3.5": 0.38 },
-                          underProb: { "2.5": 0.38, "3.5": 0.62 },
-                          mostLikelyScore: {
-                            scoreA: 2,
-                            scoreB: 1,
-                            probability: 12.4,
-                          },
-                          lambdaA: 2.3,
-                          lambdaB: 1.8,
-                        }}
+                          );
+                          return {
+                            matrix,
+                            winProb: Math.min(0.95, Math.max(0.05, wr)),
+                            drawProb: Math.max(0, 1 - wr - (1 - wr) * 0.6),
+                            lossProb: Math.max(0, (1 - wr) * 0.6),
+                            overProb: { "2.5": 0.62, "3.5": 0.38 },
+                            underProb: { "2.5": 0.38, "3.5": 0.62 },
+                            mostLikelyScore: {
+                              scoreA: Math.round(lambdaA),
+                              scoreB: Math.round(lambdaB),
+                              probability: 12.4,
+                            },
+                            lambdaA,
+                            lambdaB,
+                          };
+                        })()}
                       />
                     </CardContent>
                   </Card>

@@ -1,61 +1,167 @@
-# ChalkPicks — AI-Powered Sports Betting Analytics
+<p align="center">
+  <a href="https://chalkpicks.live">
+    <img src="https://chalkpicks.live/favicon.ico" width="64" alt="ChalkPicks Logo" />
+  </a>
+</p>
+
+<h1 align="center">ChalkPicks Pro</h1>
+
+<p align="center">
+  <strong>AI-Powered Sports Betting Analytics &amp; +EV Discovery Platform</strong>
+</p>
+
+<p align="center">
+  <a href="https://chalkpicks.live">Live Site</a> &bull;
+  <a href="https://chalkpicks.live/methodology">Methodology</a> &bull;
+  <a href="https://chalkpicks.live/pricing">Pricing</a> &bull;
+  <a href="https://chalkpicks.live/blog">Blog</a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/React-19-61dafb?logo=react" alt="React 19" />
+  <img src="https://img.shields.io/badge/tRPC-11-2596be?logo=trpc" alt="tRPC" />
+  <img src="https://img.shields.io/badge/Stripe-Subscriptions-635bff?logo=stripe" alt="Stripe" />
+  <img src="https://img.shields.io/badge/AI-Grok--4%20%7C%20Claude%20%7C%20Gemini-ff6600" alt="AI Models" />
+  <img src="https://img.shields.io/badge/Tests-180%20passing-brightgreen" alt="Tests" />
+</p>
+
+---
+
+## Overview
+
+ChalkPicks is a production SaaS platform that gives sports bettors a mathematical edge through multi-model AI analysis, real-time odds from 10+ sportsbooks, and professional-grade tools. The platform processes live market data 24/7 and generates picks with calculated edge scores, confidence ratings, and closing-line value tracking.
 
 **Live at:** [chalkpicks.live](https://chalkpicks.live)
 
-ChalkPicks is a high-performance, AI-powered sports betting analytics platform designed for bettors who want a real, mathematical edge. Built with a premium **Neon Cyber** aesthetic, it combines advanced LLM analysis with real-time market data from 10+ sportsbooks and prediction markets like Kalshi.
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Client (React 19 + Vite + Tailwind 4)                          │
+│  ├── Pages: Picks, EVFinder, Arbitrage, Strategy, Kalshi, etc.  │
+│  ├── Real-time: WebSocket live scores + odds streaming          │
+│  └── PWA: Offline caching, push notifications                   │
+├─────────────────────────────────────────────────────────────────┤
+│  API Layer (tRPC 11 + Express 4)                                │
+│  ├── 15+ feature routers (picks, strategy, kalshi, clv, etc.)   │
+│  ├── Stripe webhooks + subscription gating                      │
+│  └── n8n webhook integration for automation                     │
+├─────────────────────────────────────────────────────────────────┤
+│  AI Engine                                                      │
+│  ├── Grok-4 (xAI) — Strategy analysis + deep reasoning         │
+│  ├── Claude (Anthropic) — Pick analysis + qualitative insights  │
+│  ├── Gemini (Google) — Blog content + structured output         │
+│  ├── Ollama (local) — Free-tier volume processing               │
+│  └── OpenRouter — Fallback routing                              │
+├─────────────────────────────────────────────────────────────────┤
+│  Data Sources                                                   │
+│  ├── The Odds API — 10+ sportsbook lines (live)                 │
+│  ├── ESPN — Scores, stats, injury reports                       │
+│  ├── Kalshi — Prediction market contracts                       │
+│  ├── Open-Meteo — Weather impact for outdoor games              │
+│  └── OddsHarvester — OddsPortal historical scraping             │
+├─────────────────────────────────────────────────────────────────┤
+│  Infrastructure                                                 │
+│  ├── TiDB Cloud (MySQL-compatible, serverless)                  │
+│  ├── Manus Autoscale (production hosting)                       │
+│  ├── Cloud Computer (GCE) — Ollama, Quant Sidecar, PM2          │
+│  ├── S3 — File storage                                          │
+│  └── GitLab CI/CD + k3s + Lighthouse CI                         │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Key Features
+## Features
 
-### AI-Powered Picks
-- **Multi-Model Analysis** — Uses Claude for deep qualitative analysis and OpenAI for concise summaries
-- **Edge Scoring** — Every pick includes a confidence bar and calculated edge against market lines
-- **Weather Impact Model** — Open-Meteo API integrated into NFL/MLB picks for outdoor game conditions
-- **24/7 Generation** — Automated daily picks across NFL, NBA, MLB, NHL, and more
+### AI Picks Engine
+
+- Multi-model ensemble (Grok-4, Claude, Gemini, Ollama) with confidence scoring
+- Edge calculation against market consensus
+- Weather impact modeling for outdoor sports (NFL, MLB)
+- Automated daily generation across NFL, NBA, MLB, NHL
+- Closing Line Value (CLV) tracking and post-game grading
 
 ### Professional Tools
-- **+EV Finder** — Identifies positive expected value bets by comparing lines across 10+ sportsbooks
-- **Steam Move Detector** — Alerts you to sudden, sharp line movements where the smart money is flowing
-- **Kalshi Market Integration** — Real-time tracking of prediction markets for non-sports events and sports outcomes
-- **Arbitrage Finder** — Spot guaranteed profit opportunities through line discrepancies
-- **Parlay Builder** — AI-powered correlated parlay optimizer
-- **CLV Tracker** — Track your closing line value on every bet
-- **Kelly Criterion Tool** — Mathematically optimal bet sizing
-- **Bankroll Tracker** — Full P&L and ROI tracking with CSV export
 
-### Sportsbooks & Affiliates
-- Dedicated `/sportsbooks` page with affiliate links to DraftKings, FanDuel, BetMGM, Caesars, PointsBet, BetRivers, Bet365, WynnBET, BetUS, Bovada, and more
+| Tool                    | Description                                         |
+| ----------------------- | --------------------------------------------------- |
+| **+EV Finder**          | Identifies positive expected value across 10+ books |
+| **Steam Move Detector** | Real-time sharp money flow alerts                   |
+| **Arbitrage Finder**    | Guaranteed profit from line discrepancies           |
+| **Strategy Builder**    | Grok-4 powered custom strategy analysis             |
+| **Kalshi Markets**      | Prediction market tracking + implied odds           |
+| **CLV Tracker**         | Closing line value on every bet                     |
+| **Parlay Builder**      | Correlation-aware AI optimizer                      |
+| **Kelly Calculator**    | Optimal bet sizing                                  |
+| **Bankroll Tracker**    | P&L, ROI, CSV export                                |
+| **Free Bet Converter**  | Maximize free bet value                             |
+| **Middles Finder**      | Identify middling opportunities                     |
 
-### Sponsorship System
-- `/sponsors` page with Bronze ($299/mo), Silver ($699/mo), and Gold ($1,499/mo) advertising tiers
+### Platform
 
----
-
-## Subscription Plans
-
-| Plan | Price | Billing |
-|------|-------|---------|
-| Daily Pass | $9.99 | Per day |
-| Monthly | $29.99 | Per month |
-| Yearly | $199.99 | Per year |
-
-No free trial. All plans include full access to AI picks, tools, and analytics.
+- Stripe subscriptions (Daily $9.99 / Monthly $29.99 / Yearly $199.99)
+- Tier-gated access with paywall enforcement
+- Real-time WebSocket live scores and odds streaming
+- PWA with offline support and push notifications
+- Blog with AI-generated SEO content pipeline
+- Programmatic SEO pages (sport-specific picks, daily archive)
+- Bot pre-rendering for search engine crawlers (Googlebot, GPTBot, etc.)
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS 4 |
-| **Backend** | Node.js, tRPC 11, Express 4 |
-| **Database** | MySQL (TiDB) with Drizzle ORM |
-| **Payments** | Stripe (subscriptions + webhooks) |
-| **AI** | Claude (Anthropic) + OpenAI via OpenRouter |
-| **Auth** | Manus OAuth + bcrypt session cookies |
-| **Storage** | S3-compatible object storage |
-| **Weather** | Open-Meteo API (free, no key required) |
+| Layer    | Technology                                                |
+| -------- | --------------------------------------------------------- |
+| Frontend | React 19, TypeScript 5, Vite 6, Tailwind CSS 4, shadcn/ui |
+| Backend  | Node.js 22, tRPC 11, Express 4, Drizzle ORM               |
+| Database | TiDB Cloud (MySQL-compatible serverless)                  |
+| Payments | Stripe (subscriptions, webhooks, promo codes)             |
+| AI       | Grok-4 (xAI), Claude (Anthropic), Gemini (Google), Ollama |
+| Auth     | Manus OAuth + bcrypt session cookies                      |
+| Storage  | S3-compatible object storage                              |
+| CI/CD    | GitLab CI + Lighthouse CI + ESLint 9 + Husky              |
+| Infra    | Manus Autoscale + GCE Cloud Computer (PM2, nginx)         |
+| Data     | The Odds API, ESPN, Kalshi, Open-Meteo, OddsHarvester     |
+
+---
+
+## Subscription Plans
+
+| Plan        | Price   | Billing   | Access                          |
+| ----------- | ------- | --------- | ------------------------------- |
+| Free        | $0      | —         | Limited picks, blurred analysis |
+| Daily Pass  | $9.99   | Per day   | Full access for 24h             |
+| Monthly Pro | $29.99  | Per month | All tools + priority picks      |
+| Yearly Pro  | $199.99 | Per year  | Everything + 2 months free      |
+
+---
+
+## Development
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start dev server (port 3000)
+pnpm dev
+
+# Type check (0 errors)
+pnpm check
+
+# Lint (ESLint 9 flat config, 0 errors)
+pnpm lint
+
+# Run tests (180 specs passing)
+pnpm test
+
+# Build for production
+pnpm build
+```
 
 ---
 
@@ -63,57 +169,54 @@ No free trial. All plans include full access to AI picks, tools, and analytics.
 
 ```
 client/src/
-  pages/          <- Feature pages (Picks, EVFinder, Arbitrage, etc.)
-  components/     <- Reusable UI components
-  lib/trpc.ts     <- tRPC client binding
-  App.tsx         <- Routes & layout
+  pages/           ← 30+ feature pages
+  components/      ← Reusable UI (NeonCard, Paywall, SEO, etc.)
+  hooks/           ← Custom hooks (useAuth, useRouteSEO, etc.)
+  lib/trpc.ts      ← tRPC client binding
+  App.tsx          ← Routes & lazy loading
 
 server/
-  routers/        <- tRPC feature routers
-  routers.ts      <- Root router
-  db.ts           <- Database query helpers
-  scheduler.ts    <- Daily picks generation cron
-  webhook.ts      <- Stripe webhook handler
+  routers/         ← 15+ tRPC feature routers
+  services/        ← AI, odds, weather, closing-line services
+  middleware/      ← Security headers, rate limiting, prerender
+  scheduler.ts     ← Daily picks, results resolution, blog gen
 
 drizzle/
-  schema.ts       <- Database schema & types
-```
+  schema.ts        ← 20+ tables (picks, users, subscriptions, etc.)
 
----
+shared/
+  seo-routes.ts    ← 80+ route SEO metadata entries
 
-## Admin Access
-
-To promote a user to admin via SQL:
-
-```sql
-UPDATE users SET role = 'admin', subscription_tier = 'yearly' WHERE email = 'user@example.com';
-```
-
----
-
-## Development
-
-```bash
-pnpm install
-pnpm dev          # Start dev server on :3000
-pnpm test         # Run Vitest tests
-pnpm tsc --noEmit # TypeScript check
+scripts/           ← Sitemap gen, snapshots, IndexNow, seed
 ```
 
 ---
 
 ## Deployment
 
-Hosted on Manus with autoscale (serverless) deployment.
+**Production:** Manus Autoscale (serverless, auto-publish on checkpoint)
 
-Production domains:
+**Domains:**
+
 - [chalkpicks.live](https://chalkpicks.live)
 - [www.chalkpicks.live](https://www.chalkpicks.live)
+- [bet.chalkpicks.live](https://bet.chalkpicks.live)
 
-To deploy: create a checkpoint in the Manus Management UI, then click **Publish**.
+**Cloud Computer Mirror:** GCE VM with nginx, PM2, Ollama, Quant Sidecar
 
 ---
 
-*21+ Only. Bet Responsibly.*
+## Contributing
 
-(c) 2026 ChalkPicks. All rights reserved.
+This is a private commercial project. For feature requests or bug reports, contact the maintainer.
+
+---
+
+## License
+
+Proprietary. All rights reserved.
+
+---
+
+<p align="center"><em>21+ Only. Bet Responsibly.</em></p>
+<p align="center">&copy; 2026 ChalkPicks. All rights reserved.</p>

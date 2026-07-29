@@ -1857,3 +1857,17 @@
 - [x] Sitemap: Regenerated with 61 URLs including 4 new sport routes (ncaaf/ncaab/mma/soccer)
 - [x] Cloud computer: Rebuilt snapshots (25 HTML files), restarted PM2
 - [x] GitHub: Merged Manus+Grok branches, pushed 2b4c9e9 to main
+
+## Mobile App — Android APK + iOS Xcode (Jul 29 2026)
+
+- [x] Audit Grok's Capacitor scaffold (capacitor.config.ts, well-known files, native.ts)
+- [x] Configure capacitor.config.ts: appId=live.chalkpicks.app, appName=ChalkPicks, webDir=dist/public, server.url for dev
+- [x] Install @capacitor/cli, @capacitor/android, @capacitor/ios, @capacitor/push-notifications, @capacitor/splash-screen, @capacitor/status-bar
+- [x] Generate app icons (1024x1024 source) and splash screens for Android + iOS (Capacitor defaults)
+- [x] Build web bundle (pnpm run build) and sync to Android/iOS (npx cap sync)
+- [x] Configure Android: update AndroidManifest.xml with deep links, push permissions, internet permission
+- [x] Configure iOS: update Info.plist with deep links, push notification entitlements
+- [x] Generate Android debug APK via Gradle (7 MB, BUILD SUCCESSFUL)
+- [x] Generate iOS Xcode project (requires macOS/Xcode to build IPA)
+- [x] Document app store submission steps (Google Play + Apple App Store) in docs/MOBILE.md
+- [x] Push to GitHub with mobile platform files (ef3b7d3)

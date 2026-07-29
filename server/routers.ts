@@ -44,6 +44,8 @@ import { apiKeysRouter } from "./routers/apiKeys";
 import { consensusRouter } from "./routers/consensus";
 import { trackingRouter } from "./routers/tracking";
 import { profileRouter } from "./routers/profile";
+import { railwayRouter } from "./routers/railway";
+import { n8nWebhookRouter } from "./routers/n8nWebhook";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -215,6 +217,8 @@ export const appRouter = router({
   consensus: consensusRouter,
   tracking: trackingRouter,
   profile: profileRouter,
+  railway: railwayRouter,
+  n8nWebhook: n8nWebhookRouter,
 });
 
 export type AppRouter = typeof appRouter;

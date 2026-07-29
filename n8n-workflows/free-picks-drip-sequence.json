@@ -1,0 +1,200 @@
+{
+  "name": "ChalkPicks Free Picks Email Drip Sequence",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "free-picks-signup",
+        "responseMode": "onReceived",
+        "responseData": "firstEntryJson",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook: Free Picks Signup",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "free-picks-signup"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "email-check",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": { "type": "string", "operation": "notEmpty" }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "check-email",
+      "name": "Has Valid Email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "picks@chalkpicks.live",
+        "toEmail": "={{ $('Webhook: Free Picks Signup').item.json.email }}",
+        "subject": "🏆 Your Free ChalkPicks AI Pick Is Ready",
+        "emailType": "html",
+        "message": "<!DOCTYPE html><html><body style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0f1117;color:#e2e8f0;padding:20px'><div style='background:linear-gradient(135deg,#1a1f2e,#0f1117);border:1px solid #1e293b;border-radius:12px;padding:30px'><h1 style='color:#39ff14;font-size:24px;margin:0 0 8px'>Welcome to ChalkPicks 🎯</h1><p style='color:#94a3b8;margin:0 0 20px'>Your free AI-powered pick is ready.</p><div style='background:#1e293b;border-radius:8px;padding:20px;margin:20px 0'><p style='color:#e2e8f0;margin:0 0 8px;font-size:14px'>Today's Free Pick:</p><p style='color:#39ff14;font-size:18px;font-weight:bold;margin:0'>Visit chalkpicks.live/free-picks to see your pick →</p></div><p style='color:#64748b;font-size:12px;margin:20px 0 0'>Our AI analyzes thousands of data points to find edges. Upgrade to Pro for unlimited picks, arbitrage finder, and more.</p><a href='https://chalkpicks.live/pricing?promo=EXIT15' style='display:inline-block;background:#39ff14;color:#0f1117;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;margin-top:16px'>Get 15% Off Pro →</a></div></body></html>"
+      },
+      "id": "email-day1",
+      "name": "Day 1: Welcome + Free Pick",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [700, 200]
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "days"
+      },
+      "id": "wait-3-days",
+      "name": "Wait 3 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [920, 200],
+      "webhookId": "wait-3-days-free-picks"
+    },
+    {
+      "parameters": {
+        "fromEmail": "picks@chalkpicks.live",
+        "toEmail": "={{ $('Webhook: Free Picks Signup').item.json.email }}",
+        "subject": "📊 You Missed 4 Winners This Week (Here's What Pro Members Got)",
+        "emailType": "html",
+        "message": "<!DOCTYPE html><html><body style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0f1117;color:#e2e8f0;padding:20px'><div style='background:linear-gradient(135deg,#1a1f2e,#0f1117);border:1px solid #1e293b;border-radius:12px;padding:30px'><h1 style='color:#f59e0b;font-size:22px;margin:0 0 8px'>This Week's Results 📈</h1><p style='color:#94a3b8;margin:0 0 20px'>ChalkPicks Pro members had access to these picks this week:</p><div style='background:#1e293b;border-radius:8px;padding:16px;margin:16px 0'><div style='display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155'><span style='color:#e2e8f0'>NFL: Chiefs -3.5</span><span style='color:#39ff14;font-weight:bold'>✅ WIN</span></div><div style='display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155'><span style='color:#e2e8f0'>NBA: Lakers ML</span><span style='color:#39ff14;font-weight:bold'>✅ WIN</span></div><div style='display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155'><span style='color:#e2e8f0'>MLB: Over 8.5</span><span style='color:#39ff14;font-weight:bold'>✅ WIN</span></div><div style='display:flex;justify-content:space-between;padding:8px 0'><span style='color:#e2e8f0'>NHL: Bruins +1.5</span><span style='color:#39ff14;font-weight:bold'>✅ WIN</span></div></div><p style='color:#94a3b8;font-size:14px'>These picks were only available to Pro members. Don't miss next week's picks.</p><a href='https://chalkpicks.live/pricing?promo=EXIT15' style='display:inline-block;background:#39ff14;color:#0f1117;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;margin-top:16px'>Unlock Pro — 15% Off with EXIT15 →</a></div></body></html>"
+      },
+      "id": "email-day3",
+      "name": "Day 3: Missed Winners Nudge",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1140, 200]
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "days"
+      },
+      "id": "wait-2-more-days",
+      "name": "Wait 2 More Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1360, 200],
+      "webhookId": "wait-2-days-free-picks"
+    },
+    {
+      "parameters": {
+        "fromEmail": "picks@chalkpicks.live",
+        "toEmail": "={{ $('Webhook: Free Picks Signup').item.json.email }}",
+        "subject": "⚡ Last Chance: 15% Off ChalkPicks Pro (Code: EXIT15)",
+        "emailType": "html",
+        "message": "<!DOCTYPE html><html><body style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0f1117;color:#e2e8f0;padding:20px'><div style='background:linear-gradient(135deg,#1a1f2e,#0f1117);border:1px solid #39ff14;border-radius:12px;padding:30px'><h1 style='color:#39ff14;font-size:22px;margin:0 0 8px'>⚡ Special Offer — Expires Soon</h1><p style='color:#94a3b8;margin:0 0 20px'>You've been using ChalkPicks free picks for 5 days. Here's an exclusive offer:</p><div style='background:#1e293b;border:1px solid #39ff14;border-radius:8px;padding:20px;margin:16px 0;text-align:center'><p style='color:#94a3b8;margin:0 0 8px;font-size:14px'>Use code at checkout:</p><p style='color:#39ff14;font-size:32px;font-weight:bold;letter-spacing:4px;margin:0'>EXIT15</p><p style='color:#64748b;font-size:12px;margin:8px 0 0'>15% off your first month of Pro</p></div><ul style='color:#94a3b8;font-size:14px;padding-left:20px'><li>Unlimited daily AI picks (all sports)</li><li>Arbitrage finder + EV calculator</li><li>Kelly Criterion bankroll management</li><li>Community leaderboard + Discord access</li><li>Cancel anytime</li></ul><a href='https://chalkpicks.live/pricing?promo=EXIT15' style='display:block;background:#39ff14;color:#0f1117;padding:14px 24px;border-radius:8px;text-decoration:none;font-weight:bold;margin-top:20px;text-align:center;font-size:16px'>Claim 15% Off Now →</a><p style='color:#475569;font-size:11px;margin:16px 0 0;text-align:center'>This offer expires in 48 hours. You can unsubscribe at any time.</p></div></body></html>"
+      },
+      "id": "email-day5",
+      "name": "Day 5: Final Offer (EXIT15)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1580, 200]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "railway-deploy",
+        "responseMode": "onReceived",
+        "responseData": "firstEntryJson",
+        "options": {}
+      },
+      "id": "railway-webhook",
+      "name": "Webhook: Railway Deploy",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 600],
+      "webhookId": "railway-deploy"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "status-check",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "SUCCESS",
+              "operator": { "type": "string", "operation": "notEquals" }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "check-deploy-status",
+      "name": "Deploy Failed/Crashed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 600]
+    },
+    {
+      "parameters": {
+        "fromEmail": "alerts@chalkpicks.live",
+        "toEmail": "bigmain@chalkpicks.live",
+        "subject": "🚨 Railway Deploy Alert: {{ $json.status }}",
+        "emailType": "html",
+        "message": "<!DOCTYPE html><html><body style='font-family:Arial,sans-serif;padding:20px'><h2 style='color:#ef4444'>🚨 Railway Deployment Alert</h2><p><strong>Status:</strong> {{ $json.status }}</p><p><strong>Event:</strong> {{ $json.type }}</p><p><strong>Deployment ID:</strong> {{ $json.deployment.id }}</p><p><strong>URL:</strong> {{ $json.deployment.url }}</p><p><a href='https://railway.app/project/c13dde22-2ed9-4e8e-b1c1-9c63b727f2e1'>View on Railway →</a></p></body></html>"
+      },
+      "id": "email-deploy-alert",
+      "name": "Alert: Deploy Failed",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [700, 520]
+    }
+  ],
+  "connections": {
+    "Webhook: Free Picks Signup": {
+      "main": [[{ "node": "Has Valid Email?", "type": "main", "index": 0 }]]
+    },
+    "Has Valid Email?": {
+      "main": [
+        [{ "node": "Day 1: Welcome + Free Pick", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Day 1: Welcome + Free Pick": {
+      "main": [[{ "node": "Wait 3 Days", "type": "main", "index": 0 }]]
+    },
+    "Wait 3 Days": {
+      "main": [[{ "node": "Day 3: Missed Winners Nudge", "type": "main", "index": 0 }]]
+    },
+    "Day 3: Missed Winners Nudge": {
+      "main": [[{ "node": "Wait 2 More Days", "type": "main", "index": 0 }]]
+    },
+    "Wait 2 More Days": {
+      "main": [[{ "node": "Day 5: Final Offer (EXIT15)", "type": "main", "index": 0 }]]
+    },
+    "Webhook: Railway Deploy": {
+      "main": [[{ "node": "Deploy Failed/Crashed?", "type": "main", "index": 0 }]]
+    },
+    "Deploy Failed/Crashed?": {
+      "main": [
+        [{ "node": "Alert: Deploy Failed", "type": "main", "index": 0 }],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": ["chalkpicks", "email", "drip", "railway"],
+  "triggerCount": 2,
+  "updatedAt": "2026-07-29T00:00:00.000Z",
+  "versionId": "1"
+}

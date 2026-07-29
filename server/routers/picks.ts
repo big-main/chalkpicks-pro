@@ -267,6 +267,21 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
           isActive: true,
           isFeatured: parsed.confidenceScore >= 80,
         });
+        // Fire n8n AI analysis webhook (non-blocking)
+        const n8nPicksUrl = process.env.N8N_PICKS_WEBHOOK_URL;
+        if (n8nPicksUrl) {
+          fetch(n8nPicksUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              event_type: "pick.created",
+              pick_id: (inserted as any).insertId,
+              sport_key: input.sportKey,
+              secret: process.env.N8N_WEBHOOK_SECRET,
+            }),
+            signal: AbortSignal.timeout(5000),
+          }).catch((e) => console.warn("[n8n] picks webhook failed:", e));
+        }
         // Fire +EV push alert for high-confidence picks (≥80% confidence)
         const confidence = Math.min(95, Math.max(50, Math.round(parsed.confidenceScore)));
         if (confidence >= 80) {

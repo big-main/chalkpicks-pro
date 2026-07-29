@@ -24,4 +24,10 @@ export const ENV = {
   discordWebhookUrl: process.env.DISCORD_WEBHOOK_URL ?? "",
   // n8n Email Drip Webhook — fires on new user registration (Day 0/1/3/7 sequence)
   n8nDripWebhookUrl: process.env.N8N_DRIP_WEBHOOK_URL ?? "",
+  // n8n AI Pick Analyzer Webhook — fires when a new pick is created (triggers AI analysis workflow)
+  n8nPicksWebhookUrl: process.env.N8N_PICKS_WEBHOOK_URL ?? "",
+  // Shared secret for n8n → ChalkPicks API calls (validates incoming n8n requests)
+  n8nWebhookSecret: process.env.N8N_WEBHOOK_SECRET ?? "",
+  // Railway API token — full access for deploy management
+  railwayApiToken: process.env.RAILWAY_API_TOKEN ?? "",
 };

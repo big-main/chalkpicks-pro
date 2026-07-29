@@ -16,8 +16,8 @@ import { and, gte, lte, eq } from "drizzle-orm";
 import { sendDripEmail } from "../email";
 
 export async function welcomeDripHandler(req: Request, res: Response) {
-  const taskUid = req.headers["x-manus-cron-task-uid"] as string || "manual";
-  console.log(`[WelcomeDrip] Triggered by task: ${taskUid}`);
+  const taskUid = (req.headers["x-manus-cron-task-uid"] as string) || "manual";
+  console.warn(`[WelcomeDrip] Triggered by task: ${taskUid}`);
 
   try {
     const db = await getDb();
@@ -34,10 +34,12 @@ export async function welcomeDripHandler(req: Request, res: Response) {
     const day2Start = new Date(now.getTime() - 48 * 60 * 60 * 1000);
     const day2End = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-    const day2Orders = await db.select({
-      order: subscriptionOrders,
-      user: users,
-    }).from(subscriptionOrders)
+    const day2Orders = await db
+      .select({
+        order: subscriptionOrders,
+        user: users,
+      })
+      .from(subscriptionOrders)
       .innerJoin(users, eq(subscriptionOrders.userId, users.id))
       .where(
         and(
@@ -62,10 +64,12 @@ export async function welcomeDripHandler(req: Request, res: Response) {
     const day3Start = new Date(now.getTime() - 72 * 60 * 60 * 1000);
     const day3End = new Date(now.getTime() - 48 * 60 * 60 * 1000);
 
-    const day3Orders = await db.select({
-      order: subscriptionOrders,
-      user: users,
-    }).from(subscriptionOrders)
+    const day3Orders = await db
+      .select({
+        order: subscriptionOrders,
+        user: users,
+      })
+      .from(subscriptionOrders)
       .innerJoin(users, eq(subscriptionOrders.userId, users.id))
       .where(
         and(
@@ -90,10 +94,12 @@ export async function welcomeDripHandler(req: Request, res: Response) {
     const day7Start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const day7End = new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000);
 
-    const day7Orders = await db.select({
-      order: subscriptionOrders,
-      user: users,
-    }).from(subscriptionOrders)
+    const day7Orders = await db
+      .select({
+        order: subscriptionOrders,
+        user: users,
+      })
+      .from(subscriptionOrders)
       .innerJoin(users, eq(subscriptionOrders.userId, users.id))
       .where(
         and(
@@ -114,8 +120,16 @@ export async function welcomeDripHandler(req: Request, res: Response) {
       if (sent) day7Sent++;
     }
 
-    console.log(`[WelcomeDrip] Complete: Day 2=${day2Sent}/${day2Orders.length}, Day 3=${day3Sent}/${day3Orders.length}, Day 7=${day7Sent}/${day7Orders.length}`);
-    res.json({ ok: true, day2Sent, day3Sent, day7Sent, timestamp: now.toISOString() });
+    console.warn(
+      `[WelcomeDrip] Complete: Day 2=${day2Sent}/${day2Orders.length}, Day 3=${day3Sent}/${day3Orders.length}, Day 7=${day7Sent}/${day7Orders.length}`
+    );
+    res.json({
+      ok: true,
+      day2Sent,
+      day3Sent,
+      day7Sent,
+      timestamp: now.toISOString(),
+    });
   } catch (error: any) {
     console.error("[WelcomeDrip] Error:", error);
     res.status(500).json({

@@ -54,7 +54,11 @@ Respond with JSON only:
 
   const response = await invokeLLM({
     messages: [
-      { role: "system", content: "You are a sports betting social media expert. Always respond with valid JSON." },
+      {
+        role: "system",
+        content:
+          "You are a sports betting social media expert. Always respond with valid JSON.",
+      },
       { role: "user", content: prompt },
     ],
     response_format: {
@@ -93,8 +97,8 @@ Respond with JSON only:
 }
 
 export async function dailySocialPostHandler(req: Request, res: Response) {
-  const taskUid = req.headers["x-manus-cron-task-uid"] as string || "manual";
-  console.log(`[DailySocialPost] Triggered by task: ${taskUid}`);
+  const taskUid = (req.headers["x-manus-cron-task-uid"] as string) || "manual";
+  console.warn(`[DailySocialPost] Triggered by task: ${taskUid}`);
 
   try {
     const db = await getDb();
@@ -106,22 +110,26 @@ export async function dailySocialPostHandler(req: Request, res: Response) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const topPicks = await db.select().from(picks)
+    const topPicks = await db
+      .select()
+      .from(picks)
       .where(gte(picks.createdAt, today))
       .orderBy(desc(picks.confidenceScore))
       .limit(1);
 
     if (topPicks.length === 0) {
-      console.log("[DailySocialPost] No picks found for today, skipping");
+      console.warn("[DailySocialPost] No picks found for today, skipping");
       return res.json({ ok: true, skipped: "no-picks-today" });
     }
 
     const topPick = topPicks[0];
-    console.log(`[DailySocialPost] Using pick: ${topPick.homeTeam} vs ${topPick.awayTeam} (${topPick.confidenceScore}%)`);
+    console.warn(
+      `[DailySocialPost] Using pick: ${topPick.homeTeam} vs ${topPick.awayTeam} (${topPick.confidenceScore}%)`
+    );
 
     // Generate social content via LLM
     const posts = await generateSocialContent(topPick);
-    console.log(`[DailySocialPost] Generated ${posts.length} posts`);
+    console.warn(`[DailySocialPost] Generated ${posts.length} posts`);
 
     // Dispatch posts to n8n social syndication webhook if configured
     const n8nWebhookUrl = process.env.N8N_SOCIAL_WEBHOOK_URL;
@@ -131,25 +139,29 @@ export async function dailySocialPostHandler(req: Request, res: Response) {
       try {
         const payload = {
           posts,
-          sport: topPick.sportKey || 'sports',
-          date: new Date().toISOString().split('T')[0],
+          sport: topPick.sportKey || "sports",
+          date: new Date().toISOString().split("T")[0],
           pick: `${topPick.homeTeam} vs ${topPick.awayTeam}`,
           confidence: topPick.confidenceScore,
         };
         const webhookRes = await fetch(n8nWebhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
           signal: AbortSignal.timeout(10000),
         });
         webhookDispatched = webhookRes.ok;
-        console.log(`[DailySocialPost] n8n webhook: ${webhookRes.status} ${webhookRes.ok ? 'OK' : 'FAILED'}`);
+        console.warn(
+          `[DailySocialPost] n8n webhook: ${webhookRes.status} ${webhookRes.ok ? "OK" : "FAILED"}`
+        );
       } catch (err: any) {
         webhookError = err.message;
         console.warn(`[DailySocialPost] n8n webhook error: ${err.message}`);
       }
     } else if (!n8nWebhookUrl) {
-      console.log('[DailySocialPost] N8N_SOCIAL_WEBHOOK_URL not set — skipping webhook dispatch');
+      console.warn(
+        "[DailySocialPost] N8N_SOCIAL_WEBHOOK_URL not set — skipping webhook dispatch"
+      );
     }
 
     res.json({

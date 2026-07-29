@@ -37,7 +37,10 @@ export async function babyloveGrowSyncHandler(req: Request, res: Response) {
   const apiKey = process.env.BABYLOVEGROWTH_API_KEY;
   if (!apiKey) {
     console.error("[BabyLoveGrow Sync] BABYLOVEGROWTH_API_KEY not set");
-    return res.json({ ok: false, error: "BABYLOVEGROWTH_API_KEY not configured" });
+    return res.json({
+      ok: false,
+      error: "BABYLOVEGROWTH_API_KEY not configured",
+    });
   }
 
   try {
@@ -46,8 +49,10 @@ export async function babyloveGrowSyncHandler(req: Request, res: Response) {
       headers: { "X-API-Key": apiKey },
       timeout: 20000,
     });
-    const articles: BabyLoveArticle[] = Array.isArray(listRes.data) ? listRes.data : [];
-    const published = articles.filter((a) => a.published);
+    const articles: BabyLoveArticle[] = Array.isArray(listRes.data)
+      ? listRes.data
+      : [];
+    const published = articles.filter(a => a.published);
 
     let synced = 0;
     let skipped = 0;
@@ -55,14 +60,19 @@ export async function babyloveGrowSyncHandler(req: Request, res: Response) {
 
     const db = await getDb();
     if (!db) {
-      return res.status(500).json({ ok: false, error: "Database not available" });
+      return res
+        .status(500)
+        .json({ ok: false, error: "Database not available" });
     }
 
     for (const article of published) {
       try {
         // 2. Check if already synced
         const existing = await db
-          .select({ id: blogPosts.id, sourceArticleId: blogPosts.sourceArticleId })
+          .select({
+            id: blogPosts.id,
+            sourceArticleId: blogPosts.sourceArticleId,
+          })
           .from(blogPosts)
           .where(eq(blogPosts.sourceArticleId, String(article.id)))
           .limit(1);
@@ -84,7 +94,8 @@ export async function babyloveGrowSyncHandler(req: Request, res: Response) {
 
         // 5. Build SEO description (50-160 chars)
         let seoDescription = full.meta_description ?? full.excerpt ?? "";
-        if (seoDescription.length > 160) seoDescription = seoDescription.slice(0, 157) + "...";
+        if (seoDescription.length > 160)
+          seoDescription = seoDescription.slice(0, 157) + "...";
         if (seoDescription.length < 50 && full.title) {
           seoDescription = `${full.title} — Expert sports betting analysis and picks from ChalkPicks Pro.`;
           seoDescription = seoDescription.slice(0, 160);
@@ -109,15 +120,28 @@ export async function babyloveGrowSyncHandler(req: Request, res: Response) {
         });
 
         synced++;
-        console.log(`[BabyLoveGrow Sync] Synced: "${full.title}" (id: ${full.id})`);
+        console.warn(
+          `[BabyLoveGrow Sync] Synced: "${full.title}" (id: ${full.id})`
+        );
       } catch (articleErr: any) {
-        console.error(`[BabyLoveGrow Sync] Error syncing article ${article.id}:`, articleErr.message);
+        console.error(
+          `[BabyLoveGrow Sync] Error syncing article ${article.id}:`,
+          articleErr.message
+        );
         errors++;
       }
     }
 
-    console.log(`[BabyLoveGrow Sync] Done — synced: ${synced}, skipped: ${skipped}, errors: ${errors}`);
-    return res.json({ ok: true, synced, skipped, errors, total: published.length });
+    console.warn(
+      `[BabyLoveGrow Sync] Done — synced: ${synced}, skipped: ${skipped}, errors: ${errors}`
+    );
+    return res.json({
+      ok: true,
+      synced,
+      skipped,
+      errors,
+      total: published.length,
+    });
   } catch (err: any) {
     console.error("[BabyLoveGrow Sync] Fatal error:", err.message);
     return res.status(500).json({ ok: false, error: err.message });

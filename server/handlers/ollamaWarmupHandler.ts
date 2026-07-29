@@ -35,18 +35,34 @@ export async function ollamaWarmupHandler(_req: Request, res: Response) {
     const elapsed = Date.now() - start;
 
     if (response.ok) {
-      console.log(`[OllamaWarmup] ${model} is warm — responded in ${elapsed}ms`);
+      console.warn(
+        `[OllamaWarmup] ${model} is warm — responded in ${elapsed}ms`
+      );
       return res.json({ ok: true, model, elapsed_ms: elapsed });
     } else {
       const text = await response.text().catch(() => "");
-      console.warn(`[OllamaWarmup] ${model} returned HTTP ${response.status}: ${text.slice(0, 100)}`);
-      return res.json({ ok: false, model, status: response.status, elapsed_ms: elapsed });
+      console.warn(
+        `[OllamaWarmup] ${model} returned HTTP ${response.status}: ${text.slice(0, 100)}`
+      );
+      return res.json({
+        ok: false,
+        model,
+        status: response.status,
+        elapsed_ms: elapsed,
+      });
     }
   } catch (err: any) {
     const elapsed = Date.now() - start;
     const isTimeout = err?.name === "AbortError";
-    console.warn(`[OllamaWarmup] ${model} ${isTimeout ? "timed out" : "failed"} after ${elapsed}ms: ${err?.message}`);
+    console.warn(
+      `[OllamaWarmup] ${model} ${isTimeout ? "timed out" : "failed"} after ${elapsed}ms: ${err?.message}`
+    );
     // Return 200 even on failure — Heartbeat should not retry on model cold-start
-    return res.json({ ok: false, model, error: err?.message, elapsed_ms: elapsed });
+    return res.json({
+      ok: false,
+      model,
+      error: err?.message,
+      elapsed_ms: elapsed,
+    });
   }
 }

@@ -2,15 +2,23 @@ import { invokeLLM } from "./_core/llm";
 import nodemailer from "nodemailer";
 
 // ─── Resend HTTP API helper (no SDK needed) ───────────────────────────────────
-async function sendViaResend(to: string, subject: string, html: string): Promise<boolean> {
+async function sendViaResend(
+  to: string,
+  subject: string,
+  html: string
+): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return false;
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
       body: JSON.stringify({
-        from: process.env.SMTP_FROM || "ChalkPicks Pro <noreply@chalkpicks.live>",
+        from:
+          process.env.SMTP_FROM || "ChalkPicks Pro <noreply@chalkpicks.live>",
         to: [to],
         subject,
         html,
@@ -31,7 +39,13 @@ async function sendViaResend(to: string, subject: string, html: string): Promise
 export interface EmailPayload {
   to: string;
   subject: string;
-  type: "daily-picks" | "subscription-confirmation" | "performance-summary" | "alert" | "welcome" | "newsletter-welcome";
+  type:
+    | "daily-picks"
+    | "subscription-confirmation"
+    | "performance-summary"
+    | "alert"
+    | "welcome"
+    | "newsletter-welcome";
   data?: Record<string, any>;
 }
 
@@ -85,13 +99,16 @@ export async function sendEmail(payload: EmailPayload): Promise<boolean> {
         break;
     }
 
-    console.log(`[Email] Sending ${type} to ${to}`);
+    console.warn(`[Email] Sending ${type} to ${to}`);
 
     // Priority: Resend API → SMTP → log-only fallback
     if (process.env.RESEND_API_KEY) {
       const sent = await sendViaResend(to, subject, htmlContent);
       if (!sent) console.warn("[Email] Resend failed, falling back to SMTP");
-      else { console.log(`[Email] Sent via Resend: ${subject} → ${to}`); return true; }
+      else {
+        console.warn(`[Email] Sent via Resend: ${subject} → ${to}`);
+        return true;
+      }
     }
     if (process.env.SMTP_USER && process.env.SMTP_PASS) {
       await transporter.sendMail({
@@ -100,10 +117,12 @@ export async function sendEmail(payload: EmailPayload): Promise<boolean> {
         subject,
         html: htmlContent,
       });
-      console.log(`[Email] Sent via SMTP: ${subject} → ${to}`);
+      console.warn(`[Email] Sent via SMTP: ${subject} → ${to}`);
     } else {
       // Dev fallback: log content only
-      console.log(`[Email] No email provider configured — logged only. Subject: ${subject} → ${to}`);
+      console.warn(
+        `[Email] No email provider configured — logged only. Subject: ${subject} → ${to}`
+      );
     }
 
     return true;
@@ -184,10 +203,14 @@ function generateDailyPicksEmail(data: Record<string, any>): string {
   `;
 }
 
-function generateSubscriptionConfirmationEmail(data: Record<string, any>): string {
+function generateSubscriptionConfirmationEmail(
+  data: Record<string, any>
+): string {
   const tier = data.tier || "monthly";
   const amount = data.amount || "$29.99";
-  const renewalDate = data.renewalDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString();
+  const renewalDate =
+    data.renewalDate ||
+    new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString();
 
   return `
     <html>
@@ -306,12 +329,34 @@ function generatePerformanceSummaryEmail(data: Record<string, any>): string {
 
 function generateWelcomeEmail(data: Record<string, any>): string {
   const tier = (data.tier || "monthly") as "daily" | "monthly" | "yearly";
-  const tierName = { daily: "Daily Pass", monthly: "Monthly Pro", yearly: "Annual VIP" }[tier];
-  const expiresDate = new Date(data.expiresAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const tierName = {
+    daily: "Daily Pass",
+    monthly: "Monthly Pro",
+    yearly: "Annual VIP",
+  }[tier];
+  const expiresDate = new Date(data.expiresAt).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
   const tierFeatures = {
     daily: ["Daily AI picks", "Live stats", "Leaderboard access"],
-    monthly: ["All Daily features", "+EV Finder", "Steam detector", "CLV Tracker", "Backtesting", "Kelly Calculator", "Email alerts"],
-    yearly: ["All Monthly features", "Advanced backtesting", "Custom AI picks", "VIP Discord", "1-on-1 sessions"],
+    monthly: [
+      "All Daily features",
+      "+EV Finder",
+      "Steam detector",
+      "CLV Tracker",
+      "Backtesting",
+      "Kelly Calculator",
+      "Email alerts",
+    ],
+    yearly: [
+      "All Monthly features",
+      "Advanced backtesting",
+      "Custom AI picks",
+      "VIP Discord",
+      "1-on-1 sessions",
+    ],
   }[tier];
 
   return `
@@ -416,19 +461,26 @@ function generateAlertEmail(data: Record<string, any>): string {
   `;
 }
 
-
 /**
  * Send a welcome email after subscription purchase
  * Used by webhook handler after checkout.session.completed
  */
-export async function sendWelcomeEmail(options: WelcomeEmailOptions): Promise<boolean> {
+export async function sendWelcomeEmail(
+  options: WelcomeEmailOptions
+): Promise<boolean> {
   try {
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.warn("[Email] SMTP credentials not configured, skipping welcome email");
+      console.warn(
+        "[Email] SMTP credentials not configured, skipping welcome email"
+      );
       return false;
     }
 
-    const tierName = { daily: "Daily Pass", monthly: "Monthly Pro", yearly: "Annual VIP" }[options.tier];
+    const tierName = {
+      daily: "Daily Pass",
+      monthly: "Monthly Pro",
+      yearly: "Annual VIP",
+    }[options.tier];
 
     const info = await transporter.sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
@@ -441,7 +493,9 @@ export async function sendWelcomeEmail(options: WelcomeEmailOptions): Promise<bo
       }),
     });
 
-    console.log(`[Email] Welcome email sent to ${options.email} (message ID: ${info.messageId})`);
+    console.warn(
+      `[Email] Welcome email sent to ${options.email} (message ID: ${info.messageId})`
+    );
     return true;
   } catch (error) {
     console.error("[Email] Failed to send welcome email:", error);
@@ -454,12 +508,19 @@ export async function sendWelcomeEmail(options: WelcomeEmailOptions): Promise<bo
 /**
  * Send a raw HTML email directly (no template generation)
  */
-export async function sendEmailRaw(to: string, subject: string, html: string): Promise<boolean> {
+export async function sendEmailRaw(
+  to: string,
+  subject: string,
+  html: string
+): Promise<boolean> {
   try {
-    console.log(`[Email] Sending raw email to ${to}`);
+    console.warn(`[Email] Sending raw email to ${to}`);
     if (process.env.RESEND_API_KEY) {
       const sent = await sendViaResend(to, subject, html);
-      if (sent) { console.log(`[Email] Sent via Resend: ${subject} → ${to}`); return true; }
+      if (sent) {
+        console.warn(`[Email] Sent via Resend: ${subject} → ${to}`);
+        return true;
+      }
       console.warn("[Email] Resend failed, falling back to SMTP");
     }
     if (process.env.SMTP_USER && process.env.SMTP_PASS) {
@@ -469,10 +530,12 @@ export async function sendEmailRaw(to: string, subject: string, html: string): P
         subject,
         html,
       });
-      console.log(`[Email] Sent via SMTP: ${subject} → ${to}`);
+      console.warn(`[Email] Sent via SMTP: ${subject} → ${to}`);
       return true;
     }
-    console.log(`[Email] No email provider configured, logged only: ${subject} → ${to}`);
+    console.warn(
+      `[Email] No email provider configured, logged only: ${subject} → ${to}`
+    );
     return false;
   } catch (e) {
     console.error(`[Email/Raw] Error sending to ${to}:`, e);
@@ -525,13 +588,15 @@ function generateDay2Email(name: string): string {
 
 function generateDay3Email(name: string, tier: string): string {
   const isYearly = tier === "yearly";
-  const upsellSection = !isYearly ? `
+  const upsellSection = !isYearly
+    ? `
     <div style="background: linear-gradient(135deg, #1a2e1a, #0a1a0a); border: 1px solid rgba(57,255,20,0.3); border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;">
       <h3 style="color: #39ff14; font-size: 18px; margin: 0 0 8px;">Save 44% with Annual</h3>
       <p style="color: #94a3b8; font-size: 14px; margin: 0 0 16px;">Switch to yearly and save $159.89/year vs monthly billing.</p>
       <a href="https://chalkpicks.live/pricing" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-size: 14px;">Upgrade to Annual</a>
     </div>
-  ` : "";
+  `
+    : "";
 
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a1a; color: #e2e8f0; padding: 40px 24px;">
@@ -615,12 +680,17 @@ function generateDay7Email(name: string, tier: string): string {
 /**
  * Send a drip email (Day 2, 3, or 7 of the welcome sequence)
  */
-export async function sendDripEmail(options: DripEmailOptions): Promise<boolean> {
+export async function sendDripEmail(
+  options: DripEmailOptions
+): Promise<boolean> {
   try {
     const subjectMap: Record<number, string> = {
       2: "3 Pro Tips to Maximize Your Edge",
       3: "Share ChalkPicks & Get Rewarded",
-      7: options.tier === "yearly" ? "One Week In 🎉" : "Upgrade to Annual Elite — Save 44%",
+      7:
+        options.tier === "yearly"
+          ? "One Week In 🎉"
+          : "Upgrade to Annual Elite — Save 44%",
     };
     const subject = subjectMap[options.day] ?? "ChalkPicks Update";
 
@@ -647,10 +717,15 @@ export async function sendDripEmail(options: DripEmailOptions): Promise<boolean>
       html,
     });
 
-    console.log(`[Email] Drip day ${options.day} sent to ${options.email} (ID: ${info.messageId})`);
+    console.warn(
+      `[Email] Drip day ${options.day} sent to ${options.email} (ID: ${info.messageId})`
+    );
     return true;
   } catch (error) {
-    console.error(`[Email] Failed to send drip day ${options.day} to ${options.email}:`, error);
+    console.error(
+      `[Email] Failed to send drip day ${options.day} to ${options.email}:`,
+      error
+    );
     return false;
   }
 }

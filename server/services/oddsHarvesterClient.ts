@@ -75,7 +75,9 @@ export async function isOddsHarvesterHealthy(): Promise<boolean> {
   }
   _ohLastCheck = now;
   if (!_ohHealthy) {
-    console.warn("[OddsHarvester] API unreachable — skipping supplemental odds");
+    console.warn(
+      "[OddsHarvester] API unreachable — skipping supplemental odds"
+    );
   }
   return _ohHealthy;
 }
@@ -109,7 +111,7 @@ export async function fetchOddsHarvesterOdds(
       if (cached.length > 0) {
         const row = cached[0];
         if (row && row.expiresAt > new Date()) {
-          console.log(`[OddsHarvester] Cache hit for ${sport}`);
+          console.warn(`[OddsHarvester] Cache hit for ${sport}`);
           return (row.data as BookmakerOdds[]) || [];
         }
       }
@@ -152,8 +154,12 @@ export async function fetchOddsHarvesterOdds(
             scrapedAt: now,
             expiresAt,
           })
-          .onDuplicateKeyUpdate({ set: { data: result, scrapedAt: now, expiresAt } });
-        console.log(`[OddsHarvester] Cached ${result.length} odds for ${sport}`);
+          .onDuplicateKeyUpdate({
+            set: { data: result, scrapedAt: now, expiresAt },
+          });
+        console.warn(
+          `[OddsHarvester] Cached ${result.length} odds for ${sport}`
+        );
       }
     } catch (cacheErr) {
       console.warn("[OddsHarvester] Cache store failed:", cacheErr);
@@ -180,8 +186,10 @@ function normalizeOHEvents(
     const homeTeam = event.home_team || event.match?.split(" - ")[0] || "Home";
     const awayTeam = event.away_team || event.match?.split(" - ")[1] || "Away";
     const eventName = `${homeTeam} vs ${awayTeam}`;
-    const eventDate = event.commence_time || event.date || new Date().toISOString();
-    const eventId = `oh_${ohSport}_${homeTeam}_${awayTeam}_${eventDate}`.replace(/\s+/g, "_");
+    const eventDate =
+      event.commence_time || event.date || new Date().toISOString();
+    const eventId =
+      `oh_${ohSport}_${homeTeam}_${awayTeam}_${eventDate}`.replace(/\s+/g, "_");
 
     // Handle structured bookmakers format
     if (event.bookmakers && Array.isArray(event.bookmakers)) {
@@ -192,7 +200,7 @@ function normalizeOHEvents(
           markets.push({
             key: market.key,
             name: marketKeyToName(market.key),
-            outcomes: (market.outcomes || []).map((o) => ({
+            outcomes: (market.outcomes || []).map(o => ({
               name: o.name,
               price: o.price,
               point: o.point,

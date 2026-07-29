@@ -2,8 +2,17 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
 import {
-  CheckCircle2, XCircle, Minus, Activity, TrendingUp, ChevronLeft, ChevronRight,
-  Newspaper, Zap, BookOpen, ExternalLink,
+  CheckCircle2,
+  XCircle,
+  Minus,
+  Activity,
+  TrendingUp,
+  ChevronLeft,
+  ChevronRight,
+  Newspaper,
+  Zap,
+  BookOpen,
+  ExternalLink,
 } from "lucide-react";
 
 const SPORT_COLORS: Record<string, string> = {
@@ -15,7 +24,11 @@ const SPORT_COLORS: Record<string, string> = {
   default: "#a78bfa",
 };
 
-function NewsCard({ item }: { item: { sport: string; headline: string; source?: string; url?: string } }) {
+function NewsCard({
+  item,
+}: {
+  item: { sport: string; headline: string; source?: string; url?: string };
+}) {
   const color = SPORT_COLORS[item.sport?.toLowerCase()] ?? SPORT_COLORS.default;
   const inner = (
     <div
@@ -31,21 +44,44 @@ function NewsCard({ item }: { item: { sport: string; headline: string; source?: 
         <Newspaper className="w-3.5 h-3.5 flex-shrink-0" style={{ color }} />
         <span
           className="text-[9px] font-bold tracking-widest uppercase px-1.5 py-0.5 rounded"
-          style={{ color, background: `${color}15`, border: `1px solid ${color}25` }}
+          style={{
+            color,
+            background: `${color}15`,
+            border: `1px solid ${color}25`,
+          }}
         >
           {item.sport?.toUpperCase() ?? "NEWS"}
         </span>
-        {item.url && <ExternalLink className="w-3 h-3 ml-auto opacity-30" style={{ color }} />}
+        {item.url && (
+          <ExternalLink
+            className="w-3 h-3 ml-auto opacity-30"
+            style={{ color }}
+          />
+        )}
       </div>
-      <p className="text-xs leading-snug line-clamp-2 font-medium" style={{ color: "rgba(225,225,245,0.9)" }}>
+      <p
+        className="text-xs leading-snug line-clamp-2 font-medium"
+        style={{ color: "rgba(225,225,245,0.9)" }}
+      >
         {item.headline}
       </p>
       {item.source && (
-        <span className="text-[9px]" style={{ color: "rgba(180,180,200,0.45)" }}>{item.source}</span>
+        <span
+          className="text-[9px]"
+          style={{ color: "rgba(180,180,200,0.45)" }}
+        >
+          {item.source}
+        </span>
       )}
     </div>
   );
-  return item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer">{inner}</a> : inner;
+  return item.url ? (
+    <a href={item.url} target="_blank" rel="noopener noreferrer">
+      {inner}
+    </a>
+  ) : (
+    inner
+  );
 }
 
 function PickCard({ pick }: { pick: any }) {
@@ -53,8 +89,20 @@ function PickCard({ pick }: { pick: any }) {
   const isPush = pick.result === "push";
   const isLoss = pick.result === "loss";
   const isPending = !pick.result || pick.result === "pending";
-  const color = isWin ? "#39ff14" : isPush ? "#f0b800" : isLoss ? "#f87171" : "#a78bfa";
-  const resultLabel = isWin ? "WIN" : isPush ? "PUSH" : isLoss ? "LOSS" : "LIVE";
+  const color = isWin
+    ? "#39ff14"
+    : isPush
+      ? "#f0b800"
+      : isLoss
+        ? "#f87171"
+        : "#a78bfa";
+  const resultLabel = isWin
+    ? "WIN"
+    : isPush
+      ? "PUSH"
+      : isLoss
+        ? "LOSS"
+        : "LIVE";
   return (
     <Link href={`/picks/${pick.id}`}>
       <div
@@ -70,7 +118,11 @@ function PickCard({ pick }: { pick: any }) {
           <Zap className="w-3.5 h-3.5 flex-shrink-0" style={{ color }} />
           <span
             className="text-[9px] font-bold tracking-widest uppercase px-1.5 py-0.5 rounded"
-            style={{ color, background: `${color}15`, border: `1px solid ${color}25` }}
+            style={{
+              color,
+              background: `${color}15`,
+              border: `1px solid ${color}25`,
+            }}
           >
             {pick.sportKey?.toUpperCase() ?? "PICK"}
           </span>
@@ -81,16 +133,26 @@ function PickCard({ pick }: { pick: any }) {
             {resultLabel}
           </span>
         </div>
-        <p className="text-xs font-semibold leading-snug line-clamp-1" style={{ color: "rgba(225,225,245,0.95)" }}>
+        <p
+          className="text-xs font-semibold leading-snug line-clamp-1"
+          style={{ color: "rgba(225,225,245,0.95)" }}
+        >
           {pick.recommendation ?? `${pick.homeTeam} vs ${pick.awayTeam}`}
         </p>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono" style={{ color: "rgba(180,180,200,0.6)" }}>
+          <span
+            className="text-[10px] font-mono"
+            style={{ color: "rgba(180,180,200,0.6)" }}
+          >
             {pick.homeTeam} vs {pick.awayTeam}
           </span>
-          {pick.odds != null && (
-            <span className="ml-auto text-[10px] font-mono font-bold" style={{ color }}>
-              {pick.odds > 0 ? "+" : ""}{pick.odds}
+          {pick.odds !== null && (
+            <span
+              className="ml-auto text-[10px] font-mono font-bold"
+              style={{ color }}
+            >
+              {pick.odds > 0 ? "+" : ""}
+              {pick.odds}
             </span>
           )}
         </div>
@@ -99,7 +161,17 @@ function PickCard({ pick }: { pick: any }) {
   );
 }
 
-function ArticleCard({ article }: { article: { title: string; slug: string; excerpt?: string; heroImage?: string; seedKeyword?: string } }) {
+function ArticleCard({
+  article,
+}: {
+  article: {
+    title: string;
+    slug: string;
+    excerpt?: string;
+    heroImage?: string;
+    seedKeyword?: string;
+  };
+}) {
   return (
     <Link href={`/blog/${article.slug}`}>
       <div
@@ -127,10 +199,15 @@ function ArticleCard({ article }: { article: { title: string; slug: string; exce
               ARTICLE
             </span>
             {article.seedKeyword && (
-              <span className="ml-auto text-[9px] text-violet-300/50 truncate max-w-[80px]">{article.seedKeyword}</span>
+              <span className="ml-auto text-[9px] text-violet-300/50 truncate max-w-[80px]">
+                {article.seedKeyword}
+              </span>
             )}
           </div>
-          <p className="text-xs font-semibold leading-snug line-clamp-2" style={{ color: "rgba(225,225,245,0.95)" }}>
+          <p
+            className="text-xs font-semibold leading-snug line-clamp-2"
+            style={{ color: "rgba(225,225,245,0.95)" }}
+          >
             {article.title}
           </p>
           {article.excerpt && (
@@ -149,12 +226,18 @@ export default function HorizontalScrollTicker() {
     staleTime: 300_000,
     refetchInterval: 300_000,
   });
-  const { data: picksData } = trpc.picks.recentSettled.useQuery({ limit: 12 }, {
-    refetchInterval: 60_000,
-  });
-  const { data: blogData } = trpc.blog.list.useQuery({ limit: 6, offset: 0 }, {
-    staleTime: 600_000,
-  });
+  const { data: picksData } = trpc.picks.recentSettled.useQuery(
+    { limit: 12 },
+    {
+      refetchInterval: 60_000,
+    }
+  );
+  const { data: blogData } = trpc.blog.list.useQuery(
+    { limit: 6, offset: 0 },
+    {
+      staleTime: 600_000,
+    }
+  );
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const autoScrollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -185,7 +268,9 @@ export default function HorizontalScrollTicker() {
         el.scrollBy({ left: 1, behavior: "instant" as ScrollBehavior });
       }
     }, 30);
-    return () => { if (autoScrollRef.current) clearInterval(autoScrollRef.current); };
+    return () => {
+      if (autoScrollRef.current) clearInterval(autoScrollRef.current);
+    };
   }, [isPaused, isDragging]);
 
   useEffect(() => {
@@ -227,7 +312,10 @@ export default function HorizontalScrollTicker() {
 
   const scrollBy = (dir: "left" | "right") => {
     setIsPaused(true);
-    scrollRef.current?.scrollBy({ left: dir === "right" ? 300 : -300, behavior: "smooth" });
+    scrollRef.current?.scrollBy({
+      left: dir === "right" ? 300 : -300,
+      behavior: "smooth",
+    });
     setTimeout(() => setIsPaused(false), 2000);
   };
 
@@ -238,17 +326,30 @@ export default function HorizontalScrollTicker() {
   // Interleave: 2 news, 1 pick, 1 article, 2 news, 1 pick...
   // Cap at 15 items to reduce DOM bloat (was 37+ causing PageSpeed penalty)
   const MAX_TICKER_ITEMS = 15;
-  const combined: Array<{ type: "news"; data: any } | { type: "pick"; data: any } | { type: "article"; data: any }> = [];
-  let ni = 0, pi = 0, ai = 0;
-  while ((ni < newsItems.length || pi < picks.length || ai < articles.length) && combined.length < MAX_TICKER_ITEMS) {
-    if (ni < newsItems.length && combined.length < MAX_TICKER_ITEMS) combined.push({ type: "news", data: newsItems[ni++] });
-    if (ni < newsItems.length && combined.length < MAX_TICKER_ITEMS) combined.push({ type: "news", data: newsItems[ni++] });
-    if (pi < picks.length && combined.length < MAX_TICKER_ITEMS) combined.push({ type: "pick", data: picks[pi++] });
-    if (ai < articles.length && combined.length < MAX_TICKER_ITEMS) combined.push({ type: "article", data: articles[ai++] });
+  const combined: Array<
+    | { type: "news"; data: any }
+    | { type: "pick"; data: any }
+    | { type: "article"; data: any }
+  > = [];
+  let ni = 0,
+    pi = 0,
+    ai = 0;
+  while (
+    (ni < newsItems.length || pi < picks.length || ai < articles.length) &&
+    combined.length < MAX_TICKER_ITEMS
+  ) {
+    if (ni < newsItems.length && combined.length < MAX_TICKER_ITEMS)
+      combined.push({ type: "news", data: newsItems[ni++] });
+    if (ni < newsItems.length && combined.length < MAX_TICKER_ITEMS)
+      combined.push({ type: "news", data: newsItems[ni++] });
+    if (pi < picks.length && combined.length < MAX_TICKER_ITEMS)
+      combined.push({ type: "pick", data: picks[pi++] });
+    if (ai < articles.length && combined.length < MAX_TICKER_ITEMS)
+      combined.push({ type: "article", data: articles[ai++] });
   }
 
-  const wins = picks.filter((p) => p.result === "win").length;
-  const losses = picks.filter((p) => p.result === "loss").length;
+  const wins = picks.filter(p => p.result === "win").length;
+  const losses = picks.filter(p => p.result === "loss").length;
   const total = wins + losses;
   const winPct = total > 0 ? Math.round((wins / total) * 100) : null;
 
@@ -260,7 +361,9 @@ export default function HorizontalScrollTicker() {
         borderColor: "rgba(57,255,20,0.08)",
       }}
       onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => { if (!isDragging) setIsPaused(false); }}
+      onMouseLeave={() => {
+        if (!isDragging) setIsPaused(false);
+      }}
     >
       <div className="relative">
         {/* Header row */}
@@ -268,19 +371,28 @@ export default function HorizontalScrollTicker() {
           <div className="flex items-center gap-1.5">
             <span className="live-dot" />
             <Activity className="w-3.5 h-3.5" style={{ color: "#39ff14" }} />
-            <span className="text-[10px] font-bold tracking-widest" style={{ color: "#39ff14" }}>
+            <span
+              className="text-[10px] font-bold tracking-widest"
+              style={{ color: "#39ff14" }}
+            >
               LIVE FEED
             </span>
           </div>
           {total > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono text-white/50">
-                Recent: <span className="text-[#39ff14] font-bold">{wins}W</span>-<span className="text-red-400 font-bold">{losses}L</span>
+                Recent:{" "}
+                <span className="text-[#39ff14] font-bold">{wins}W</span>-
+                <span className="text-red-400 font-bold">{losses}L</span>
               </span>
               {winPct !== null && (
                 <span
                   className="text-[9px] font-bold px-1.5 py-0.5 rounded"
-                  style={{ color: "#39ff14", background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.2)" }}
+                  style={{
+                    color: "#39ff14",
+                    background: "rgba(57,255,20,0.1)",
+                    border: "1px solid rgba(57,255,20,0.2)",
+                  }}
                 >
                   {winPct}% WIN
                 </span>
@@ -293,8 +405,12 @@ export default function HorizontalScrollTicker() {
               disabled={!canScrollLeft}
               className="p-1 rounded-full transition-all"
               style={{
-                background: canScrollLeft ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.02)",
-                color: canScrollLeft ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.2)",
+                background: canScrollLeft
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(255,255,255,0.02)",
+                color: canScrollLeft
+                  ? "rgba(255,255,255,0.7)"
+                  : "rgba(255,255,255,0.2)",
               }}
               aria-label="Scroll left"
             >
@@ -305,8 +421,12 @@ export default function HorizontalScrollTicker() {
               disabled={!canScrollRight}
               className="p-1 rounded-full transition-all"
               style={{
-                background: canScrollRight ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.02)",
-                color: canScrollRight ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.2)",
+                background: canScrollRight
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(255,255,255,0.02)",
+                color: canScrollRight
+                  ? "rgba(255,255,255,0.7)"
+                  : "rgba(255,255,255,0.2)",
               }}
               aria-label="Scroll right"
             >
@@ -333,31 +453,29 @@ export default function HorizontalScrollTicker() {
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
-          {combined.length === 0 ? (
-            Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="flex-shrink-0 rounded-xl border"
-                style={{
-                  minWidth: 240,
-                  height: 80,
-                  background: "rgba(255,255,255,0.03)",
-                  borderColor: "rgba(255,255,255,0.06)",
-                  animation: "pulse 1.5s ease-in-out infinite",
-                }}
-              />
-            ))
-          ) : (
-            combined.map((item, i) =>
-              item.type === "news" ? (
-                <NewsCard key={`news-${i}`} item={item.data} />
-              ) : item.type === "article" ? (
-                <ArticleCard key={`article-${i}`} article={item.data} />
-              ) : (
-                <PickCard key={`pick-${i}`} pick={item.data} />
-              )
-            )
-          )}
+          {combined.length === 0
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex-shrink-0 rounded-xl border"
+                  style={{
+                    minWidth: 240,
+                    height: 80,
+                    background: "rgba(255,255,255,0.03)",
+                    borderColor: "rgba(255,255,255,0.06)",
+                    animation: "pulse 1.5s ease-in-out infinite",
+                  }}
+                />
+              ))
+            : combined.map((item, i) =>
+                item.type === "news" ? (
+                  <NewsCard key={`news-${i}`} item={item.data} />
+                ) : item.type === "article" ? (
+                  <ArticleCard key={`article-${i}`} article={item.data} />
+                ) : (
+                  <PickCard key={`pick-${i}`} pick={item.data} />
+                )
+              )}
           {/* Spacer at end */}
           <div className="flex-shrink-0 w-2" />
         </div>
@@ -366,14 +484,20 @@ export default function HorizontalScrollTicker() {
         {canScrollLeft && (
           <div
             className="absolute left-0 top-0 bottom-0 w-16 pointer-events-none"
-            style={{ background: "linear-gradient(to right, rgba(8,8,20,0.95), transparent)" }}
+            style={{
+              background:
+                "linear-gradient(to right, rgba(8,8,20,0.95), transparent)",
+            }}
           />
         )}
         {/* Right fade gradient */}
         {canScrollRight && (
           <div
             className="absolute right-0 top-0 bottom-0 w-16 pointer-events-none"
-            style={{ background: "linear-gradient(to left, rgba(8,8,20,0.95), transparent)" }}
+            style={{
+              background:
+                "linear-gradient(to left, rgba(8,8,20,0.95), transparent)",
+            }}
           />
         )}
       </div>

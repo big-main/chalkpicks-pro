@@ -21,7 +21,7 @@ const CLOUD_PROJECT = "/home/ubuntu/chalkpicks-prod";
 
 export async function cloudSyncHandler(req: Request, res: Response) {
   const taskUid = (req.headers["x-manus-cron-task-uid"] as string) || "manual";
-  console.log(`[CloudSync] Nightly sync triggered — task: ${taskUid}`);
+  console.warn(`[CloudSync] Nightly sync triggered — task: ${taskUid}`);
 
   const deployScript = [
     `cd ${CLOUD_PROJECT}`,
@@ -39,7 +39,7 @@ export async function cloudSyncHandler(req: Request, res: Response) {
     );
 
     const output = (stdout + (stderr ? `\nSTDERR: ${stderr}` : "")).trim();
-    console.log(`[CloudSync] Deploy complete:\n${output.slice(-800)}`);
+    console.warn(`[CloudSync] Deploy complete:\n${output.slice(-800)}`);
 
     return res.json({
       ok: true,
@@ -47,8 +47,11 @@ export async function cloudSyncHandler(req: Request, res: Response) {
       output: output.slice(-1000),
     });
   } catch (err: any) {
-    const output = (err.stdout ?? "") + (err.stderr ? `\nSTDERR: ${err.stderr}` : "");
-    console.error(`[CloudSync] Deploy failed: ${err.message}\n${output.slice(-500)}`);
+    const output =
+      (err.stdout ?? "") + (err.stderr ? `\nSTDERR: ${err.stderr}` : "");
+    console.error(
+      `[CloudSync] Deploy failed: ${err.message}\n${output.slice(-500)}`
+    );
     return res.status(500).json({
       error: err.message,
       output: output.slice(-500),

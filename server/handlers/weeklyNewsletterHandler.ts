@@ -12,8 +12,8 @@ import { notifyOwner } from "../_core/notification";
 import { sendEmailRaw } from "../email";
 
 export async function weeklyNewsletterHandler(req: Request, res: Response) {
-  const taskUid = req.headers["x-manus-cron-task-uid"] as string || "manual";
-  console.log(`[WeeklyNewsletter] Triggered by task: ${taskUid}`);
+  const taskUid = (req.headers["x-manus-cron-task-uid"] as string) || "manual";
+  console.warn(`[WeeklyNewsletter] Triggered by task: ${taskUid}`);
 
   try {
     const db = await getDb();
@@ -25,29 +25,37 @@ export async function weeklyNewsletterHandler(req: Request, res: Response) {
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
 
-    const weeklyPicks = await db.select().from(picks)
+    const weeklyPicks = await db
+      .select()
+      .from(picks)
       .where(gte(picks.createdAt, weekAgo))
       .orderBy(desc(picks.confidenceScore));
 
     if (weeklyPicks.length === 0) {
-      console.log("[WeeklyNewsletter] No picks this week, skipping");
+      console.warn("[WeeklyNewsletter] No picks this week, skipping");
       return res.json({ ok: true, skipped: "no-picks-this-week" });
     }
 
     // Calculate weekly stats
     const wins = weeklyPicks.filter(p => p.result === "win").length;
     const losses = weeklyPicks.filter(p => p.result === "loss").length;
-    const pending = weeklyPicks.filter(p => !p.result || p.result === "pending").length;
-    const winRate = wins + losses > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : "N/A";
+    const pending = weeklyPicks.filter(
+      p => !p.result || p.result === "pending"
+    ).length;
+    const winRate =
+      wins + losses > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : "N/A";
     const topPicks = weeklyPicks.slice(0, 5);
-    const sportsThisWeek = Array.from(new Set(weeklyPicks.map(p => p.sportKey))).join(", ");
+    const sportsThisWeek = Array.from(
+      new Set(weeklyPicks.map(p => p.sportKey))
+    ).join(", ");
 
     // Generate newsletter summary via LLM
     const response = await invokeLLM({
       messages: [
         {
           role: "system",
-          content: "You are a sports betting newsletter writer for ChalkPicks Pro. Write engaging, concise weekly summaries in HTML format. Use <h2>, <p>, <strong>, <ul>/<li> tags. Keep it professional but exciting. Max 250 words of content."
+          content:
+            "You are a sports betting newsletter writer for ChalkPicks Pro. Write engaging, concise weekly summaries in HTML format. Use <h2>, <p>, <strong>, <ul>/<li> tags. Keep it professional but exciting. Max 250 words of content.",
         },
         {
           role: "user",
@@ -61,20 +69,28 @@ Stats this week:
 - Sports covered: ${sportsThisWeek}
 
 Top 3 picks:
-${topPicks.slice(0, 3).map((p, i) => `${i + 1}. ${p.homeTeam} vs ${p.awayTeam} — ${p.pickType} ${p.recommendation} (${p.confidenceScore}% confidence, result: ${p.result || "pending"})`).join("\n")}
+${topPicks
+  .slice(0, 3)
+  .map(
+    (p, i) =>
+      `${i + 1}. ${p.homeTeam} vs ${p.awayTeam} — ${p.pickType} ${p.recommendation} (${p.confidenceScore}% confidence, result: ${p.result || "pending"})`
+  )
+  .join("\n")}
 
 Include:
 1. Brief performance recap with stats
 2. Highlight top 3 picks with details
 3. Teaser for next week
 4. CTA: "Upgrade to Pro for real-time alerts and +EV picks"
-Output HTML only (no markdown).`
-        }
+Output HTML only (no markdown).`,
+        },
       ],
       complexity: "high",
     });
 
-    const newsletterBody = response.choices[0].message.content || "<p>Weekly summary unavailable.</p>";
+    const newsletterBody =
+      response.choices[0].message.content ||
+      "<p>Weekly summary unavailable.</p>";
 
     // Build full HTML email
     const emailHtml = `
@@ -113,7 +129,9 @@ Output HTML only (no markdown).`
 </html>`;
 
     // Get all active newsletter subscribers
-    const subscribers = await db.select().from(newsletterSubscribers)
+    const subscribers = await db
+      .select()
+      .from(newsletterSubscribers)
       .where(eq(newsletterSubscribers.status, "active"));
 
     const subject = `📊 ChalkPicks Weekly: ${wins}W-${losses}L (${winRate}% Win Rate) — Week of ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
@@ -135,10 +153,12 @@ Output HTML only (no markdown).`
     // Notify owner
     await notifyOwner({
       title: `📧 Weekly Newsletter Sent (${wins}W-${losses}L)`,
-      content: `Win Rate: ${winRate}%\nTotal Picks: ${weeklyPicks.length}\nSent: ${sent}/${subscribers.length} subscribers\nFailed: ${failed}\n\nSubject: ${subject}`
+      content: `Win Rate: ${winRate}%\nTotal Picks: ${weeklyPicks.length}\nSent: ${sent}/${subscribers.length} subscribers\nFailed: ${failed}\n\nSubject: ${subject}`,
     });
 
-    console.log(`[WeeklyNewsletter] Sent to ${sent}/${subscribers.length} subscribers (${failed} failed)`);
+    console.warn(
+      `[WeeklyNewsletter] Sent to ${sent}/${subscribers.length} subscribers (${failed} failed)`
+    );
 
     res.json({
       ok: true,

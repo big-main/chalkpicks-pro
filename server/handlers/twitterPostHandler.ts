@@ -26,7 +26,11 @@ import crypto from "crypto";
 type Slot = "morning" | "afternoon" | "evening" | "night";
 
 // ─── OAuth 1.0a helper ────────────────────────────────────────────────────────
-function oauthHeader(method: string, url: string, params: Record<string, string>): string {
+function oauthHeader(
+  method: string,
+  url: string,
+  params: Record<string, string>
+): string {
   const oauthParams: Record<string, string> = {
     oauth_consumer_key: ENV.twitterConsumerKey,
     oauth_nonce: crypto.randomBytes(16).toString("hex"),
@@ -39,7 +43,7 @@ function oauthHeader(method: string, url: string, params: Record<string, string>
   const allParams = { ...params, ...oauthParams };
   const sortedKeys = Object.keys(allParams).sort();
   const paramString = sortedKeys
-    .map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(allParams[k])}`)
+    .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(allParams[k])}`)
     .join("&");
 
   const sigBase = [
@@ -49,13 +53,18 @@ function oauthHeader(method: string, url: string, params: Record<string, string>
   ].join("&");
 
   const sigKey = `${encodeURIComponent(ENV.twitterConsumerSecret)}&${encodeURIComponent(ENV.twitterAccessSecret)}`;
-  const signature = crypto.createHmac("sha1", sigKey).update(sigBase).digest("base64");
+  const signature = crypto
+    .createHmac("sha1", sigKey)
+    .update(sigBase)
+    .digest("base64");
 
   oauthParams.oauth_signature = signature;
 
   const headerParts = Object.keys(oauthParams)
     .sort()
-    .map((k) => `${encodeURIComponent(k)}="${encodeURIComponent(oauthParams[k])}"`)
+    .map(
+      k => `${encodeURIComponent(k)}="${encodeURIComponent(oauthParams[k])}"`
+    )
     .join(", ");
 
   return `OAuth ${headerParts}`;
@@ -91,7 +100,10 @@ async function postTweet(
 
     const data = (await res.json()) as any;
     if (!res.ok) {
-      return { success: false, error: `HTTP ${res.status}: ${JSON.stringify(data)}` };
+      return {
+        success: false,
+        error: `HTTP ${res.status}: ${JSON.stringify(data)}`,
+      };
     }
     return { success: true, tweetId: data?.data?.id };
   } catch (err: any) {
@@ -114,7 +126,7 @@ async function postThread(
     tweetIds.push(result.tweetId!);
     lastId = result.tweetId;
     // Small delay between thread tweets to avoid rate limit
-    await new Promise((r) => setTimeout(r, 1200));
+    await new Promise(r => setTimeout(r, 1200));
   }
 
   return { success: true, tweetIds };
@@ -178,7 +190,7 @@ async function buildMorningContent(
   if (conf >= 80) {
     const keyFactors: string[] = (() => {
       try {
-        const parsed = JSON.parse(p.keyFactors as string ?? "[]");
+        const parsed = JSON.parse((p.keyFactors as string) ?? "[]");
         return Array.isArray(parsed) ? parsed.slice(0, 3) : [];
       } catch {
         return [];
@@ -190,7 +202,7 @@ async function buildMorningContent(
     const tweet2 =
       keyFactors.length > 0
         ? `📈 KEY FACTORS:\n\n${keyFactors.map((f: string) => `• ${f}`).join("\n")}\n\nConfidence: ${confidenceBar(conf)} ${conf}%\n\n[2/3]`
-        : `📈 AI ANALYSIS:\n\n${(p.aiAnalysis as string ?? "").substring(0, 180)}...\n\nConfidence: ${confidenceBar(conf)} ${conf}%\n\n[2/3]`;
+        : `📈 AI ANALYSIS:\n\n${((p.aiAnalysis as string) ?? "").substring(0, 180)}...\n\nConfidence: ${confidenceBar(conf)} ${conf}%\n\n[2/3]`;
 
     const tweet3 = `🔗 Full AI analysis, edge %, and best odds:\nchalkpicks.live/picks/${p.id}\n\nJoin 2,000+ sharp bettors using ChalkPicks Pro 🎯\n\n[3/3] ${sport} #SportsBetting`;
 
@@ -222,7 +234,10 @@ async function buildAfternoonTweet(db: any): Promise<string> {
   }
 
   const lines = sharpPicks
-    .map((p: any) => `• ${p.homeTeam} vs ${p.awayTeam} — ${p.recommendation} (${p.confidenceScore}%)`)
+    .map(
+      (p: any) =>
+        `• ${p.homeTeam} vs ${p.awayTeam} — ${p.recommendation} (${p.confidenceScore}%)`
+    )
     .join("\n");
 
   return `📡 SHARP MONEY ALERT\n\nAI flagged ${sharpPicks.length} high-confidence plays today:\n${lines}\n\nFull analysis → chalkpicks.live\n#SharpMoney #SportsBetting #Picks`;
@@ -262,7 +277,7 @@ async function buildNightTweet(_db: any): Promise<string> {
 export async function twitterPostHandler(req: Request, res: Response) {
   const slot = (req.body?.slot || req.query?.slot || "morning") as Slot;
   const taskUid = (req.headers["x-manus-cron-task-uid"] as string) || "manual";
-  console.log(`[TwitterPost] Triggered slot=${slot} task=${taskUid}`);
+  console.warn(`[TwitterPost] Triggered slot=${slot} task=${taskUid}`);
 
   try {
     const db = await getDb();
@@ -270,7 +285,12 @@ export async function twitterPostHandler(req: Request, res: Response) {
       return res.status(500).json({ error: "Database unavailable" });
     }
 
-    let result: { success: boolean; tweetIds?: string[]; tweetId?: string; error?: string };
+    let result: {
+      success: boolean;
+      tweetIds?: string[];
+      tweetId?: string;
+      error?: string;
+    };
     let preview: string;
     let isThread = false;
 
@@ -281,27 +301,53 @@ export async function twitterPostHandler(req: Request, res: Response) {
 
       if (content.isThread) {
         const threadResult = await postThread(content.tweets);
-        result = { success: threadResult.success, tweetIds: threadResult.tweetIds, error: threadResult.error };
-        console.log(`[TwitterPost] Thread posted slot=${slot} tweetIds=${threadResult.tweetIds.join(",")}`);
+        result = {
+          success: threadResult.success,
+          tweetIds: threadResult.tweetIds,
+          error: threadResult.error,
+        };
+        console.warn(
+          `[TwitterPost] Thread posted slot=${slot} tweetIds=${threadResult.tweetIds.join(",")}`
+        );
       } else {
         const singleResult = await postTweet(content.tweets[0]);
-        result = { success: singleResult.success, tweetId: singleResult.tweetId, error: singleResult.error };
-        console.log(`[TwitterPost] Single tweet posted slot=${slot} tweetId=${singleResult.tweetId}`);
+        result = {
+          success: singleResult.success,
+          tweetId: singleResult.tweetId,
+          error: singleResult.error,
+        };
+        console.warn(
+          `[TwitterPost] Single tweet posted slot=${slot} tweetId=${singleResult.tweetId}`
+        );
       }
     } else {
       let tweetText: string;
       switch (slot) {
-        case "afternoon": tweetText = await buildAfternoonTweet(db); break;
-        case "evening":   tweetText = await buildEveningTweet(db); break;
-        case "night":     tweetText = await buildNightTweet(db); break;
-        default:          tweetText = await buildNightTweet(db);
+        case "afternoon":
+          tweetText = await buildAfternoonTweet(db);
+          break;
+        case "evening":
+          tweetText = await buildEveningTweet(db);
+          break;
+        case "night":
+          tweetText = await buildNightTweet(db);
+          break;
+        default:
+          tweetText = await buildNightTweet(db);
       }
-      preview = tweetText.substring(0, 100) + (tweetText.length > 100 ? "..." : "");
+      preview =
+        tweetText.substring(0, 100) + (tweetText.length > 100 ? "..." : "");
       const singleResult = await postTweet(tweetText);
-      result = { success: singleResult.success, tweetId: singleResult.tweetId, error: singleResult.error };
+      result = {
+        success: singleResult.success,
+        tweetId: singleResult.tweetId,
+        error: singleResult.error,
+      };
 
       if (result.success) {
-        console.log(`[TwitterPost] Posted slot=${slot} tweetId=${result.tweetId}`);
+        console.warn(
+          `[TwitterPost] Posted slot=${slot} tweetId=${result.tweetId}`
+        );
       } else {
         console.warn(`[TwitterPost] Failed slot=${slot}: ${result.error}`);
       }

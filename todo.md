@@ -1,11 +1,13 @@
 # ChalkPicks Pro — TODO
 
 ## Phase 2: Database Schema & Project Setup
+
 - [x] Design and apply full database schema (picks, sports, players, bets, subscriptions, leaderboard, backtests)
 - [x] Set up Stripe integration via webdev_add_feature
 - [x] Write todo.md (this file)
 
 ## Phase 3: Landing Page & Global Theme
+
 - [x] Dark elegant theme with gold/green accent colors in index.css
 - [x] Custom Google Fonts (Orbitron for headings)
 - [x] Navigation bar with sport filters, auth, subscription CTA
@@ -16,6 +18,7 @@
 - [x] Footer with SEO links
 
 ## Phase 4: AI Picks Engine
+
 - [x] AI picks generation via LLM with confidence + edge scoring
 - [x] Picks list page with sport filter tabs (NFL, NBA, MLB, NHL, etc.)
 - [x] Pick card component with confidence bar, edge score, odds, analysis
@@ -24,6 +27,7 @@
 - [x] Pick detail page with full AI analysis
 
 ## Phase 5: Player Stats & Matchup Analysis
+
 - [x] Live sports data feed integration (scores, odds, player stats)
 - [x] Player stats page with performance trends
 - [x] Matchup analysis page with head-to-head data
@@ -32,6 +36,7 @@
 - [x] Interactive charts (Recharts) for trends and odds movement
 
 ## Phase 6: Backtesting Engine & User Dashboard
+
 - [x] Backtesting engine with historical pick performance
 - [x] ROI tracking and win rate metrics
 - [x] User dashboard with personal bet tracking
@@ -40,6 +45,7 @@
 - [x] Bet slip / tracker
 
 ## Phase 7: Leaderboard & Subscriptions
+
 - [x] Leaderboard page ranking top bettors
 - [x] Community performance tracking
 - [x] Subscription tiers (Free, Daily, Monthly, Yearly)
@@ -48,6 +54,7 @@
 - [x] Subscription management page
 
 ## Phase 8: SEO, Notifications & Polish
+
 - [x] Meta tags and Open Graph for all pages
 - [x] Sitemap.xml generation
 - [x] robots.txt
@@ -60,17 +67,20 @@
 - [x] Micro-interactions and animations
 
 ## Phase 9: Testing & Delivery
+
 - [x] Vitest unit tests for core procedures (31 tests, all passing)
 - [x] Final checkpoint save
 - [x] Deliver to user
 
 ## Additional Pages & Features
+
 - [x] Matchup Analysis page with head-to-head data
 - [x] Subscription Management page with billing history
 - [x] Email notification service with templates
 - [x] Routes for all new pages
 
 ## Feedback & Rating System (NEW)
+
 - [x] Add pickFeedback table to database schema
 - [x] Create feedback router with CRUD operations
 - [x] Build feedback UI component for pick cards
@@ -84,13 +94,14 @@
 - [x] Update AI pick generation to consider feedback — getFeedbackContext() wired into scheduler
 
 ## Phase 2 Upgrade — Design B Neon Cyber + Real Data + Unique Features
+
 - [x] Apply Design B neon cyber theme to entire site (index.css, Navbar, Home, all pages)
 - [x] Integrate The Odds API for real live odds from 10+ sportsbooks (mock + real API ready)
 - [x] Build live odds comparison table (best line across books)
 - [x] Build line movement tracker (opening line vs current line)
 - [x] Build steam move detector (sudden sharp line movement alerts)
 - [x] Build +EV (positive expected value) finder page
--- [x] Add CLV (Closing Line Value) tracker (database schema + router complete)r for user bets
+      -- [x] Add CLV (Closing Line Value) tracker (database schema + router complete)r for user bets
 - [x] Build public betting % display (where the public money is going)
 - [x] Build Kelly Criterion bankroll calculator tool
 - [x] Build weather impact model for outdoor games (NFL, MLB) — Open-Meteo API in scheduler
@@ -101,6 +112,7 @@
 - [x] Add live game scores widget in navbar — LiveScoresMini component
 
 ## Payment System Migration (NEW)
+
 - [x] Replace Stripe with PayPal integration
 - [x] Create PayPal subscription router with all procedures
 - [x] Create PayPalPricing page with PayPal checkout flow
@@ -110,12 +122,14 @@
 - [x] PayPal documentation in deployment guide
 
 ## Deployment
+
 - [x] Deploy to Manus Autoscale (production environment)
 - [x] Configure custom domains (chalkpicks.live, www.chalkpicks.live)
 - [x] Set up SSL/TLS certificates
 - [x] Configure Stripe webhooks for production
 
 ## Custom Notification System (COMPLETE)
+
 - [x] Add notificationPreferences table to schema
 - [x] Add notificationLogs table to schema
 - [x] Run database migration
@@ -133,17 +147,19 @@
 - [x] All 52 tests passing across 4 test files
 
 ## Stripe Pricing Switch
+
 - [x] Rewrite /pricing page to use Stripe checkout (replace PayPal mock)
 - [x] Apply neon cyber theme to pricing page
 - [x] Update App.tsx to route /pricing to new Stripe pricing page
 - [x] Verify Stripe checkout session creation end-to-end
 
 ## Bug Fixes — OAuth & Site Stability
+
 - [x] Fix "Permission denied: Redirect URI is not set" OAuth error on login (Auth system uses email/password, not OAuth — working correctly)
 - [x] Audit all pages for runtime errors and fix any found (Fixed blank screen issue with missing React imports)
 
-
 ## Paywall Implementation — Lock Premium Features
+
 - [x] Add subscription tier checks to backend routers (EV Finder, Tools, Leaderboard, Live Stats, Backtesting)
 - [x] Create paywall component for frontend locked pages
 - [x] Lock EVFinder page behind "Monthly Pro" or higher tier
@@ -155,8 +171,8 @@
 - [x] Add upgrade CTA buttons throughout the site (Paywall component)
 - [x] Test paywall flow end-to-end (all 74 tests passing)
 
-
 ## Authentication Pages (NEW)
+
 - [x] Create Sign-Up page with Manus OAuth
 - [x] Create Login page with Manus OAuth
 - [x] Create Account Settings page with profile, security, notifications
@@ -165,16 +181,16 @@
 - [x] Add Account Settings link to user dropdown menu
 - [x] Logout functionality already in Navbar
 
-
 ## Content Blur for Free Users (NEW)
+
 - [x] Update Picks page to blur premium content (confidence, edge, odds, analysis) for free users
 - [x] Show only pick title for free users
 - [x] Add "Upgrade to see full analysis" CTA on blurred content
 - [x] Premium users see all content unblurred
 - [x] Test blur effect and verify messaging
 
-
 ## OpenAI & Claude API Integration (NEW)
+
 - [x] Get OpenAI API key and configure in environment
 - [x] Get Anthropic Claude API key and configure in environment
 - [x] Create AI service layer with OpenAI and Claude clients
@@ -182,20 +198,20 @@
 - [x] Add AI-powered betting insights and recommendations
 - [x] Test both APIs end-to-end (77/77 tests passing)
 
-
 ## Win Rate Display (NEW)
+
 - [x] Display 92% overall win rate on Home page hero section
 - [x] Update leaderboard to show 92% platform average
 - [x] Update stats page with 92% win rate metric
 
-
 ## Critical Bug Fixes (NEW)
+
 - [x] Fix database query error on Sign-Up page (select fields mismatch) — Applied migration to add passwordHash column
 - [x] Audit all auth flows for database compatibility — Auth flows verified working
 - [x] Fix any other runtime errors found — Dev server running with no critical errors
 
-
 ## ChalkPicks V2 — Complete Revamp
+
 - [x] Fix CSS @import ordering warning
 - [x] Add SEO meta tags, sitemap, robots.txt, structured data for Google visibility
 - [x] Add real ESPN/sports news ticker with live data
@@ -214,8 +230,8 @@
 - [x] Performance optimization (lazy loading, code splitting, vendor chunking)
 - [x] Mobile-first responsive polish (touch targets, safe areas, responsive grid)
 
-
 ## Kalshi Prediction Market Integration (NEW)
+
 - [x] Add Kalshi API integration for market data fetching
 - [x] Create Kalshi Markets page with real-time market listings
 - [x] Build market analysis tools (implied odds, sharp money detection)
@@ -227,8 +243,8 @@
 - [x] Build market analytics dashboard — getAnalyticsSummary endpoint
 - [x] Test Kalshi integration end-to-end — kalshi.test.ts with 97 passing tests
 
-
 ## Edge Terminal Integration (NEW)
+
 - [x] Add 6-question onboarding questionnaire (age, experience, frequency, bet size, intent, contact) — Onboarding.tsx page complete
 - [x] Implement tier-based access system (Recreational <$100, Serious $100-$500, Professional $1K+) — Auto-tier assignment in place
 - [x] Add age verification enforcement (21+ requirement) — Enforced in onboarding flow
@@ -240,8 +256,8 @@
 - [x] Create admin panel for reviewing applications — /admin route with overview, user mgmt, subscriptions, picks engine tabs
 - [x] Test Edge Terminal features end-to-end — TypeScript compiles clean, all tests pass
 
-
 ## Tier-Gating Implementation (NEW)
+
 - [x] Create feature access control procedures in tRPC router (features.ts with canAccess, getAccessSummary, getUpgradeInfo)
 - [x] Add tier-gating to Kalshi Markets page (premium feature) - Monthly Pro required
 - [x] Add tier-gating to CLV Tracker page (premium feature) - Monthly Pro required
@@ -249,8 +265,8 @@
 - [x] Test tier-gating end-to-end with different subscription tiers (Kalshi and CLV Tracker properly gated)
 - [x] Add Subscription Dashboard page displaying current tier and active premium features
 
-
 ## Real-Time Live Data (24/7) (NEW)
+
 - [x] Implement WebSocket real-time updates for live scores and stats (WebSocket server + React hooks)
 - [x] Add real-time Kalshi market data streaming (streaming service ready)
 - [x] Implement live odds updates from multiple sportsbooks (streaming service ready)
@@ -258,6 +274,7 @@
 - [x] Test 24/7 live data and save checkpoint (Build clean, WebSocket infrastructure verified)
 
 ## Arbitrage Finder Tool (NEW)
+
 - [x] Create arbitrage opportunities database tables
 - [x] Build arbitrage finder router with odds comparison
 - [x] Create Arbitrage Finder UI page with tier-gating
@@ -266,6 +283,7 @@
 - [x] Test arbitrage finder end-to-end
 
 ## Subscription-Gated Tools Skill (NEW)
+
 - [x] Create reusable skill for building subscription-gated features
 - [x] Write comprehensive SKILL.md with workflows and examples
 - [x] Create tRPC router template with tier checks
@@ -275,6 +293,7 @@
 - [x] Validate skill and publish
 
 ## Phase 10: Promotions & Design Overhaul (COMPLETE)
+
 - [x] Implement 5-day free trial logic in Stripe and backend
 - [x] Create $5 for $100 promotional credit offer
 - [x] Update database schema with accountBalance and trial fields
@@ -285,6 +304,7 @@
 - [x] Generate promotional ad assets for social media
 
 ## Bug Fixes & Stability (COMPLETE)
+
 - [x] Fix constant page refresh issue - added missing minArbitrage state variable
 - [x] Add filtering and sorting to Arbitrage Finder
 - [x] Add filter presets component for saved preferences
@@ -292,6 +312,7 @@
 - [x] Fix all TypeScript errors (60+ → 0) - feature gating, Drizzle ORM, component props
 
 ## Remaining Items (Future Enhancements)
+
 - [x] Add bet history export (CSV) functionality — Export CSV button on UserDashboard
 - [x] Implement pick ranking by EV edge across 18+ sportsbooks — picks sorted by edgeScore desc
 - [x] Add application review workflow for Edge Terminal — admin.ts router
@@ -306,8 +327,8 @@
 - [x] Integrate Kalshi signals into AI picks engine — kalshi router
 - [x] Add market comparison (Kalshi vs traditional sportsbooks) — marketComparison.ts
 
-
 ## Major Upgrade — June 2026
+
 - [x] Remove 5-day free trial from Stripe checkout and backend
 - [x] Ensure signup/login flow works perfectly (test end-to-end)
 - [x] Create admin account for Big-Main (owner) — admin@chalkpicks.live
@@ -321,6 +342,7 @@
 - [x] Run all tests — 88 passing, 1 skipped (network timeout)
 
 ## Logo & Site-Wide Update — June 2026
+
 - [x] Generate enhanced ChalkPicks logo (neon cyber checkmark + lightning bolt mark)
 - [x] Deploy new logo to navbar, footer, auth pages, hero section
 - [x] Generate favicon.ico and PWA manifest.json with new branding
@@ -332,21 +354,24 @@
 - [x] Implement full application review workflow in admin panel — admin.ts router
 - [x] Add projected P&L YTD to user dashboard — annualized from YTD daily average
 
-
 ## Major Architecture Overhaul — July 2026
+
 ### Phase 1: Real Data APIs
+
 - [x] Integrate The Odds API (free tier) for live odds from 15+ sportsbooks
 - [x] Integrate ESPN unofficial API for live scores and schedules
 - [x] Integrate Ball Don't Lie API for NBA player stats
 - [x] Build unified data service layer (server/services/dataService.ts)
 
 ### Phase 2: Data Pipeline & Caching
+
 - [x] Build in-memory cache layer with TTL (5-min odds, 1-min scores)
 - [x] Create background data refresh via heartbeat
 - [x] Replace all simulated/hardcoded data with real API data
 - [x] Wire real odds into +EV ticker on homepage
 
 ### Phase 3: New Tools
+
 - [x] Build Prop Builder tool (player prop analysis with over/under recs)
 - [x] Build Line Movement Tracker (real-time line changes + sharp money)
 - [x] Build Correlation Finder (same-game parlay correlations)
@@ -354,20 +379,22 @@
 - [x] Credit deduction system integrated into all new tools (tools router)
 
 ### Phase 4: Security Hardening
+
 - [x] Add rate limiting to all API endpoints (100 req/min per user) — express-rate-limit
 - [x] Add input validation/sanitization on all tRPC procedures — sanitizeValue middleware
 - [x] Add secure headers (CORS, CSP, HSTS) — helmet + HSTS in production
 - [x] Fix sensitive data exposure in API responses — X-Powered-By removed, helmet headers
 
 ### Phase 5: Architecture Refactor
+
 - [x] Add React error boundaries for graceful failure
 - [x] Implement React.lazy code splitting for route-based loading (all pages lazy-loaded)
 - [x] Remove duplicate logic and consolidate shared utilities — shared/utils.ts
 - [x] Add proper TypeScript interfaces for all API responses (dataService.ts)
 - [x] Optimize database queries (add indexes, reduce N+1) — 7 indexes added via drizzle schema
 
-
 ## Picks Filtering & Sorting System (NEW)
+
 - [x] Add sort controls (Highest Confidence, Highest Edge, Newest, Oldest)
 - [x] Add filter controls (Sport, Bet Type, Confidence Min, Edge Min)
 - [x] Implement client-side sorting logic
@@ -376,6 +403,7 @@
 - [x] Persist user filter preferences in localStorage
 
 ## Feature Batch: Top Picks + Push Notifications + Sportsbook Filter
+
 - [x] Auto-pin top 3 daily picks (gold border, crown badge) regardless of sort order
 - [x] Add isFeaturedToday flag logic in picks router (top 3 by confidence+edge from today)
 - [x] Push notification system: Web Push API (VAPID) for high-confidence picks (85%+)
@@ -386,6 +414,7 @@
 - [x] Wire sportsbook filter to bestBook field on picks
 
 ## Public Performance Page + Push Notifications + SEO
+
 - [x] Build public Performance/Track Record page (win rate, ROI%, streak, recent settled picks)
 - [x] Add Performance route to App.tsx and Performance link to Navbar
 - [x] Add recentSettled and enhanced performance procedures to picks router
@@ -396,6 +425,7 @@
 - [x] Fonts updated: Space Grotesk + Inter + JetBrains Mono in index.html
 
 ## Share Pick Card + Bet Calculator + SEO Submissions (2026-07-03)
+
 - [x] Create SharePickCard component (Twitter/X share + copy link for any pick card)
 - [x] Wire SharePickCard into PickCard in Picks.tsx (share button on each card)
 - [x] Create free Bet Calculator page (/bet-calculator) — odds converter, parlay calc, Kelly Criterion
@@ -409,6 +439,7 @@
 - [x] Create directory submission guide (references/directory-submissions.md)
 
 ## WebMCP + FAQPage JSON-LD (2026-07-03)
+
 - [x] Install @mcp-b/react-webmcp and zod in client
 - [x] Create WebMCPTools component that registers ChalkPicks tools (get-picks, calculate-parlay, convert-odds, get-performance)
 - [x] Wire WebMCPTools into App.tsx (renders at root, outside ThemeProvider)
@@ -416,16 +447,19 @@
 - [x] WebSite + SoftwareApplication JSON-LD already present in index.html (verified)
 
 ## Steps 1-2-3: Rich Results + Bet Tracker MCP + GSC (2026-07-03)
+
 - [x] Validate FAQPage JSON-LD via live HTML parse — 3 blocks valid (WebSite, FAQPage 8q, SoftwareApplication)
 - [x] Add chalkpicks_place_bet_tracker MCP tool (5th tool — records bet via bets.add, handles 401 gracefully)
 - [x] Submit sitemap to Google Search Console — submitted Jul 3 2026, Status=Success, 19 pages discovered, ownership auto-verified via DNS
 
 ## BreadcrumbList JSON-LD Structured Data (2026-07-03)
+
 - [x] Create BreadcrumbJsonLd React component that injects per-page BreadcrumbList JSON-LD into document head
 - [x] Wire BreadcrumbJsonLd into Router in App.tsx — auto-injects correct breadcrumb trail for all 25 mapped routes on every navigation
 - [x] TypeScript: 0 errors. BreadcrumbList JSON-LD injected client-side via useEffect on every route change
 
 ## PageSpeed Optimization (Mobile 72 → 85+) (2026-07-03)
+
 - [x] Defer Google Analytics script — load after page interactive (on 'load' event)
 - [x] Code-split main bundle by route — Vite manualChunks function defers feature libs (Recharts, date-fns, zod)
 - [x] Lazy-load route components — all 35+ pages already use React.lazy() + Suspense
@@ -435,6 +469,7 @@
 - [x] Re-run PageSpeed test (scheduled for 24h later; site HTTP 200, all optimizations live)
 
 ## Skill Creation + PageMeta + Organization JSON-LD (2026-07-03)
+
 - [x] Create webdev-pagespeed-optimization skill using skill-creator (5-phase workflow documented)
 - [x] Build PageMeta component for per-route title and meta description tags (24 routes mapped)
 - [x] Wire PageMeta into App.tsx Router function (auto-updates document.title and meta description on navigation)
@@ -442,7 +477,8 @@
 - [x] TypeScript: 0 errors. All components and JSON-LD valid.
 
 ## Stripe Integration Verification (2026-07-03)
-- [x] Audit Stripe configuration: API keys (sk_test_*, pk_test_*), webhook secret, subscription products
+
+- [x] Audit Stripe configuration: API keys (sk*test*_, pk*test*_), webhook secret, subscription products
 - [x] Verify free trial setup: 3-day trial auto-granted on signup (subscriptionTier="trial", expiresAt=now+3days)
 - [x] Test end-to-end subscription flow: signup page live, form displays "no credit card required" messaging
 - [x] Verify webhook handling: /api/stripe/webhook endpoint registered and configured with webhook secret
@@ -451,6 +487,7 @@
 - [x] Credit bonus system active: $100 credit granted for payments >= $5
 
 ## Free Trial + GitHub Repos (Jul 3, 2026)
+
 - [x] Move free trial: activate AFTER payment method insertion (not on signup)
 - [x] Search GitHub for performance, knowledge, data acquisition, credit optimization repos
 - [x] Identify 6 high-impact repos: lmcache, vLLM, sportsbook-odds-scraper, SportsArbFinder, OddsHarvester, ArbitrageFinder
@@ -466,6 +503,7 @@
 - [x] Create webdev-search-engine-verification skill documenting GSC + Bing workflow
 
 ## Payment Method Prompt + Multi-Source Odds (Jul 3, 2026)
+
 - [x] Create TrialPrompt component with visual indicator and CTA for free users
 - [x] Wire TrialPrompt into UserDashboard (shows for free tier users only)
 - [x] Create sportsbookOddsScraper service with multi-bookmaker odds fetching
@@ -477,14 +515,15 @@
 - [x] TypeScript: 0 errors. All components compile successfully.
 
 ## Skill + OddsHarvester + Health Check (Jul 3, 2026)
+
 - [x] Create ollama-local-llm reusable skill — 9-phase deployment workflow, health-check reference
 - [x] Deploy OddsHarvester API on Cloud Computer (35.237.81.82:8090) — PM2 managed, port 8090 open
 - [x] Integrate OddsHarvester into arbitrageRefreshHandler — merged with The Odds API odds for wider coverage
 - [x] Implement Qwen health check in invokeLLM — 2s timeout, 30s TTL cache, auto-fallback to Gemini
 - [x] Update AGENTS.md on Cloud Computer with OddsHarvester service docs
 
-
 ## Publish + Caching + UI Badge (Jul 3, 2026)
+
 - [x] Publish checkpoint a25753b3 to production — Qwen health check + OddsHarvester live
 - [x] Implement OddsHarvester caching layer — 5-min TTL, DB-backed, avoids re-scraping during 60–120s scrapes
 - [x] Add arbitrage UI source badge — shows 🌐 OddsPortal vs 🇺🇸 US Books for each opportunity
@@ -492,8 +531,8 @@
 - [x] Fix TypeScript inference — added explicit type annotation for `source` field in arbitrage router and client component
 - [x] Create `arbitrage-optimization` skill — documents full workflow for Qwen routing, OddsHarvester, caching, and UI badges
 
-
 ## New Tasks (Jul 3, 2026 — Batch 2)
+
 - [x] Add advanced filtering and sorting to arbitrage dashboard — ALREADY EXISTS (ArbitrageFilters.tsx: sports, sportsbooks, profit margin range, guaranteed profit min, event time range, sort by, active-only)
 - [x] Implement LLM status badge showing Qwen vs Gemini fallback state in UI — LlmStatusBadge in Navbar, /api/trpc/system.llmStatus endpoint
 - [x] Redesign website theme to match ChalkPicks brand — dark bg (#0d0f14), metallic gold (#d4a017/#f0b800), neon green (#39ff14), Oswald font, 92+ color refs updated across 16 files
@@ -501,22 +540,25 @@
 - [x] Create reusable skill documenting the full process — updated chalkpicks-analytics §7-9 (LLM routing, OddsHarvester, brand identity)
 
 ## LLM Provider Update (Jul 3, 2026)
+
 - [x] Replace Gemini with GPT-4o-mini (OpenRouter) as primary fallback when Qwen is down
 - [x] Update LLM status badge to show "GPT-4o" (blue) when using OpenRouter fallback
 - [x] Routing: Qwen (free/local) → GPT-4o-mini (OpenRouter, $0.15/1M tokens) → Gemini (Forge, last resort)
 
 ## Navbar & Logo Enhancement (Jul 3, 2026)
+
 - [x] Upgrade logo — 5 new shield+crown variations generated (green navbar, CP icon, gold premium, minimal white, gold CP icon)
 - [x] Redesign navbar — glass-morphism floating style, pill-shaped links, gold active state, live scores ticker, LLM badge
 - [x] Enhance top portion of the site — animated blur blobs (blue/gold/green), framer-motion staggered hero animations, diagonal brand accents
 
 ## Mobile + P&L + Story Generator (Jul 3, 2026)
+
 - [x] Mobile logo breakpoint — show CP icon on sm screens, full horizontal logo on md+
 - [x] P&L color indicators on Performance page — red/green win/loss rows
 - [x] Branded Instagram story generator — one-click export using AI pick data + gold premium logo
 
-
 ## Story Generator Enhancements (Jul 4, 2026)
+
 - [x] Wire "Load Today's Pick" button to trpc.picks.list — fetch top pick from DB and auto-populate form
 - [x] Create story_exports table in schema — track pick_id, generated_at, s3_url, user_id, sport, confidence
 - [x] Build Story History router — getHistory, deleteExport, getExportStats procedures
@@ -525,17 +567,17 @@
 - [x] Write vitest tests for all new story features (story generator, history, clipboard) — 15 tests passing
 - [x] Test end-to-end: generate story → save to history → view in history page → copy to clipboard
 
-
 ## Story Generator Advanced Features (Jul 4, 2026)
+
 - [x] Auto-save drafts to localStorage — save form state every 3 seconds, restore on page reload
 - [x] Scheduled posting feature — add "Schedule for Later" button, story_scheduled table, storyScheduledRouter with 5 procedures
 - [x] Story templates system — 3 preset layouts (Default, Minimal, Detailed), template selector UI
 - [x] Write vitest tests for all three features — integrated into storyGenerator.test.ts
 
-
 ## Free Organic Traffic Growth (Jul 4, 2026)
 
 ### Phase 1: Directory Submissions & Landing Pages
+
 - [x] Create `/daily-picks` landing page with daily picks showcase — PicksLanding.tsx with sport filters, free/premium gating, CTA
 - [x] Create `/blog/best-sports-betting-picks` blog post (target: "best sports betting picks" — 2,100 monthly searches)
 - [x] Create `/blog/ai-sports-betting` blog post (target: "AI sports betting" — 1,400 monthly searches)
@@ -544,12 +586,14 @@
 - [x] Submit to 5 tech/AI directories (Product Hunt, Capterra, G2, etc.) — Ready-to-paste submission kit created with copy for Product Hunt, AlternativeTo, SaaSHub, G2, Capterra, Indie Hackers, Crunchbase, There's An AI For That, ToolPilot
 
 ### Phase 2: Interactive Tools
+
 - [x] Build Odds Calculator tool (`/tools/odds-calculator`) — Convert American/Decimal/Fractional odds + payouts
 - [x] Build ROI Calculator tool (`/tools/roi-calculator`) — Track betting performance, break-even analysis
 - [x] Build Parlay Builder tool (`/tools/parlay-builder`) — Already existed, optimized for traffic
 - [x] Build Bankroll Manager tool (`/tools/bankroll-manager`) — Full bet tracking, ROI, Kelly Criterion, bet history
 
 ### Phase 3: Social Media Automation
+
 - [x] Create community automation router (Reddit, Twitter, Discord posting) — communityAutomationRouter with 5 procedures
 - [x] Build Community Automation UI page (`/community-automation`) — Platform metrics, manual posting, scheduling
 - [x] Set up Heartbeat cron jobs for daily Reddit/Twitter/Discord posting — dailySocialPostHandler created and mounted at /api/scheduled/daily-social-post
@@ -558,6 +602,7 @@
 - [x] Set up email newsletter (weekly picks summary) — weeklyNewsletterHandler with LLM-generated content at /api/scheduled/weekly-newsletter
 
 ### Phase 4: SEO & Indexing
+
 - [x] Set up Google Search Console — already verified with big.main666@gmail.com, 10 pages indexed, 4 clicks
 - [x] Set up Bing Webmaster Tools — IndexNow pings sent (202 accepted) for all new pages
 - [x] Submit sitemap to both — sitemap.xml updated with 9 new URLs, Bing IndexNow pinged
@@ -566,37 +611,42 @@
 - [x] Update robots.txt — added Allow rules for all new public pages
 
 ### Phase 5: Analytics & Monitoring
+
 - [x] Set up Google Analytics 4 — G-Y2LHJE4F1T already integrated in index.html
 - [x] Create Stripe revenue dashboard — Stripe dashboard at dashboard.stripe.com (subscriptions auto-tracked via webhook)
 - [x] Set up weekly reporting (traffic, conversions, revenue) — weeklyNewsletterHandler generates weekly stats
 - [x] Monitor search console for ranking keywords — GSC verified, 10 pages indexed, tracking active
 
-
 ## Premium Redesign — "Million Dollar App" (Jul 4, 2026)
 
 ### Phase 2: Global Styles & Typography
+
 - [x] Add premium fonts (Plus Jakarta Sans + Inter) via Google Fonts CDN
 - [x] Rewrite index.css with premium color system, glassmorphism utilities, gradient animations
 - [x] Add premium button styles with glow effects
 - [x] Update NeonCard component with refined glassmorphism
 
 ### Phase 3: Navbar Redesign
+
 - [x] Make logo 2x larger with enhanced glow
 - [x] Streamline nav links (reduce clutter, group into dropdowns)
 - [x] Premium floating nav with enhanced glass effect
 
 ### Phase 4: Home Page Redesign
+
 - [x] Redesign hero with larger typography and premium feel
 - [x] Add bento grid features section
 - [x] Floating stat cards with premium animations
 - [x] Premium social proof section
 
 ### Phase 5: Key Pages
+
 - [x] Pricing page: glassmorphism cards with popular tier glow
 - [x] Performance page: premium data cards
 - [x] Picks page: premium pick cards with confidence visualizations
 
 ### Phase 6: Remaining Pages & Cleanup
+
 - [x] Update Tools page with premium design (glass cards, rounded tabs)
 - [x] Update EVFinder page with premium header and filters
 - [x] Update Login/SignUp with premium AuthPageShell
@@ -608,12 +658,14 @@
 - [x] TypeScript compiles clean (0 errors)
 
 ## SEO Fixes (Homepage /)
+
 - [x] Reduce meta keywords from 21 to 7 (max 8)
 - [x] Rewrite title from 76 chars to 54 chars (30-60 range)
 - [x] Rewrite description from 180 chars to 149 chars (50-160 range)
 - [x] Sync PageMeta.tsx with index.html for consistent SPA title/description
 
 ## Premium UX Enhancements (Jul 4, 2026)
+
 - [x] Install Framer Motion and create animation utilities (FadeIn, SlideUp, StaggerChildren)
 - [x] Add animated mesh/particle hero background effect
 - [x] Build social proof ticker (real-time win notifications)
@@ -623,6 +675,7 @@
 - [x] TypeScript compiles clean, tests pass (113/117 — 3 pre-existing failures)
 
 ## Logo Fix & Dropdown Enhancement (Jul 5, 2026)
+
 - [x] Fix logo: apply mix-blend-mode screen + drop-shadow glow to remove black square and blend with dark bg
 - [x] Make logo bigger: 220px wide desktop, 68px icon on mobile
 - [x] Rebuild Navbar as mega-menu with 4 groups (Analytics, Tools, Calculators, Community)
@@ -638,6 +691,7 @@
 - [x] 114/117 tests pass (2 pre-existing failures: subscription amounts + feedback timeout)
 
 ## Swipe Gesture Navigation (Jul 5, 2026)
+
 - [x] Create useSwipeNavigation hook — detects horizontal swipe, threshold 55px, velocity 0.18px/ms, cancels on vertical drift >80px
 - [x] Create SwipeNavProvider component — wraps app, shows directional hint overlay during swipe
 - [x] Swipe hint shows target tab name + chevron arrow, colored to match destination tab
@@ -648,12 +702,14 @@
 - [x] TypeScript: 0 errors
 
 ## Stripe Buy Button — Monthly Pro (Jul 5, 2026)
+
 - [x] Add Stripe Buy Button JS script to index.html head (async load)
 - [x] Replace Monthly Pro CTA button in Pricing.tsx with official stripe-buy-button element
 - [x] Daily Pass and Annual Elite keep existing Stripe checkout session flow
 - [x] TypeScript: 0 errors (custom element suppressed with @ts-ignore)
 
 ## Stripe Buy Buttons — Daily Pass + Post-Purchase (Jul 5, 2026)
+
 - [x] Add Stripe Buy Button for Daily Pass (buy_btn_1TpyfwJXlShpHPhg27Ns7mB1)
 - [x] Add success-url to both Monthly Pro and Daily Pass buy buttons → /account-settings?subscribed=true&plan={tier}
 - [x] Annual Elite keeps existing Stripe checkout session flow (no buy button ID provided yet)
@@ -663,12 +719,14 @@
 - [x] TypeScript: 0 errors
 
 ## Annual VIP Stripe Buy Button (Jul 5, 2026)
+
 - [x] Add Stripe Buy Button for Annual VIP (buy_btn_1TpyjQJXlShpHPhgtdOYAbTc)
 - [x] All three pricing tiers now use Stripe Buy Buttons (Daily Pass, Monthly Pro, Annual VIP)
 - [x] All three redirect to /account-settings?subscribed=true&plan={tier} on success
 - [x] TypeScript: 0 errors
 
 ## Webhook Subscription Sync + Promo Codes + Email (Jul 5, 2026)
+
 - [x] Stripe webhook handler for checkout.session.completed already exists (server/webhook.ts)
 - [x] Webhook extracts plan tier from session metadata and updates subscriptionTier in database
 - [x] Webhook validates Stripe signature using STRIPE_WEBHOOK_SECRET
@@ -679,7 +737,9 @@
 - [x] TypeScript: 0 errors
 
 ## Premium Enhancements — Phase 2 (Jul 6, 2026)
+
 ### SMS Notifications & Affiliate Dashboard
+
 - [x] Create Twilio SMS integration (server/routers/sms.ts)
 - [x] Add SMS alert tRPC procedure for new picks, wins, steam moves
 - [x] Build affiliate dashboard page with earnings tracker, commission history
@@ -687,6 +747,7 @@
 - [x] Wire affiliate earnings to user account balance (backend ready)
 
 ### Bet Tracking & Dark Mode
+
 - [x] Build bet tracking UI component (DraftKings/FanDuel API placeholder)
 - [x] Add dark/light mode toggle in account settings
 - [x] Persist theme preference to localStorage and database
@@ -694,6 +755,7 @@
 - [x] Add smooth transition animation between themes
 
 ### Push Badges, Achievements & Pick of Week
+
 - [x] Add animated red badge to bell icon when unread notifications exist
 - [x] Create leaderboard achievements system (7-Day Win Streak, 100+ Picks, etc.)
 - [x] Build achievement unlock animations and display badges on profile
@@ -701,19 +763,22 @@
 - [x] Wire pick of week to highest-performing pick from the week
 
 ### Onboarding Video
+
 - [x] Create onboarding video component with HeyGen AI avatar
 - [x] Show video on first login (store viewed status in database)
 - [x] Add skip button and fullscreen option
 - [x] Wire video to show key features: +EV Finder, placing bets, tracking wins
 
 ### Testing & Delivery
+
 - [x] TypeScript: 0 errors
 - [x] All features tested in dev
 - [x] Save checkpoint with all 8 enhancements
 
-
 ## Revenue-Driving Features — Phase 3 (Jul 6, 2026)
+
 ### Live Leaderboard & Prize Pools
+
 - [x] Create leaderboard page showing top performers by win rate, ROI, profit
 - [x] Add weekly prize pool system ($500/week for top 5)
 - [x] Wire leaderboard to real user performance data from database
@@ -721,6 +786,7 @@
 - [x] Show prize payout schedule and claim interface
 
 ### Telegram Bot Integration
+
 - [x] Create Telegram bot for pick alerts, win notifications, steam moves
 - [x] Add /start, /picks, /stats, /settings commands
 - [x] Wire bot to send SMS-like alerts via Telegram
@@ -728,42 +794,49 @@
 - [x] Track engagement metrics (opens, clicks, shares)
 
 ### Affiliate Tier Bonuses
+
 - [x] Update affiliate commission structure (20% → 30% after 10+ referrals)
 - [x] Add tier display in affiliate hub (Bronze 20%, Silver 25%, Gold 30%)
 - [x] Create tier progression tracker with milestones
 - [x] Add bonus payout schedule to affiliate dashboard
 
 ### Parlay Tracking Dashboard
+
 - [x] Build parlay import UI (DraftKings/FanDuel API integration)
 - [x] Create parlay tracking table with live odds, potential payouts
 - [x] Add parlay history and performance analytics
 - [x] Wire to live odds API for real-time updates
 
 ### Bet Slip Builder
+
 - [x] Create drag-and-drop bet slip builder interface
 - [x] Add live odds display and +EV calculations
 - [x] Build parlay builder with leg-by-leg odds
 - [x] Add "Copy to DraftKings" button for quick checkout
 
 ### Community Chat
+
 - [x] Build real-time chat component (Socket.io or Supabase Realtime)
 - [x] Add chat channels (General, Picks Discussion, Wins, Strategy)
 - [x] Add user profiles and reputation system
 - [x] Moderate spam and enforce community guidelines
 
 ### Elite+ Premium Tier
+
 - [x] Create Elite+ tier ($99/month) with SMS alerts, priority picks, 1-on-1 coaching
 - [x] Add tier gating for premium features
 - [x] Create Elite+ onboarding flow
 - [x] Add coaching calendar booking system
 
 ### API Access Tier
+
 - [x] Build API documentation page
 - [x] Create API key management in account settings
 - [x] Implement rate limiting and usage tracking
 - [x] Add API tier ($199/month) for bot access
 
 ### White-Label Reseller Program
+
 - [x] Create reseller signup flow with custom branding options
 - [x] Build reseller dashboard with revenue tracking
 - [x] Add custom domain setup (subdomain or custom domain)
@@ -771,12 +844,13 @@
 - [x] Add reseller analytics and customer management
 
 ### Testing & Delivery
+
 - [x] TypeScript: 0 errors
 - [x] All features tested in dev
 - [x] Save checkpoint with all 9 features
 
-
 ## TypeScript Build Fix (Jul 7, 2026)
+
 - [x] Fix PageTransition.tsx — add Variants type import from framer-motion
 - [x] Fix AccountSettings.tsx — add missing useEffect import
 - [x] Fix AffiliateHub.tsx — change duplicate useRouter import to useLocation (wouter)
@@ -787,6 +861,7 @@
 - [x] TypeScript: 0 errors (verified via tsc --noEmit)
 
 ## Promo Code Enhancement (Jul 7, 2026)
+
 - [x] Redesign promo code section on Pricing page to be more prominent with CHALK15 highlight
 - [x] Update placeholder text to reference CHALK15 code
 - [x] Make promo code validation work for all tiers (not just one specific tier)
@@ -794,6 +869,7 @@
 - [x] Seed CHALK15 promo code in database (15% off, all tiers)
 
 ## Stripe Checkout Sessions Migration (Jul 7, 2026)
+
 - [x] Replace Stripe Buy Buttons with Checkout Session CTAs on Pricing page
 - [x] Update createCheckout backend to apply promo code discount via Stripe Coupon
 - [x] Ensure webhook handles checkout.session.completed for subscription activation
@@ -801,6 +877,7 @@
 - [x] Test end-to-end flow with CHALK15 promo code
 
 ## Next Steps Implementation (Jul 7, 2026)
+
 - [x] Create live-mode CHALK15 promotion code in Stripe (already exists in Stripe account)
 - [x] Add confetti/success animation to payment success page
 - [x] Add countdown timer to CHALK15 promo banner on pricing page
@@ -811,8 +888,8 @@
 - [x] Test full checkout flow on production (code ready, needs deploy for live test)
 - [x] Verify all features work end-to-end (0 TS errors, all code compiles)
 
-
 ## BabyLoveGrowth Integration (Jul 10, 2026)
+
 - [x] Configure Gmail SMTP credentials (admin@chalkpicks.live with password 992352Cmz!)
 - [x] Add BabyLoveGrowth API service (babyloveGrowth.ts with fetch, generate, transform functions)
 - [x] Create blog_posts database table with schema (title, slug, content, SEO fields, status)
@@ -826,6 +903,7 @@
 - [x] Test end-to-end blog generation and publishing (3 articles imported + published successfully)
 
 ## Deployment Fix & Pricing Alignment (Jul 10, 2026)
+
 - [x] Remove postinstall Socket Security script that was causing deployment failure
 - [x] Increase rate limit from 100 to 300 requests/min to prevent tool page blocking
 - [x] Update all pricing across site to match Stripe (Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr)
@@ -834,6 +912,7 @@
 - [x] Update Paywall, FeatureGate, PageMeta, StructuredData, AdminPanel, CreditDashboard, SubscriptionDashboard, SubscriptionManagement, UserProfile, AffiliateHub, PayPalPricing, PaymentSuccess, AccountSettings
 
 ## Public Blog Page & ToolPilot Badge (Jul 10, 2026)
+
 - [x] Create public /blog page listing published articles from database
 - [x] Create /blog/:slug detail page with full article content
 - [x] Add blog routes to App.tsx
@@ -841,12 +920,14 @@
 - [x] Add ToolPilot partnership link
 
 ## Media Partners Page (Jul 10, 2026)
+
 - [x] Create /partners (Media Partners) page with ToolPilot.ai as first featured partner
 - [x] Add route to App.tsx
 - [x] Add link to footer navigation
 - [x] Add to sitemap
 
 ## ToolPilot Badge & Scalar API (Jul 10, 2026)
+
 - [x] Download and upload ToolPilot badge image to static assets
 - [x] Add ToolPilot badge to homepage hero/social proof section
 - [x] Add ToolPilot badge to Media Partners page header
@@ -854,31 +935,37 @@
 - [x] Expose /api/docs endpoint with OpenAPI spec (also /openapi.json)
 
 ## Blog & SEO Enhancements (Jul 10, 2026)
+
 - [x] Add social share buttons (Twitter/X, Reddit, Discord) to blog post pages
 - [x] Add "Write for Us" section to blog listing page with submission form
 - [x] Set up IndexNow pings when blog articles are published
 - [x] Expand OpenAPI spec with auth examples and response schemas
 
 ## GitHub & LLM Access (Jul 10, 2026)
+
 - [x] Confirm GitHub repo big-main/chalkpicks-prov2 is already public (no change needed)
 - [x] Public repo grants read access to Claude, GPT, Gemini, and all LLMs via GitHub API
 
 ## Blog SEO & UX Improvements (Jul 10, 2026)
+
 - [x] Add Open Graph / Twitter Card meta tags to blog post pages (og:title, og:description, og:image, twitter:card)
 - [x] Submit sitemap to Google Search Console (ping Google sitemap endpoint)
 - [x] Add Related Articles section to blog post pages (2-3 other published posts)
 
 ## Dynamic Sitemap, Newsletter CTA & Blog Tags (Jul 10, 2026)
+
 - [x] Add dynamic /sitemap-blog.xml endpoint with DB-backed blog post URLs (up to 500 posts, 1h cache)
 - [x] Add newsletter signup CTA to blog post pages (email capture before Related Articles)
 - [x] Add tags column to blog_posts schema and tag-based related article filtering
 
 ## Newsletter, Auto-Tags & Sitemap Index (Jul 10, 2026)
+
 - [x] Wire newsletter signups to DB (newsletter_subscribers table) + SMTP welcome email
 - [x] Auto-extract tags from BabyLoveGrowth API categories in blogContentHandler.ts
 - [x] Ping both /sitemap.xml and /sitemap-blog.xml to Google on publish
 
 ## Claude's 13-Bug-Fix Merge (Jul 10, 2026)
+
 - [x] Stripe webhook: fail closed when secret missing (was accepting unsigned events)
 - [x] $100 credit bonus: now increments instead of overwriting balance
 - [x] Removed hidden trial downgrade that would've overwritten paid tier
@@ -895,6 +982,7 @@
 - [x] tRPC client/react-query upgraded 11.6 → 11.18 to match server
 
 ## Databricks + Global Data Site Integration (Jul 15, 2026)
+
 - [x] Test Databricks REST API connectivity (stub created, needs DATABRICKS_HOST/TOKEN/WAREHOUSE_ID)
 - [x] Test Global Data Site API connectivity (keys return 401 — subscription needs renewal)
 - [x] Add credentials to .env.production on cloud computer
@@ -907,6 +995,7 @@
 - [x] Update AGENTS.md with new integrations
 
 ## Phase 11: Competitive Playbook Implementation (Jul 16, 2026)
+
 - [x] Build @chalkpicks/odds-math module (shared/oddsMath.ts) — 29 exported functions: devig, EV, Kelly, CLV, arbitrage, steam moves, Elo, parlay math, middle detection
 - [x] Upgrade odds router to use real Odds API data with proper proportional devig from oddsMath module
 - [x] Add SportsEvent JSON-LD component for programmatic pages
@@ -930,6 +1019,7 @@
 - [x] Set up n8n + Ollama content factory workflow (JSON ready at ~/chalkpicks-pro-n8n-content-factory.json)
 
 ## Phase 11 Drop-In Guide (Jul 16, 2026)
+
 - [x] odds_snapshots table added to drizzle/schema.ts + migration SQL generated
 - [x] ev.router (server/routers/ev.ts) — findPositiveEV, stampClosingLines, stampCLV
 - [x] evRouter mounted in appRouter (server/routers.ts)
@@ -937,9 +1027,9 @@
 - [x] OrganizationJsonLd + WebSiteJsonLd added to App.tsx root layout
 - [x] llms.txt rewritten with correct real route URLs
 - [x] Prerender middleware (server/prerender.ts) — GPTBot/ClaudeBot/PerplexityBot get full HTML+JSON-LD; normal users get SPA
-- [x] registerPrerenderMiddleware() wired into server/_core/index.ts before setupVite/serveStatic
+- [x] registerPrerenderMiddleware() wired into server/\_core/index.ts before setupVite/serveStatic
 - [x] n8n closing-line cron workflow JSON exported (chalkpicks-pro-n8n-closing-line-cron.json)
-- [x] Apply odds_snapshots migration to production DB (run SQL from drizzle/0019_*.sql)
+- [x] Apply odds*snapshots migration to production DB (run SQL from drizzle/0019*\*.sql)
 - [x] Import n8n workflow JSON into bigmain.app.n8n.cloud and activate (n8n API not enabled, manual import required)
 
 ## Tier 1 — Revenue Critical
@@ -974,6 +1064,7 @@
 - [x] API access tier: expose EV/CLV/devig endpoints as paid API
 
 ## Tier 4 Completion (Jul 16, 2026)
+
 - [x] Sharp money detector: real-time line movement + public betting % divergence (SharpMoneyDetector page + sharpMoney router)
 - [x] Consensus picks aggregator: public betting % vs ChalkPicks AI recommendation (ConsensusAggregator page + consensus router)
 - [x] API access tier: expose EV/CLV/devig endpoints as paid API (APIAccess page + apiKeys router with generate/revoke/list)
@@ -995,7 +1086,7 @@
 
 ## Phase 12 — All Next Steps (Jul 17, 2026)
 
-- [x] Apply odds_snapshots migration to production DB (SQL from drizzle/0019_*.sql)
+- [x] Apply odds*snapshots migration to production DB (SQL from drizzle/0019*\*.sql)
 - [x] Build and export n8n closing-line cron workflow (every 15 min, stampClosingLines + stampCLV)
 - [x] Create Product Hunt launch copy and assets (tagline, description, screenshots, logo)
 - [x] Build @xyflow/react visual parlay builder component (/parlay-flow)
@@ -1099,7 +1190,7 @@
 
 ## Phase 37 — Discord Automation (COMPLETE)
 
-- [x] Add DISCORD_WEBHOOK_URL to ENV object in server/_core/env.ts
+- [x] Add DISCORD_WEBHOOK_URL to ENV object in server/\_core/env.ts
 - [x] Store Discord webhook URL as project secret (DISCORD_WEBHOOK_URL)
 - [x] Verify webhook URL works (HTTP 204 confirmed)
 - [x] Create server/services/discordBot.ts with 4 webhook-based posting functions:
@@ -1108,12 +1199,12 @@
   - postEveningResultsToDiscord() — 6pm PT: yesterday's results recap embed (blurple)
   - postNightPreviewToDiscord() — 9pm PT: tomorrow's preview embed (purple)
 - [x] Create server/handlers/discordPostHandler.ts (slot routing: morning/afternoon/evening/night)
-- [x] Register POST /api/scheduled/discord-post in server/_core/index.ts
+- [x] Register POST /api/scheduled/discord-post in server/\_core/index.ts
 - [x] Create 4 Heartbeat jobs:
-  - discord-morning-pick: "0 0 15 * * *" (8am PT) — task_uid: 9wevuNEV7CHnBDx4VTmNur
-  - discord-afternoon-alert: "0 0 20 * * *" (1pm PT) — task_uid: mSysFg9vHqwc5N8weKcdPT
-  - discord-evening-results: "0 0 1 * * *" (6pm PT) — task_uid: oC6fA4Cy4FFZV95KXXRZcQ
-  - discord-night-preview: "0 0 4 * * *" (9pm PT) — task_uid: HPRvokbj5WYBQheMHwFYB6
+  - discord-morning-pick: "0 0 15 \* \* \*" (8am PT) — task_uid: 9wevuNEV7CHnBDx4VTmNur
+  - discord-afternoon-alert: "0 0 20 \* \* \*" (1pm PT) — task_uid: mSysFg9vHqwc5N8weKcdPT
+  - discord-evening-results: "0 0 1 \* \* \*" (6pm PT) — task_uid: oC6fA4Cy4FFZV95KXXRZcQ
+  - discord-night-preview: "0 0 4 \* \* \*" (9pm PT) — task_uid: HPRvokbj5WYBQheMHwFYB6
 - [x] Test all 4 slots end-to-end (all return HTTP 200 {"ok":true})
 - [x] Save checkpoint
 
@@ -1134,14 +1225,14 @@
 
 ## Phase 39 — Recommendations Implementation
 
-- [x] Fix tracking.ts TS errors: rewrite to use standard select queries instead of relational API (db.query.*)
+- [x] Fix tracking.ts TS errors: rewrite to use standard select queries instead of relational API (db.query.\*)
 - [x] Add trackingRouter import and registration in server/routers.ts
 - [x] Fix MyTrackedPicks.tsx useAuth import path
 - [x] Add shared/oddsMath.ts compat exports: noVigProbabilities, noVigProbability, bookmakerHold (decimal), expectedValue (with validation), edgeVsFairLine, kellyFraction (with fraction param), closingLineValue, decimalToImpliedProb, fractionalToDecimal, decimalToFractional
 - [x] All 163 tests passing (1 skipped) — 0 TS errors
 - [x] Deploy latest code to Cloud Computer production mirror (git pull + pnpm build + pm2 restart)
 - [x] Add Ollama warm-up Heartbeat job: POST /api/scheduled/ollama-warmup every 4 minutes (task_uid: 2PgkaJqzhgoCbTcPTHtfjG)
-- [x] Register ollamaWarmupHandler in server/_core/index.ts
+- [x] Register ollamaWarmupHandler in server/\_core/index.ts
 - [x] Tested warm-up endpoint: qwen2.5:7b responds in ~3.3s when warm
 
 ## Phase 40 — AI Model Recommendations (SEO + Revenue Protection)
@@ -1173,6 +1264,7 @@
 - [x] Save checkpoint
 
 ## Phase 43 — Elo Engine, PremiumCard, Push Notification Edge Trigger
+
 - [x] Cloud Computer verified and redeployed: all services healthy (chalkpicks-prod, nginx, Ollama, quant sidecar, OddsHarvester)
 - [x] Elo engine seeded with 2025 data: 410 games total (150 NBA regular season, 60 NBA playoffs, 200 MLB 2025). OKC Thunder tops NBA at 1786.7, Dodgers tops MLB at 1703.0
 - [x] PremiumCard glassmorphism component created at client/src/components/ui/PremiumCard.tsx
@@ -1182,9 +1274,10 @@
 - [x] Save checkpoint
 
 ## Phase 44 — Cloud Deploy, n8n Drip, Nightly Auto-Sync
+
 - [x] Deploy Phase 43 changes to Cloud Computer production mirror (git pull + pnpm build + pm2 restart)
 - [x] cloudSyncHandler.ts created at server/handlers/cloudSyncHandler.ts (SSH → git pull → build → pm2 restart)
-- [x] Registered /api/scheduled/cloud-sync route in server/_core/index.ts
+- [x] Registered /api/scheduled/cloud-sync route in server/\_core/index.ts
 - [x] Nightly Heartbeat job created: cloud-sync-nightly (task_uid: FG8TENbfPEu45TMbz7XGdk) — fires at 07:00 UTC (midnight PT) daily
 - [x] n8n email drip workflow: BLOCKED — needs user to enable Public API in bigmain.app.n8n.cloud Settings → API (reply when done, will auto-import)
 - [x] N8N_DRIP_WEBHOOK_URL secret: BLOCKED — will be set automatically after n8n API is enabled and workflow imported
@@ -1228,10 +1321,12 @@
 - [x] n8n drip workflow: blocked on n8n Public API enable (user action required — pending user)
 
 ## Phase 48 — Confidence Bar Animations
+
 - [x] Add smooth 0→value fill animation to all confidence bars on page load
 - [x] Apply to: Picks page, FreePick, PickDetail, Performance page (shared ConfidenceBar component)
 
 ## Phase 49 — Banner, Tooltips, Pulse Glow, Sorting, Skill
+
 - [x] Site-wide announcement banner (database-driven via announcements table, active record inserted)
 - [x] Confidence bar tooltip: hover shows explanation of the percentage (Info icon + shadcn Tooltip)
 - [x] Pulse glow effect on pick cards with confidence >= 90% (cp-pulse-glow keyframe animation)
@@ -1239,12 +1334,14 @@
 - [x] Package ChalkPicks feature-build process as reusable skill (chalkpicks-builder validated)
 
 ## Phase 50 — Picks Page Sport & Date Filtering
+
 - [x] Prominent sport filter tabs (All, NFL, NBA, MLB, NHL, NCAAF, NCAAB, Soccer, Tennis, MMA) with sport-colored pill buttons
 - [x] Date preset row (Today, Yesterday, Last 7 Days, Last 30 Days, All Time) with blue active state
 - [x] Wire sport + date filters to picks.list tRPC procedure (dateFrom/dateTo params added)
 - [x] activeFilterCount includes datePreset deviation from default
 
 ## Phase 51 — Logo Update, Sport Count Badges, Purple→Cyan, AI Failover
+
 - [x] Apply new logo (gold crown + red splatter) to all 6 locations: Navbar, AuthPageShell, AdminPanel, Home footer, schema-jsonld.tsx, index.html
 - [x] Update OG/Twitter image meta tags and Organization JSON-LD logo URL to new CDN
 - [x] Add sportCounts tRPC procedure to picks router (counts per sport key, last 7 days)
@@ -1260,6 +1357,7 @@
 - [x] All 176 tests passing (20 test files)
 
 ## Phase 52 — Favorites, Legend, New Pick Dot, Color Overhaul, Logo v3
+
 - [x] Color overhaul: gold reserved for wins only; new palette (cyan=NBA/AI, violet=premium tier, orange=NCAAF/B, emerald=MLB)
 - [x] Logo v3: gold crown + red chalk splatter, green/cyan glow drop-shadow
 - [x] Logo updated in all 6 locations (Navbar, AuthPageShell, AdminPanel, Home footer, JSON-LD, index.html)
@@ -1274,6 +1372,7 @@
 - [x] 176 tests passing, 0 TypeScript errors
 
 ## Phase 53 — Full-Width Banner + Logo Save
+
 - [x] Saved original ChalkPicks logo (green crown + white/green text on black) from user upload
 - [x] Generated wide 16:9 banner version with red chalk splatter accents on left/right sides
 - [x] Wired banner as full-width hero image at top of Home page (below Navbar + LiveResultsTicker)
@@ -1297,6 +1396,7 @@
 ## Phase 58 — Stripe Live Fix, Logo Headers, Streak Badges, Blog Fix
 
 ### Stripe Live Mode Fix
+
 - [x] Create 3 live-mode prices in Stripe (Daily $9.99, Monthly Pro $19.99, Yearly Elite $59.99/yr)
 - [x] Update PLANS in server/routers/subscription.ts with live price IDs
 - [x] Confirm webhook.ts uses amount-based tier detection (no hardcoded price IDs needed)
@@ -1305,17 +1405,21 @@
 - [x] Update STRIPE_SECRET_KEY to live key in Manus secrets
 
 ### Logo Headers
+
 - [x] Add 320px borderless bleed logo hero to Leaderboard page
 - [x] Add 320px borderless bleed logo hero to Tools page
 - [x] Verify logo headers render correctly on all pages (TS clean, no errors)
 
 ### Streak Badges
+
 - [x] Add gold 🔥 streak badge to pick cards for winning streaks (3W+)
 
 ### Blog Title Fix
+
 - [x] Fix blog post titles — removed test data (Team Spoon/Coop) and generic sport-only titles from DB
 
 ### Sitemap/IndexNow
+
 - [x] Submit sitemap to Google Search Console (already wired — pingIndexNow fires on every new blog post)
 - [x] Ping IndexNow for new pages (already wired in blog.ts generateFromPick procedure)
 
@@ -1336,7 +1440,7 @@
 ## Phase 61 — Twitter Post Handler Fix
 
 - [x] Create twitterPostHandler.ts with OAuth 1.0a, 4 daily slots (morning/afternoon/evening/night)
-- [x] Register /api/scheduled/twitter-post route in server/_core/index.ts
+- [x] Register /api/scheduled/twitter-post route in server/\_core/index.ts
 - [x] All 176 tests passing (20 test files)
 
 ## Phase 62 — Deployment Fix (Critical)
@@ -1359,16 +1463,14 @@
 - [x] Add siteStats public tRPC procedure to systemRouter (real DB counts with graceful fallback)
 - [x] Add picks count badge to MobileBottomNav Picks tab
 
-
 ## Phase 64 — Pick Result Auto-Tweeting
 
 - [x] Add twitterResultPosted boolean column to picks table schema
 - [x] Generate and apply migration for new column
 - [x] Create twitterPickResultHandler.ts with OAuth 1.0a Twitter API integration
-- [x] Register /api/scheduled/twitter-pick-results endpoint in server/_core/index.ts
+- [x] Register /api/scheduled/twitter-pick-results endpoint in server/\_core/index.ts
 - [x] Auto-tweet pick results (win/loss) with odds, pick details, and running record
 - [x] All 176 tests passing, TypeScript clean
-
 
 ## Phase 65 — Admin Dashboard Metrics
 
@@ -1381,7 +1483,6 @@
 - [x] Register /admin/stats route in App.tsx
 - [x] All 176 tests passing, TypeScript clean
 
-
 ## Phase 66 — Hero Section Redesign
 
 - [x] Enlarge logo to 80vh max height with 1:0.75 aspect ratio
@@ -1391,7 +1492,6 @@
 - [x] Change objectFit from cover to contain for full logo display
 - [x] Reduce top margin from 60px to 20px to fill more space
 - [x] All TypeScript clean, dev server running
-
 
 ## Phase 67 — Referral Page with Earnings Dashboard
 
@@ -1405,7 +1505,6 @@
 - [x] Display referrals table showing email, status, and join date
 - [x] Register /refer route in App.tsx
 - [x] All 176 tests passing, TypeScript clean
-
 
 ## Phase 69 — Directory Kit Optimization
 
@@ -1421,7 +1520,6 @@
 - [x] Add all 7 tools to seo-routes.ts sitemap (odds-calc, roi-calc, bankroll-mgr, parlay-calc, devig-calc, kelly-calc, ev-calc)
 - [x] Add Parlay Calculator, Kelly Calculator, EV Calculator to Navbar Calculators dropdown (now 8 items total)
 
-
 ## Phase 70 — Live Feed Optimization + BabyLoveGrow SEO
 
 - [x] Optimize HorizontalScrollTicker: auto-scroll animation, larger cards, better visual hierarchy
@@ -1432,7 +1530,6 @@
 - [x] Add /api/scheduled/sync-babylovegrow Heartbeat job to pull new articles daily (3am PT)
 - [x] Add Navbar + PageMeta + back button to all tools pages (all 4 confirmed: ParlayCalculator, KellyCalculator, EVCalculator, DevigCalculator)
 - [x] Fix twitterResultPosted column — confirmed exists in TiDB, dev server restarted, picks queries working
-
 
 ## Phase 71 — Tools Hub Page
 
@@ -1445,7 +1542,6 @@
 - [x] Register /tools route in App.tsx
 - [x] All 176 tests passing
 
-
 ## Phase 72 — Leaderboard Public Profiles
 
 - [x] Verified LeaderboardProfile.tsx already has SEO component with dynamic title and description
@@ -1454,10 +1550,10 @@
 - [x] Profile page optimized for Twitter/Discord rich previews
 - [x] All 176 tests passing
 
-
 ## 10-Phase Optimization Plan (Wide Parallel Execution — July 2026)
 
 ### Phase 1-2: Test Fixes + Schema Markup
+
 - [x] Fix server/ai-integration.test.ts (graceful 429/timeout handling)
 - [x] Fix server/oddsApiIo.test.ts (graceful timeout handling)
 - [x] Fix server/aiPicks.test.ts (graceful rate limit handling)
@@ -1469,44 +1565,53 @@
 - [x] Add HowToJsonLd to OddsCalculator, ROICalculator, BankrollManager, ParlayCalculator, KellyCalculator, EVCalculator
 
 ### Phase 3: Programmatic SEO Pages
+
 - [x] Build /guides hub page with betting education articles
 - [x] Build /public-betting page with public money percentages
 - [x] Build /free-picks landing page optimized for organic search
 - [x] Add BreadcrumbJsonLd to sport-specific picks pages
 
 ### Phase 4: Social Media Automation
+
 - [x] Add Twitter image card generation for pick tweets (pick card PNG) — thread format with confidence bar
 - [x] Add thread-style multi-tweet for high-confidence picks (≥80% confidence posts as 3-tweet thread)
 
 ### Phase 5: AI Strategy Builder
+
 - [x] Build /strategy-builder page with AI-powered betting strategy creation
 - [x] Allow users to define rules (sport, pick type, confidence threshold, bankroll %)
 - [x] Backtest strategy against historical picks
 - [x] Save/share strategies
 
 ### Phase 6: PWA + Performance
+
 - [x] Add/update manifest.json for full PWA compliance (shortcuts, display_override, dual-purpose icons)
 - [x] Add service worker with offline caching (cache-first assets, network-first nav, push notifications)
 - [x] Verify push notifications working end-to-end (sw.js handles push + notificationclick)
 
 ### Phase 7: New Tools
+
 - [x] Build /tools/free-bet-converter tool
 - [x] Build /tools/middles-finder tool
 
 ### Phase 8: Revenue Optimization
+
 - [x] Add exit-intent popup with discount offer
 - [x] Add upsell modal for free users viewing premium picks
 
 ### Phase 9: Railway Integration
+
 - [x] Add Railway deployment status widget to /admin/stats
 
 ### Phase 10: Final Audit
+
 - [x] Run full test suite (179/180 passing, 1 skipped network test)
 - [x] Save checkpoint + auto-publish (96d0dde6)
 - [x] Sync Cloud Computer (FUSE copy + pnpm build + pm2 restart — all 15 files synced)
 - [x] Deliver comprehensive report
 
 ## 10-Phase Optimization Plan — July 2026
+
 - [x] Phase 2: Schema markup rollout (ProductJsonLd on Pricing, HowToJsonLd on all calculators, SoftwareApplicationJsonLd in root)
 - [x] Phase 3: Programmatic SEO pages — /strategy-builder, /guides, /public-betting, /tools/free-bet-converter, /tools/middles-finder
 - [x] Phase 4: Register all new pages in seo-routes.ts and routeMeta.ts
@@ -1518,6 +1623,7 @@
 - [x] Phase 10: Cloud Computer sync — all files available via FUSE mount
 
 ## Post-Optimization Audit & Next Steps (July 29, 2026)
+
 - [x] Full TypeScript check: 0 errors
 - [x] Full test suite: 179 pass, 1 skip (network test)
 - [x] Browser console: 0 errors on all new pages
@@ -1530,6 +1636,7 @@
 - [x] Sync to Cloud Computer + rebuild (PM2 online, build success)
 
 ## Next Steps (Jul 28, 2026)
+
 - [x] Store xAI API key (XAI_API_KEY) — valid, needs credits at console.x.ai to activate inference
 - [x] Fix baseline-browser-mapping dev warning (pnpm add -D baseline-browser-mapping@latest)
 - [x] Add email capture gate on /free-picks with n8n drip trigger (wired to newsletter.subscribe + n8n webhook)
@@ -1538,6 +1645,7 @@
 - [x] Note: Similarweb connected via Google Analytics — use for traffic analysis (noted, no code change needed)
 
 ## Railway + n8n Drip + GSC (Jul 28, 2026)
+
 - [x] Connect Railway API correctly (verify token, health checks, status widget)
 - [x] Configure Railway webhook for deployment notifications (Railway router + RailwayStatusWidget wired)
 - [x] Build n8n 3-step email drip workflow (Day 1 welcome, Day 3 missed picks, Day 5 EXIT15 offer) — saved at n8n-workflows/free-picks-drip-sequence.json
@@ -1545,6 +1653,7 @@
 - [x] Run full test suite and verify nothing broken (179/180 passing)
 
 ## n8n Workflow Adaptation + Railway (Jul 28, 2026)
+
 - [x] Adapt Baserow AI Auto-Fill workflow to ChalkPicks (n8n-workflows/chalkpicks-ai-pick-analyzer.json)
 - [x] Add n8nWebhook tRPC router (picksSchema, getPickData, getUnanalyzedPicks, updatePickAnalysis)
 - [x] Wire n8n picks webhook trigger in picks.ts (fires on pick.created)
@@ -1558,6 +1667,7 @@
 - [ ] GSC: Verify chalkpicks.live in Google Search Console + submit /sitemap.xml
 
 ## PageSpeed Optimization (Jul 28, 2026) — Mobile Score: 41 → 80+
+
 - [x] Compress hero image: convert 2.8MB PNG to WebP, resize to 800px, add fetchpriority=high
 - [x] Add preconnect for CloudFront CDN to index.html
 - [x] Non-render-blocking Google Fonts (preload + media=print onload swap)
@@ -1567,6 +1677,7 @@
 - [x] Fix accessibility issues: aria-labels on nav buttons, email input label, contrast fixes
 
 ## GSC Indexing + PageSpeed Fixes (Jul 28-29, 2026)
+
 - [x] Fix soft 404: /picks/:id returns HTTP 404 for non-existent pick IDs (seo.ts + vite.ts)
 - [x] Add noindex to all individual pick pages (paywall-gated, thin content for Google)
 - [x] Remove 487 individual pick pages from sitemap (564 → 77 URLs)
@@ -1581,6 +1692,7 @@
 - [x] All 179/180 tests passing, 0 TS errors
 
 ## Google Antigravity SDK Integration (Jul 29, 2026)
+
 - [x] Create antigravity tRPC router (server/routers/antigravity.ts)
 - [x] Add antigravityRouter to server/routers.ts
 - [x] Create AI Analysis panel in pick detail page (Live Gemini Analysis button for premium users)
@@ -1590,3 +1702,42 @@
 - [x] Deploy orchestrator.py (n8n replacement, PM2 — online)
 - [x] Update AGENTS.md with new Antigravity services
 - [x] Push all changes to GitHub
+
+## 8-Model Optimization Roadmap (Jul 29, 2026)
+
+### Phase 0: Repository Consolidation
+
+- [x] Merge Grok's 14 commits (Pick Ledger, CLV Skill, /verify/:hash, closing-line job, IndexNow)
+- [x] Apply pick_ledger migration to production database
+- [x] Delete 4 stale branches
+- [x] Enable branch protection on main (1 PR review, block force-push)
+
+### Phase 1: Code Quality Enforcement
+
+- [x] Install ESLint 9 flat config with typescript-eslint, react-hooks, jsx-a11y
+- [x] Install Husky + lint-staged (pre-commit auto-lint + format)
+- [x] Reduce ESLint errors from 984 to 0 (308 warnings remain)
+- [x] Convert 122 console.log to console.warn (server) or remove (client)
+- [x] Fix 16 eqeqeq violations (== to ===)
+
+### Phase 2: Technical SEO
+
+- [x] Clean robots.txt — deduplicate, add Crawl-delay, /snapshots/ disallow
+- [x] Add Permissions-Policy, Referrer-Policy, X-Content-Type-Options headers
+- [x] Add /verify, /responsible-gambling, /methodology, /how-it-works to seo-routes.ts
+
+### Phase 3: Authority Content
+
+- [x] Create /methodology page (ensemble models, CLV, Monte Carlo, edge detection, FAQ)
+- [x] Create /how-it-works page (4-step flow, automated grading, CTA, FAQ)
+
+### Phase 4: CI/CD Hardening
+
+- [x] Make lint stage strict (fail on tsc errors + ESLint errors)
+- [x] Add Lighthouse CI step
+- [x] Add broken-link checker (manual trigger)
+
+### Phase 5: Deploy & Finalize
+
+- [x] TypeScript: 0 errors, Tests: 179 passing
+- [x] Save checkpoint and push to GitHub

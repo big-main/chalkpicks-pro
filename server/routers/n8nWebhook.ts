@@ -173,10 +173,18 @@ export const n8nWebhookRouter = router({
             // Find the matching game
             const game = oddsData.find(
               (g: any) =>
-                (g.home_team?.toLowerCase().includes(pick.homeTeam?.toLowerCase() ?? "") ||
-                  g.away_team?.toLowerCase().includes(pick.awayTeam?.toLowerCase() ?? "")) &&
-                (g.home_team?.toLowerCase().includes(pick.awayTeam?.toLowerCase() ?? "") ||
-                  g.away_team?.toLowerCase().includes(pick.homeTeam?.toLowerCase() ?? "") ||
+                (g.home_team
+                  ?.toLowerCase()
+                  .includes(pick.homeTeam?.toLowerCase() ?? "") ||
+                  g.away_team
+                    ?.toLowerCase()
+                    .includes(pick.awayTeam?.toLowerCase() ?? "")) &&
+                (g.home_team
+                  ?.toLowerCase()
+                  .includes(pick.awayTeam?.toLowerCase() ?? "") ||
+                  g.away_team
+                    ?.toLowerCase()
+                    .includes(pick.homeTeam?.toLowerCase() ?? "") ||
                   true)
             );
             if (game) {
@@ -262,9 +270,12 @@ export const n8nWebhookRouter = router({
       if (!db) throw new Error("Database unavailable");
 
       const updateData: Record<string, any> = {};
-      if (input.aiAnalysis !== undefined) updateData.aiAnalysis = input.aiAnalysis;
-      if (input.keyFactors !== undefined) updateData.keyFactors = input.keyFactors;
-      if (input.confidenceScore !== undefined) updateData.confidenceScore = input.confidenceScore;
+      if (input.aiAnalysis !== undefined)
+        updateData.aiAnalysis = input.aiAnalysis;
+      if (input.keyFactors !== undefined)
+        updateData.keyFactors = input.keyFactors;
+      if (input.confidenceScore !== undefined)
+        updateData.confidenceScore = input.confidenceScore;
       if (input.edgeScore !== undefined) updateData.edgeScore = input.edgeScore;
 
       if (Object.keys(updateData).length === 0) {
@@ -273,7 +284,9 @@ export const n8nWebhookRouter = router({
 
       await db.update(picks).set(updateData).where(eq(picks.id, input.id));
 
-      console.log(`[n8n] Updated pick ${input.id}: ${Object.keys(updateData).join(", ")}`);
+      console.warn(
+        `[n8n] Updated pick ${input.id}: ${Object.keys(updateData).join(", ")}`
+      );
       return { updated: true, id: input.id, fields: Object.keys(updateData) };
     }),
 
@@ -285,7 +298,11 @@ export const n8nWebhookRouter = router({
   picksEvent: publicProcedure
     .input(
       z.object({
-        event_type: z.enum(["pick.created", "pick.updated", "picks.batch_analyze"]),
+        event_type: z.enum([
+          "pick.created",
+          "pick.updated",
+          "picks.batch_analyze",
+        ]),
         pick_id: z.number().optional(),
         sport_key: z.string().optional(),
         secret: z.string().optional(),
@@ -293,7 +310,9 @@ export const n8nWebhookRouter = router({
     )
     .mutation(async ({ input }) => {
       validateSecret(input.secret);
-      console.log(`[n8n] Picks event: ${input.event_type} | pick_id: ${input.pick_id ?? "batch"}`);
+      console.warn(
+        `[n8n] Picks event: ${input.event_type} | pick_id: ${input.pick_id ?? "batch"}`
+      );
       return {
         received: true,
         event_type: input.event_type,

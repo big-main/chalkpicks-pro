@@ -34,8 +34,8 @@ lint:
     - pnpm config set store-dir .pnpm-store
     - pnpm install --frozen-lockfile
   script:
-    - echo "Linting and type-checking..."
-    - pnpm exec tsc --noEmit || true
+    - pnpm exec tsc --noEmit
+    - pnpm lint
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
@@ -109,6 +109,40 @@ deploy:production:
   needs:
     - build
     - test
+
+# ─── Lighthouse CI ───────────────────────────────────────────────────────────
+lighthouse:
+  stage: validate
+  image: node:22
+  <<: *node_cache
+  before_script:
+    - corepack enable
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile
+    - npm install -g @lhci/cli
+  script:
+    - pnpm run build
+    - lhci autorun --collect.staticDistDir=./client/dist --assert.preset=lighthouse:recommended --assert.assertions.categories:performance=off || true
+  artifacts:
+    paths:
+      - .lighthouseci/
+    expire_in: 7 days
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ─── Broken Link Checker ─────────────────────────────────────────────────────
+link_check:
+  stage: validate
+  image: node:22-alpine
+  before_script:
+    - npm install -g broken-link-checker
+  script:
+    - blc https://chalkpicks.live --recursive --ordered --exclude-external --filter-level 3 || true
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
 
 # ─── Security Scan ────────────────────────────────────────────────────────────
 dependency_scanning:

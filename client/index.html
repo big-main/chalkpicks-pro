@@ -12,7 +12,7 @@
     <meta name="robots" content="index, follow" />
     <meta name="msvalidate.01" content="C29EC427134D36D72C08DC4C4E614EF6" />
     <link rel="canonical" href="https://chalkpicks.live/" />
-    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -192,26 +192,30 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
 
-    <!-- Google Fonts: Plus Jakarta Sans (display) + Inter (body) + JetBrains Mono (data) -->
     <!-- Preconnect: hero image CDN (LCP critical path) -->
     <link rel="preconnect" href="https://d2xsxph8kpxj0f.cloudfront.net" crossorigin />
     <link rel="dns-prefetch" href="https://d2xsxph8kpxj0f.cloudfront.net" />
+    <!-- LCP image preload — start download before React hydrates -->
+    <link
+      rel="preload"
+      as="image"
+      href="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/hero-800.webp"
+      type="image/webp"
+      fetchpriority="high"
+    />
     <!-- Preconnect: fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <!-- Non-render-blocking font load: media=print swaps to all after load -->
+    <!-- Non-render-blocking font load -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
     <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" /></noscript>
 
-
-    <!-- Theme color for mobile browsers -->
     <meta name="theme-color" content="#000000" />
 
-    <!-- Google Analytics (GA4) — deferred to load after page interactive -->
+    <!-- Google Analytics (GA4) — deferred -->
     <script>
-      // Defer GA4 loading to after page load to avoid blocking main thread
       window.addEventListener('load', function() {
         const script = document.createElement('script');
         script.async = true;
@@ -228,7 +232,7 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Umami Analytics — deferred to load after page interactive -->
+    <!-- Umami Analytics — deferred -->
     <script>
       window.addEventListener('load', function() {
         const script = document.createElement('script');

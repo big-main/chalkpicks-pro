@@ -52,7 +52,11 @@ async function pingIndexNow(urls: string[]): Promise<void> {
       await fetch("https://api.indexnow.org/indexnow", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ host: INDEXNOW_HOST, key: INDEXNOW_KEY, urlList: urls }),
+        body: JSON.stringify({
+          host: INDEXNOW_HOST,
+          key: INDEXNOW_KEY,
+          urlList: urls,
+        }),
       });
     }
   } catch (e) {
@@ -71,11 +75,19 @@ async function generatePickArticle(pick: {
   pickType: string;
   pickDate: string;
   odds: number | null;
-}): Promise<{ title: string; slug: string; content: string; excerpt: string; seoDescription: string; tags: string } | null> {
+}): Promise<{
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  seoDescription: string;
+  tags: string;
+} | null> {
   const sport = SPORT_LABELS[pick.sportKey] ?? pick.sportKey.toUpperCase();
-  const matchup = pick.homeTeam && pick.awayTeam
-    ? `${pick.awayTeam} vs ${pick.homeTeam}`
-    : sport;
+  const matchup =
+    pick.homeTeam && pick.awayTeam
+      ? `${pick.awayTeam} vs ${pick.homeTeam}`
+      : sport;
   const title = `${matchup} Prediction & Pick — ${pick.pickDate} | ChalkPicks AI`;
   const slug = slugify(`${matchup}-prediction-pick-${pick.pickDate}`);
 
@@ -109,7 +121,11 @@ Return ONLY the markdown article content, no title, no frontmatter.`;
   try {
     const response = await invokeLLM({
       messages: [
-        { role: "system", content: "You are a professional sports betting analyst. Write detailed, SEO-optimized betting analysis articles in markdown format." },
+        {
+          role: "system",
+          content:
+            "You are a professional sports betting analyst. Write detailed, SEO-optimized betting analysis articles in markdown format.",
+        },
         { role: "user", content: prompt },
       ],
       complexity: "high", // Force Forge (Gemini 2.5 Flash) — blog articles too long for Ollama on CPU
@@ -119,9 +135,23 @@ Return ONLY the markdown article content, no title, no frontmatter.`;
     const content = typeof rawContent === "string" ? rawContent : "";
     if (!content || content.length < 200) return null;
 
-    const excerpt = content.replace(/#{1,3} .+\n/g, "").replace(/\n+/g, " ").slice(0, 200).trim() + "...";
-    const seoDescription = `${matchup} prediction and betting pick for ${pick.pickDate}. ${pick.confidenceScore}% confidence. AI-powered analysis by ChalkPicks.`.slice(0, 160);
-    const tags = [sport, "picks", pick.pickType.replace("_", " "), "AI picks"].join(",");
+    const excerpt =
+      content
+        .replace(/#{1,3} .+\n/g, "")
+        .replace(/\n+/g, " ")
+        .slice(0, 200)
+        .trim() + "...";
+    const seoDescription =
+      `${matchup} prediction and betting pick for ${pick.pickDate}. ${pick.confidenceScore}% confidence. AI-powered analysis by ChalkPicks.`.slice(
+        0,
+        160
+      );
+    const tags = [
+      sport,
+      "picks",
+      pick.pickType.replace("_", " "),
+      "AI picks",
+    ].join(",");
 
     return { title, slug, content, excerpt, seoDescription, tags };
   } catch (e) {
@@ -131,30 +161,27 @@ Return ONLY the markdown article content, no title, no frontmatter.`;
 }
 
 export async function picksBlogHandler(req: Request, res: Response) {
-  const taskUid = req.headers["x-manus-cron-task-uid"] as string || "manual";
-  console.log(`[PicksBlog] Triggered by task: ${taskUid}`);
+  const taskUid = (req.headers["x-manus-cron-task-uid"] as string) || "manual";
+  console.warn(`[PicksBlog] Triggered by task: ${taskUid}`);
 
   try {
     const db = await getDb();
     if (!db) return res.status(500).json({ error: "Database unavailable" });
 
     const today = new Date().toISOString().slice(0, 10);
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10);
 
     // Get today's and yesterday's active picks
     const recentPicks = await db
       .select()
       .from(picks)
-      .where(
-        and(
-          eq(picks.isActive, true),
-          gte(picks.pickDate, yesterday)
-        )
-      )
+      .where(and(eq(picks.isActive, true), gte(picks.pickDate, yesterday)))
       .limit(20);
 
     if (recentPicks.length === 0) {
-      console.log("[PicksBlog] No recent picks found, skipping.");
+      console.warn("[PicksBlog] No recent picks found, skipping.");
       return res.json({ ok: true, generated: 0, skipped: 0 });
     }
 
@@ -164,7 +191,7 @@ export async function picksBlogHandler(req: Request, res: Response) {
       .from(blogPosts)
       .where(eq(blogPosts.source, "ai-generated"));
 
-    const existingSlugSet = new Set(existingSlugs.map((r) => r.slug));
+    const existingSlugSet = new Set(existingSlugs.map(r => r.slug));
 
     let generated = 0;
     let skipped = 0;
@@ -178,9 +205,10 @@ export async function picksBlogHandler(req: Request, res: Response) {
       }
 
       const sport = SPORT_LABELS[pick.sportKey] ?? pick.sportKey;
-      const matchup = pick.homeTeam && pick.awayTeam
-        ? `${pick.awayTeam} vs ${pick.homeTeam}`
-        : sport;
+      const matchup =
+        pick.homeTeam && pick.awayTeam
+          ? `${pick.awayTeam} vs ${pick.homeTeam}`
+          : sport;
       const slug = slugify(`${matchup}-prediction-pick-${pick.pickDate}`);
 
       if (existingSlugSet.has(slug)) {
@@ -223,13 +251,13 @@ export async function picksBlogHandler(req: Request, res: Response) {
       generated++;
 
       // Throttle to avoid overwhelming the LLM
-      await new Promise((r) => setTimeout(r, 500));
+      await new Promise(r => setTimeout(r, 500));
     }
 
     // Ping IndexNow for all new URLs
     if (newUrls.length > 0) {
       await pingIndexNow(newUrls);
-      console.log(`[PicksBlog] Pinged IndexNow for ${newUrls.length} URLs`);
+      console.warn(`[PicksBlog] Pinged IndexNow for ${newUrls.length} URLs`);
     }
 
     await notifyOwner({
@@ -237,10 +265,20 @@ export async function picksBlogHandler(req: Request, res: Response) {
       content: `Generated ${generated} pick analysis articles. Skipped ${skipped}. New URLs pinged to IndexNow:\n${newUrls.join("\n")}`,
     });
 
-    console.log(`[PicksBlog] Complete: generated=${generated}, skipped=${skipped}`);
-    res.json({ ok: true, generated, skipped, newUrls, timestamp: new Date().toISOString() });
+    console.warn(
+      `[PicksBlog] Complete: generated=${generated}, skipped=${skipped}`
+    );
+    res.json({
+      ok: true,
+      generated,
+      skipped,
+      newUrls,
+      timestamp: new Date().toISOString(),
+    });
   } catch (error: any) {
     console.error("[PicksBlog] Error:", error);
-    res.status(500).json({ error: error.message, timestamp: new Date().toISOString() });
+    res
+      .status(500)
+      .json({ error: error.message, timestamp: new Date().toISOString() });
   }
 }

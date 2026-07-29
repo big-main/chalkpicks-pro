@@ -12,9 +12,16 @@
 import type { Request, Response } from "express";
 import { getDb } from "../db";
 import { arbitrageOpportunities } from "../../drizzle/schema";
-import { fetchMultiBookmakerOdds, BookmakerOdds } from "../services/sportsbookOddsScraper";
+import {
+  fetchMultiBookmakerOdds,
+  BookmakerOdds,
+} from "../services/sportsbookOddsScraper";
 import { fetchOddsHarvesterOdds } from "../services/oddsHarvesterClient";
-import { detectAllArbitrages, calculateOptimalBets, classifyRiskLevel } from "../services/arbitrageDetector";
+import {
+  detectAllArbitrages,
+  calculateOptimalBets,
+  classifyRiskLevel,
+} from "../services/arbitrageDetector";
 import { lt } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -37,11 +44,16 @@ export async function arbitrageRefreshHandler(req: Request, res: Response) {
   const startTime = Date.now();
 
   try {
-    console.log(`[ArbRefresh] Starting refresh (taskUid=${taskUid ?? "manual"})`);
+    console.warn(
+      `[ArbRefresh] Starting refresh (taskUid=${taskUid ?? "manual"})`
+    );
 
     const db = await getDb();
     if (!db) {
-      return res.status(500).json({ error: "Database not available", timestamp: new Date().toISOString() });
+      return res.status(500).json({
+        error: "Database not available",
+        timestamp: new Date().toISOString(),
+      });
     }
 
     // 1. Expire old opportunities
@@ -78,10 +90,15 @@ export async function arbitrageRefreshHandler(req: Request, res: Response) {
           // Build moneyline odds array across bookmakers
           const h2hOdds: Array<{ bookmaker: string; odds: number }> = [];
           for (const bookOdds of eventOdds) {
-            const h2hMarket = bookOdds.markets.find((m: { key: string }) => m.key === "h2h");
+            const h2hMarket = bookOdds.markets.find(
+              (m: { key: string }) => m.key === "h2h"
+            );
             if (!h2hMarket) continue;
             for (const outcome of h2hMarket.outcomes) {
-              h2hOdds.push({ bookmaker: `${bookOdds.bookmaker}:${outcome.name}`, odds: outcome.price });
+              h2hOdds.push({
+                bookmaker: `${bookOdds.bookmaker}:${outcome.name}`,
+                odds: outcome.price,
+              });
             }
           }
 
@@ -105,7 +122,11 @@ export async function arbitrageRefreshHandler(req: Request, res: Response) {
 
             // Upsert: check if this exact arb already exists and is active
             const existingId = `${eventId}:${book1}:${book2}`;
-            const dedupKey = crypto.createHash("md5").update(existingId).digest("hex").slice(0, 16);
+            const dedupKey = crypto
+              .createHash("md5")
+              .update(existingId)
+              .digest("hex")
+              .slice(0, 16);
 
             try {
               await db.insert(arbitrageOpportunities).values({
@@ -122,15 +143,23 @@ export async function arbitrageRefreshHandler(req: Request, res: Response) {
                 outcomeB: outcome2 ?? "Team B",
                 oddsB: String(arb.odds2),
                 impliedProbabilityB: String(arb.impliedProb2.toFixed(4)),
-                totalImpliedProbability: String((arb.impliedProb1 + arb.impliedProb2).toFixed(4)),
-                arbitragePercentage: String((arb.arbitragePercent / 100).toFixed(4)),
-                profitPercentage: String((arb.arbitragePercent / 100).toFixed(4)),
+                totalImpliedProbability: String(
+                  (arb.impliedProb1 + arb.impliedProb2).toFixed(4)
+                ),
+                arbitragePercentage: String(
+                  (arb.arbitragePercent / 100).toFixed(4)
+                ),
+                profitPercentage: String(
+                  (arb.arbitragePercent / 100).toFixed(4)
+                ),
                 stakeA: String(bets.bet1),
                 stakeB: String(bets.bet2),
                 guaranteedProfit: String(bets.profit),
                 isActive: true,
                 expiresAt,
-                source: supplementalOdds.some(o => o.eventId === eventId) ? "heartbeat-cron+oddsportal" : "heartbeat-cron",
+                source: supplementalOdds.some(o => o.eventId === eventId)
+                  ? "heartbeat-cron+oddsportal"
+                  : "heartbeat-cron",
               });
               totalInserted++;
             } catch (insertErr: any) {
@@ -142,12 +171,15 @@ export async function arbitrageRefreshHandler(req: Request, res: Response) {
           }
         }
       } catch (sportErr: any) {
-        console.warn(`[ArbRefresh] Error fetching ${sport}:`, sportErr?.message);
+        console.warn(
+          `[ArbRefresh] Error fetching ${sport}:`,
+          sportErr?.message
+        );
       }
     }
 
     const elapsed = Date.now() - startTime;
-    console.log(
+    console.warn(
       `[ArbRefresh] Done: detected=${totalDetected}, inserted=${totalInserted}, elapsed=${elapsed}ms`
     );
 

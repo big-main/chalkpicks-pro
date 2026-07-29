@@ -1,13 +1,55 @@
 import { z } from "zod";
-import { protectedProcedure, premiumProcedure, router } from "../_core/trpc";
+import {
+  protectedProcedure,
+  premiumProcedure,
+  publicProcedure,
+  router,
+} from "../_core/trpc";
 import { getDb } from "../db";
 import { userBets } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
+import { getModelClvSkill } from "../_core/clv-skill";
+import { getLedgerByHash } from "../_core/pick-ledger";
 
 export const clvRouter = router({
   /**
-   * Get CLV statistics for a user's bets
+   * Public platform CLV Skill Rating (ledger-backed).
+   * Chess-style skill driven only by graded pick_ledger CLV — not win rate.
    */
+  modelSkill: publicProcedure.query(async () => {
+    return getModelClvSkill();
+  }),
+
+  /**
+   * Public verify endpoint data for /verify/:hash
+   * Proves a pick was locked pre-game and whether it was graded.
+   */
+  verifyByHash: publicProcedure
+    .input(z.object({ hash: z.string().min(16).max(64) }))
+    .query(async ({ input }) => {
+      const row = await getLedgerByHash(input.hash);
+      if (!row) return { found: false as const, entry: null };
+      return {
+        found: true as const,
+        entry: {
+          pickId: row.pickId,
+          contentHash: row.contentHash,
+          lockedAt: row.lockedAt,
+          gameStartAt: row.gameStartAt,
+          recommendation: row.recommendation,
+          sportKey: row.sportKey,
+          homeTeam: row.homeTeam,
+          awayTeam: row.awayTeam,
+          lineAtLock: row.lineAtLock,
+          closingLine: row.closingLine,
+          clvValue: row.clvValue,
+          result: row.result,
+          gradedAt: row.gradedAt,
+          payload: row.payloadJson,
+        },
+      };
+    }),
+
   getClvStats: premiumProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
     if (!userId) return null;
@@ -15,7 +57,10 @@ export const clvRouter = router({
     const database = await getDb();
     if (!database) return null;
 
-    const bets = await database.select().from(userBets).where(eq(userBets.userId, userId));
+    const bets = await database
+      .select()
+      .from(userBets)
+      .where(eq(userBets.userId, userId));
 
     const stats = {
       totalBets: bets.length,
@@ -25,32 +70,55 @@ export const clvRouter = router({
       pendingBets: bets.filter((b: any) => b.result === "pending").length,
       betsWithCLV: bets.filter((b: any) => b.clvValue !== null).length,
       averageCLV: calculateAverageCLV(bets),
-      positiveCLVBets: bets.filter((b: any) => b.clvValue && b.clvValue > 0).length,
-      negativeCLVBets: bets.filter((b: any) => b.clvValue && b.clvValue < 0).length,
-      totalProfit: bets.reduce((sum: number, b: any) => sum + (parseFloat(b.profit?.toString() || "0")), 0),
+      positiveCLVBets: bets.filter((b: any) => b.clvValue && b.clvValue > 0)
+        .length,
+      negativeCLVBets: bets.filter((b: any) => b.clvValue && b.clvValue < 0)
+        .length,
+      totalProfit: bets.reduce(
+        (sum: number, b: any) => sum + parseFloat(b.profit?.toString() || "0"),
+        0
+      ),
       profitWithPositiveCLV: bets
         .filter((b: any) => b.clvValue && b.clvValue > 0)
-        .reduce((sum: number, b: any) => sum + (parseFloat(b.profit?.toString() || "0")), 0),
+        .reduce(
+          (sum: number, b: any) =>
+            sum + parseFloat(b.profit?.toString() || "0"),
+          0
+        ),
       profitWithNegativeCLV: bets
         .filter((b: any) => b.clvValue && b.clvValue < 0)
-        .reduce((sum: number, b: any) => sum + (parseFloat(b.profit?.toString() || "0")), 0),
-      winRateOverall: bets.length > 0 ? (bets.filter((b: any) => b.result === "win").length / bets.length) * 100 : 0,
+        .reduce(
+          (sum: number, b: any) =>
+            sum + parseFloat(b.profit?.toString() || "0"),
+          0
+        ),
+      winRateOverall:
+        bets.length > 0
+          ? (bets.filter((b: any) => b.result === "win").length / bets.length) *
+            100
+          : 0,
       winRateWithPositiveCLV:
         bets.filter((b: any) => b.clvValue && b.clvValue > 0).length > 0
-          ? (bets.filter((b: any) => b.clvValue && b.clvValue > 0 && b.result === "win").length /
+          ? (bets.filter(
+              (b: any) => b.clvValue && b.clvValue > 0 && b.result === "win"
+            ).length /
               bets.filter((b: any) => b.clvValue && b.clvValue > 0).length) *
             100
           : 0,
       winRateWithNegativeCLV:
         bets.filter((b: any) => b.clvValue && b.clvValue < 0).length > 0
-          ? (bets.filter((b: any) => b.clvValue && b.clvValue < 0 && b.result === "win").length /
+          ? (bets.filter(
+              (b: any) => b.clvValue && b.clvValue < 0 && b.result === "win"
+            ).length /
               bets.filter((b: any) => b.clvValue && b.clvValue < 0).length) *
             100
           : 0,
       betsWithSharpMoney: bets.filter((b: any) => b.sharpMoney === true).length,
       winRateWithSharpMoney:
         bets.filter((b: any) => b.sharpMoney === true).length > 0
-          ? (bets.filter((b: any) => b.sharpMoney === true && b.result === "win").length /
+          ? (bets.filter(
+              (b: any) => b.sharpMoney === true && b.result === "win"
+            ).length /
               bets.filter((b: any) => b.sharpMoney === true).length) *
             100
           : 0,
@@ -59,9 +127,6 @@ export const clvRouter = router({
     return stats;
   }),
 
-  /**
-   * Get CLV breakdown by bet type
-   */
   getClvByBetType: premiumProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
     if (!userId) return [];
@@ -69,28 +134,43 @@ export const clvRouter = router({
     const database = await getDb();
     if (!database) return [];
 
-    const bets = await database.select().from(userBets).where(eq(userBets.userId, userId));
+    const bets = await database
+      .select()
+      .from(userBets)
+      .where(eq(userBets.userId, userId));
 
-    const betTypes = ["moneyline", "spread", "over_under", "player_prop", "parlay"];
-    const breakdown = betTypes.map((type) => {
+    const betTypes = [
+      "moneyline",
+      "spread",
+      "over_under",
+      "player_prop",
+      "parlay",
+    ];
+    const breakdown = betTypes.map(type => {
       const typeBets = bets.filter((b: any) => b.betType === type);
       return {
         betType: type,
         count: typeBets.length,
         wins: typeBets.filter((b: any) => b.result === "win").length,
         losses: typeBets.filter((b: any) => b.result === "loss").length,
-        winRate: typeBets.length > 0 ? (typeBets.filter((b: any) => b.result === "win").length / typeBets.length) * 100 : 0,
+        winRate:
+          typeBets.length > 0
+            ? (typeBets.filter((b: any) => b.result === "win").length /
+                typeBets.length) *
+              100
+            : 0,
         averageCLV: calculateAverageCLV(typeBets),
-        totalProfit: typeBets.reduce((sum: number, b: any) => sum + (parseFloat(b.profit?.toString() || "0")), 0),
+        totalProfit: typeBets.reduce(
+          (sum: number, b: any) =>
+            sum + parseFloat(b.profit?.toString() || "0"),
+          0
+        ),
       };
     });
 
-    return breakdown.filter((b) => b.count > 0);
+    return breakdown.filter(b => b.count > 0);
   }),
 
-  /**
-   * Record CLV for a bet
-   */
   recordClv: premiumProcedure
     .input(
       z.object({
@@ -115,8 +195,12 @@ export const clvRouter = router({
 
       if (!bet || bet.length === 0) throw new Error("Bet not found");
 
-      const clvValue = calculateCLV(parseInt(bet[0].odds?.toString() || "0"), input.closingLineOdds);
-      const lineMovement = input.closingLineOdds - parseInt(bet[0].odds?.toString() || "0");
+      const clvValue = calculateCLV(
+        parseInt(bet[0].odds?.toString() || "0"),
+        input.closingLineOdds
+      );
+      const lineMovement =
+        input.closingLineOdds - parseInt(bet[0].odds?.toString() || "0");
 
       await database
         .update(userBets)
@@ -133,9 +217,6 @@ export const clvRouter = router({
       return { clvValue, lineMovement };
     }),
 
-  /**
-   * Get best CLV bets
-   */
   getBestClvBets: premiumProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
     if (!userId) return [];
@@ -143,7 +224,10 @@ export const clvRouter = router({
     const database = await getDb();
     if (!database) return [];
 
-    const bets = await database.select().from(userBets).where(eq(userBets.userId, userId));
+    const bets = await database
+      .select()
+      .from(userBets)
+      .where(eq(userBets.userId, userId));
 
     return bets
       .filter((b: any) => b.clvValue !== null)
@@ -151,9 +235,6 @@ export const clvRouter = router({
       .slice(0, 10);
   }),
 
-  /**
-   * Get worst CLV bets
-   */
   getWorstClvBets: premiumProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
     if (!userId) return [];
@@ -161,7 +242,10 @@ export const clvRouter = router({
     const database = await getDb();
     if (!database) return [];
 
-    const bets = await database.select().from(userBets).where(eq(userBets.userId, userId));
+    const bets = await database
+      .select()
+      .from(userBets)
+      .where(eq(userBets.userId, userId));
 
     return bets
       .filter((b: any) => b.clvValue !== null)
@@ -169,9 +253,6 @@ export const clvRouter = router({
       .slice(0, 10);
   }),
 
-  /**
-   * Get CLV insights
-   */
   getClvInsights: premiumProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
     if (!userId) return null;
@@ -179,15 +260,28 @@ export const clvRouter = router({
     const database = await getDb();
     if (!database) return null;
 
-    const bets = await database.select().from(userBets).where(eq(userBets.userId, userId));
+    const bets = await database
+      .select()
+      .from(userBets)
+      .where(eq(userBets.userId, userId));
 
     const totalBets = bets.length;
-    const positiveCLVBets = bets.filter((b: any) => b.clvValue && b.clvValue > 0).length;
-    const negativeCLVBets = bets.filter((b: any) => b.clvValue && b.clvValue < 0).length;
+    const positiveCLVBets = bets.filter(
+      (b: any) => b.clvValue && b.clvValue > 0
+    ).length;
+    const negativeCLVBets = bets.filter(
+      (b: any) => b.clvValue && b.clvValue < 0
+    ).length;
     const betsWithCLV = bets.filter((b: any) => b.clvValue !== null).length;
-    const betsWithSharpMoney = bets.filter((b: any) => b.sharpMoney === true).length;
+    const betsWithSharpMoney = bets.filter(
+      (b: any) => b.sharpMoney === true
+    ).length;
 
-    const insights: Array<{ title: string; message: string; severity: string }> = [];
+    const insights: Array<{
+      title: string;
+      message: string;
+      severity: string;
+    }> = [];
 
     if (positiveCLVBets > 0 && negativeCLVBets > 0) {
       insights.push({
@@ -234,5 +328,8 @@ function oddsToDecimal(americanOdds: number): number {
 function calculateAverageCLV(bets: any[]): number {
   const betsWithCLV = bets.filter((b: any) => b.clvValue !== null);
   if (betsWithCLV.length === 0) return 0;
-  return betsWithCLV.reduce((sum: number, b: any) => sum + (b.clvValue || 0), 0) / betsWithCLV.length;
+  return (
+    betsWithCLV.reduce((sum: number, b: any) => sum + (b.clvValue || 0), 0) /
+    betsWithCLV.length
+  );
 }

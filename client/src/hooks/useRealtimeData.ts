@@ -9,7 +9,7 @@ interface UseRealtimeDataOptions {
 
 /**
  * Hook for subscribing to real-time WebSocket data
- * 
+ *
  * Usage:
  * const { data, isConnected, error } = useRealtimeData({ channel: "live-scores" });
  */
@@ -40,7 +40,7 @@ export function useRealtimeData<T = any>({
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log(`[WebSocket] Connected to ${channel}`);
+        console.warn(`[WebSocket] Connected to ${channel}`);
         setIsConnected(true);
         setError(null);
         reconnectAttemptsRef.current = 0;
@@ -55,7 +55,7 @@ export function useRealtimeData<T = any>({
         );
       };
 
-      ws.onmessage = (event) => {
+      ws.onmessage = event => {
         try {
           const message = JSON.parse(event.data);
 
@@ -68,20 +68,21 @@ export function useRealtimeData<T = any>({
         }
       };
 
-      ws.onerror = (event) => {
+      ws.onerror = event => {
         console.error("[WebSocket] Error:", event);
         setError("WebSocket connection error");
         setIsConnected(false);
       };
 
       ws.onclose = () => {
-        console.log("[WebSocket] Disconnected");
+        console.warn("[WebSocket] Disconnected");
         setIsConnected(false);
         wsRef.current = null;
 
         // Attempt to reconnect with exponential backoff
         if (enabled && reconnectAttemptsRef.current < maxReconnectAttempts) {
-          const backoffDelay = reconnectInterval * Math.pow(1.5, reconnectAttemptsRef.current);
+          const backoffDelay =
+            reconnectInterval * Math.pow(1.5, reconnectAttemptsRef.current);
           reconnectTimeoutRef.current = setTimeout(() => {
             reconnectAttemptsRef.current += 1;
             connect();
@@ -142,12 +143,12 @@ export function useRealtimeDataMultiple(channels: string[], enabled = true) {
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log("[WebSocket] Connected to multiple channels");
+        console.warn("[WebSocket] Connected to multiple channels");
         setIsConnected(true);
         setError(null);
 
         // Subscribe to all channels
-        channels.forEach((ch) => {
+        channels.forEach(ch => {
           ws.send(
             JSON.stringify({
               type: "subscribe",
@@ -158,12 +159,12 @@ export function useRealtimeDataMultiple(channels: string[], enabled = true) {
         });
       };
 
-      ws.onmessage = (event) => {
+      ws.onmessage = event => {
         try {
           const message = JSON.parse(event.data);
 
           if (message.type === "update" && message.channel) {
-            setAllData((prev) => ({
+            setAllData(prev => ({
               ...prev,
               [message.channel]: message.data,
             }));
@@ -173,14 +174,14 @@ export function useRealtimeDataMultiple(channels: string[], enabled = true) {
         }
       };
 
-      ws.onerror = (event) => {
+      ws.onerror = event => {
         console.error("[WebSocket] Error:", event);
         setError("WebSocket connection error");
         setIsConnected(false);
       };
 
       ws.onclose = () => {
-        console.log("[WebSocket] Disconnected from multiple channels");
+        console.warn("[WebSocket] Disconnected from multiple channels");
         setIsConnected(false);
         wsRef.current = null;
       };

@@ -5,7 +5,11 @@ import { useLocation } from "wouter";
 import { WebMCPTools } from "@/components/WebMCPTools";
 import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
 import { StructuredData } from "@/components/StructuredData";
-import { OrganizationJsonLd, WebSiteJsonLd, SoftwareApplicationJsonLd } from "@/components/seo/schema-jsonld";
+import {
+  OrganizationJsonLd,
+  WebSiteJsonLd,
+  SoftwareApplicationJsonLd,
+} from "@/components/seo/schema-jsonld";
 import { PageMeta } from "@/components/PageMeta";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,7 +18,6 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { usePageTracking } from "@/hooks/usePageTracking";
 
-// Eagerly loaded (critical path)
 import Home from "./pages/Home";
 import NotFound from "@/pages/NotFound";
 import { SocialProofTicker } from "@/components/SocialProofTicker";
@@ -26,7 +29,6 @@ import { AnnouncementBar } from "@/components/AnnouncementBar";
 import PushNotificationBanner from "@/components/PushNotificationBanner";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
 
-// Lazy-loaded pages (code splitting)
 const Picks = lazy(() => import("./pages/Picks"));
 const PickDetail = lazy(() => import("./pages/PickDetail"));
 const Stats = lazy(() => import("./pages/Stats"));
@@ -36,11 +38,12 @@ const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const MatchupAnalysis = lazy(() => import("./pages/MatchupAnalysis"));
-const SubscriptionManagement = lazy(() => import("./pages/SubscriptionManagement"));
+const SubscriptionManagement = lazy(
+  () => import("./pages/SubscriptionManagement")
+);
 const FeedbackAnalytics = lazy(() => import("./pages/FeedbackAnalytics"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const EVFinder = lazy(() => import("@/pages/EVFinder"));
-const Tools = lazy(() => import("@/pages/Tools"));
 const ToolsHub = lazy(() => import("@/pages/ToolsHub"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const Login = lazy(() => import("@/pages/Login"));
@@ -51,10 +54,14 @@ const CLVTracker = lazy(() => import("@/pages/CLVTracker"));
 const ParlayBuilder = lazy(() => import("@/pages/ParlayBuilder"));
 const BankrollTracker = lazy(() => import("@/pages/BankrollTracker"));
 const Referral = lazy(() => import("@/pages/Referral"));
-const ReferralPage = lazy(() => import("@/pages/ReferralPage").then(m => ({ default: m.ReferralPage })));
+const ReferralPage = lazy(() =>
+  import("@/pages/ReferralPage").then(m => ({ default: m.ReferralPage }))
+);
 const PickShare = lazy(() => import("@/pages/PickShare"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
-const SubscriptionDashboard = lazy(() => import("@/pages/SubscriptionDashboard"));
+const SubscriptionDashboard = lazy(
+  () => import("@/pages/SubscriptionDashboard")
+);
 const ArbitrageFinder = lazy(() => import("@/pages/ArbitrageFinder"));
 const AffiliateHub = lazy(() => import("@/pages/AffiliateHub"));
 const LiveLeaderboard = lazy(() => import("@/pages/LiveLeaderboard"));
@@ -68,12 +75,18 @@ const UserProfile = lazy(() => import("@/pages/UserProfile"));
 const Sportsbooks = lazy(() => import("@/pages/Sportsbooks"));
 const Sponsors = lazy(() => import("@/pages/Sponsors"));
 const AdminPanel = lazy(() => import("@/pages/AdminPanel"));
-const AdminStats = lazy(() => import("@/pages/AdminStats").then(m => ({ default: m.AdminStats })));
+const AdminStats = lazy(() =>
+  import("@/pages/AdminStats").then(m => ({ default: m.AdminStats }))
+);
 const CreditDashboard = lazy(() => import("@/pages/CreditDashboard"));
 const PropBuilder = lazy(() => import("@/pages/PropBuilder"));
 const LineMovement = lazy(() => import("@/pages/LineMovement"));
 const CorrelationFinder = lazy(() => import("@/pages/CorrelationFinder"));
-const ArbitrageOpportunitiesPage = lazy(() => import("@/pages/ArbitrageOpportunitiesPage").then(m => ({ default: m.ArbitrageOpportunitiesPage })));
+const ArbitrageOpportunitiesPage = lazy(() =>
+  import("@/pages/ArbitrageOpportunitiesPage").then(m => ({
+    default: m.ArbitrageOpportunitiesPage,
+  }))
+);
 const OddsComparison = lazy(() => import("@/pages/OddsComparison"));
 const Performance = lazy(() => import("@/pages/Performance"));
 const BetCalculator = lazy(() => import("@/pages/BetCalculator"));
@@ -105,7 +118,6 @@ const LearnPage = lazy(() => import("@/pages/LearnPage"));
 const FreePick = lazy(() => import("@/pages/FreePick"));
 const KellyCalculator = lazy(() => import("@/pages/KellyCalculator"));
 const EVCalculator = lazy(() => import("@/pages/EVCalculator"));
-
 const StrategyBuilder = lazy(() => import("@/pages/StrategyBuilder"));
 const FreePicks = lazy(() => import("@/pages/FreePicks"));
 const AILeaderboard = lazy(() => import("@/pages/AILeaderboard"));
@@ -114,15 +126,20 @@ const MiddlesFinder = lazy(() => import("@/pages/MiddlesFinder"));
 const GuidesHub = lazy(() => import("@/pages/GuidesHub"));
 const PublicBetting = lazy(() => import("@/pages/PublicBetting"));
 const Results = lazy(() => import("@/pages/Results"));
-
 const Terms = lazy(() => import("@/pages/Terms"));
 const LeaderboardProfile = lazy(() => import("@/pages/LeaderboardProfile"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
 const ResponsibleGambling = lazy(() => import("@/pages/ResponsibleGambling"));
+const Verify = lazy(() => import("@/pages/Verify"));
+const Methodology = lazy(() => import("@/pages/Methodology"));
+const HowItWorks = lazy(() => import("@/pages/HowItWorks"));
 
 function PageLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: "#080814" }}>
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{ background: "#080814" }}
+    >
       <div className="flex flex-col items-center gap-4">
         <div
           className="w-10 h-10 border-2 border-t-transparent rounded-full animate-spin"
@@ -149,112 +166,157 @@ function Router() {
       <StructuredData />
       <Suspense fallback={<PageLoader />}>
         <AnimatePresence mode="wait" initial={false}>
-        <PageTransition key={location}>
-        <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/picks" component={Picks} />
-          <Route path="/picks/:id" component={PickDetail} />
-          <Route path="/stats" component={Stats} />
-          <Route path="/backtesting" component={Backtesting} />
-          <Route path="/dashboard" component={UserDashboard} />
-          <Route path="/leaderboard" component={Leaderboard} />
-          <Route path="/leaderboard/:username" component={LeaderboardProfile} />
-          <Route path="/pricing" component={Pricing} />
-          <Route path="/payment/success" component={PaymentSuccess} />
-          <Route path="/matchup-analysis" component={MatchupAnalysis} />
-          <Route path="/subscription-management" component={SubscriptionManagement} />
-          <Route path="/feedback-analytics" component={FeedbackAnalytics} />
-          <Route path="/notifications" component={Notifications} />
-          <Route path="/ev-finder" component={EVFinder} />
-          <Route path="/tools" component={ToolsHub} />
-          <Route path="/signup" component={SignUp} />
-          <Route path="/login" component={Login} />
-          <Route path="/account-settings" component={AccountSettings} />
-          <Route path="/subscription-dashboard" component={SubscriptionDashboard} />
-          <Route path="/admin/promos" component={AdminPromos} />
-          <Route path="/kalshi" component={KalshiMarkets} />
-          <Route path="/clv-tracker" component={CLVTracker} />
-          <Route path="/parlay-builder" component={ParlayBuilder} />
-          <Route path="/parlay-flow" component={ParlayFlow} />
-          <Route path="/bankroll-tracker" component={BankrollTracker} />
-          <Route path="/refer" component={ReferralPage} />
-      <Route path="/referral" component={Referral} />
-      <Route path="/picks/:id/share" component={PickShare} />
-          <Route path="/affiliate" component={AffiliateHub} />
-          <Route path="/live-leaderboard" component={LiveLeaderboard} />
-          <Route path="/community" component={CommunityChat} />
-          <Route path="/bet-builder" component={BetSlipBuilder} />
-          <Route path="/parlay-tracker" component={ParlayTracker} />
-          <Route path="/elite-plus" component={ElitePlusTier} />
-          <Route path="/api-access" component={APIAccess} />
-          <Route path="/reseller" component={ResellerProgram} />
-          <Route path="/profile" component={UserProfile} />
-          <Route path="/onboarding" component={Onboarding} />
-          <Route path="/arbitrage" component={ArbitrageFinder} />
-          <Route path="/arbitrage-opportunities" component={ArbitrageOpportunitiesPage} />
-          <Route path="/sportsbooks" component={Sportsbooks} />
-          <Route path="/sponsors" component={Sponsors} />
-          <Route path="/admin" component={AdminPanel} />
-      <Route path="/admin/stats" component={AdminStats} />
-          <Route path="/credits" component={CreditDashboard} />
-          <Route path="/prop-builder" component={PropBuilder} />
-          <Route path="/line-movement" component={LineMovement} />
-          <Route path="/correlation-finder" component={CorrelationFinder} />
-          <Route path="/odds-comparison" component={OddsComparison} />
-          <Route path="/performance" component={Performance} />
-          <Route path="/bet-calculator" component={BetCalculator} />
-          <Route path="/learn/:slug" component={LearnPage} />
-          <Route path="/story-generator" component={StoryGenerator} />
-          <Route path="/story-history" component={StoryHistory} />
-          <Route path="/tools/odds-calculator" component={OddsCalculator} />
-          <Route path="/tools/roi-calculator" component={ROICalculator} />
-          <Route path="/community-automation" component={CommunityAutomation} />
-          <Route path="/daily-picks" component={PicksLanding} />
-          <Route path="/tools/bankroll-manager" component={BankrollManager} />
-          <Route path="/tools/parlay-calculator" component={ParlayCalculator} />
-          <Route path="/admin/blog" component={BlogManagement} />
-          <Route path="/partners" component={MediaPartners} />
-          <Route path="/nfl-picks" component={SportPicks} />
-          <Route path="/nba-picks" component={SportPicks} />
-          <Route path="/mlb-picks" component={SportPicks} />
-          <Route path="/nhl-picks" component={SportPicks} />
-          <Route path="/ncaaf-picks" component={SportPicks} />
-          <Route path="/ncaab-picks" component={SportPicks} />
-          <Route path="/mma-picks" component={SportPicks} />
-          <Route path="/soccer-picks" component={SportPicks} />
-          <Route path="/odds/nfl" component={OddsPage} />
-          <Route path="/odds/nba" component={OddsPage} />
-          <Route path="/odds/mlb" component={OddsPage} />
-          <Route path="/odds/nhl" component={OddsPage} />
-          <Route path="/tools/devig-calculator" component={DevigCalculator} />
-          <Route path="/dfs-optimizer" component={DFSOptimizer} />
-          <Route path="/elo-ratings" component={EloPowerRatings} />
-          <Route path="/monte-carlo" component={MonteCarloSimulator} />
-          <Route path="/sharp-money" component={SharpMoneyDetector} />
-          <Route path="/consensus" component={ConsensusAggregator} />
-          <Route path="/free-pick" component={FreePick} />
-          <Route path="/tools/kelly-calculator" component={KellyCalculator} />
-          <Route path="/tools/ev-calculator" component={EVCalculator} />
-          <Route path="/strategy-builder" component={StrategyBuilder} />
-          <Route path="/free-picks" component={FreePicks} />
-          <Route path="/ai-leaderboard" component={AILeaderboard} />
-          <Route path="/tools/free-bet-converter" component={FreeBetConverter} />
-          <Route path="/tools/middles-finder" component={MiddlesFinder} />
-          <Route path="/guides" component={GuidesHub} />
-          <Route path="/public-betting" component={PublicBetting} />
-          <Route path="/results" component={Results} />
-          <Route path="/blog" component={Blog} />
-          <Route path="/blog/best-sports-betting-picks" component={BlogBestPicks} />
-          <Route path="/blog/ai-sports-betting" component={BlogAISportsBetting} />
-          <Route path="/blog/sports-betting-strategy" component={BlogStrategy} />
-          <Route path="/blog/:slug" component={BlogPost} />
-          <Route path="/terms" component={Terms} />
-          <Route path="/privacy" component={Privacy} />
-          <Route path="/responsible-gambling" component={ResponsibleGambling} />
-          <Route path="/404" component={NotFound} />
-          <Route component={NotFound} />
-        </Switch>
-        </PageTransition>
+          <PageTransition key={location}>
+            <Switch>
+              <Route path="/" component={Home} />
+              <Route path="/picks" component={Picks} />
+              <Route path="/picks/:id" component={PickDetail} />
+              <Route path="/verify/:hash" component={Verify} />
+              <Route path="/stats" component={Stats} />
+              <Route path="/backtesting" component={Backtesting} />
+              <Route path="/dashboard" component={UserDashboard} />
+              <Route path="/leaderboard" component={Leaderboard} />
+              <Route
+                path="/leaderboard/:username"
+                component={LeaderboardProfile}
+              />
+              <Route path="/pricing" component={Pricing} />
+              <Route path="/payment/success" component={PaymentSuccess} />
+              <Route path="/matchup-analysis" component={MatchupAnalysis} />
+              <Route
+                path="/subscription-management"
+                component={SubscriptionManagement}
+              />
+              <Route path="/feedback-analytics" component={FeedbackAnalytics} />
+              <Route path="/notifications" component={Notifications} />
+              <Route path="/ev-finder" component={EVFinder} />
+              <Route path="/tools" component={ToolsHub} />
+              <Route path="/signup" component={SignUp} />
+              <Route path="/login" component={Login} />
+              <Route path="/account-settings" component={AccountSettings} />
+              <Route
+                path="/subscription-dashboard"
+                component={SubscriptionDashboard}
+              />
+              <Route path="/admin/promos" component={AdminPromos} />
+              <Route path="/kalshi" component={KalshiMarkets} />
+              <Route path="/clv-tracker" component={CLVTracker} />
+              <Route path="/parlay-builder" component={ParlayBuilder} />
+              <Route path="/parlay-flow" component={ParlayFlow} />
+              <Route path="/bankroll-tracker" component={BankrollTracker} />
+              <Route path="/refer" component={ReferralPage} />
+              <Route path="/referral" component={Referral} />
+              <Route path="/picks/:id/share" component={PickShare} />
+              <Route path="/affiliate" component={AffiliateHub} />
+              <Route path="/live-leaderboard" component={LiveLeaderboard} />
+              <Route path="/community" component={CommunityChat} />
+              <Route path="/bet-builder" component={BetSlipBuilder} />
+              <Route path="/parlay-tracker" component={ParlayTracker} />
+              <Route path="/elite-plus" component={ElitePlusTier} />
+              <Route path="/api-access" component={APIAccess} />
+              <Route path="/reseller" component={ResellerProgram} />
+              <Route path="/profile" component={UserProfile} />
+              <Route path="/onboarding" component={Onboarding} />
+              <Route path="/arbitrage" component={ArbitrageFinder} />
+              <Route
+                path="/arbitrage-opportunities"
+                component={ArbitrageOpportunitiesPage}
+              />
+              <Route path="/sportsbooks" component={Sportsbooks} />
+              <Route path="/sponsors" component={Sponsors} />
+              <Route path="/admin" component={AdminPanel} />
+              <Route path="/admin/stats" component={AdminStats} />
+              <Route path="/credits" component={CreditDashboard} />
+              <Route path="/prop-builder" component={PropBuilder} />
+              <Route path="/line-movement" component={LineMovement} />
+              <Route path="/correlation-finder" component={CorrelationFinder} />
+              <Route path="/odds-comparison" component={OddsComparison} />
+              <Route path="/performance" component={Performance} />
+              <Route path="/bet-calculator" component={BetCalculator} />
+              <Route path="/learn/:slug" component={LearnPage} />
+              <Route path="/story-generator" component={StoryGenerator} />
+              <Route path="/story-history" component={StoryHistory} />
+              <Route path="/tools/odds-calculator" component={OddsCalculator} />
+              <Route path="/tools/roi-calculator" component={ROICalculator} />
+              <Route
+                path="/community-automation"
+                component={CommunityAutomation}
+              />
+              <Route path="/daily-picks" component={PicksLanding} />
+              <Route
+                path="/tools/bankroll-manager"
+                component={BankrollManager}
+              />
+              <Route
+                path="/tools/parlay-calculator"
+                component={ParlayCalculator}
+              />
+              <Route path="/admin/blog" component={BlogManagement} />
+              <Route path="/partners" component={MediaPartners} />
+              <Route path="/nfl-picks" component={SportPicks} />
+              <Route path="/nba-picks" component={SportPicks} />
+              <Route path="/mlb-picks" component={SportPicks} />
+              <Route path="/nhl-picks" component={SportPicks} />
+              <Route path="/ncaaf-picks" component={SportPicks} />
+              <Route path="/ncaab-picks" component={SportPicks} />
+              <Route path="/mma-picks" component={SportPicks} />
+              <Route path="/soccer-picks" component={SportPicks} />
+              <Route path="/odds/nfl" component={OddsPage} />
+              <Route path="/odds/nba" component={OddsPage} />
+              <Route path="/odds/mlb" component={OddsPage} />
+              <Route path="/odds/nhl" component={OddsPage} />
+              <Route
+                path="/tools/devig-calculator"
+                component={DevigCalculator}
+              />
+              <Route path="/dfs-optimizer" component={DFSOptimizer} />
+              <Route path="/elo-ratings" component={EloPowerRatings} />
+              <Route path="/monte-carlo" component={MonteCarloSimulator} />
+              <Route path="/sharp-money" component={SharpMoneyDetector} />
+              <Route path="/consensus" component={ConsensusAggregator} />
+              <Route path="/free-pick" component={FreePick} />
+              <Route
+                path="/tools/kelly-calculator"
+                component={KellyCalculator}
+              />
+              <Route path="/tools/ev-calculator" component={EVCalculator} />
+              <Route path="/strategy-builder" component={StrategyBuilder} />
+              <Route path="/free-picks" component={FreePicks} />
+              <Route path="/ai-leaderboard" component={AILeaderboard} />
+              <Route
+                path="/tools/free-bet-converter"
+                component={FreeBetConverter}
+              />
+              <Route path="/tools/middles-finder" component={MiddlesFinder} />
+              <Route path="/guides" component={GuidesHub} />
+              <Route path="/public-betting" component={PublicBetting} />
+              <Route path="/results" component={Results} />
+              <Route path="/blog" component={Blog} />
+              <Route
+                path="/blog/best-sports-betting-picks"
+                component={BlogBestPicks}
+              />
+              <Route
+                path="/blog/ai-sports-betting"
+                component={BlogAISportsBetting}
+              />
+              <Route
+                path="/blog/sports-betting-strategy"
+                component={BlogStrategy}
+              />
+              <Route path="/blog/:slug" component={BlogPost} />
+              <Route path="/terms" component={Terms} />
+              <Route path="/privacy" component={Privacy} />
+              <Route
+                path="/responsible-gambling"
+                component={ResponsibleGambling}
+              />
+              <Route path="/methodology" component={Methodology} />
+              <Route path="/how-it-works" component={HowItWorks} />
+              <Route path="/404" component={NotFound} />
+              <Route component={NotFound} />
+            </Switch>
+          </PageTransition>
         </AnimatePresence>
       </Suspense>
     </>

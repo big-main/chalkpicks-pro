@@ -1,7 +1,10 @@
 import { router, protectedProcedure, premiumProcedure } from "../_core/trpc";
 import { z } from "zod";
 import { getDb } from "../db";
-import { arbitrageOpportunities, userArbitrageTrades } from "../../drizzle/schema";
+import {
+  arbitrageOpportunities,
+  userArbitrageTrades,
+} from "../../drizzle/schema";
 import { eq, and, gt, lt, asc, desc, inArray } from "drizzle-orm";
 
 // Helper: Convert American odds to decimal
@@ -24,10 +27,14 @@ const calculateArbitrage = (probA: number, probB: number): number => {
 };
 
 // Helper: Calculate stakes for $100 investment
-export const calculateStakes = (oddsA: number, oddsB: number, totalStake: number = 100) => {
+export const calculateStakes = (
+  oddsA: number,
+  oddsB: number,
+  totalStake: number = 100
+) => {
   const decimalA = americanToDecimal(oddsA);
   const decimalB = americanToDecimal(oddsB);
-  
+
   const probA = decimalToImpliedProbability(decimalA);
   const probB = decimalToImpliedProbability(decimalB);
 
@@ -35,16 +42,17 @@ export const calculateStakes = (oddsA: number, oddsB: number, totalStake: number
   // stakeA * decimalA === stakeB * decimalB (equal payout on either outcome).
   const stakeA = (totalStake * probA) / (probA + probB);
   const stakeB = totalStake - stakeA;
-  
+
   const winningsA = stakeA * decimalA;
   const winningsB = stakeB * decimalB;
   const guaranteedProfit = Math.min(winningsA, winningsB) - totalStake;
-  
+
   return {
     stakeA: Math.round(stakeA * 100) / 100,
     stakeB: Math.round(stakeB * 100) / 100,
     guaranteedProfit: Math.round(guaranteedProfit * 100) / 100,
-    profitPercentage: Math.round((guaranteedProfit / totalStake) * 10000) / 10000,
+    profitPercentage:
+      Math.round((guaranteedProfit / totalStake) * 10000) / 10000,
   };
 };
 
@@ -58,8 +66,18 @@ export const arbitrageRouter = router({
         minProfitMargin: z.number().default(0.5),
         maxProfitMargin: z.number().default(5),
         minGuaranteedProfit: z.number().default(10),
-        eventTimeRange: z.enum(["today", "this_week", "this_month", "all"]).default("all"),
-        sortBy: z.enum(["profit_desc", "profit_asc", "margin_desc", "margin_asc", "time_asc"]).default("profit_desc"),
+        eventTimeRange: z
+          .enum(["today", "this_week", "this_month", "all"])
+          .default("all"),
+        sortBy: z
+          .enum([
+            "profit_desc",
+            "profit_asc",
+            "margin_desc",
+            "margin_asc",
+            "time_asc",
+          ])
+          .default("profit_desc"),
         onlyActive: z.boolean().default(true),
         limit: z.number().default(50),
       })
@@ -72,33 +90,48 @@ export const arbitrageRouter = router({
 
       const db = await getDb();
       if (!db) throw new Error("Database not available");
-      
+
       const now = new Date();
       const conditions = [];
-      
+
       // Active status
       if (input.onlyActive) {
         conditions.push(eq(arbitrageOpportunities.isActive, true));
         conditions.push(gt(arbitrageOpportunities.expiresAt, now));
       }
-      
+
       // Profit margin range
-      conditions.push(gt(arbitrageOpportunities.arbitragePercentage, String(input.minProfitMargin / 100)));
-      conditions.push(lt(arbitrageOpportunities.arbitragePercentage, String(input.maxProfitMargin / 100)));
-      
+      conditions.push(
+        gt(
+          arbitrageOpportunities.arbitragePercentage,
+          String(input.minProfitMargin / 100)
+        )
+      );
+      conditions.push(
+        lt(
+          arbitrageOpportunities.arbitragePercentage,
+          String(input.maxProfitMargin / 100)
+        )
+      );
+
       // Guaranteed profit minimum
-      conditions.push(gt(arbitrageOpportunities.guaranteedProfit, String(input.minGuaranteedProfit)));
-      
+      conditions.push(
+        gt(
+          arbitrageOpportunities.guaranteedProfit,
+          String(input.minGuaranteedProfit)
+        )
+      );
+
       // Sports filter
       if (input.sports.length > 0) {
         conditions.push(inArray(arbitrageOpportunities.sport, input.sports));
       }
-      
+
       // Event time range
       if (input.eventTimeRange !== "all") {
         const today = new Date();
-        let startDate = new Date();
-        
+        const startDate = new Date();
+
         if (input.eventTimeRange === "today") {
           startDate.setHours(0, 0, 0, 0);
         } else if (input.eventTimeRange === "this_week") {
@@ -106,26 +139,32 @@ export const arbitrageRouter = router({
         } else if (input.eventTimeRange === "this_month") {
           startDate.setDate(1);
         }
-        
+
         conditions.push(gt(arbitrageOpportunities.eventTime, startDate));
       }
-      
+
       // Build base query
-      let baseQuery = db
+      const baseQuery = db
         .select()
         .from(arbitrageOpportunities)
         .where(and(...conditions));
-      
+
       // Apply sorting
       let query: any = baseQuery;
       if (input.sortBy === "profit_desc") {
-        query = baseQuery.orderBy(desc(arbitrageOpportunities.guaranteedProfit));
+        query = baseQuery.orderBy(
+          desc(arbitrageOpportunities.guaranteedProfit)
+        );
       } else if (input.sortBy === "profit_asc") {
         query = baseQuery.orderBy(asc(arbitrageOpportunities.guaranteedProfit));
       } else if (input.sortBy === "margin_desc") {
-        query = baseQuery.orderBy(desc(arbitrageOpportunities.arbitragePercentage));
+        query = baseQuery.orderBy(
+          desc(arbitrageOpportunities.arbitragePercentage)
+        );
       } else if (input.sortBy === "margin_asc") {
-        query = baseQuery.orderBy(asc(arbitrageOpportunities.arbitragePercentage));
+        query = baseQuery.orderBy(
+          asc(arbitrageOpportunities.arbitragePercentage)
+        );
       } else if (input.sortBy === "time_asc") {
         query = baseQuery.orderBy(asc(arbitrageOpportunities.eventTime));
       } else {
@@ -156,7 +195,7 @@ export const arbitrageRouter = router({
 
       const db = await getDb();
       if (!db) throw new Error("Database not available");
-      
+
       const opp = await db
         .select()
         .from(arbitrageOpportunities)
@@ -227,7 +266,7 @@ export const arbitrageRouter = router({
 
       const db = await getDb();
       if (!db) throw new Error("Database not available");
-      
+
       const result = await db.insert(userArbitrageTrades).values({
         userId: ctx.user.id,
         arbitrageId: input.arbitrageId,
@@ -246,7 +285,9 @@ export const arbitrageRouter = router({
   getUserTrades: premiumProcedure
     .input(
       z.object({
-        status: z.enum(["pending", "executed", "completed", "failed"]).optional(),
+        status: z
+          .enum(["pending", "executed", "completed", "failed"])
+          .optional(),
         limit: z.number().default(20),
       })
     )
@@ -257,7 +298,7 @@ export const arbitrageRouter = router({
 
       const db = await getDb();
       if (!db) throw new Error("Database not available");
-      
+
       const conditions = [eq(userArbitrageTrades.userId, ctx.user.id)];
       if (input.status) {
         conditions.push(eq(userArbitrageTrades.status, input.status));
@@ -268,7 +309,7 @@ export const arbitrageRouter = router({
         .from(userArbitrageTrades)
         .where(and(...conditions))
         .limit(input.limit);
-      return trades.map((trade) => ({
+      return trades.map(trade => ({
         ...trade,
         stakeA: Number(trade.stakeA),
         stakeB: Number(trade.stakeB),
@@ -288,13 +329,13 @@ export const arbitrageRouter = router({
 
     const db = await getDb();
     if (!db) throw new Error("Database not available");
-    
+
     const trades = await db
       .select()
       .from(userArbitrageTrades)
       .where(eq(userArbitrageTrades.userId, ctx.user.id));
 
-    const completedTrades = trades.filter((t) => t.status === "completed");
+    const completedTrades = trades.filter(t => t.status === "completed");
     const totalProfit = completedTrades.reduce(
       (sum, t) => sum + (t.actualProfit ? Number(t.actualProfit) : 0),
       0
@@ -303,12 +344,13 @@ export const arbitrageRouter = router({
     return {
       totalTrades: trades.length,
       completedTrades: completedTrades.length,
-      pendingTrades: trades.filter((t) => t.status === "pending").length,
-      executedTrades: trades.filter((t) => t.status === "executed").length,
-      failedTrades: trades.filter((t) => t.status === "failed").length,
+      pendingTrades: trades.filter(t => t.status === "pending").length,
+      executedTrades: trades.filter(t => t.status === "executed").length,
+      failedTrades: trades.filter(t => t.status === "failed").length,
       totalStaked: trades.reduce((sum, t) => sum + Number(t.totalStake), 0),
       totalProfit,
-      averageProfit: completedTrades.length > 0 ? totalProfit / completedTrades.length : 0,
+      averageProfit:
+        completedTrades.length > 0 ? totalProfit / completedTrades.length : 0,
     };
   }),
 });

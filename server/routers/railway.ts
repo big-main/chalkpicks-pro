@@ -60,10 +60,10 @@ export const railwayRouter = router({
       latest?.status === "SUCCESS"
         ? "ACTIVE"
         : latest?.status === "BUILDING" || latest?.status === "DEPLOYING"
-        ? "DEPLOYING"
-        : latest?.status === "SLEEPING"
-        ? "ACTIVE"
-        : "FAILED";
+          ? "DEPLOYING"
+          : latest?.status === "SLEEPING"
+            ? "ACTIVE"
+            : "FAILED";
 
     return {
       projectName: "ChalkPicks-Pro",
@@ -73,7 +73,8 @@ export const railwayRouter = router({
       lastDeployment: latest?.createdAt ?? svc.updatedAt,
       deploymentUrl: `https://${RAILWAY_DOMAIN}`,
       environment: "production",
-      healthCheck: mappedStatus === "ACTIVE" ? ("passing" as const) : ("failing" as const),
+      healthCheck:
+        mappedStatus === "ACTIVE" ? ("passing" as const) : ("failing" as const),
       deployments,
     };
   }),
@@ -118,13 +119,19 @@ export const railwayRouter = router({
     )
     .mutation(async ({ input }) => {
       const { type, status, deployment } = input;
-      console.log(`[Railway Webhook] Event: ${type} | Status: ${status ?? deployment?.status}`);
+      console.warn(
+        `[Railway Webhook] Event: ${type} | Status: ${status ?? deployment?.status}`
+      );
 
       // Notify owner via Manus notification system
       const { notifyOwner } = await import("../_core/notification");
       const deployStatus = status ?? deployment?.status ?? "UNKNOWN";
       const emoji =
-        deployStatus === "SUCCESS" ? "✅" : deployStatus === "FAILED" || deployStatus === "CRASHED" ? "🚨" : "🔄";
+        deployStatus === "SUCCESS"
+          ? "✅"
+          : deployStatus === "FAILED" || deployStatus === "CRASHED"
+            ? "🚨"
+            : "🔄";
 
       await notifyOwner({
         title: `${emoji} Railway Deploy: ${deployStatus}`,

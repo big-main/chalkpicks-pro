@@ -2,13 +2,13 @@ import { broadcastToChannel } from "../websocket";
 
 /**
  * Live Data Streamer
- * 
+ *
  * Manages real-time data updates for:
  * - Live scores from ESPN
  * - Kalshi market movements
  * - Odds changes from sportsbooks
  * - Leaderboard updates
- * 
+ *
  * Uses AbortController timeouts and error throttling to prevent log spam.
  */
 
@@ -82,7 +82,10 @@ function throttledWarn(source: string, msg: string) {
 /**
  * Fetch with timeout (AbortController)
  */
-async function fetchWithTimeout(url: string, timeoutMs = 8000): Promise<Response> {
+async function fetchWithTimeout(
+  url: string,
+  timeoutMs = 8000
+): Promise<Response> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -186,7 +189,10 @@ async function fetchLiveScores(): Promise<LiveScore[]> {
       lastUpdated: Date.now(),
     }));
   } catch (error: any) {
-    throttledWarn("espn", "[LiveDataStreamer] ESPN live scores unavailable (retrying silently)");
+    throttledWarn(
+      "espn",
+      "[LiveDataStreamer] ESPN live scores unavailable (retrying silently)"
+    );
     return [];
   }
 }
@@ -224,7 +230,12 @@ async function fetchSteamMoves(): Promise<SteamMove[]> {
   const apiKey = process.env.ODDS_API_KEY;
   if (!apiKey) return [];
   try {
-    const sports = ["americanfootball_nfl", "basketball_nba", "baseball_mlb", "icehockey_nhl"];
+    const sports = [
+      "americanfootball_nfl",
+      "basketball_nba",
+      "baseball_mlb",
+      "icehockey_nhl",
+    ];
     const allMoves: SteamMove[] = [];
 
     for (const sport of sports) {
@@ -247,7 +258,9 @@ async function fetchSteamMoves(): Promise<SteamMove[]> {
           .filter(Boolean);
 
         if (spreads.length < 2) continue;
-        const avg = spreads.reduce((s: number, sp: any) => s + sp.point, 0) / spreads.length;
+        const avg =
+          spreads.reduce((s: number, sp: any) => s + sp.point, 0) /
+          spreads.length;
         // Find outliers (books that moved significantly from consensus)
         for (const sp of spreads) {
           const diff = Math.abs(sp.point - avg);
@@ -302,12 +315,17 @@ async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
  */
 export function startLiveDataStreaming() {
   // Skip in development if ESPN is known to be unreachable from sandbox
-  if (process.env.NODE_ENV === "development" && process.env.DISABLE_LIVE_STREAMING === "true") {
-    console.log("[LiveDataStreamer] Disabled in development (DISABLE_LIVE_STREAMING=true)");
+  if (
+    process.env.NODE_ENV === "development" &&
+    process.env.DISABLE_LIVE_STREAMING === "true"
+  ) {
+    console.warn(
+      "[LiveDataStreamer] Disabled in development (DISABLE_LIVE_STREAMING=true)"
+    );
     return;
   }
 
-  console.log("[LiveDataStreamer] Starting real-time data streaming...");
+  console.warn("[LiveDataStreamer] Starting real-time data streaming...");
 
   // Stream live scores every 30 seconds
   setInterval(streamLiveScores, 30_000);
@@ -324,5 +342,7 @@ export function startLiveDataStreaming() {
   // Stream leaderboard updates every 120 seconds
   setInterval(streamLeaderboardUpdates, 120_000);
 
-  console.log("[LiveDataStreamer] Real-time data streaming started (30s/60s/90s/60s/120s intervals)");
+  console.warn(
+    "[LiveDataStreamer] Real-time data streaming started (30s/60s/90s/60s/120s intervals)"
+  );
 }

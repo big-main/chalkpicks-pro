@@ -21,7 +21,9 @@ const authLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: "Too many authentication attempts. Please wait before trying again." },
+  message: {
+    error: "Too many authentication attempts. Please wait before trying again.",
+  },
 });
 
 // Webhook rate limiter: 50 requests per minute (Stripe/PayPal webhooks)
@@ -75,10 +77,19 @@ export function registerSecurityMiddleware(app: Express) {
     })
   );
 
-  // HSTS header (force HTTPS in production)
+  // HSTS + Permissions-Policy + Referrer-Policy (production hardening)
   if (process.env.NODE_ENV === "production") {
     app.use((_req: Request, res: Response, next: NextFunction) => {
-      res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+      res.setHeader(
+        "Strict-Transport-Security",
+        "max-age=31536000; includeSubDomains; preload"
+      );
+      res.setHeader(
+        "Permissions-Policy",
+        "camera=(), microphone=(), geolocation=(), payment=(self)"
+      );
+      res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+      res.setHeader("X-Content-Type-Options", "nosniff");
       next();
     });
   }

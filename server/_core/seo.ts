@@ -13,12 +13,14 @@
  *  - for /blog/:slug — the post's real title/description plus an Article
  *    JSON-LD carrying the full article text, so crawlers get the CONTENT
  *    without running JS, and
- *  - for /picks/:id — the pick's matchup as title plus SportsEvent JSON-LD.
+ *  - for /picks/:id — the pick's matchup as title plus SportsEvent JSON-LD
+ *    (noindex — paywall-gated),
+ *  - for /free-picks and /picks — ItemList JSON-LD of recent public picks.
  *
  * Fail-open by design: any error returns the original HTML untouched.
  */
 import { resolvePageMeta } from "@shared/routeMeta";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 const ORIGIN = "https://chalkpicks.live";
 
@@ -55,21 +57,61 @@ interface RouteSeo {
   robots?: string;
 }
 
+/** Build ItemList JSON-LD from a short list of public picks. */
+function buildPicksItemList(
+  listName: string,
+  rows: {
+    id: number;
+    awayTeam: string | null;
+    homeTeam: string | null;
+    recommendation: string | null;
+    sportKey: string | null;
+    pickDate: string | Date | null;
+  }[]
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: listName,
+    numberOfItems: rows.length,
+    itemListElement: rows.slice(0, 20).map((p, i) => {
+      const name = `${p.awayTeam ?? "Away"} @ ${p.homeTeam ?? "Home"}${
+        p.recommendation ? ` — ${p.recommendation}` : ""
+      }`;
+      return {
+        "@type": "ListItem",
+        position: i + 1,
+        name,
+        url: `${ORIGIN}/picks/${p.id}`,
+        item: {
+          "@type": "SportsEvent",
+          name,
+          ...(p.pickDate
+            ? {
+                startDate:
+                  p.pickDate instanceof Date
+                    ? p.pickDate.toISOString().slice(0, 10)
+                    : String(p.pickDate).slice(0, 10),
+              }
+            : {}),
+          ...(p.sportKey ? { sport: p.sportKey.toUpperCase() } : {}),
+        },
+      };
+    }),
+  };
+}
+
 /**
  * Parse a "## FAQ" section's **Q:** / **A:** pairs out of article markdown.
  * Returns [] if there's no FAQ section or fewer than 2 well-formed pairs —
  * callers should treat that as "no FAQPage schema for this article".
  */
 export function parseFaqPairs(markdown: string): { q: string; a: string }[] {
-  // [^\S\n]* (horizontal whitespace only) instead of \s* immediately before an
-  // explicit \n keeps the two quantifiers' character classes disjoint, so the
-  // engine can't backtrack between them — \s* followed by \n+ both accept "\n"
-  // and is exactly the overlapping-quantifier shape regex-DoS scanners flag.
-  const faqSection = markdown.match(/##[^\S\n]*FAQ[^\S\n]*\n([\s\S]*?)(?:\n##[^\S\n]|$)/i);
+  const faqSection = markdown.match(
+    /##[^\S\n]*FAQ[^\S\n]*\n([\s\S]*?)(?:\n##[^\S\n]|$)/i
+  );
   if (!faqSection) return [];
 
-  // Line-oriented split instead of a single greedy/lazy regex over the whole
-  // section: bounded per-line work, no backtracking surface at all.
   const lines = faqSection[1].split("\n");
   const pairs: { q: string; a: string }[] = [];
   let currentQ: string | null = null;
@@ -119,9 +161,14 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
           .limit(1);
         const post = rows[0];
         if (post && post.status === "published") {
-          const body = stripHtml(post.contentHtml || post.content || "").slice(0, 5000);
+          const body = stripHtml(post.contentHtml || post.content || "").slice(
+            0,
+            5000
+          );
           const description =
-            post.seoDescription || post.excerpt?.slice(0, 158) || body.slice(0, 158);
+            post.seoDescription ||
+            post.excerpt?.slice(0, 158) ||
+            body.slice(0, 158);
           const articleLd = {
             "@context": "https://schema.org",
             "@type": "Article",
@@ -140,9 +187,6 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
             articleBody: body,
           };
 
-          // Worker-generated articles end with a "## FAQ" section of 3 real-search
-          // Q&As (see cloud-computer/worker.mjs previewPrompt). Surface it as
-          // FAQPage schema too when there's enough of it to be worth it.
           const faqs = parseFaqPairs(post.content || "");
           const jsonLd =
             faqs.length >= 2
@@ -170,7 +214,46 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
         }
       }
     } catch {
-      // fall through to the static map
+      // fall through
+    }
+  }
+
+  // Public pick listings — ItemList for crawlers (no JS required)
+  if (cleanPath === "/free-picks" || cleanPath === "/picks") {
+    try {
+      const { getDb } = await import("../db");
+      const { picks } = await import("../../drizzle/schema");
+      const db = await getDb();
+      if (db) {
+        const rows = await db
+          .select({
+            id: picks.id,
+            awayTeam: picks.awayTeam,
+            homeTeam: picks.homeTeam,
+            recommendation: picks.recommendation,
+            sportKey: picks.sportKey,
+            pickDate: picks.pickDate,
+          })
+          .from(picks)
+          .orderBy(desc(picks.pickDate))
+          .limit(15);
+
+        if (rows.length > 0) {
+          const listName =
+            cleanPath === "/free-picks"
+              ? "Free AI Sports Betting Picks — ChalkPicks"
+              : "AI Sports Betting Picks — ChalkPicks";
+          const base = resolvePageMeta(cleanPath);
+          return {
+            title: base.title,
+            description: base.description,
+            canonicalPath: cleanPath,
+            jsonLd: buildPicksItemList(listName, rows),
+          };
+        }
+      }
+    } catch {
+      // fall through
     }
   }
 
@@ -191,7 +274,6 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
           .limit(1);
         const pick = rows[0];
         if (!pick) {
-          // Pick does not exist → 404
           return {
             title: "Pick Not Found | ChalkPicks",
             description: "The requested pick could not be found.",
@@ -222,17 +304,27 @@ async function resolveRouteSeo(pathname: string): Promise<RouteSeo> {
                 { "@type": "SportsTeam", name: pick.homeTeam },
                 { "@type": "SportsTeam", name: pick.awayTeam },
               ],
+              description: `AI analysis and recommendation for ${pick.awayTeam} @ ${pick.homeTeam}.`,
+              organizer: {
+                "@type": "Organization",
+                name: "ChalkPicks",
+                url: ORIGIN,
+              },
             },
           };
         }
       }
     } catch {
-      // fall through to the static map
+      // fall through
     }
   }
 
   const meta = resolvePageMeta(cleanPath);
-  return { title: meta.title, description: meta.description, canonicalPath: cleanPath };
+  return {
+    title: meta.title,
+    description: meta.description,
+    canonicalPath: cleanPath,
+  };
 }
 
 /** Result of SEO injection including the rewritten HTML and optional status code. */
@@ -262,7 +354,10 @@ export async function injectSeo(html: string, url: string): Promise<SeoResult> {
         /(<link rel="canonical" href=")[^"]*(")/,
         `$1${esc(canonical)}$2`
       )
-      .replace(/(<meta property="og:url" content=")[^"]*(")/, `$1${esc(canonical)}$2`)
+      .replace(
+        /(<meta property="og:url" content=")[^"]*(")/,
+        `$1${esc(canonical)}$2`
+      )
       .replace(
         /(<meta property="og:title" content=")[^"]*(")/,
         `$1${esc(seo.title)}$2`
@@ -279,7 +374,10 @@ export async function injectSeo(html: string, url: string): Promise<SeoResult> {
         /(<meta name="twitter:description" content=")[^"]*(")/,
         `$1${esc(seo.description)}$2`
       )
-      .replace(/(<meta name="twitter:url" content=")[^"]*(")/, `$1${esc(canonical)}$2`);
+      .replace(
+        /(<meta name="twitter:url" content=")[^"]*(")/,
+        `$1${esc(canonical)}$2`
+      );
 
     if (seo.ogType) {
       out = out.replace(
@@ -288,16 +386,14 @@ export async function injectSeo(html: string, url: string): Promise<SeoResult> {
       );
     }
 
-    // Override robots directive if specified (e.g. noindex for paywall/404 pages)
     if (seo.robots) {
       out = out.replace(
-        /(<meta name="robots" content=")[^"]*(")/, 
+        /(<meta name="robots" content=")[^"]*(")/,
         `$1${esc(seo.robots)}$2`
       );
     }
 
     if (seo.jsonLd) {
-      // JSON-LD in <script> context: escape "</" to keep the parser inside the tag.
       const blocks = Array.isArray(seo.jsonLd) ? seo.jsonLd : [seo.jsonLd];
       const scripts = blocks
         .map(

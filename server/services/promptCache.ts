@@ -24,12 +24,15 @@ export async function initPromptCache() {
       password: process.env.REDIS_PASSWORD,
     });
 
-    redisClient.on("error", (err) => console.error("Redis Client Error", err));
+    redisClient.on("error", err => console.error("Redis Client Error", err));
     await redisClient.connect();
-    console.log("[PromptCache] Redis connected");
+    console.warn("[PromptCache] Redis connected");
     return redisClient;
   } catch (error) {
-    console.warn("[PromptCache] Redis connection failed, caching disabled:", error);
+    console.warn(
+      "[PromptCache] Redis connection failed, caching disabled:",
+      error
+    );
     return null;
   }
 }
@@ -38,7 +41,10 @@ export async function initPromptCache() {
  * Generate cache key from prompt content
  */
 function generateCacheKey(prompt: string, model: string): string {
-  const hash = crypto.createHash("sha256").update(`${prompt}:${model}`).digest("hex");
+  const hash = crypto
+    .createHash("sha256")
+    .update(`${prompt}:${model}`)
+    .digest("hex");
   return `prompt_cache:${hash}`;
 }
 
@@ -55,7 +61,7 @@ export async function getCachedResponse(
     const key = generateCacheKey(prompt, model);
     const cached = await redisClient.get(key);
     if (cached) {
-      console.log("[PromptCache] Cache hit for prompt");
+      console.warn("[PromptCache] Cache hit for prompt");
       return cached;
     }
   } catch (error) {
@@ -78,7 +84,7 @@ export async function cacheResponse(
   try {
     const key = generateCacheKey(prompt, model);
     await redisClient.setEx(key, ttlSeconds, response);
-    console.log("[PromptCache] Response cached for 24 hours");
+    console.warn("[PromptCache] Response cached for 24 hours");
   } catch (error) {
     console.warn("[PromptCache] Cache write failed:", error);
   }
@@ -126,7 +132,12 @@ export function calculateCacheSavings(
   originalTokens: number,
   compressedTokens: number,
   costPerToken: number = 0.00001 // $0.01 per 1M tokens (typical)
-): { originalCost: number; compressedCost: number; savings: number; savingsPercent: number } {
+): {
+  originalCost: number;
+  compressedCost: number;
+  savings: number;
+  savingsPercent: number;
+} {
   const originalCost = originalTokens * costPerToken;
   const compressedCost = compressedTokens * costPerToken;
   const savings = originalCost - compressedCost;
@@ -175,7 +186,7 @@ export async function clearPromptCache(): Promise<void> {
     const keys = await redisClient.keys("prompt_cache:*");
     if (keys.length > 0) {
       await redisClient.del(keys);
-      console.log(`[PromptCache] Cleared ${keys.length} cached prompts`);
+      console.warn(`[PromptCache] Cleared ${keys.length} cached prompts`);
     }
   } catch (error) {
     console.warn("[PromptCache] Cache clear failed:", error);
@@ -196,7 +207,11 @@ export async function getCacheStats(): Promise<{
     const info = await redisClient.info("memory");
     return {
       cachedPrompts: keys.length,
-      estimatedSize: info.split("\r\n").find((l) => l.includes("used_memory_human"))?.split(":")[1] || "unknown",
+      estimatedSize:
+        info
+          .split("\r\n")
+          .find(l => l.includes("used_memory_human"))
+          ?.split(":")[1] || "unknown",
     };
   } catch (error) {
     console.warn("[PromptCache] Stats retrieval failed:", error);

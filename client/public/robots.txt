@@ -1,78 +1,22 @@
+# ChalkPicks Pro — robots.txt
+# Last updated: 2026-07-29
+
 User-agent: *
 Allow: /
-Allow: /picks
-Allow: /stats
-Allow: /leaderboard
-Allow: /pricing
-Allow: /backtesting
-Allow: /performance
-Allow: /bet-calculator
-Allow: /ev-finder
-Allow: /prop-builder
-Allow: /line-movement
-Allow: /correlation-finder
-Allow: /kalshi
-Allow: /clv-tracker
-Allow: /arbitrage
-Allow: /sportsbooks
-Allow: /tools
-Allow: /tools/odds-calculator
-Allow: /tools/roi-calculator
-Allow: /tools/devig-calculator
-Allow: /parlay-builder
-Allow: /odds-comparison
-Allow: /blog
-Allow: /blog/best-sports-betting-picks
-Allow: /blog/ai-sports-betting
-Allow: /blog/sports-betting-strategy
-Allow: /nfl-picks
-Allow: /nba-picks
-Allow: /mlb-picks
-Allow: /nhl-picks
-Allow: /ncaaf-picks
-Allow: /ncaab-picks
-Allow: /mma-picks
-Allow: /soccer-picks
-Allow: /daily-picks
-Allow: /odds/nfl
-Allow: /odds/nba
-Allow: /odds/mlb
-Allow: /odds/nhl
-Allow: /sharp-money
-Allow: /consensus
-Allow: /api-access
-Allow: /parlay-flow
+
+# Private/authenticated areas
 Disallow: /dashboard
 Disallow: /admin
 Disallow: /api/
 Disallow: /payment/
 Disallow: /account-settings
 Disallow: /subscription-management
+Disallow: /snapshots/
 
-# AI Crawlers — welcome
-User-agent: GPTBot
-Allow: /
+# Crawl-delay for polite bots
+Crawl-delay: 2
 
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
-
-User-agent: cohere-ai
-Allow: /
-
-# AI assistants & answer engines — explicitly welcomed so ChalkPicks can be
-# cited in AI answers (AEO). Each is allowed full crawl of public content.
+# AI Crawlers & Answer Engines — explicitly welcomed for AEO/GEO citation
 User-agent: GPTBot
 Allow: /
 
@@ -109,5 +53,8 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://chalkpicks.live/sitemap.xml
-Sitemap: https://chalkpicks.live/sitemap-blog.xml
+User-agent: cohere-ai
+Allow: /
+
+# Sitemaps
+Sitemap: https://chalkpicks.live/sitemap-index.xml

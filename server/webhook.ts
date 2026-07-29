@@ -23,7 +23,8 @@ function getStripe(): Stripe | null {
 // interval prevents a paid monthly subscriber's access from lapsing after a day.
 function tierToExpiry(tier: "daily" | "monthly" | "yearly", from: Date): Date {
   const expiresAt = new Date(from);
-  if (PLANS[tier].interval === "year") expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+  if (PLANS[tier].interval === "year")
+    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
   else expiresAt.setMonth(expiresAt.getMonth() + 1);
   return expiresAt;
 }
@@ -48,13 +49,19 @@ export function registerStripeWebhook(app: express.Application) {
         return res.status(500).json({ error: "Webhook not configured" });
       }
       if (!sig) {
-        return res.status(400).json({ error: "Missing stripe-signature header" });
+        return res
+          .status(400)
+          .json({ error: "Missing stripe-signature header" });
       }
 
       let event: Stripe.Event;
       try {
         const sigHeader = Array.isArray(sig) ? sig[0] : sig;
-        event = stripe.webhooks.constructEvent(req.body, sigHeader, webhookSecret);
+        event = stripe.webhooks.constructEvent(
+          req.body,
+          sigHeader,
+          webhookSecret
+        );
       } catch (err: any) {
         console.error("[Webhook] Signature verification failed:", err.message);
         return res.status(400).json({ error: "Invalid signature" });
@@ -62,18 +69,23 @@ export function registerStripeWebhook(app: express.Application) {
 
       // Handle Stripe CLI / dashboard test events
       if (event.id.startsWith("evt_test_")) {
-        console.log("[Webhook] Test event detected, returning verification response");
+        console.warn(
+          "[Webhook] Test event detected, returning verification response"
+        );
         return res.json({ verified: true });
       }
 
-      console.log(`[Webhook] Received: ${event.type} (${event.id})`);
+      console.warn(`[Webhook] Received: ${event.type} (${event.id})`);
 
       try {
         switch (event.type) {
           case "checkout.session.completed": {
             const session = event.data.object as Stripe.Checkout.Session;
             const userId = parseInt(session.metadata?.user_id ?? "0");
-            const tier = (session.metadata?.tier ?? "monthly") as "daily" | "monthly" | "yearly";
+            const tier = (session.metadata?.tier ?? "monthly") as
+              | "daily"
+              | "monthly"
+              | "yearly";
 
             if (!userId) break;
 
@@ -88,12 +100,18 @@ export function registerStripeWebhook(app: express.Application) {
               .where(eq(subscriptionOrders.stripeSessionId, session.id))
               .limit(1);
             if (existingOrder.length > 0) {
-              console.log(`[Webhook] Session ${session.id} already processed, skipping`);
+              console.warn(
+                `[Webhook] Session ${session.id} already processed, skipping`
+              );
               break;
             }
 
             // Read user state BEFORE mutating it, so email uses correct info.
-            const userBefore = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+            const userBefore = await db
+              .select()
+              .from(users)
+              .where(eq(users.id, userId))
+              .limit(1);
 
             const now = new Date();
             const expiresAt = tierToExpiry(tier, now);
@@ -114,13 +132,15 @@ export function registerStripeWebhook(app: express.Application) {
                 stripeCustomerId: session.customer?.toString() ?? null,
                 // INCREMENT the balance — never overwrite what the user already has.
                 ...(creditBonus > 0
-                  ? { accountBalance: sql`${users.accountBalance} + ${creditBonus}` }
+                  ? {
+                      accountBalance: sql`${users.accountBalance} + ${creditBonus}`,
+                    }
                   : {}),
               })
               .where(eq(users.id, userId));
 
             if (creditBonus > 0) {
-              console.log(
+              console.warn(
                 `[Webhook] Granted $${creditBonus} credit bonus to user ${userId} (payment: $${(amountPaid / 100).toFixed(2)})`
               );
             }
@@ -152,11 +172,13 @@ export function registerStripeWebhook(app: express.Application) {
                 expiresAt,
               });
               if (emailSent) {
-                console.log(`[Webhook] Welcome email sent to ${userBefore[0].email}`);
+                console.warn(
+                  `[Webhook] Welcome email sent to ${userBefore[0].email}`
+                );
               }
             }
 
-            console.log(`[Webhook] Activated ${tier} for user ${userId}`);
+            console.warn(`[Webhook] Activated ${tier} for user ${userId}`);
             break;
           }
 
@@ -168,7 +190,9 @@ export function registerStripeWebhook(app: express.Application) {
             const invoice = event.data.object as Stripe.Invoice;
             const subId: string | undefined =
               (invoice as any).subscription?.toString?.() ??
-              (invoice as any).parent?.subscription_details?.subscription?.toString?.();
+              (
+                invoice as any
+              ).parent?.subscription_details?.subscription?.toString?.();
             if (!subId) break;
 
             const db = await getDb();
@@ -182,10 +206,13 @@ export function registerStripeWebhook(app: express.Application) {
             if (!userResult[0]) break;
 
             // Prefer Stripe's own period end; fall back to tier math.
-            const periodEnd: number | undefined = invoice.lines?.data?.[0]?.period?.end;
+            const periodEnd: number | undefined =
+              invoice.lines?.data?.[0]?.period?.end;
             const currentTier = userResult[0].subscriptionTier;
             const tier: "daily" | "monthly" | "yearly" =
-              currentTier === "daily" || currentTier === "yearly" ? currentTier : "monthly";
+              currentTier === "daily" || currentTier === "yearly"
+                ? currentTier
+                : "monthly";
             const expiresAt = periodEnd
               ? new Date(periodEnd * 1000)
               : tierToExpiry(tier, new Date());
@@ -194,7 +221,7 @@ export function registerStripeWebhook(app: express.Application) {
               .update(users)
               .set({ subscriptionTier: tier, subscriptionExpiresAt: expiresAt })
               .where(eq(users.id, userResult[0].id));
-            console.log(
+            console.warn(
               `[Webhook] Renewed ${tier} for user ${userResult[0].id} through ${expiresAt.toISOString()}`
             );
             break;
@@ -220,7 +247,9 @@ export function registerStripeWebhook(app: express.Application) {
                   stripeSubscriptionId: null,
                 })
                 .where(eq(users.id, userResult[0].id));
-              console.log(`[Webhook] Cancelled subscription for user ${userResult[0].id}`);
+              console.warn(
+                `[Webhook] Cancelled subscription for user ${userResult[0].id}`
+              );
             }
             break;
           }
@@ -232,7 +261,9 @@ export function registerStripeWebhook(app: express.Application) {
             // Find the user and send a payment failure warning email
             const subId: string | undefined =
               (invoice as any).subscription?.toString?.() ??
-              (invoice as any).parent?.subscription_details?.subscription?.toString?.();
+              (
+                invoice as any
+              ).parent?.subscription_details?.subscription?.toString?.();
             if (subId) {
               const db = await getDb();
               if (db) {
@@ -249,11 +280,20 @@ export function registerStripeWebhook(app: express.Application) {
                       to: userResult[0].email,
                       subject: "⚠️ ChalkPicks — Payment Failed",
                       type: "alert" as const,
-                      data: { name: userResult[0].name ?? "there", message: "We were unable to process your ChalkPicks subscription payment. Your access will remain active for a short grace period while Stripe retries the charge. Please update your payment method to avoid losing access." },
+                      data: {
+                        name: userResult[0].name ?? "there",
+                        message:
+                          "We were unable to process your ChalkPicks subscription payment. Your access will remain active for a short grace period while Stripe retries the charge. Please update your payment method to avoid losing access.",
+                      },
                     });
-                    console.log(`[Webhook] Payment failure warning sent to ${userResult[0].email}`);
+                    console.warn(
+                      `[Webhook] Payment failure warning sent to ${userResult[0].email}`
+                    );
                   } catch (emailErr) {
-                    console.error("[Webhook] Failed to send payment failure email:", emailErr);
+                    console.error(
+                      "[Webhook] Failed to send payment failure email:",
+                      emailErr
+                    );
                   }
                 }
               }
@@ -280,29 +320,43 @@ export function registerStripeWebhook(app: express.Application) {
             const amount = item?.price?.unit_amount ?? 0;
 
             let tier: "daily" | "monthly" | "yearly" = "monthly";
-            if (amount <= 999) tier = "daily";       // $9.99 or less
+            if (amount <= 999)
+              tier = "daily"; // $9.99 or less
             else if (amount >= 19999) tier = "yearly"; // $199.99 or more
 
             const status = sub.status;
             if (status === "active" || status === "trialing") {
-              const expiresAt = new Date(((sub as any).current_period_end as number) * 1000);
+              const expiresAt = new Date(
+                ((sub as any).current_period_end as number) * 1000
+              );
               await db
                 .update(users)
-                .set({ subscriptionTier: tier, subscriptionExpiresAt: expiresAt })
+                .set({
+                  subscriptionTier: tier,
+                  subscriptionExpiresAt: expiresAt,
+                })
                 .where(eq(users.id, userResult[0].id));
-              console.log(`[Webhook] Updated subscription to ${tier} for user ${userResult[0].id} (status: ${status})`);
+              console.warn(
+                `[Webhook] Updated subscription to ${tier} for user ${userResult[0].id} (status: ${status})`
+              );
             } else if (status === "canceled" || status === "unpaid") {
               await db
                 .update(users)
-                .set({ subscriptionTier: "free", subscriptionExpiresAt: null, stripeSubscriptionId: null })
+                .set({
+                  subscriptionTier: "free",
+                  subscriptionExpiresAt: null,
+                  stripeSubscriptionId: null,
+                })
                 .where(eq(users.id, userResult[0].id));
-              console.log(`[Webhook] Downgraded user ${userResult[0].id} to free (status: ${status})`);
+              console.warn(
+                `[Webhook] Downgraded user ${userResult[0].id} to free (status: ${status})`
+              );
             }
             break;
           }
 
           default:
-            console.log(`[Webhook] Unhandled event type: ${event.type}`);
+            console.warn(`[Webhook] Unhandled event type: ${event.type}`);
         }
       } catch (err) {
         console.error("[Webhook] Error processing event:", err);

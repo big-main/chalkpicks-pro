@@ -3,7 +3,7 @@ import { Server } from "http";
 
 /**
  * WebSocket Server for Real-Time Live Data
- * 
+ *
  * Handles:
  * - Live scores (ESPN)
  * - Kalshi market updates
@@ -31,7 +31,7 @@ export function initializeWebSocket(server: Server) {
   const wss = new WebSocketServer({ server, path: "/api/ws" });
 
   wss.on("connection", (ws: WebSocket) => {
-    console.log("[WebSocket] Client connected");
+    console.warn("[WebSocket] Client connected");
 
     // Initialize client subscription tracking
     clients.set(ws, {
@@ -51,10 +51,10 @@ export function initializeWebSocket(server: Server) {
 
     // Handle client disconnect
     ws.on("close", () => {
-      console.log("[WebSocket] Client disconnected");
+      console.warn("[WebSocket] Client disconnected");
       const subscription = clients.get(ws);
       if (subscription) {
-        subscription.channels.forEach((channel) => {
+        subscription.channels.forEach(channel => {
           const subscribers = channelSubscribers.get(channel);
           if (subscribers) {
             subscribers.delete(ws);
@@ -65,15 +65,17 @@ export function initializeWebSocket(server: Server) {
     });
 
     // Handle errors
-    ws.on("error", (error) => {
+    ws.on("error", error => {
       console.error("[WebSocket] Error:", error);
     });
 
     // Send initial connection confirmation
-    ws.send(JSON.stringify({
-      type: "connected",
-      timestamp: Date.now(),
-    }));
+    ws.send(
+      JSON.stringify({
+        type: "connected",
+        timestamp: Date.now(),
+      })
+    );
   });
 
   return wss;
@@ -101,7 +103,11 @@ function handleWebSocketMessage(ws: WebSocket, msg: WebSocketMessage) {
   }
 }
 
-function subscribeToChannel(ws: WebSocket, channel: string, subscription: ClientSubscription) {
+function subscribeToChannel(
+  ws: WebSocket,
+  channel: string,
+  subscription: ClientSubscription
+) {
   subscription.channels.add(channel);
 
   if (!channelSubscribers.has(channel)) {
@@ -110,16 +116,22 @@ function subscribeToChannel(ws: WebSocket, channel: string, subscription: Client
   channelSubscribers.get(channel)!.add(ws);
 
   // Send subscription confirmation
-  ws.send(JSON.stringify({
-    type: "subscribed",
-    channel,
-    timestamp: Date.now(),
-  }));
+  ws.send(
+    JSON.stringify({
+      type: "subscribed",
+      channel,
+      timestamp: Date.now(),
+    })
+  );
 
-  console.log(`[WebSocket] Client subscribed to ${channel}`);
+  console.warn(`[WebSocket] Client subscribed to ${channel}`);
 }
 
-function unsubscribeFromChannel(ws: WebSocket, channel: string, subscription: ClientSubscription) {
+function unsubscribeFromChannel(
+  ws: WebSocket,
+  channel: string,
+  subscription: ClientSubscription
+) {
   subscription.channels.delete(channel);
 
   const subscribers = channelSubscribers.get(channel);
@@ -127,13 +139,15 @@ function unsubscribeFromChannel(ws: WebSocket, channel: string, subscription: Cl
     subscribers.delete(ws);
   }
 
-  ws.send(JSON.stringify({
-    type: "unsubscribed",
-    channel,
-    timestamp: Date.now(),
-  }));
+  ws.send(
+    JSON.stringify({
+      type: "unsubscribed",
+      channel,
+      timestamp: Date.now(),
+    })
+  );
 
-  console.log(`[WebSocket] Client unsubscribed from ${channel}`);
+  console.warn(`[WebSocket] Client unsubscribed from ${channel}`);
 }
 
 /**
@@ -150,7 +164,7 @@ export function broadcastToChannel(channel: string, data: any) {
     timestamp: Date.now(),
   });
 
-  subscribers.forEach((ws) => {
+  subscribers.forEach(ws => {
     if (ws.readyState === WebSocket.OPEN) {
       ws.send(message);
     }

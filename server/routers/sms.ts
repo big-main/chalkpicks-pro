@@ -2,7 +2,10 @@ import { protectedProcedure, router } from "../_core/trpc";
 import { z } from "zod";
 import twilio from "twilio";
 
-const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const twilioClient = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 const TWILIO_PHONE = process.env.TWILIO_PHONE_NUMBER || "";
 
 export const smsRouter = router({
@@ -11,13 +14,21 @@ export const smsRouter = router({
    * Stores phone number and sets SMS preference
    */
   enableSMS: protectedProcedure
-    .input(z.object({ phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number") }))
+    .input(
+      z.object({
+        phoneNumber: z
+          .string()
+          .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number"),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) throw new Error("Not authenticated");
 
       try {
         // Send verification code via SMS (in production, generate and store code)
-        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const verificationCode = Math.floor(
+          100000 + Math.random() * 900000
+        ).toString();
 
         await twilioClient.messages.create({
           body: `Your ChalkPicks verification code is: ${verificationCode}. Valid for 10 minutes.`,
@@ -25,7 +36,9 @@ export const smsRouter = router({
           to: input.phoneNumber,
         });
 
-        console.log(`[SMS] Verification code sent to ${input.phoneNumber} for user ${ctx.user.id}`);
+        console.warn(
+          `[SMS] Verification code sent to ${input.phoneNumber} for user ${ctx.user.id}`
+        );
 
         return {
           success: true,
@@ -65,7 +78,7 @@ export const smsRouter = router({
           to: input.phoneNumber,
         });
 
-        console.log(`[SMS] Pick alert sent to ${input.phoneNumber}`);
+        console.warn(`[SMS] Pick alert sent to ${input.phoneNumber}`);
         return { success: true };
       } catch (error) {
         console.error("[SMS] Failed to send pick alert:", error);
@@ -98,7 +111,7 @@ export const smsRouter = router({
           to: input.phoneNumber,
         });
 
-        console.log(`[SMS] Win alert sent to ${input.phoneNumber}`);
+        console.warn(`[SMS] Win alert sent to ${input.phoneNumber}`);
         return { success: true };
       } catch (error) {
         console.error("[SMS] Failed to send win alert:", error);
@@ -130,7 +143,7 @@ export const smsRouter = router({
           to: input.phoneNumber,
         });
 
-        console.log(`[SMS] Steam alert sent to ${input.phoneNumber}`);
+        console.warn(`[SMS] Steam alert sent to ${input.phoneNumber}`);
         return { success: true };
       } catch (error) {
         console.error("[SMS] Failed to send steam alert:", error);

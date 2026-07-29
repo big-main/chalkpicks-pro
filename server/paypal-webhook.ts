@@ -8,42 +8,49 @@ import { sendSubscriptionConfirmation } from "./notificationService";
  */
 export function registerPayPalWebhook(app: Express) {
   // PayPal webhook endpoint
-  app.post("/api/paypal/webhook", express.raw({ type: "application/json" }), async (req, res) => {
-    try {
-      const event = JSON.parse(req.body.toString());
+  app.post(
+    "/api/paypal/webhook",
+    express.raw({ type: "application/json" }),
+    async (req, res) => {
+      try {
+        const event = JSON.parse(req.body.toString());
 
-      console.log("[PayPal Webhook] Event received:", event.event_type);
+        console.warn("[PayPal Webhook] Event received:", event.event_type);
 
-      // Verify webhook signature (in production, verify with PayPal)
-      // For now, accept all events
-      if (!event.event_type) {
-        return res.status(400).json({ error: "Missing event_type" });
+        // Verify webhook signature (in production, verify with PayPal)
+        // For now, accept all events
+        if (!event.event_type) {
+          return res.status(400).json({ error: "Missing event_type" });
+        }
+
+        // Handle different PayPal events
+        switch (event.event_type) {
+          case "BILLING.SUBSCRIPTION.CREATED":
+            await handleSubscriptionCreated(event);
+            break;
+          case "BILLING.SUBSCRIPTION.UPDATED":
+            await handleSubscriptionUpdated(event);
+            break;
+          case "BILLING.SUBSCRIPTION.CANCELLED":
+            await handleSubscriptionCancelled(event);
+            break;
+          case "PAYMENT.CAPTURE.COMPLETED":
+            await handlePaymentCompleted(event);
+            break;
+          default:
+            console.warn(
+              "[PayPal Webhook] Unhandled event type:",
+              event.event_type
+            );
+        }
+
+        res.json({ success: true });
+      } catch (error) {
+        console.error("[PayPal Webhook] Error:", error);
+        res.status(500).json({ error: "Webhook processing failed" });
       }
-
-      // Handle different PayPal events
-      switch (event.event_type) {
-        case "BILLING.SUBSCRIPTION.CREATED":
-          await handleSubscriptionCreated(event);
-          break;
-        case "BILLING.SUBSCRIPTION.UPDATED":
-          await handleSubscriptionUpdated(event);
-          break;
-        case "BILLING.SUBSCRIPTION.CANCELLED":
-          await handleSubscriptionCancelled(event);
-          break;
-        case "PAYMENT.CAPTURE.COMPLETED":
-          await handlePaymentCompleted(event);
-          break;
-        default:
-          console.log("[PayPal Webhook] Unhandled event type:", event.event_type);
-      }
-
-      res.json({ success: true });
-    } catch (error) {
-      console.error("[PayPal Webhook] Error:", error);
-      res.status(500).json({ error: "Webhook processing failed" });
     }
-  });
+  );
 }
 
 /**
@@ -54,7 +61,7 @@ async function handleSubscriptionCreated(event: any) {
   if (!db) return;
 
   const resource = event.resource;
-  console.log("[PayPal] Subscription created:", resource.id);
+  console.warn("[PayPal] Subscription created:", resource.id);
 
   // Extract subscriber info from PayPal event
   const subscriberEmail = resource.subscriber?.email_address;
@@ -73,8 +80,17 @@ async function handleSubscriptionCreated(event: any) {
   if (subscriberEmail) {
     try {
       const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days default
-      await sendSubscriptionConfirmation(0, subscriberEmail, subscriberName, tierName, expiresAt);
-      console.log("[PayPal] Subscription confirmation sent to:", subscriberEmail);
+      await sendSubscriptionConfirmation(
+        0,
+        subscriberEmail,
+        subscriberName,
+        tierName,
+        expiresAt
+      );
+      console.warn(
+        "[PayPal] Subscription confirmation sent to:",
+        subscriberEmail
+      );
     } catch (err) {
       console.error("[PayPal] Failed to send confirmation:", err);
     }
@@ -89,7 +105,12 @@ async function handleSubscriptionUpdated(event: any) {
   if (!db) return;
 
   const resource = event.resource;
-  console.log("[PayPal] Subscription updated:", resource.id, "Status:", resource.status);
+  console.warn(
+    "[PayPal] Subscription updated:",
+    resource.id,
+    "Status:",
+    resource.status
+  );
 
   // In production, update subscription status in database
 }
@@ -102,7 +123,7 @@ async function handleSubscriptionCancelled(event: any) {
   if (!db) return;
 
   const resource = event.resource;
-  console.log("[PayPal] Subscription cancelled:", resource.id);
+  console.warn("[PayPal] Subscription cancelled:", resource.id);
 
   // In production, mark subscription as cancelled in database
 }
@@ -115,7 +136,12 @@ async function handlePaymentCompleted(event: any) {
   if (!db) return;
 
   const resource = event.resource;
-  console.log("[PayPal] Payment completed:", resource.id, "Amount:", resource.amount?.value);
+  console.warn(
+    "[PayPal] Payment completed:",
+    resource.id,
+    "Amount:",
+    resource.amount?.value
+  );
 
   // In production, record payment in database
 }

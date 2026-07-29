@@ -39,20 +39,29 @@ const SPORT_LABELS: Record<string, string> = {
 };
 
 const TAG_KEYWORDS: Array<{ tag: string; keywords: RegExp }> = [
-  { tag: "NFL",         keywords: /\bNFL\b|football|quarterback|touchdown|super bowl/i },
-  { tag: "NBA",         keywords: /\bNBA\b|basketball|point guard|three.pointer/i },
-  { tag: "MLB",         keywords: /\bMLB\b|baseball|pitcher|home run|batting/i },
-  { tag: "NHL",         keywords: /\bNHL\b|hockey|goalie|puck|ice/i },
-  { tag: "NCAAF",       keywords: /\bNCAAF\b|college football|bowl game/i },
-  { tag: "NCAAB",       keywords: /\bNCAAB\b|college basketball|march madness/i },
-  { tag: "arbitrage",   keywords: /arbitrage|arb bet|sure bet|no.risk/i },
-  { tag: "parlay",      keywords: /parlay|accumulator|multi.bet/i },
-  { tag: "prop bets",   keywords: /prop bet|player prop|anytime scorer/i },
-  { tag: "bankroll",    keywords: /bankroll|kelly criterion|staking|unit size/i },
-  { tag: "+EV",         keywords: /\+EV|positive expected value|expected value/i },
-  { tag: "sharp money", keywords: /sharp money|steam move|line move|reverse line/i },
-  { tag: "strategy",    keywords: /strategy|system|method|approach|technique/i },
-  { tag: "AI picks",    keywords: /AI pick|machine learning|algorithm|model predict/i },
+  {
+    tag: "NFL",
+    keywords: /\bNFL\b|football|quarterback|touchdown|super bowl/i,
+  },
+  { tag: "NBA", keywords: /\bNBA\b|basketball|point guard|three.pointer/i },
+  { tag: "MLB", keywords: /\bMLB\b|baseball|pitcher|home run|batting/i },
+  { tag: "NHL", keywords: /\bNHL\b|hockey|goalie|puck|ice/i },
+  { tag: "NCAAF", keywords: /\bNCAAF\b|college football|bowl game/i },
+  { tag: "NCAAB", keywords: /\bNCAAB\b|college basketball|march madness/i },
+  { tag: "arbitrage", keywords: /arbitrage|arb bet|sure bet|no.risk/i },
+  { tag: "parlay", keywords: /parlay|accumulator|multi.bet/i },
+  { tag: "prop bets", keywords: /prop bet|player prop|anytime scorer/i },
+  { tag: "bankroll", keywords: /bankroll|kelly criterion|staking|unit size/i },
+  { tag: "+EV", keywords: /\+EV|positive expected value|expected value/i },
+  {
+    tag: "sharp money",
+    keywords: /sharp money|steam move|line move|reverse line/i,
+  },
+  { tag: "strategy", keywords: /strategy|system|method|approach|technique/i },
+  {
+    tag: "AI picks",
+    keywords: /AI pick|machine learning|algorithm|model predict/i,
+  },
 ];
 
 function slugify(text: string): string {
@@ -76,7 +85,7 @@ function extractTags(title: string, content: string): string {
 
 async function pingIndexNow(slugs: string[]): Promise<void> {
   if (slugs.length === 0) return;
-  const urls = slugs.map((s) => `https://${INDEXNOW_HOST}/blog/${s}`);
+  const urls = slugs.map(s => `https://${INDEXNOW_HOST}/blog/${s}`);
   try {
     await fetch("https://api.indexnow.org/indexnow", {
       method: "POST",
@@ -88,7 +97,7 @@ async function pingIndexNow(slugs: string[]): Promise<void> {
         urlList: urls,
       }),
     });
-    console.log(`[BlogContent] IndexNow pinged ${urls.length} URL(s)`);
+    console.warn(`[BlogContent] IndexNow pinged ${urls.length} URL(s)`);
   } catch (e: any) {
     console.warn("[BlogContent] IndexNow ping failed:", e.message);
   }
@@ -101,7 +110,9 @@ async function pingGoogleSitemap(): Promise<void> {
         `https://www.google.com/ping?sitemap=${encodeURIComponent(`https://${INDEXNOW_HOST}${sm}`)}`,
         { method: "GET" }
       );
-    } catch (_) { /* non-fatal */ }
+    } catch (_) {
+      /* non-fatal */
+    }
   }
 }
 
@@ -116,14 +127,26 @@ async function generateArticle(pick: {
   pickType: string;
   pickDate: string;
   odds: number | null;
-}): Promise<{ title: string; slug: string; content: string; excerpt: string; seoDescription: string; tags: string } | null> {
+}): Promise<{
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  seoDescription: string;
+  tags: string;
+} | null> {
   const sport = SPORT_LABELS[pick.sportKey] ?? pick.sportKey.toUpperCase();
-  const matchup = pick.homeTeam && pick.awayTeam
-    ? `${pick.awayTeam} vs ${pick.homeTeam}`
-    : sport;
+  const matchup =
+    pick.homeTeam && pick.awayTeam
+      ? `${pick.awayTeam} vs ${pick.homeTeam}`
+      : sport;
   const title = `${matchup} Prediction & Pick — ${pick.pickDate} | ChalkPicks AI`;
   const slug = slugify(`${matchup}-prediction-pick-${pick.pickDate}`);
-  const oddsStr = pick.odds ? (pick.odds > 0 ? `+${pick.odds}` : String(pick.odds)) : "N/A";
+  const oddsStr = pick.odds
+    ? pick.odds > 0
+      ? `+${pick.odds}`
+      : String(pick.odds)
+    : "N/A";
 
   const prompt = `You are a professional sports betting analyst writing for ChalkPicks, an AI-powered sports analytics platform.
 
@@ -155,7 +178,11 @@ Return ONLY the markdown article body — no title, no frontmatter.`;
   try {
     const response = await invokeLLM({
       messages: [
-        { role: "system", content: "You are a professional sports betting analyst. Write detailed, SEO-optimized betting analysis articles in markdown format." },
+        {
+          role: "system",
+          content:
+            "You are a professional sports betting analyst. Write detailed, SEO-optimized betting analysis articles in markdown format.",
+        },
         { role: "user", content: prompt },
       ],
       complexity: "high", // Force Forge API (Gemini) — Ollama on CPU is too slow for 650-word articles
@@ -165,9 +192,20 @@ Return ONLY the markdown article body — no title, no frontmatter.`;
     const content = typeof rawContent === "string" ? rawContent : "";
     if (!content || content.length < 200) return null;
 
-    const excerpt = content.replace(/#{1,3} .+\n/g, "").replace(/\n+/g, " ").slice(0, 200).trim() + "...";
-    const seoDescription = `${matchup} prediction and betting pick for ${pick.pickDate}. ${pick.confidenceScore}% confidence. AI-powered analysis by ChalkPicks.`.slice(0, 160);
-    const tags = extractTags(title, content) || [sport, "AI picks", pick.pickType.replace("_", " ")].join(",");
+    const excerpt =
+      content
+        .replace(/#{1,3} .+\n/g, "")
+        .replace(/\n+/g, " ")
+        .slice(0, 200)
+        .trim() + "...";
+    const seoDescription =
+      `${matchup} prediction and betting pick for ${pick.pickDate}. ${pick.confidenceScore}% confidence. AI-powered analysis by ChalkPicks.`.slice(
+        0,
+        160
+      );
+    const tags =
+      extractTags(title, content) ||
+      [sport, "AI picks", pick.pickType.replace("_", " ")].join(",");
 
     return { title, slug, content, excerpt, seoDescription, tags };
   } catch (e: any) {
@@ -178,14 +216,16 @@ Return ONLY the markdown article body — no title, no frontmatter.`;
 
 export async function blogContentHandler(req: Request, res: Response) {
   const taskUid = (req.headers["x-manus-cron-task-uid"] as string) || "manual";
-  console.log(`[BlogContent] Triggered by task: ${taskUid}`);
+  console.warn(`[BlogContent] Triggered by task: ${taskUid}`);
 
   try {
     const db = await getDb();
     if (!db) return res.status(500).json({ error: "Database unavailable" });
 
     const today = new Date().toISOString().slice(0, 10);
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10);
 
     // Get today's and yesterday's active picks
     const recentPicks = await db
@@ -195,14 +235,26 @@ export async function blogContentHandler(req: Request, res: Response) {
       .limit(20);
 
     if (recentPicks.length === 0) {
-      console.log("[BlogContent] No recent picks found — skipping article generation.");
-      return res.json({ ok: true, imported: 0, published: 0, errors: 0, timestamp: new Date().toISOString() });
+      console.warn(
+        "[BlogContent] No recent picks found — skipping article generation."
+      );
+      return res.json({
+        ok: true,
+        imported: 0,
+        published: 0,
+        errors: 0,
+        timestamp: new Date().toISOString(),
+      });
     }
 
     // Get slugs of already-generated articles to avoid duplicates
     const existingSlugs = new Set(
-      (await db.select({ slug: blogPosts.slug }).from(blogPosts).where(eq(blogPosts.source, "ai-generated")))
-        .map((r) => r.slug)
+      (
+        await db
+          .select({ slug: blogPosts.slug })
+          .from(blogPosts)
+          .where(eq(blogPosts.source, "ai-generated"))
+      ).map(r => r.slug)
     );
 
     let imported = 0;
@@ -211,12 +263,14 @@ export async function blogContentHandler(req: Request, res: Response) {
     const publishedSlugs: string[] = [];
 
     for (const pick of recentPicks) {
-      if (!["moneyline", "spread", "over_under"].includes(pick.pickType)) continue;
+      if (!["moneyline", "spread", "over_under"].includes(pick.pickType))
+        continue;
 
       const sport = SPORT_LABELS[pick.sportKey] ?? pick.sportKey;
-      const matchup = pick.homeTeam && pick.awayTeam
-        ? `${pick.awayTeam} vs ${pick.homeTeam}`
-        : sport;
+      const matchup =
+        pick.homeTeam && pick.awayTeam
+          ? `${pick.awayTeam} vs ${pick.homeTeam}`
+          : sport;
       const slug = slugify(`${matchup}-prediction-pick-${pick.pickDate}`);
 
       if (existingSlugs.has(slug)) continue;
@@ -234,7 +288,10 @@ export async function blogContentHandler(req: Request, res: Response) {
         odds: pick.odds ?? null,
       });
 
-      if (!article) { errors++; continue; }
+      if (!article) {
+        errors++;
+        continue;
+      }
 
       try {
         await db.insert(blogPosts).values({
@@ -253,14 +310,14 @@ export async function blogContentHandler(req: Request, res: Response) {
         publishedSlugs.push(article.slug);
         imported++;
         published++;
-        console.log(`[BlogContent] Published: ${article.slug}`);
+        console.warn(`[BlogContent] Published: ${article.slug}`);
       } catch (e: any) {
         console.error("[BlogContent] DB insert failed:", e.message);
         errors++;
       }
 
       // Throttle to avoid overwhelming Ollama
-      await new Promise((r) => setTimeout(r, 800));
+      await new Promise(r => setTimeout(r, 800));
     }
 
     if (publishedSlugs.length > 0) {
@@ -269,16 +326,24 @@ export async function blogContentHandler(req: Request, res: Response) {
     }
 
     const summary = `Blog content sync completed:\n- Imported: ${imported}\n- Published: ${published}\n- Errors: ${errors}`;
-    console.log(`[BlogContent] ${summary}`);
+    console.warn(`[BlogContent] ${summary}`);
 
     await notifyOwner({
       title: `Daily Blog Content — ${published} new articles`,
       content: summary,
     });
 
-    res.json({ ok: true, imported, published, errors, timestamp: new Date().toISOString() });
+    res.json({
+      ok: true,
+      imported,
+      published,
+      errors,
+      timestamp: new Date().toISOString(),
+    });
   } catch (error: any) {
     console.error("[BlogContent] Error:", error);
-    res.status(500).json({ error: error.message, timestamp: new Date().toISOString() });
+    res
+      .status(500)
+      .json({ error: error.message, timestamp: new Date().toISOString() });
   }
 }

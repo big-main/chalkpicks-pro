@@ -1,4 +1,9 @@
-import express, { type Express, type Request, type Response, type NextFunction } from "express";
+import express, {
+  type Express,
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
 import crypto from "crypto";
 import { getDb } from "./db";
 import { blogPosts, picks, games, oddsSnapshots } from "../drizzle/schema";
@@ -53,17 +58,26 @@ async function getLineMovements(
 
   byEvent.forEach((snapshots, eventId) => {
     const bookmaker =
-      snapshots.find(s => s.bookmaker === "draftkings")?.bookmaker ?? snapshots[0].bookmaker;
+      snapshots.find(s => s.bookmaker === "draftkings")?.bookmaker ??
+      snapshots[0].bookmaker;
     const forBook = snapshots.filter(s => s.bookmaker === bookmaker);
     const homeTeam = homeTeamByEvent.get(eventId);
 
     const h2h = forBook.filter(s => s.marketKey === "h2h");
     const totals = forBook.filter(s => s.marketKey === "totals");
 
-    const extractPrice = (outcomesJson: string, teamName: string | undefined): number | null => {
+    const extractPrice = (
+      outcomesJson: string,
+      teamName: string | undefined
+    ): number | null => {
       try {
-        const outcomes = JSON.parse(outcomesJson) as { name: string; price?: number }[];
-        const outcome = teamName ? outcomes.find(o => o.name === teamName) : outcomes[0];
+        const outcomes = JSON.parse(outcomesJson) as {
+          name: string;
+          price?: number;
+        }[];
+        const outcome = teamName
+          ? outcomes.find(o => o.name === teamName)
+          : outcomes[0];
         return typeof outcome?.price === "number" ? outcome.price : null;
       } catch {
         return null;
@@ -72,13 +86,17 @@ async function getLineMovements(
     const extractPoint = (outcomesJson: string): number | null => {
       try {
         const outcomes = JSON.parse(outcomesJson) as { point?: number }[];
-        return typeof outcomes[0]?.point === "number" ? outcomes[0].point : null;
+        return typeof outcomes[0]?.point === "number"
+          ? outcomes[0].point
+          : null;
       } catch {
         return null;
       }
     };
 
-    const openOdds = h2h[0] ? extractPrice(h2h[0].outcomesJson, homeTeam) : null;
+    const openOdds = h2h[0]
+      ? extractPrice(h2h[0].outcomesJson, homeTeam)
+      : null;
     const currentOdds = h2h[h2h.length - 1]
       ? extractPrice(h2h[h2h.length - 1].outcomesJson, homeTeam)
       : null;
@@ -172,23 +190,32 @@ export function registerWorkerRoutes(app: Express) {
     // history so the worker can cite real open->current numbers instead of
     // writing generically about "line movement".
     const gameIds = Array.from(
-      new Set(rows.map(r => r.gameId).filter((id): id is number => id != null))
+      new Set(rows.map(r => r.gameId).filter((id): id is number => id !== null))
     );
     const gameRows = gameIds.length
       ? await db
-          .select({ id: games.id, externalId: games.externalId, homeTeamName: games.homeTeamName })
+          .select({
+            id: games.id,
+            externalId: games.externalId,
+            homeTeamName: games.homeTeamName,
+          })
           .from(games)
           .where(inArray(games.id, gameIds))
       : [];
     const externalIdByGameId = new Map(gameRows.map(g => [g.id, g.externalId]));
     const homeTeamByEvent = new Map(
-      gameRows.filter(g => g.externalId).map(g => [g.externalId as string, g.homeTeamName ?? ""])
+      gameRows
+        .filter(g => g.externalId)
+        .map(g => [g.externalId as string, g.homeTeamName ?? ""])
     );
-    const eventIds = gameRows.map(g => g.externalId).filter((id): id is string => !!id);
+    const eventIds = gameRows
+      .map(g => g.externalId)
+      .filter((id): id is string => !!id);
     const movements = await getLineMovements(db, eventIds, homeTeamByEvent);
 
     const picksWithMovement = rows.map(({ gameId, ...pick }) => {
-      const externalId = gameId != null ? externalIdByGameId.get(gameId) : undefined;
+      const externalId =
+        gameId !== null ? externalIdByGameId.get(gameId) : undefined;
       const movement = externalId ? movements.get(externalId) : undefined;
       return { ...pick, lineMovement: movement ?? null };
     });
@@ -207,12 +234,17 @@ export function registerWorkerRoutes(app: Express) {
     const { title, slug, content, contentHtml, excerpt, seoDescription, tags } =
       req.body ?? {};
     if (
-      typeof title !== "string" || !title.trim() || title.length > 256 ||
-      typeof slug !== "string" || !/^[a-z0-9-]{3,200}$/.test(slug) ||
-      typeof content !== "string" || content.trim().length < 100
+      typeof title !== "string" ||
+      !title.trim() ||
+      title.length > 256 ||
+      typeof slug !== "string" ||
+      !/^[a-z0-9-]{3,200}$/.test(slug) ||
+      typeof content !== "string" ||
+      content.trim().length < 100
     ) {
       return res.status(400).json({
-        error: "title (<=256 chars), slug (kebab-case), and content (>=100 chars) are required",
+        error:
+          "title (<=256 chars), slug (kebab-case), and content (>=100 chars) are required",
       });
     }
 
@@ -232,7 +264,9 @@ export function registerWorkerRoutes(app: Express) {
       contentHtml: typeof contentHtml === "string" ? contentHtml : null,
       excerpt: typeof excerpt === "string" ? excerpt.slice(0, 500) : null,
       seoDescription:
-        typeof seoDescription === "string" ? seoDescription.slice(0, 160) : null,
+        typeof seoDescription === "string"
+          ? seoDescription.slice(0, 160)
+          : null,
       tags: typeof tags === "string" ? tags.slice(0, 512) : null,
       source: "ai-generated",
       status: "draft",

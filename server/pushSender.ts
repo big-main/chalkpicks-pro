@@ -15,7 +15,9 @@ function initVapid() {
   const publicKey = ENV.vapidPublicKey;
   const privateKey = ENV.vapidPrivateKey;
   if (!publicKey || !privateKey) {
-    console.warn("[PushSender] VAPID keys not configured — push notifications disabled");
+    console.warn(
+      "[PushSender] VAPID keys not configured — push notifications disabled"
+    );
     return;
   }
   webpush.setVapidDetails(
@@ -38,7 +40,10 @@ export interface PushPayload {
 /**
  * Send a push notification to a single user (all their subscribed devices).
  */
-export async function sendPushToUser(userId: number, payload: PushPayload): Promise<{ sent: number; failed: number }> {
+export async function sendPushToUser(
+  userId: number,
+  payload: PushPayload
+): Promise<{ sent: number; failed: number }> {
   initVapid();
   if (!vapidInitialized) return { sent: 0, failed: 0 };
 
@@ -66,7 +71,7 @@ export async function sendPushToUser(userId: number, payload: PushPayload): Prom
   const staleEndpoints: number[] = [];
 
   await Promise.allSettled(
-    subs.map(async (sub) => {
+    subs.map(async sub => {
       try {
         await webpush.sendNotification(
           {
@@ -83,15 +88,22 @@ export async function sendPushToUser(userId: number, payload: PushPayload): Prom
         if (err.statusCode === 410 || err.statusCode === 404) {
           staleEndpoints.push(sub.id);
         }
-        console.warn(`[PushSender] Failed to send to sub ${sub.id}:`, err.message);
+        console.warn(
+          `[PushSender] Failed to send to sub ${sub.id}:`,
+          err.message
+        );
       }
     })
   );
 
   // Clean up stale subscriptions
   if (staleEndpoints.length > 0) {
-    await db.delete(pushSubscriptions).where(inArray(pushSubscriptions.id, staleEndpoints));
-    console.log(`[PushSender] Removed ${staleEndpoints.length} stale subscriptions`);
+    await db
+      .delete(pushSubscriptions)
+      .where(inArray(pushSubscriptions.id, staleEndpoints));
+    console.warn(
+      `[PushSender] Removed ${staleEndpoints.length} stale subscriptions`
+    );
   }
 
   return { sent, failed };
@@ -101,7 +113,10 @@ export async function sendPushToUser(userId: number, payload: PushPayload): Prom
  * Send a push notification to ALL subscribed users (broadcast).
  * Used for new +EV picks, daily picks alerts, etc.
  */
-export async function broadcastPush(payload: PushPayload, userIds?: number[]): Promise<{ sent: number; failed: number; users: number }> {
+export async function broadcastPush(
+  payload: PushPayload,
+  userIds?: number[]
+): Promise<{ sent: number; failed: number; users: number }> {
   initVapid();
   if (!vapidInitialized) return { sent: 0, failed: 0, users: 0 };
 
@@ -110,9 +125,13 @@ export async function broadcastPush(payload: PushPayload, userIds?: number[]): P
 
   // Get all subscriptions (optionally filtered by userIds)
   const query = db.select().from(pushSubscriptions);
-  const subs = userIds && userIds.length > 0
-    ? await db.select().from(pushSubscriptions).where(inArray(pushSubscriptions.userId, userIds))
-    : await query;
+  const subs =
+    userIds && userIds.length > 0
+      ? await db
+          .select()
+          .from(pushSubscriptions)
+          .where(inArray(pushSubscriptions.userId, userIds))
+      : await query;
 
   if (subs.length === 0) return { sent: 0, failed: 0, users: 0 };
 
@@ -134,10 +153,13 @@ export async function broadcastPush(payload: PushPayload, userIds?: number[]): P
   for (let i = 0; i < subs.length; i += BATCH_SIZE) {
     const batch = subs.slice(i, i + BATCH_SIZE);
     await Promise.allSettled(
-      batch.map(async (sub) => {
+      batch.map(async sub => {
         try {
           await webpush.sendNotification(
-            { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+            {
+              endpoint: sub.endpoint,
+              keys: { p256dh: sub.p256dh, auth: sub.auth },
+            },
             message,
             { TTL: 86400 }
           );
@@ -153,11 +175,15 @@ export async function broadcastPush(payload: PushPayload, userIds?: number[]): P
   }
 
   if (staleEndpoints.length > 0) {
-    await db.delete(pushSubscriptions).where(inArray(pushSubscriptions.id, staleEndpoints));
+    await db
+      .delete(pushSubscriptions)
+      .where(inArray(pushSubscriptions.id, staleEndpoints));
   }
 
-  const uniqueUsers = new Set(subs.map((s) => s.userId)).size;
-  console.log(`[PushSender] Broadcast sent=${sent} failed=${failed} users=${uniqueUsers}`);
+  const uniqueUsers = new Set(subs.map(s => s.userId)).size;
+  console.warn(
+    `[PushSender] Broadcast sent=${sent} failed=${failed} users=${uniqueUsers}`
+  );
   return { sent, failed, users: uniqueUsers };
 }
 
@@ -173,7 +199,8 @@ export async function sendEVAlert(pick: {
   odds: number;
   confidence: number;
 }): Promise<void> {
-  const evStr = pick.ev > 0 ? `+${pick.ev.toFixed(1)}%` : `${pick.ev.toFixed(1)}%`;
+  const evStr =
+    pick.ev > 0 ? `+${pick.ev.toFixed(1)}%` : `${pick.ev.toFixed(1)}%`;
   const oddsStr = pick.odds > 0 ? `+${pick.odds}` : String(pick.odds);
   await broadcastPush({
     title: `🔥 New +EV Pick: ${pick.sport.toUpperCase()}`,
@@ -187,7 +214,10 @@ export async function sendEVAlert(pick: {
 /**
  * Send a daily picks digest push to all subscribed users.
  */
-export async function sendDailyPicksPush(pickCount: number, topSport: string): Promise<void> {
+export async function sendDailyPicksPush(
+  pickCount: number,
+  topSport: string
+): Promise<void> {
   await broadcastPush({
     title: `📊 ${pickCount} New ChalkPicks Today`,
     body: `Top picks for ${topSport} and more are ready. Check your dashboard.`,

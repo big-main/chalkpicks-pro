@@ -4,7 +4,12 @@
  * A "steam move" occurs when the line moves AGAINST the public betting %
  * (e.g., 70% of public bets on Team A but the line moves toward Team B).
  */
-import { publicProcedure, protectedProcedure, premiumProcedure, router } from "../_core/trpc";
+import {
+  publicProcedure,
+  protectedProcedure,
+  premiumProcedure,
+  router,
+} from "../_core/trpc";
 import { z } from "zod/v4";
 import { getDb } from "../db";
 import { oddsSnapshots } from "../../drizzle/schema";
@@ -44,7 +49,10 @@ async function fetchCurrentOdds(sportKey: string): Promise<OddsApiEvent[]> {
 }
 
 /** Calculate line movement between two snapshots */
-function calcLineMovement(openPrice: number, currentPrice: number): {
+function calcLineMovement(
+  openPrice: number,
+  currentPrice: number
+): {
   direction: "toward" | "away" | "none";
   magnitude: number;
 } {
@@ -57,7 +65,11 @@ function calcLineMovement(openPrice: number, currentPrice: number): {
 }
 
 /** Determine if this is a sharp move (reverse line movement) */
-function isSharpMove(publicPct: number, lineMovedTowardTeam: boolean, teamIsHome: boolean): boolean {
+function isSharpMove(
+  publicPct: number,
+  lineMovedTowardTeam: boolean,
+  teamIsHome: boolean
+): boolean {
   // Sharp move: public bets heavily on one side but line moves the other way
   const publicFavorsHome = publicPct > 55;
   const lineFavorsHome = lineMovedTowardTeam === teamIsHome;
@@ -67,10 +79,12 @@ function isSharpMove(publicPct: number, lineMovedTowardTeam: boolean, teamIsHome
 export const sharpMoneyRouter = router({
   /** Get current steam moves — lines moving against public % */
   getSteamMoves: premiumProcedure
-    .input(z.object({
-      sport: z.string().default("americanfootball_nfl"),
-      minMagnitude: z.number().default(3),
-    }))
+    .input(
+      z.object({
+        sport: z.string().default("americanfootball_nfl"),
+        minMagnitude: z.number().default(3),
+      })
+    )
     .query(async ({ input }) => {
       const db = await getDb();
       const events = await fetchCurrentOdds(input.sport);
@@ -149,13 +163,19 @@ export const sharpMoneyRouter = router({
 
       for (const event of events) {
         // Get the spread market from DraftKings or first available
-        const bookmaker = event.bookmakers.find(b => b.key === "draftkings") ?? event.bookmakers[0];
+        const bookmaker =
+          event.bookmakers.find(b => b.key === "draftkings") ??
+          event.bookmakers[0];
         if (!bookmaker) continue;
         const spreadMarket = bookmaker.markets.find(m => m.key === "spreads");
         if (!spreadMarket) continue;
 
-        const homeOutcome = spreadMarket.outcomes.find(o => o.name === event.home_team);
-        const awayOutcome = spreadMarket.outcomes.find(o => o.name === event.away_team);
+        const homeOutcome = spreadMarket.outcomes.find(
+          o => o.name === event.home_team
+        );
+        const awayOutcome = spreadMarket.outcomes.find(
+          o => o.name === event.away_team
+        );
         if (!homeOutcome || !awayOutcome) continue;
 
         const currentLine = homeOutcome.point ?? 0;
@@ -164,21 +184,30 @@ export const sharpMoneyRouter = router({
         let openLine = currentLine;
         if (db) {
           const snapshots = await db
-            .select({ outcomesJson: oddsSnapshots.outcomesJson, snapshotAt: oddsSnapshots.snapshotAt })
+            .select({
+              outcomesJson: oddsSnapshots.outcomesJson,
+              snapshotAt: oddsSnapshots.snapshotAt,
+            })
             .from(oddsSnapshots)
-            .where(and(
-              eq(oddsSnapshots.eventId, event.id),
-              eq(oddsSnapshots.bookmaker, bookmaker.key),
-              eq(oddsSnapshots.marketKey, "spreads")
-            ))
+            .where(
+              and(
+                eq(oddsSnapshots.eventId, event.id),
+                eq(oddsSnapshots.bookmaker, bookmaker.key),
+                eq(oddsSnapshots.marketKey, "spreads")
+              )
+            )
             .orderBy(oddsSnapshots.snapshotAt)
             .limit(1);
           if (snapshots[0]?.outcomesJson) {
             try {
               const outcomes = JSON.parse(snapshots[0].outcomesJson);
-              const homeOut = outcomes.find((o: any) => o.name === event.home_team);
-              if (homeOut?.point != null) openLine = Number(homeOut.point);
-            } catch { /* ignore parse error */ }
+              const homeOut = outcomes.find(
+                (o: any) => o.name === event.home_team
+              );
+              if (homeOut?.point !== null) openLine = Number(homeOut.point);
+            } catch {
+              /* ignore parse error */
+            }
           }
         }
 
@@ -191,8 +220,11 @@ export const sharpMoneyRouter = router({
         const sharpSide = lineMove < 0 ? event.away_team : event.home_team;
 
         const confidence: "high" | "medium" | "low" =
-          Math.abs(lineMove) >= 7 ? "high" :
-          Math.abs(lineMove) >= 4 ? "medium" : "low";
+          Math.abs(lineMove) >= 7
+            ? "high"
+            : Math.abs(lineMove) >= 4
+              ? "medium"
+              : "low";
 
         steamMoves.push({
           eventId: event.id,
@@ -206,7 +238,8 @@ export const sharpMoneyRouter = router({
           currentLine,
           lineMove,
           confidence,
-          steamType: Math.abs(lineMove) >= 7 ? "steam_move" : "reverse_line_movement",
+          steamType:
+            Math.abs(lineMove) >= 7 ? "steam_move" : "reverse_line_movement",
           bookmaker: bookmaker.title,
         });
       }
@@ -214,7 +247,10 @@ export const sharpMoneyRouter = router({
       // Sort by confidence then magnitude
       steamMoves.sort((a, b) => {
         const confOrder = { high: 0, medium: 1, low: 2 };
-        return confOrder[a.confidence] - confOrder[b.confidence] || Math.abs(b.lineMove) - Math.abs(a.lineMove);
+        return (
+          confOrder[a.confidence] - confOrder[b.confidence] ||
+          Math.abs(b.lineMove) - Math.abs(a.lineMove)
+        );
       });
 
       return {
@@ -227,9 +263,11 @@ export const sharpMoneyRouter = router({
 
   /** Get consensus betting percentages for a sport */
   getConsensus: premiumProcedure
-    .input(z.object({
-      sport: z.string().default("americanfootball_nfl"),
-    }))
+    .input(
+      z.object({
+        sport: z.string().default("americanfootball_nfl"),
+      })
+    )
     .query(async ({ input }) => {
       const events = await fetchCurrentOdds(input.sport);
 
@@ -255,16 +293,25 @@ export const sharpMoneyRouter = router({
       }
 
       const consensus = events.slice(0, 20).map(event => {
-        const bookmaker = event.bookmakers.find(b => b.key === "draftkings") ?? event.bookmakers[0];
+        const bookmaker =
+          event.bookmakers.find(b => b.key === "draftkings") ??
+          event.bookmakers[0];
         const spreadMarket = bookmaker?.markets.find(m => m.key === "spreads");
         const totalMarket = bookmaker?.markets.find(m => m.key === "totals");
-        const homeOutcome = spreadMarket?.outcomes.find(o => o.name === event.home_team);
+        const homeOutcome = spreadMarket?.outcomes.find(
+          o => o.name === event.home_team
+        );
         const totalOver = totalMarket?.outcomes.find(o => o.name === "Over");
 
         // Simulate public % based on odds (in production, use a consensus API)
         const homeOdds = homeOutcome?.price ?? -110;
-        const impliedHome = homeOdds < 0 ? Math.abs(homeOdds) / (Math.abs(homeOdds) + 100) : 100 / (homeOdds + 100);
-        const homePublicPct = Math.round(impliedHome * 100 * (0.9 + Math.random() * 0.2));
+        const impliedHome =
+          homeOdds < 0
+            ? Math.abs(homeOdds) / (Math.abs(homeOdds) + 100)
+            : 100 / (homeOdds + 100);
+        const homePublicPct = Math.round(
+          impliedHome * 100 * (0.9 + Math.random() * 0.2)
+        );
         const clampedHome = Math.min(80, Math.max(20, homePublicPct));
 
         return {
@@ -274,11 +321,24 @@ export const sharpMoneyRouter = router({
           commenceTime: event.commence_time,
           homePublicPct: clampedHome,
           awayPublicPct: 100 - clampedHome,
-          homeMoneyPct: Math.min(85, Math.max(15, clampedHome + Math.round((Math.random() - 0.5) * 10))),
-          awayMoneyPct: 100 - Math.min(85, Math.max(15, clampedHome + Math.round((Math.random() - 0.5) * 10))),
+          homeMoneyPct: Math.min(
+            85,
+            Math.max(15, clampedHome + Math.round((Math.random() - 0.5) * 10))
+          ),
+          awayMoneyPct:
+            100 -
+            Math.min(
+              85,
+              Math.max(15, clampedHome + Math.round((Math.random() - 0.5) * 10))
+            ),
           currentSpread: homeOutcome?.point ?? 0,
           currentTotal: totalOver?.point ?? 0,
-          sharpIndicator: clampedHome > 60 ? "away" as const : clampedHome < 40 ? "home" as const : "none" as const,
+          sharpIndicator:
+            clampedHome > 60
+              ? ("away" as const)
+              : clampedHome < 40
+                ? ("home" as const)
+                : ("none" as const),
         };
       });
 

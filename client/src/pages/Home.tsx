@@ -2,17 +2,32 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  Zap, BarChart3, Trophy, Brain,
-  ArrowRight, CheckCircle2, Star, Target, Lock,
-  TrendingUp, Percent,
-  Calculator, CloudLightning, Layers, Eye, Flame,
-  Activity, Shield, Sparkles, Users
+  Zap,
+  BarChart3,
+  Trophy,
+  Brain,
+  ArrowRight,
+  CheckCircle2,
+  Star,
+  Target,
+  Lock,
+  TrendingUp,
+  Percent,
+  Calculator,
+  CloudLightning,
+  Layers,
+  Eye,
+  Flame,
+  Activity,
+  Shield,
+  Sparkles,
+  Users,
 } from "lucide-react";
 import NeonCard from "@/components/NeonCard";
 import { HeroBackground } from "@/components/HeroBackground";
-import { FadeIn, StaggerChildren, StaggerItem } from "@/components/animations";
+import { FadeIn } from "@/components/animations";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 // Lazy-load Recharts to reduce TBT on initial page load
@@ -21,9 +36,16 @@ import HorizontalScrollTicker from "@/components/HorizontalScrollTicker";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-// ─── Animated Counter Component ───────────────────────────────────
-function AnimatedCounter({ value, prefix = "", suffix = "", duration = 2 }: {
-  value: number; prefix?: string; suffix?: string; duration?: number;
+function AnimatedCounter({
+  value,
+  prefix = "",
+  suffix = "",
+  duration = 2,
+}: {
+  value: number;
+  prefix?: string;
+  suffix?: string;
+  duration?: number;
 }) {
   const [display, setDisplay] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
@@ -52,12 +74,20 @@ function AnimatedCounter({ value, prefix = "", suffix = "", duration = 2 }: {
     return () => observer.disconnect();
   }, [value, duration]);
 
-  return <span ref={ref}>{prefix}{display.toLocaleString()}{suffix}</span>;
+  return (
+    <span ref={ref}>
+      {prefix}
+      {display.toLocaleString()}
+      {suffix}
+    </span>
+  );
 }
 
-// ─── Live Dashboard Preview Widget ────────────────────────────────
 function LiveDashboardPreview() {
-  const { data: picksData } = trpc.picks.list.useQuery({ limit: 1, tier: "all" });
+  const { data: picksData } = trpc.picks.list.useQuery({
+    limit: 1,
+    tier: "all",
+  });
   const pick = picksData?.picks?.[0];
 
   return (
@@ -67,37 +97,48 @@ function LiveDashboardPreview() {
       transition={{ duration: 0.8, delay: 0.6 }}
       className="relative max-w-md mx-auto"
     >
-      {/* Glow behind card */}
-      <div className="absolute inset-0 rounded-2xl" style={{
-        background: "radial-gradient(ellipse at center, rgba(57, 255, 20, 0.08) 0%, transparent 70%)",
-        filter: "blur(40px)",
-        transform: "scale(1.2)",
-      }} />
+      <div
+        className="absolute inset-0 rounded-2xl"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, rgba(57, 255, 20, 0.08) 0%, transparent 70%)",
+          filter: "blur(40px)",
+          transform: "scale(1.2)",
+        }}
+      />
 
-      <div className="relative glass-card p-6 rounded-2xl border border-white/10" style={{
-        background: "rgba(10, 10, 20, 0.85)",
-        boxShadow: "0 24px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(57, 255, 20, 0.04), inset 0 1px 0 rgba(255,255,255,0.06)",
-      }}>
-        {/* Header */}
+      <div
+        className="relative glass-card p-6 rounded-2xl border border-white/10"
+        style={{
+          background: "rgba(10, 10, 20, 0.85)",
+          boxShadow:
+            "0 24px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(57, 255, 20, 0.04), inset 0 1px 0 rgba(255,255,255,0.06)",
+        }}
+      >
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-[#39ff14] animate-pulse" />
-            <span className="text-xs font-semibold text-white/50 uppercase tracking-wider">AI Pick Engine</span>
+            <span className="text-xs font-semibold text-white/50 uppercase tracking-wider">
+              AI Pick Engine
+            </span>
           </div>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#39ff14]/10 text-[#39ff14] font-bold">LIVE</span>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#39ff14]/10 text-[#39ff14] font-bold">
+            LIVE
+          </span>
         </div>
 
-        {/* Pick content */}
         <div className="mb-5">
           <div className="text-lg font-bold text-white mb-1">
-            {pick ? `${pick.awayTeam || "Away"} vs ${pick.homeTeam || "Home"}` : "Yankees vs Red Sox"}
+            {pick
+              ? `${pick.awayTeam || "Away"} vs ${pick.homeTeam || "Home"}`
+              : "Yankees vs Red Sox"}
           </div>
           <div className="text-sm text-white/40">
-            {pick?.sportKey || "MLB"} · {pick?.pickType || "Moneyline"} · {pick?.recommendation || "Yankees ML"}
+            {pick?.sportKey || "MLB"} · {pick?.pickType || "Moneyline"} ·{" "}
+            {pick?.recommendation || "Yankees ML"}
           </div>
         </div>
 
-        {/* Metrics grid */}
         <div className="grid grid-cols-4 gap-3">
           <div className="text-center">
             <div className="text-xl font-bold text-[#39ff14]">
@@ -112,27 +153,24 @@ function LiveDashboardPreview() {
             <div className="text-[10px] text-white/35 mt-0.5">+EV Edge</div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-[#60a5fa]">
-              2.1%
-            </div>
+            <div className="text-xl font-bold text-[#60a5fa]">2.1%</div>
             <div className="text-[10px] text-white/35 mt-0.5">Kelly Bet</div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-[#06b6d4]">
-              14.2%
-            </div>
+            <div className="text-xl font-bold text-[#06b6d4]">14.2%</div>
             <div className="text-[10px] text-white/35 mt-0.5">Exp. ROI</div>
           </div>
         </div>
 
-        {/* Steam indicator */}
         <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Flame className="w-3.5 h-3.5 text-[#f97316]" />
             <span className="text-xs text-white/50">Steam Detected</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-[#39ff14] font-semibold">Strong Buy</span>
+            <span className="text-xs text-[#39ff14] font-semibold">
+              Strong Buy
+            </span>
             <ArrowRight className="w-3 h-3 text-[#39ff14]" />
           </div>
         </div>
@@ -141,7 +179,6 @@ function LiveDashboardPreview() {
   );
 }
 
-// ─── Features (no badges — let content speak) ────────────────────
 const features = [
   {
     icon: Brain,
@@ -199,7 +236,6 @@ const features = [
   },
 ];
 
-// ─── Sport coverage ──────────────────────────────────────────────
 const sportStats = [
   { label: "NFL", note: "Spreads, totals & props" },
   { label: "NBA", note: "Nightly slate coverage" },
@@ -209,42 +245,48 @@ const sportStats = [
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
-  const { data: siteStats } = trpc.system.siteStats.useQuery(undefined, { staleTime: 60_000 });
+  const { data: siteStats } = trpc.system.siteStats.useQuery(undefined, {
+    staleTime: 60_000,
+  });
   const [emailCapture, setEmailCapture] = useState("");
   const [emailSubscribed, setEmailSubscribed] = useState(false);
   const newsletterMutation = trpc.newsletter.subscribe.useMutation({
-    onSuccess: () => { setEmailSubscribed(true); toast.success("You're in! Free daily picks coming to your inbox."); },
+    onSuccess: () => {
+      setEmailSubscribed(true);
+      toast.success("You're in! Free daily picks coming to your inbox.");
+    },
     onError: () => toast.error("Something went wrong. Try again."),
   });
   const handleEmailCapture = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!emailCapture || !emailCapture.includes("@")) { toast.error("Enter a valid email."); return; }
+    if (!emailCapture || !emailCapture.includes("@")) {
+      toast.error("Enter a valid email.");
+      return;
+    }
     newsletterMutation.mutate({ email: emailCapture, source: "home" });
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-16 md:pb-0">
-            <Navbar />
+      <Navbar />
       <HorizontalScrollTicker />
 
-      {/* ── LOGO HERO (borderless, bleeds into page) ─────────────────────── */}
-      {/* Background gradient layer */}
       <div
         className="absolute inset-0 top-0 h-screen pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse 800px 600px at 50% 30%, rgba(57, 255, 20, 0.08) 0%, rgba(57, 255, 20, 0.02) 40%, transparent 100%)",
+          background:
+            "radial-gradient(ellipse 800px 600px at 50% 30%, rgba(57, 255, 20, 0.08) 0%, rgba(57, 255, 20, 0.02) 40%, transparent 100%)",
           zIndex: 0,
         }}
       />
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.88 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="w-full relative flex flex-col items-center justify-center overflow-hidden select-none"
         style={{ marginTop: "20px", zIndex: 1 }}
       >
-        {/* Logo — fills full width, bottom-only fade */}
         <div
           style={{
             position: "relative",
@@ -264,6 +306,8 @@ export default function Home() {
             <img
               src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/hero-800.webp"
               alt="ChalkPicks"
+              width={800}
+              height={600}
               fetchPriority="high"
               loading="eager"
               decoding="async"
@@ -276,42 +320,100 @@ export default function Home() {
               }}
             />
           </picture>
-          {/* Bottom fade only — blends into page */}
           <div
             className="absolute bottom-0 left-0 right-0 pointer-events-none"
             style={{
               height: "30%",
-              background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)",
+              background:
+                "linear-gradient(to bottom, transparent 0%, var(--background) 100%)",
             }}
           />
-          {/* Soft side fades */}
-          <div className="absolute inset-y-0 left-0 w-[6%] pointer-events-none"
-            style={{ background: "linear-gradient(to right, var(--background), transparent)" }} />
-          <div className="absolute inset-y-0 right-0 w-[6%] pointer-events-none"
-            style={{ background: "linear-gradient(to left, var(--background), transparent)" }} />
+          <div
+            className="absolute inset-y-0 left-0 w-[6%] pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(to right, var(--background), transparent)",
+            }}
+          />
+          <div
+            className="absolute inset-y-0 right-0 w-[6%] pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(to left, var(--background), transparent)",
+            }}
+          />
         </div>
 
-        {/* ── SOCIAL MEDIA LINKS ── */}
         <div
           className="flex items-center gap-5 pointer-events-auto"
           style={{ marginTop: "-48px", zIndex: 10, position: "relative" }}
         >
           {[
-            { href: "https://facebook.com/chalkpicks", label: "Facebook", icon: (
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-            )},
-            { href: "https://x.com/chalkpickspro", label: "X (Twitter)", icon: (
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            )},
-            { href: "https://instagram.com/chalkpicks", label: "Instagram", icon: (
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-            )},
-            { href: "https://youtube.com/@chalkpicks", label: "YouTube", icon: (
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-            )},
-            { href: "https://reddit.com/r/chalkpicks", label: "Reddit", icon: (
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
-            )},
+            {
+              href: "https://facebook.com/chalkpicks",
+              label: "Facebook",
+              icon: (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              ),
+            },
+            {
+              href: "https://x.com/chalkpickspro",
+              label: "X (Twitter)",
+              icon: (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              ),
+            },
+            {
+              href: "https://instagram.com/chalkpicks",
+              label: "Instagram",
+              icon: (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                </svg>
+              ),
+            },
+            {
+              href: "https://youtube.com/@chalkpicks",
+              label: "YouTube",
+              icon: (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+              ),
+            },
+            {
+              href: "https://reddit.com/r/chalkpicks",
+              label: "Reddit",
+              icon: (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z" />
+                </svg>
+              ),
+            },
           ].map(({ href, label, icon }) => (
             <a
               key={label}
@@ -326,16 +428,23 @@ export default function Home() {
                 color: "rgba(255,255,255,0.5)",
               }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.background = "rgba(132,204,22,0.15)";
-                (e.currentTarget as HTMLElement).style.borderColor = "rgba(132,204,22,0.5)";
+                (e.currentTarget as HTMLElement).style.background =
+                  "rgba(132,204,22,0.15)";
+                (e.currentTarget as HTMLElement).style.borderColor =
+                  "rgba(132,204,22,0.5)";
                 (e.currentTarget as HTMLElement).style.color = "#84cc16";
-                (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
+                (e.currentTarget as HTMLElement).style.transform =
+                  "translateY(-2px)";
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)";
-                (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.1)";
-                (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.5)";
-                (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                (e.currentTarget as HTMLElement).style.background =
+                  "rgba(255,255,255,0.06)";
+                (e.currentTarget as HTMLElement).style.borderColor =
+                  "rgba(255,255,255,0.1)";
+                (e.currentTarget as HTMLElement).style.color =
+                  "rgba(255,255,255,0.5)";
+                (e.currentTarget as HTMLElement).style.transform =
+                  "translateY(0)";
               }}
             >
               {icon}
@@ -344,25 +453,32 @@ export default function Home() {
         </div>
       </motion.div>
 
-      {/* ── HERO ─────────────────────────────────────────────── */}
-      <section className="relative pt-0 pb-20 lg:pt-0 lg:pb-28 overflow-hidden" style={{ marginTop: "-120px" }}>
-        {/* Animated gradient orbs */}
+      <section
+        className="relative pt-0 pb-20 lg:pt-0 lg:pb-28 overflow-hidden"
+        style={{ marginTop: "-120px" }}
+      >
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
             className="absolute animate-orb"
             style={{
-              top: "-20%", left: "10%",
-              width: "60vw", height: "60vw",
-              background: "radial-gradient(ellipse, rgba(57, 255, 20, 0.07) 0%, transparent 60%)",
+              top: "-20%",
+              left: "10%",
+              width: "60vw",
+              height: "60vw",
+              background:
+                "radial-gradient(ellipse, rgba(57, 255, 20, 0.07) 0%, transparent 60%)",
               filter: "blur(80px)",
             }}
           />
           <div
             className="absolute animate-orb"
             style={{
-              bottom: "-30%", right: "-10%",
-              width: "50vw", height: "50vw",
-              background: "radial-gradient(ellipse, rgba(59, 130, 246, 0.06) 0%, transparent 60%)",
+              bottom: "-30%",
+              right: "-10%",
+              width: "50vw",
+              height: "50vw",
+              background:
+                "radial-gradient(ellipse, rgba(59, 130, 246, 0.06) 0%, transparent 60%)",
               filter: "blur(80px)",
               animationDelay: "-7s",
             }}
@@ -370,16 +486,18 @@ export default function Home() {
           <div
             className="absolute animate-orb"
             style={{
-              top: "40%", right: "20%",
-              width: "30vw", height: "30vw",
-              background: "radial-gradient(ellipse, rgba(168, 85, 247, 0.04) 0%, transparent 60%)",
+              top: "40%",
+              right: "20%",
+              width: "30vw",
+              height: "30vw",
+              background:
+                "radial-gradient(ellipse, rgba(168, 85, 247, 0.04) 0%, transparent 60%)",
               filter: "blur(60px)",
               animationDelay: "-14s",
             }}
           />
         </div>
 
-        {/* HeroBackground hidden on mobile to reduce TBT */}
         <div className="hidden md:block">
           <HeroBackground />
         </div>
@@ -387,9 +505,7 @@ export default function Home() {
 
         <div className="container relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left: Copy */}
             <div className="text-center lg:text-left">
-              {/* Badge */}
               <motion.div
                 initial={{ opacity: 0, y: -12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -399,18 +515,28 @@ export default function Home() {
                 <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card-static text-xs font-semibold tracking-wide">
                     <span className="live-dot" />
-                    <span style={{ color: "rgba(255, 255, 255, 0.7)" }}>AI-Powered Sports Analytics</span>
+                    <span style={{ color: "rgba(255, 255, 255, 0.7)" }}>
+                      AI-Powered Sports Analytics
+                    </span>
                   </div>
                   {siteStats && (
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.25)", color: "#39ff14" }}>
+                    <div
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
+                      style={{
+                        background: "rgba(57,255,20,0.1)",
+                        border: "1px solid rgba(57,255,20,0.25)",
+                        color: "#39ff14",
+                      }}
+                    >
                       <Users className="w-3 h-3" />
-                      <span>{siteStats.totalMembers.toLocaleString()} members</span>
+                      <span>
+                        {siteStats.totalMembers.toLocaleString()} members
+                      </span>
                     </div>
                   )}
                 </div>
               </motion.div>
 
-              {/* Headline */}
               <motion.h1
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -424,7 +550,6 @@ export default function Home() {
                 <span className="text-cyan-400">Data-Backed Results.</span>
               </motion.h1>
 
-              {/* Subheadline */}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -432,10 +557,11 @@ export default function Home() {
                 className="mb-10 max-w-lg text-lg leading-relaxed"
                 style={{ color: "rgba(255, 255, 255, 0.55)" }}
               >
-                Real-time +EV detection, predictive modeling, steam tracking, bankroll optimization, and institutional-grade sports analytics in one platform.
+                Real-time +EV detection, predictive modeling, steam tracking,
+                bankroll optimization, and institutional-grade sports analytics
+                in one platform.
               </motion.p>
 
-              {/* Single dominant CTA */}
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -469,7 +595,6 @@ export default function Home() {
               </motion.p>
             </div>
 
-            {/* Right: Live Dashboard Preview */}
             <div className="hidden lg:block">
               <LiveDashboardPreview />
             </div>
@@ -477,7 +602,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── LIVE STATS BAR ────────────────────────────────────── */}
       <section className="py-6 border-y border-white/5 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(57,255,20,0.02)] to-transparent" />
         <div className="container relative z-10">
@@ -490,19 +614,34 @@ export default function Home() {
             </div>
             <div className="text-center">
               <div className="font-display text-3xl lg:text-4xl text-[#f0b800] mb-1">
-                <AnimatedCounter value={siteStats ? Math.round((siteStats.totalMembers) / 1000) : 12} suffix="K+" />
+                <AnimatedCounter
+                  value={
+                    siteStats ? Math.round(siteStats.totalMembers / 1000) : 12
+                  }
+                  suffix="K+"
+                />
               </div>
               <div className="text-sm text-white/50">Active Members</div>
             </div>
             <div className="text-center">
               <div className="font-display text-3xl lg:text-4xl text-[#60a5fa] mb-1">
-                <AnimatedCounter value={siteStats ? Math.round(siteStats.winRate) : 71} suffix="%" />
+                <AnimatedCounter
+                  value={siteStats ? Math.round(siteStats.winRate) : 71}
+                  suffix="%"
+                />
               </div>
               <div className="text-sm text-white/50">AI Win Rate</div>
             </div>
             <div className="text-center">
               <div className="font-display text-3xl lg:text-4xl text-[#06b6d4] mb-1">
-                <AnimatedCounter value={siteStats ? Math.round((siteStats.totalPicksGenerated) / 1000) : 847} suffix="K+" />
+                <AnimatedCounter
+                  value={
+                    siteStats
+                      ? Math.round(siteStats.totalPicksGenerated / 1000)
+                      : 847
+                  }
+                  suffix="K+"
+                />
               </div>
               <div className="text-sm text-white/50">Picks Generated</div>
             </div>
@@ -510,7 +649,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── PERFORMANCE CHART ────────────────────────────────── */}
       <section className="py-24 relative">
         <div className="absolute inset-0 bg-mesh pointer-events-none" />
         <div className="container relative z-10">
@@ -525,18 +663,27 @@ export default function Home() {
                 <span className="text-white"> Results</span>
               </h2>
               <p className="text-white/50 leading-relaxed mb-8 max-w-lg">
-                Every pick is logged, timestamped, and graded automatically. No cherry-picking, no hindsight edits. Review the full history yourself on our Performance page.
+                Every pick is logged, timestamped, and graded automatically. No
+                cherry-picking, no hindsight edits. Review the full history
+                yourself on our Performance page.
               </p>
               <div className="grid grid-cols-2 gap-3">
-                {sportStats.map((s) => (
+                {sportStats.map(s => (
                   <NeonCard key={s.label} className="p-4">
-                    <div className="text-sm text-brand-gold font-bold mb-1">{s.label}</div>
+                    <div className="text-sm text-brand-gold font-bold mb-1">
+                      {s.label}
+                    </div>
                     <div className="text-xs text-white/50">{s.note}</div>
-                    <div className="text-xs mt-1.5 text-brand-green font-semibold">Auto-graded</div>
+                    <div className="text-xs mt-1.5 text-brand-green font-semibold">
+                      Auto-graded
+                    </div>
                   </NeonCard>
                 ))}
               </div>
-              <Link href="/performance" className="inline-flex items-center gap-2 mt-6 text-sm text-[#39ff14] hover:text-[#39ff14]/80 transition-colors font-medium">
+              <Link
+                href="/performance"
+                className="inline-flex items-center gap-2 mt-6 text-sm text-[#39ff14] hover:text-[#39ff14]/80 transition-colors font-medium"
+              >
                 View Full Performance <ArrowRight className="w-4 h-4" />
               </Link>
             </FadeIn>
@@ -544,12 +691,18 @@ export default function Home() {
             <FadeIn direction="right">
               <NeonCard className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium text-white/50">Model ROI — 6 Month</span>
+                  <span className="text-sm font-medium text-white/50">
+                    Model ROI — 6 Month
+                  </span>
                   <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full glass-card-static text-xs font-semibold text-[#39ff14]">
                     <Activity className="w-3 h-3" /> +23.1%
                   </div>
                 </div>
-                <Suspense fallback={<div className="w-full h-[240px] animate-pulse rounded-lg bg-white/5" />}>
+                <Suspense
+                  fallback={
+                    <div className="w-full h-[240px] animate-pulse rounded-lg bg-white/5" />
+                  }
+                >
                   <LazyRechartsChart />
                 </Suspense>
               </NeonCard>
@@ -558,7 +711,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FEATURES ─────────────────────────────────────────── */}
       <section className="py-24 relative">
         <div className="container relative z-10">
           <div className="text-center mb-16">
@@ -571,7 +723,8 @@ export default function Home() {
               <span className="text-emerald-gradient">Win</span>
             </h2>
             <p className="text-white/40 max-w-2xl mx-auto text-lg">
-              The same tools used by professional bettors and sharp syndicates — now available to everyone.
+              The same tools used by professional bettors and sharp syndicates —
+              now available to everyone.
             </p>
           </div>
 
@@ -588,13 +741,20 @@ export default function Home() {
                   <div className="flex items-start gap-4">
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: `${f.color}10`, border: `1px solid ${f.color}20` }}
+                      style={{
+                        background: `${f.color}10`,
+                        border: `1px solid ${f.color}20`,
+                      }}
                     >
                       <f.icon className="w-5 h-5" style={{ color: f.color }} />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1.5">{f.title}</h3>
-                      <p className="text-sm text-white/45 leading-relaxed">{f.desc}</p>
+                      <h3 className="font-semibold text-white mb-1.5">
+                        {f.title}
+                      </h3>
+                      <p className="text-sm text-white/45 leading-relaxed">
+                        {f.desc}
+                      </p>
                     </div>
                   </div>
                 </NeonCard>
@@ -612,7 +772,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ─────────────────────────────────────── */}
       <section className="py-24 relative border-t border-white/5">
         <div className="absolute inset-0 bg-mesh pointer-events-none opacity-50" />
         <div className="container relative z-10">
@@ -624,12 +783,26 @@ export default function Home() {
               From data to dollars in three simple steps.
             </p>
           </div>
-
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
-              { step: "01", title: "AI Analyzes", desc: "Our model processes 50,000+ data points per game — odds, injuries, weather, sharp money, historical matchups.", color: "#39ff14" },
-              { step: "02", title: "You Get Picks", desc: "Receive AI-generated picks with confidence scores, +EV edge, and optimal bet sizing via Kelly Criterion.", color: "#f0b800" },
-              { step: "03", title: "Track & Win", desc: "Every pick is auto-graded against closing lines. Track your CLV, ROI, and bankroll growth in real-time.", color: "#60a5fa" },
+              {
+                step: "01",
+                title: "AI Analyzes",
+                desc: "Our model processes 50,000+ data points per game — odds, injuries, weather, sharp money, historical matchups.",
+                color: "#39ff14",
+              },
+              {
+                step: "02",
+                title: "You Get Picks",
+                desc: "Receive AI-generated picks with confidence scores, +EV edge, and optimal bet sizing via Kelly Criterion.",
+                color: "#f0b800",
+              },
+              {
+                step: "03",
+                title: "Track & Win",
+                desc: "Every pick is auto-graded against closing lines. Track your CLV, ROI, and bankroll growth in real-time.",
+                color: "#60a5fa",
+              },
             ].map((item, i) => (
               <motion.div
                 key={item.step}
@@ -641,19 +814,26 @@ export default function Home() {
               >
                 <div
                   className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center font-display text-2xl"
-                  style={{ background: `${item.color}08`, border: `1px solid ${item.color}20`, color: item.color }}
+                  style={{
+                    background: `${item.color}08`,
+                    border: `1px solid ${item.color}20`,
+                    color: item.color,
+                  }}
                 >
                   {item.step}
                 </div>
-                <h3 className="font-bold text-lg text-white mb-2">{item.title}</h3>
-                <p className="text-sm text-white/45 leading-relaxed">{item.desc}</p>
+                <h3 className="font-bold text-lg text-white mb-2">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-white/45 leading-relaxed">
+                  {item.desc}
+                </p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── SOCIAL PROOF — Live Stats ────────────────────────── */}
       <section className="py-24">
         <div className="container">
           <div className="text-center mb-14">
@@ -662,42 +842,79 @@ export default function Home() {
               <span className="text-white/60">Trusted by Thousands</span>
             </div>
             <h2 className="font-display text-3xl lg:text-4xl text-white">
-              Less Hype, More <span className="text-emerald-gradient">Proof</span>
+              Less Hype, More{" "}
+              <span className="text-emerald-gradient">Proof</span>
             </h2>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto mb-12">
             {[
-              { value: siteStats ? `${(siteStats.totalMembers / 1000).toFixed(1)}K+` : "12.8K+", label: "Active Members", icon: Users, color: "#39ff14" },
-              { value: siteStats ? `${Math.round(siteStats.totalPicksGenerated / 1000)}K+` : "847K+", label: "Picks Generated", icon: Brain, color: "#f0b800" },
-              { value: "4.9/5", label: "Member Rating", icon: Star, color: "#60a5fa" },
-              { value: "24/7", label: "AI Monitoring", icon: Activity, color: "#06b6d4" },
-            ].map((stat) => (
+              {
+                value: siteStats
+                  ? `${(siteStats.totalMembers / 1000).toFixed(1)}K+`
+                  : "12.8K+",
+                label: "Active Members",
+                icon: Users,
+                color: "#39ff14",
+              },
+              {
+                value: siteStats
+                  ? `${Math.round(siteStats.totalPicksGenerated / 1000)}K+`
+                  : "847K+",
+                label: "Picks Generated",
+                icon: Brain,
+                color: "#f0b800",
+              },
+              {
+                value: "4.9/5",
+                label: "Member Rating",
+                icon: Star,
+                color: "#60a5fa",
+              },
+              {
+                value: "24/7",
+                label: "AI Monitoring",
+                icon: Activity,
+                color: "#06b6d4",
+              },
+            ].map(stat => (
               <NeonCard key={stat.label} className="p-5 text-center">
-                <stat.icon className="w-5 h-5 mx-auto mb-3" style={{ color: stat.color }} />
-                <div className="font-display text-2xl text-white mb-1">{stat.value}</div>
+                <stat.icon
+                  className="w-5 h-5 mx-auto mb-3"
+                  style={{ color: stat.color }}
+                />
+                <div className="font-display text-2xl text-white mb-1">
+                  {stat.value}
+                </div>
                 <div className="text-xs text-white/40">{stat.label}</div>
               </NeonCard>
             ))}
           </div>
 
-          {/* Live user count + email capture */}
           <div className="text-center space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full glass-card-static">
               <span className="live-dot" />
               <span className="text-sm text-white/60">
-                <strong className="text-brand-green">{siteStats?.paidSubscribers ?? 247}</strong> paid subscribers active
+                <strong className="text-brand-green">
+                  {siteStats?.paidSubscribers ?? 247}
+                </strong>{" "}
+                paid subscribers active
               </span>
             </div>
-            {/* Email capture widget — prominent card */}
             <div className="max-w-lg mx-auto">
               <div className="rounded-2xl p-6 border border-[rgba(57,255,20,0.2)] bg-gradient-to-br from-[rgba(57,255,20,0.06)] to-transparent shadow-[0_0_40px_rgba(57,255,20,0.05)]">
-                <p className="text-base font-bold text-white mb-1">Get Today's Free AI Pick</p>
-                <p className="text-sm text-white/40 mb-4">Delivered every morning — free forever, no credit card needed</p>
+                <p className="text-base font-bold text-white mb-1">
+                  Get Today's Free AI Pick
+                </p>
+                <p className="text-sm text-white/40 mb-4">
+                  Delivered every morning — free forever, no credit card needed
+                </p>
                 {emailSubscribed ? (
                   <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[rgba(57,255,20,0.08)] border border-[rgba(57,255,20,0.25)]">
                     <CheckCircle2 className="w-4 h-4 text-[#39ff14]" />
-                    <span className="text-sm font-medium text-[#39ff14]">You're in! Daily free pick coming to your inbox.</span>
+                    <span className="text-sm font-medium text-[#39ff14]">
+                      You're in! Daily free pick coming to your inbox.
+                    </span>
                   </div>
                 ) : (
                   <form onSubmit={handleEmailCapture} className="flex gap-2">
@@ -705,7 +922,7 @@ export default function Home() {
                       type="email"
                       placeholder="your@email.com"
                       value={emailCapture}
-                      onChange={(e) => setEmailCapture(e.target.value)}
+                      onChange={e => setEmailCapture(e.target.value)}
                       aria-label="Email address for free daily pick"
                       autoComplete="email"
                       className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#39ff14]/50 h-11"
@@ -715,14 +932,18 @@ export default function Home() {
                       disabled={newsletterMutation.isPending}
                       className="btn-premium px-6 py-2.5 text-sm font-semibold whitespace-nowrap h-11"
                     >
-                      {newsletterMutation.isPending ? "Sending..." : "Get Free Pick"}
+                      {newsletterMutation.isPending
+                        ? "Sending..."
+                        : "Get Free Pick"}
                     </button>
                   </form>
                 )}
                 <div className="flex items-center justify-center gap-4 mt-3">
                   <span className="text-xs text-white/50">✓ Free forever</span>
                   <span className="text-xs text-white/50">✓ No spam</span>
-                  <span className="text-xs text-white/50">✓ Unsubscribe anytime</span>
+                  <span className="text-xs text-white/50">
+                    ✓ Unsubscribe anytime
+                  </span>
                 </div>
               </div>
             </div>
@@ -730,26 +951,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FINAL CTA ──────────────────────────────────────────── */}
       <section className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute animate-orb"
             style={{
-              bottom: "-30%", left: "30%",
-              width: "60vw", height: "60vw",
-              background: "radial-gradient(ellipse, rgba(57, 255, 20, 0.06) 0%, transparent 60%)",
+              bottom: "-30%",
+              left: "30%",
+              width: "60vw",
+              height: "60vw",
+              background:
+                "radial-gradient(ellipse, rgba(57, 255, 20, 0.06) 0%, transparent 60%)",
               filter: "blur(80px)",
             }}
           />
         </div>
         <div className="container relative z-10 text-center">
           <h2 className="font-display text-4xl lg:text-6xl mb-6 text-white leading-tight">
-            Ready to Bet{" "}
-            <span className="text-emerald-gradient">Smarter?</span>
+            Ready to Bet <span className="text-emerald-gradient">Smarter?</span>
           </h2>
           <p className="text-white/45 text-lg mb-10 max-w-lg mx-auto">
-            Join thousands of members who use ChalkPicks to gain a real, mathematical edge over the sportsbooks.
+            Join thousands of members who use ChalkPicks to gain a real,
+            mathematical edge over the sportsbooks.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             {isAuthenticated ? (
@@ -769,36 +992,47 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/35">
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-brand-green" /> Secure Stripe checkout
+              <CheckCircle2 className="w-4 h-4 text-brand-green" /> Secure
+              Stripe checkout
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-brand-green" /> Cancel anytime
+              <CheckCircle2 className="w-4 h-4 text-brand-green" /> Cancel
+              anytime
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-brand-green" /> Verified results
+              <CheckCircle2 className="w-4 h-4 text-brand-green" /> Verified
+              results
             </span>
           </div>
         </div>
       </section>
 
-      {/* ── FOOTER ───────────────────────────────────────────── */}
       <footer className="border-t border-white/5 py-16">
         <div className="container">
-          {/* Follow Us strip */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 pb-8 border-b border-white/5">
-            <p className="text-sm text-white/50">Follow us for daily picks &amp; alerts</p>
+            <p className="text-sm text-white/50">
+              Follow us for daily picks & alerts
+            </p>
             <div className="flex items-center gap-3">
               {[
-                { href: "https://facebook.com/chalkpicks", label: "Facebook", d: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
-                { href: "https://x.com/chalkpickspro", label: "X", d: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
-                { href: "https://instagram.com/chalkpicks", label: "Instagram", d: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" },
-                { href: "https://youtube.com/@chalkpicks", label: "YouTube", d: "M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" },
-                { href: "https://reddit.com/r/chalkpicks", label: "Reddit", d: "M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z" },
-              ].map(({ href, label, d }) => (
-                <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                  className="flex items-center justify-center w-9 h-9 rounded-full text-white/40 hover:text-lime-400 hover:bg-lime-400/10 transition-all duration-200"
+                { href: "https://facebook.com/chalkpicks", label: "Facebook" },
+                { href: "https://x.com/chalkpickspro", label: "X" },
+                {
+                  href: "https://instagram.com/chalkpicks",
+                  label: "Instagram",
+                },
+                { href: "https://youtube.com/@chalkpicks", label: "YouTube" },
+                { href: "https://reddit.com/r/chalkpicks", label: "Reddit" },
+              ].map(({ href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="flex items-center justify-center w-9 h-9 rounded-full text-white/40 hover:text-lime-400 hover:bg-lime-400/10 transition-all duration-200 text-xs font-medium"
                 >
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d={d} /></svg>
+                  {label[0]}
                 </a>
               ))}
             </div>
@@ -806,64 +1040,106 @@ export default function Home() {
 
           <div className="grid md:grid-cols-4 gap-10 mb-10">
             <div>
-              {/* Borderless logo — blends into dark footer */}
-              <div style={{ position: "relative", width: 140, marginBottom: 16 }}>
-                <img
-                  src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png"
-                  alt="ChalkPicks"
-                  style={{
-                    width: "100%",
-                    display: "block",
-                    WebkitMaskImage: "radial-gradient(ellipse 75% 70% at 50% 48%, black 25%, transparent 75%)",
-                    maskImage: "radial-gradient(ellipse 75% 70% at 50% 48%, black 25%, transparent 75%)",
-                  }}
-                />
-              </div>
+              <p className="text-sm font-bold text-white mb-3">ChalkPicks</p>
               <p className="text-sm text-white/40 leading-relaxed">
-                Institutional-grade sports analysis and predictive modeling. Gain a mathematical edge with AI-driven player projections and market analysis.
+                Institutional-grade sports analysis and predictive modeling.
+                Gain a mathematical edge with AI-driven player projections and
+                market analysis.
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-semibold mb-4 text-white/70">Platform</h4>
+              <h4 className="text-sm font-semibold mb-4 text-white/70">
+                Platform
+              </h4>
               <div className="flex flex-col gap-2.5">
-                <Link href="/picks" className="text-sm text-white/40 hover:text-lime-400 transition-colors">AI Picks</Link>
-                <Link href="/ev-finder" className="text-sm text-white/40 hover:text-lime-400 transition-colors">+EV Finder</Link>
-                <Link href="/tools" className="text-sm text-white/40 hover:text-lime-400 transition-colors">Tools</Link>
-                <Link href="/performance" className="text-sm text-white/40 hover:text-lime-400 transition-colors">Performance</Link>
-                <Link href="/blog" className="text-sm text-white/40 hover:text-lime-400 transition-colors">Blog</Link>
+                <Link
+                  href="/picks"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  AI Picks
+                </Link>
+                <Link
+                  href="/ev-finder"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  +EV Finder
+                </Link>
+                <Link
+                  href="/tools"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  Tools
+                </Link>
+                <Link
+                  href="/performance"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  Performance
+                </Link>
+                <Link
+                  href="/blog"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  Blog
+                </Link>
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-semibold mb-4 text-white/70">Community</h4>
+              <h4 className="text-sm font-semibold mb-4 text-white/70">
+                Community
+              </h4>
               <div className="flex flex-col gap-2.5">
-                <Link href="/leaderboard" className="text-sm text-white/40 hover:text-lime-400 transition-colors">Leaderboard</Link>
-                <Link href="/pricing" className="text-sm text-white/40 hover:text-lime-400 transition-colors">Pricing</Link>
-                <a href="https://discord.gg/chalkpicks" target="_blank" rel="noopener" className="text-sm text-white/40 hover:text-lime-400 transition-colors">Discord</a>
-              </div>
-              {/* Social icons row */}
-              <div className="flex items-center gap-3 mt-5">
-                {[
-                  { href: "https://facebook.com/chalkpicks", label: "Facebook", d: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
-                  { href: "https://x.com/chalkpickspro", label: "X", d: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
-                  { href: "https://instagram.com/chalkpicks", label: "Instagram", d: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" },
-                  { href: "https://youtube.com/@chalkpicks", label: "YouTube", d: "M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" },
-                  { href: "https://reddit.com/r/chalkpicks", label: "Reddit", d: "M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z" },
-                ].map(({ href, label, d }) => (
-                  <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                    className="flex items-center justify-center w-8 h-8 rounded-full text-white/35 hover:text-lime-400 hover:bg-lime-400/10 transition-all duration-200"
-                  >
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d={d} /></svg>
-                  </a>
-                ))}
+                <Link
+                  href="/leaderboard"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  Leaderboard
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  Pricing
+                </Link>
+                <a
+                  href="https://discord.gg/chalkpicks"
+                  target="_blank"
+                  rel="noopener"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  Discord
+                </a>
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-semibold mb-4 text-white/70">Legal</h4>
+              <h4 className="text-sm font-semibold mb-4 text-white/70">
+                Legal
+              </h4>
               <div className="flex flex-col gap-2.5">
-                <Link href="/terms" className="text-sm text-white/40 hover:text-lime-400 transition-colors">Terms of Service</Link>
-                <Link href="/privacy" className="text-sm text-white/40 hover:text-lime-400 transition-colors">Privacy Policy</Link>
-                <Link href="/responsible-gambling" className="text-sm text-white/40 hover:text-lime-400 transition-colors">Responsible Gambling</Link>
-                <Link href="/profile" className="text-sm text-white/40 hover:text-lime-400 transition-colors">My Profile</Link>
+                <Link
+                  href="/terms"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  Terms of Service
+                </Link>
+                <Link
+                  href="/privacy"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+                <Link
+                  href="/responsible-gambling"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  Responsible Gambling
+                </Link>
+                <Link
+                  href="/profile"
+                  className="text-sm text-white/40 hover:text-lime-400 transition-colors"
+                >
+                  My Profile
+                </Link>
               </div>
             </div>
           </div>
@@ -872,7 +1148,8 @@ export default function Home() {
               © 2026 ChalkPicks Pro. All rights reserved. Analyze responsibly.
             </div>
             <div className="text-xs text-white/45">
-              Predictive sports analysis involves variance. Past performance does not guarantee future results.
+              Predictive sports analysis involves variance. Past performance
+              does not guarantee future results.
             </div>
           </div>
         </div>

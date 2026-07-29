@@ -1,7 +1,13 @@
 import sgMail from "@sendgrid/mail";
 import twilio from "twilio";
 import { getDb } from "./db";
-import { notificationLogs, notificationPreferences, notifications, picks, users } from "../drizzle/schema";
+import {
+  notificationLogs,
+  notificationPreferences,
+  notifications,
+  picks,
+  users,
+} from "../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
 
 // ─── Initialize Clients ───────────────────────────────────────────────────────
@@ -131,28 +137,58 @@ export const emailTemplates = {
     text: `Welcome to ${APP_NAME} ${tier}! Your subscription is active until ${expiresAt}. Visit ${APP_URL}/picks to see today's picks.`,
   }),
 
-  dailyPicks: (name: string, picksData: Array<{ sport: string; recommendation: string; confidence: number; odds: number }>) => ({
+  dailyPicks: (
+    name: string,
+    picksData: Array<{
+      sport: string;
+      recommendation: string;
+      confidence: number;
+      odds: number;
+    }>
+  ) => ({
     subject: `🏆 Today's AI Picks Are Ready — ${new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}`,
     html: emailBase(`
       <div class="card">
         <div class="badge">Daily Picks</div>
         <h1>Today's Top Picks</h1>
         <p>Hi ${name}, our AI has analyzed today's games and identified the highest-edge opportunities for you.</p>
-        ${picksData.slice(0, 5).map(p => `
+        ${picksData
+          .slice(0, 5)
+          .map(
+            p => `
           <div class="pick-card">
             <div class="pick-sport">${p.sport}</div>
             <div class="pick-rec">${p.recommendation}</div>
             <div class="pick-meta">Odds: ${p.odds > 0 ? "+" : ""}${p.odds} &nbsp;|&nbsp; <span class="confidence">${p.confidence}% Confidence</span></div>
           </div>
-        `).join("")}
+        `
+          )
+          .join("")}
         <hr class="divider" />
         <a href="${APP_URL}/picks" class="btn">View Full Analysis</a>
       </div>
     `),
-    text: `Today's top picks from ${APP_NAME}: ${picksData.slice(0, 3).map(p => `${p.sport}: ${p.recommendation} (${p.confidence}% confidence)`).join(", ")}. Visit ${APP_URL}/picks for full analysis.`,
+    text: `Today's top picks from ${APP_NAME}: ${picksData
+      .slice(0, 3)
+      .map(p => `${p.sport}: ${p.recommendation} (${p.confidence}% confidence)`)
+      .join(", ")}. Visit ${APP_URL}/picks for full analysis.`,
   }),
 
-  dailyDigest: (name: string, stats: { totalPicks: number; wins: number; losses: number; winRate: number; roi: number }, topPick: { recommendation: string; sport: string; confidence: number } | null) => ({
+  dailyDigest: (
+    name: string,
+    stats: {
+      totalPicks: number;
+      wins: number;
+      losses: number;
+      winRate: number;
+      roi: number;
+    },
+    topPick: {
+      recommendation: string;
+      sport: string;
+      confidence: number;
+    } | null
+  ) => ({
     subject: `📊 Your Daily ${APP_NAME} Digest — ${new Date().toLocaleDateString()}`,
     html: emailBase(`
       <div class="card">
@@ -163,7 +199,9 @@ export const emailTemplates = {
         <div class="stat-row"><span class="stat-label">Win / Loss</span><span class="stat-value">${stats.wins}W — ${stats.losses}L</span></div>
         <div class="stat-row"><span class="stat-label">Win Rate</span><span class="stat-value">${stats.winRate.toFixed(1)}%</span></div>
         <div class="stat-row"><span class="stat-label">ROI</span><span class="stat-value" style="color:${stats.roi >= 0 ? "#22c55e" : "#ef4444"}">${stats.roi >= 0 ? "+" : ""}${stats.roi.toFixed(1)}%</span></div>
-        ${topPick ? `
+        ${
+          topPick
+            ? `
         <hr class="divider" />
         <h2>Top Pick of the Day</h2>
         <div class="pick-card">
@@ -171,7 +209,9 @@ export const emailTemplates = {
           <div class="pick-rec">${topPick.recommendation}</div>
           <div class="pick-meta"><span class="confidence">${topPick.confidence}% Confidence</span></div>
         </div>
-        ` : ""}
+        `
+            : ""
+        }
         <hr class="divider" />
         <a href="${APP_URL}/dashboard" class="btn">View Full Dashboard</a>
       </div>
@@ -179,7 +219,18 @@ export const emailTemplates = {
     text: `Your ${APP_NAME} daily digest: ${stats.totalPicks} picks, ${stats.wins}W-${stats.losses}L, ${stats.winRate.toFixed(1)}% win rate, ${stats.roi >= 0 ? "+" : ""}${stats.roi.toFixed(1)}% ROI. Visit ${APP_URL}/dashboard for details.`,
   }),
 
-  performanceSummary: (name: string, period: string, stats: { totalBets: number; wins: number; losses: number; winRate: number; roi: number; profit: number }) => ({
+  performanceSummary: (
+    name: string,
+    period: string,
+    stats: {
+      totalBets: number;
+      wins: number;
+      losses: number;
+      winRate: number;
+      roi: number;
+      profit: number;
+    }
+  ) => ({
     subject: `📈 Your ${period} Performance Summary — ${APP_NAME}`,
     html: emailBase(`
       <div class="card">
@@ -217,7 +268,9 @@ export const smsTemplates = {
 // ─── Core Send Functions ──────────────────────────────────────────────────────
 async function sendEmail(options: SendEmailOptions): Promise<boolean> {
   if (!SENDGRID_API_KEY) {
-    console.log(`[Notifications] Email skipped (no SendGrid key): ${options.subject} → ${options.to}`);
+    console.warn(
+      `[Notifications] Email skipped (no SendGrid key): ${options.subject} → ${options.to}`
+    );
     return false;
   }
   try {
@@ -228,7 +281,9 @@ async function sendEmail(options: SendEmailOptions): Promise<boolean> {
       html: options.html,
       text: options.text || options.subject,
     });
-    console.log(`[Notifications] Email sent: ${options.subject} → ${options.to}`);
+    console.warn(
+      `[Notifications] Email sent: ${options.subject} → ${options.to}`
+    );
     return true;
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -239,7 +294,9 @@ async function sendEmail(options: SendEmailOptions): Promise<boolean> {
 
 async function sendSms(options: SendSmsOptions): Promise<boolean> {
   if (!twilioClient || !TWILIO_PHONE_FROM) {
-    console.log(`[Notifications] SMS skipped (no Twilio config): ${options.to}`);
+    console.warn(
+      `[Notifications] SMS skipped (no Twilio config): ${options.to}`
+    );
     return false;
   }
   try {
@@ -248,7 +305,7 @@ async function sendSms(options: SendSmsOptions): Promise<boolean> {
       from: TWILIO_PHONE_FROM,
       to: options.to,
     });
-    console.log(`[Notifications] SMS sent to ${options.to}`);
+    console.warn(`[Notifications] SMS sent to ${options.to}`);
     return true;
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -319,7 +376,10 @@ export async function ensureUserPreferences(userId: number) {
   if (!db) return;
   const existing = await getUserPrefs(userId);
   if (!existing) {
-    await db.insert(notificationPreferences).values({ userId }).onDuplicateKeyUpdate({ set: { userId } });
+    await db
+      .insert(notificationPreferences)
+      .values({ userId })
+      .onDuplicateKeyUpdate({ set: { userId } });
   }
 }
 
@@ -328,27 +388,55 @@ export async function ensureUserPreferences(userId: number) {
 /**
  * Send login alert to user
  */
-export async function sendLoginAlert(userId: number, userEmail: string, userName: string, ip?: string) {
+export async function sendLoginAlert(
+  userId: number,
+  userEmail: string,
+  userName: string,
+  ip?: string
+) {
   const prefs = await getUserPrefs(userId);
-  const time = new Date().toLocaleString("en-US", { timeZone: "America/New_York", dateStyle: "medium", timeStyle: "short" });
+  const time = new Date().toLocaleString("en-US", {
+    timeZone: "America/New_York",
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 
   // Email
   if (!prefs || (prefs.emailEnabled && prefs.emailLoginAlert)) {
     const tpl = emailTemplates.loginAlert(userName || "there", time, ip);
     const ok = await sendEmail({ to: userEmail, ...tpl });
-    await logNotification(userId, "email", "login_alert", userEmail, tpl.subject, ok ? "sent" : "failed");
+    await logNotification(
+      userId,
+      "email",
+      "login_alert",
+      userEmail,
+      tpl.subject,
+      ok ? "sent" : "failed"
+    );
   }
 
   // SMS
   if (prefs?.smsEnabled && prefs.smsLoginAlert && prefs.smsPhone) {
     const body = smsTemplates.loginAlert(time);
     const ok = await sendSms({ to: prefs.smsPhone, body });
-    await logNotification(userId, "sms", "login_alert", prefs.smsPhone, "Login Alert", ok ? "sent" : "failed");
+    await logNotification(
+      userId,
+      "sms",
+      "login_alert",
+      prefs.smsPhone,
+      "Login Alert",
+      ok ? "sent" : "failed"
+    );
   }
 
   // In-app
   if (!prefs || prefs.inAppEnabled) {
-    await createInAppNotification(userId, "system", "New Login Detected", `A new login was detected at ${time}.`);
+    await createInAppNotification(
+      userId,
+      "system",
+      "New Login Detected",
+      `A new login was detected at ${time}.`
+    );
   }
 }
 
@@ -364,14 +452,29 @@ export async function sendSubscriptionConfirmation(
   smsPhone?: string
 ) {
   const prefs = await getUserPrefs(userId);
-  const expiresStr = expiresAt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const expiresStr = expiresAt.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
   const tierLabel = tier.charAt(0).toUpperCase() + tier.slice(1);
 
   // Email
   if (!prefs || (prefs.emailEnabled && prefs.emailSubscriptionConfirm)) {
-    const tpl = emailTemplates.subscriptionConfirm(userName || "there", tierLabel, expiresStr);
+    const tpl = emailTemplates.subscriptionConfirm(
+      userName || "there",
+      tierLabel,
+      expiresStr
+    );
     const ok = await sendEmail({ to: userEmail, ...tpl });
-    await logNotification(userId, "email", "subscription_confirm", userEmail, tpl.subject, ok ? "sent" : "failed");
+    await logNotification(
+      userId,
+      "email",
+      "subscription_confirm",
+      userEmail,
+      tpl.subject,
+      ok ? "sent" : "failed"
+    );
   }
 
   // SMS
@@ -379,12 +482,24 @@ export async function sendSubscriptionConfirmation(
   if (prefs?.smsEnabled && prefs.smsSubscriptionConfirm && phone) {
     const body = smsTemplates.subscriptionConfirm(tierLabel);
     const ok = await sendSms({ to: phone, body });
-    await logNotification(userId, "sms", "subscription_confirm", phone, "Subscription Confirmed", ok ? "sent" : "failed");
+    await logNotification(
+      userId,
+      "sms",
+      "subscription_confirm",
+      phone,
+      "Subscription Confirmed",
+      ok ? "sent" : "failed"
+    );
   }
 
   // In-app
   if (!prefs || prefs.inAppEnabled) {
-    await createInAppNotification(userId, "subscription", `${tierLabel} Subscription Active`, `Your ${tierLabel} subscription is now active until ${expiresStr}.`);
+    await createInAppNotification(
+      userId,
+      "subscription",
+      `${tierLabel} Subscription Active`,
+      `Your ${tierLabel} subscription is now active until ${expiresStr}.`
+    );
   }
 }
 
@@ -395,7 +510,7 @@ export async function sendDailyPicksToAllUsers() {
   const db = await getDb();
   if (!db) return;
 
-  console.log("[Notifications] Sending daily picks notifications...");
+  console.warn("[Notifications] Sending daily picks notifications...");
 
   // Get today's top picks
   const today = new Date().toISOString().split("T")[0];
@@ -407,7 +522,9 @@ export async function sendDailyPicksToAllUsers() {
     .limit(10);
 
   if (todayPicks.length === 0) {
-    console.log("[Notifications] No picks available for today, skipping daily picks notifications.");
+    console.warn(
+      "[Notifications] No picks available for today, skipping daily picks notifications."
+    );
     return;
   }
 
@@ -430,11 +547,29 @@ export async function sendDailyPicksToAllUsers() {
     .where(eq(users.subscriptionTier, "monthly"));
 
   // Also get daily and yearly subscribers
-  const dailyUsers = await db.select({ id: users.id, name: users.name, email: users.email, subscriptionTier: users.subscriptionTier }).from(users).where(eq(users.subscriptionTier, "daily"));
-  const yearlyUsers = await db.select({ id: users.id, name: users.name, email: users.email, subscriptionTier: users.subscriptionTier }).from(users).where(eq(users.subscriptionTier, "yearly"));
+  const dailyUsers = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      subscriptionTier: users.subscriptionTier,
+    })
+    .from(users)
+    .where(eq(users.subscriptionTier, "daily"));
+  const yearlyUsers = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      subscriptionTier: users.subscriptionTier,
+    })
+    .from(users)
+    .where(eq(users.subscriptionTier, "yearly"));
 
   const allSubscribers = [...subscribedUsers, ...dailyUsers, ...yearlyUsers];
-  console.log(`[Notifications] Sending daily picks to ${allSubscribers.length} subscribers...`);
+  console.warn(
+    `[Notifications] Sending daily picks to ${allSubscribers.length} subscribers...`
+  );
 
   for (const user of allSubscribers) {
     if (!user.email) continue;
@@ -444,24 +579,48 @@ export async function sendDailyPicksToAllUsers() {
     if (!prefs || (prefs.emailEnabled && prefs.emailDailyPicks)) {
       const tpl = emailTemplates.dailyPicks(user.name || "there", picksData);
       const ok = await sendEmail({ to: user.email, ...tpl });
-      await logNotification(user.id, "email", "daily_picks", user.email, tpl.subject, ok ? "sent" : "failed");
+      await logNotification(
+        user.id,
+        "email",
+        "daily_picks",
+        user.email,
+        tpl.subject,
+        ok ? "sent" : "failed"
+      );
     }
 
     // SMS
     if (prefs?.smsEnabled && prefs.smsDailyPicks && prefs.smsPhone) {
       const topPick = picksData[0];
-      const body = smsTemplates.dailyPicks(picksData.length, topPick?.recommendation || "");
+      const body = smsTemplates.dailyPicks(
+        picksData.length,
+        topPick?.recommendation || ""
+      );
       const ok = await sendSms({ to: prefs.smsPhone, body });
-      await logNotification(user.id, "sms", "daily_picks", prefs.smsPhone, "Daily Picks", ok ? "sent" : "failed");
+      await logNotification(
+        user.id,
+        "sms",
+        "daily_picks",
+        prefs.smsPhone,
+        "Daily Picks",
+        ok ? "sent" : "failed"
+      );
     }
 
     // In-app
     if (!prefs || (prefs.inAppEnabled && prefs.inAppDailyPicks)) {
-      await createInAppNotification(user.id, "daily_picks", `${picksData.length} New Picks Today`, `Today's top pick: ${picksData[0]?.recommendation || "View picks"}`);
+      await createInAppNotification(
+        user.id,
+        "daily_picks",
+        `${picksData.length} New Picks Today`,
+        `Today's top pick: ${picksData[0]?.recommendation || "View picks"}`
+      );
     }
   }
 
-  console.log(`[Notifications] Daily picks notifications sent to ${allSubscribers.length} users.`);
+  console.warn(
+    `[Notifications] Daily picks notifications sent to ${allSubscribers.length} users.`
+  );
 }
 
 /**
@@ -471,7 +630,7 @@ export async function sendDailyDigestToAllUsers() {
   const db = await getDb();
   if (!db) return;
 
-  console.log("[Notifications] Sending daily digest notifications...");
+  console.warn("[Notifications] Sending daily digest notifications...");
 
   const today = new Date().toISOString().split("T")[0];
   const todayPicks = await db
@@ -484,7 +643,9 @@ export async function sendDailyDigestToAllUsers() {
   const topPick = todayPicks[0] || null;
 
   // Get all users with email enabled
-  const allUsers = await db.select({ id: users.id, name: users.name, email: users.email }).from(users);
+  const allUsers = await db
+    .select({ id: users.id, name: users.name, email: users.email })
+    .from(users);
 
   for (const user of allUsers) {
     if (!user.email) continue;
@@ -492,25 +653,55 @@ export async function sendDailyDigestToAllUsers() {
     if (prefs && (!prefs.emailEnabled || !prefs.emailDailyDigest)) continue;
 
     // Build simple stats (mock for now, real data from user bets)
-    const digestStats = { totalPicks: todayPicks.length, wins: 0, losses: 0, winRate: 0, roi: 0 };
+    const digestStats = {
+      totalPicks: todayPicks.length,
+      wins: 0,
+      losses: 0,
+      winRate: 0,
+      roi: 0,
+    };
 
     const tpl = emailTemplates.dailyDigest(
       user.name || "there",
       digestStats,
-      topPick ? { recommendation: topPick.recommendation, sport: topPick.sportKey.toUpperCase(), confidence: topPick.confidenceScore } : null
+      topPick
+        ? {
+            recommendation: topPick.recommendation,
+            sport: topPick.sportKey.toUpperCase(),
+            confidence: topPick.confidenceScore,
+          }
+        : null
     );
     const ok = await sendEmail({ to: user.email, ...tpl });
-    await logNotification(user.id, "email", "daily_digest", user.email, tpl.subject, ok ? "sent" : "failed");
+    await logNotification(
+      user.id,
+      "email",
+      "daily_digest",
+      user.email,
+      tpl.subject,
+      ok ? "sent" : "failed"
+    );
 
     // SMS digest
     if (prefs?.smsEnabled && prefs.smsDailyDigest && prefs.smsPhone) {
-      const body = smsTemplates.dailyDigest(digestStats.wins, digestStats.losses, digestStats.roi);
+      const body = smsTemplates.dailyDigest(
+        digestStats.wins,
+        digestStats.losses,
+        digestStats.roi
+      );
       const ok2 = await sendSms({ to: prefs.smsPhone, body });
-      await logNotification(user.id, "sms", "daily_digest", prefs.smsPhone, "Daily Digest", ok2 ? "sent" : "failed");
+      await logNotification(
+        user.id,
+        "sms",
+        "daily_digest",
+        prefs.smsPhone,
+        "Daily Digest",
+        ok2 ? "sent" : "failed"
+      );
     }
   }
 
-  console.log("[Notifications] Daily digest sent.");
+  console.warn("[Notifications] Daily digest sent.");
 }
 
 /**
@@ -544,11 +735,19 @@ export async function getUserInAppNotifications(userId: number, limit = 20) {
 /**
  * Mark in-app notification as read
  */
-export async function markNotificationRead(notificationId: number, userId: number) {
+export async function markNotificationRead(
+  notificationId: number,
+  userId: number
+) {
   const db = await getDb();
   if (!db) return;
   await db
     .update(notifications)
     .set({ isRead: true })
-    .where(and(eq(notifications.id, notificationId), eq(notifications.userId, userId)));
+    .where(
+      and(
+        eq(notifications.id, notificationId),
+        eq(notifications.userId, userId)
+      )
+    );
 }

@@ -98,8 +98,13 @@ async function startServer() {
       info: {
         title: "ChalkPicks Pro API",
         version: "1.0.0",
-        description: "AI-powered sports betting analytics API. Access picks, odds, arbitrage, analytics, and subscription data. All protected endpoints require a valid session cookie obtained by registering or logging in via the auth.register / auth.login tRPC mutations.",
-        contact: { name: "ChalkPicks Support", email: "admin@chalkpicks.live", url: "https://chalkpicks.live" },
+        description:
+          "AI-powered sports betting analytics API. Access picks, odds, arbitrage, analytics, and subscription data. All protected endpoints require a valid session cookie obtained by registering or logging in via the auth.register / auth.login tRPC mutations.",
+        contact: {
+          name: "ChalkPicks Support",
+          email: "admin@chalkpicks.live",
+          url: "https://chalkpicks.live",
+        },
         license: { name: "Proprietary", url: "https://chalkpicks.live/terms" },
       },
       servers: [
@@ -113,13 +118,15 @@ async function startServer() {
             type: "apiKey",
             in: "cookie",
             name: "session",
-            description: "Session cookie issued after a successful auth.register or auth.login tRPC mutation.",
+            description:
+              "Session cookie issued after a successful auth.register or auth.login tRPC mutation.",
           },
           bearerAuth: {
             type: "http",
             scheme: "bearer",
             bearerFormat: "JWT",
-            description: "JWT token for server-to-server requests. Include as: `Authorization: Bearer <token>`",
+            description:
+              "JWT token for server-to-server requests. Include as: `Authorization: Bearer <token>`",
           },
         },
         schemas: {
@@ -127,14 +134,36 @@ async function startServer() {
             type: "object",
             properties: {
               id: { type: "integer", example: 1 },
-              sport: { type: "string", enum: ["NFL", "NBA", "MLB", "NHL", "NCAAF", "NCAAB"], example: "NBA" },
+              sport: {
+                type: "string",
+                enum: ["NFL", "NBA", "MLB", "NHL", "NCAAF", "NCAAB"],
+                example: "NBA",
+              },
               game: { type: "string", example: "Lakers vs Celtics" },
               pick: { type: "string", example: "Lakers -4.5" },
-              confidence: { type: "number", minimum: 0, maximum: 100, example: 78.5 },
+              confidence: {
+                type: "number",
+                minimum: 0,
+                maximum: 100,
+                example: 78.5,
+              },
               odds: { type: "string", example: "-110" },
-              analysis: { type: "string", example: "Strong home court advantage with key injury news favoring LA" },
-              result: { type: "string", nullable: true, enum: ["win", "loss", "push", null], example: null },
-              gameTime: { type: "string", format: "date-time", example: "2026-07-10T19:30:00Z" },
+              analysis: {
+                type: "string",
+                example:
+                  "Strong home court advantage with key injury news favoring LA",
+              },
+              result: {
+                type: "string",
+                nullable: true,
+                enum: ["win", "loss", "push", null],
+                example: null,
+              },
+              gameTime: {
+                type: "string",
+                format: "date-time",
+                example: "2026-07-10T19:30:00Z",
+              },
               createdAt: { type: "string", format: "date-time" },
             },
             required: ["id", "sport", "game", "pick", "confidence", "odds"],
@@ -165,7 +194,10 @@ async function startServer() {
                             items: {
                               type: "object",
                               properties: {
-                                name: { type: "string", example: "Los Angeles Lakers" },
+                                name: {
+                                  type: "string",
+                                  example: "Los Angeles Lakers",
+                                },
                                 price: { type: "number", example: -120 },
                               },
                             },
@@ -204,24 +236,54 @@ async function startServer() {
             type: "object",
             properties: {
               id: { type: "integer", example: 1 },
-              title: { type: "string", example: "Top NBA Betting Strategies for 2026" },
-              slug: { type: "string", example: "top-nba-betting-strategies-2026" },
+              title: {
+                type: "string",
+                example: "Top NBA Betting Strategies for 2026",
+              },
+              slug: {
+                type: "string",
+                example: "top-nba-betting-strategies-2026",
+              },
               excerpt: { type: "string", nullable: true },
               heroImage: { type: "string", format: "uri", nullable: true },
               seoDescription: { type: "string", nullable: true },
-              publishedAt: { type: "string", format: "date-time", nullable: true },
-              status: { type: "string", enum: ["draft", "published"], example: "published" },
+              publishedAt: {
+                type: "string",
+                format: "date-time",
+                nullable: true,
+              },
+              status: {
+                type: "string",
+                enum: ["draft", "published"],
+                example: "published",
+              },
             },
             required: ["id", "title", "slug", "status"],
           },
           SubscriptionPlan: {
             type: "object",
             properties: {
-              id: { type: "string", enum: ["basic", "pro", "yearly"], example: "pro" },
+              id: {
+                type: "string",
+                enum: ["basic", "pro", "yearly"],
+                example: "pro",
+              },
               name: { type: "string", example: "Pro" },
               price: { type: "number", example: 19.99 },
-              interval: { type: "string", enum: ["month", "year"], example: "month" },
-              features: { type: "array", items: { type: "string" }, example: ["Unlimited AI picks", "Live odds", "Arbitrage scanner"] },
+              interval: {
+                type: "string",
+                enum: ["month", "year"],
+                example: "month",
+              },
+              features: {
+                type: "array",
+                items: { type: "string" },
+                example: [
+                  "Unlimited AI picks",
+                  "Live odds",
+                  "Arbitrage scanner",
+                ],
+              },
               stripePriceId: { type: "string", example: "price_xxx" },
             },
           },
@@ -230,10 +292,26 @@ async function startServer() {
             properties: {
               id: { type: "integer", example: 42 },
               name: { type: "string", example: "John Doe" },
-              email: { type: "string", format: "email", example: "john@example.com" },
-              role: { type: "string", enum: ["user", "admin"], example: "user" },
-              tier: { type: "string", enum: ["free", "basic", "pro", "yearly"], example: "pro" },
-              subscriptionStatus: { type: "string", nullable: true, example: "active" },
+              email: {
+                type: "string",
+                format: "email",
+                example: "john@example.com",
+              },
+              role: {
+                type: "string",
+                enum: ["user", "admin"],
+                example: "user",
+              },
+              tier: {
+                type: "string",
+                enum: ["free", "basic", "pro", "yearly"],
+                example: "pro",
+              },
+              subscriptionStatus: {
+                type: "string",
+                nullable: true,
+                example: "active",
+              },
             },
           },
           ErrorResponse: {
@@ -254,7 +332,8 @@ async function startServer() {
         "/trpc/auth.register": {
           post: {
             summary: "Register a new account",
-            description: "Creates a user with email + password and issues a session cookie.",
+            description:
+              "Creates a user with email + password and issues a session cookie.",
             tags: ["Authentication"],
             security: [],
             requestBody: {
@@ -265,8 +344,16 @@ async function startServer() {
                     type: "object",
                     properties: {
                       name: { type: "string", example: "Jane Bettor" },
-                      email: { type: "string", format: "email", example: "jane@example.com" },
-                      password: { type: "string", minLength: 8, maxLength: 128 },
+                      email: {
+                        type: "string",
+                        format: "email",
+                        example: "jane@example.com",
+                      },
+                      password: {
+                        type: "string",
+                        minLength: 8,
+                        maxLength: 128,
+                      },
                     },
                     required: ["name", "email", "password"],
                   },
@@ -275,7 +362,14 @@ async function startServer() {
             },
             responses: {
               "200": { description: "Account created, session cookie set" },
-              "409": { description: "Email already registered", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "409": {
+                description: "Email already registered",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/ErrorResponse" },
+                  },
+                },
+              },
             },
           },
         },
@@ -302,18 +396,31 @@ async function startServer() {
             },
             responses: {
               "200": { description: "Session cookie set" },
-              "401": { description: "Invalid email or password", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "401": {
+                description: "Invalid email or password",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/ErrorResponse" },
+                  },
+                },
+              },
             },
           },
         },
         "/trpc/auth.me": {
           get: {
             summary: "Get current authenticated user",
-            description: "Returns the currently authenticated user's profile. Requires a valid session cookie.",
+            description:
+              "Returns the currently authenticated user's profile. Requires a valid session cookie.",
             tags: ["Authentication"],
             security: [{ cookieAuth: [] }],
             parameters: [
-              { name: "input", in: "query", schema: { type: "string" }, description: "tRPC input (not required for this query)" },
+              {
+                name: "input",
+                in: "query",
+                schema: { type: "string" },
+                description: "tRPC input (not required for this query)",
+              },
             ],
             responses: {
               "200": {
@@ -326,27 +433,52 @@ async function startServer() {
                         result: {
                           type: "object",
                           properties: {
-                            data: { "$ref": "#/components/schemas/User" },
+                            data: { $ref: "#/components/schemas/User" },
                           },
                         },
                       },
                     },
-                    example: { result: { data: { id: 42, name: "John Doe", email: "john@example.com", role: "user", tier: "pro", subscriptionStatus: "active" } } },
+                    example: {
+                      result: {
+                        data: {
+                          id: 42,
+                          name: "John Doe",
+                          email: "john@example.com",
+                          role: "user",
+                          tier: "pro",
+                          subscriptionStatus: "active",
+                        },
+                      },
+                    },
                   },
                 },
               },
-              "401": { description: "Not authenticated", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "401": {
+                description: "Not authenticated",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/ErrorResponse" },
+                  },
+                },
+              },
             },
           },
         },
         "/trpc/picks.today": {
           get: {
             summary: "Get today's AI picks",
-            description: "Returns AI-generated picks for today's games with confidence scores. Requires Basic tier or higher.",
+            description:
+              "Returns AI-generated picks for today's games with confidence scores. Requires Basic tier or higher.",
             tags: ["Picks"],
             security: [{ cookieAuth: [] }],
             parameters: [
-              { name: "input", in: "query", schema: { type: "string" }, description: "Optional JSON: `{\"sport\":\"NBA\"}` to filter by sport" },
+              {
+                name: "input",
+                in: "query",
+                schema: { type: "string" },
+                description:
+                  'Optional JSON: `{"sport":"NBA"}` to filter by sport',
+              },
             ],
             responses: {
               "200": {
@@ -359,7 +491,10 @@ async function startServer() {
                         result: {
                           type: "object",
                           properties: {
-                            data: { type: "array", items: { "$ref": "#/components/schemas/Pick" } },
+                            data: {
+                              type: "array",
+                              items: { $ref: "#/components/schemas/Pick" },
+                            },
                           },
                         },
                       },
@@ -367,19 +502,40 @@ async function startServer() {
                   },
                 },
               },
-              "401": { description: "Not authenticated", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
-              "403": { description: "Subscription required", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "401": {
+                description: "Not authenticated",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/ErrorResponse" },
+                  },
+                },
+              },
+              "403": {
+                description: "Subscription required",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/ErrorResponse" },
+                  },
+                },
+              },
             },
           },
         },
         "/trpc/odds.live": {
           get: {
             summary: "Get live odds from 10+ sportsbooks",
-            description: "Returns real-time odds data aggregated from DraftKings, FanDuel, BetMGM, Caesars, and more. Requires Pro tier or higher.",
+            description:
+              "Returns real-time odds data aggregated from DraftKings, FanDuel, BetMGM, Caesars, and more. Requires Pro tier or higher.",
             tags: ["Odds"],
             security: [{ cookieAuth: [] }],
             parameters: [
-              { name: "input", in: "query", schema: { type: "string" }, description: "JSON: `{\"sport\":\"basketball_nba\",\"markets\":[\"h2h\",\"spreads\"]}` " },
+              {
+                name: "input",
+                in: "query",
+                schema: { type: "string" },
+                description:
+                  'JSON: `{"sport":"basketball_nba","markets":["h2h","spreads"]}` ',
+              },
             ],
             responses: {
               "200": {
@@ -392,7 +548,10 @@ async function startServer() {
                         result: {
                           type: "object",
                           properties: {
-                            data: { type: "array", items: { "$ref": "#/components/schemas/OddsLine" } },
+                            data: {
+                              type: "array",
+                              items: { $ref: "#/components/schemas/OddsLine" },
+                            },
                           },
                         },
                       },
@@ -400,15 +559,30 @@ async function startServer() {
                   },
                 },
               },
-              "401": { description: "Not authenticated", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
-              "403": { description: "Pro subscription required", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "401": {
+                description: "Not authenticated",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/ErrorResponse" },
+                  },
+                },
+              },
+              "403": {
+                description: "Pro subscription required",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/ErrorResponse" },
+                  },
+                },
+              },
             },
           },
         },
         "/trpc/arbitrage.scan": {
           get: {
             summary: "Scan for arbitrage opportunities",
-            description: "Returns current arbitrage opportunities across all tracked sportsbooks. Profit percentages are guaranteed regardless of outcome. Requires Elite tier.",
+            description:
+              "Returns current arbitrage opportunities across all tracked sportsbooks. Profit percentages are guaranteed regardless of outcome. Requires Elite tier.",
             tags: ["Arbitrage"],
             security: [{ cookieAuth: [] }],
             responses: {
@@ -422,7 +596,12 @@ async function startServer() {
                         result: {
                           type: "object",
                           properties: {
-                            data: { type: "array", items: { "$ref": "#/components/schemas/ArbitrageOpportunity" } },
+                            data: {
+                              type: "array",
+                              items: {
+                                $ref: "#/components/schemas/ArbitrageOpportunity",
+                              },
+                            },
                           },
                         },
                       },
@@ -430,19 +609,40 @@ async function startServer() {
                   },
                 },
               },
-              "401": { description: "Not authenticated", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
-              "403": { description: "Elite subscription required", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "401": {
+                description: "Not authenticated",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/ErrorResponse" },
+                  },
+                },
+              },
+              "403": {
+                description: "Elite subscription required",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/ErrorResponse" },
+                  },
+                },
+              },
             },
           },
         },
         "/trpc/blog.list": {
           get: {
             summary: "List published blog articles",
-            description: "Returns paginated published blog articles. Public endpoint — no authentication required.",
+            description:
+              "Returns paginated published blog articles. Public endpoint — no authentication required.",
             tags: ["Blog"],
             security: [],
             parameters: [
-              { name: "input", in: "query", schema: { type: "string" }, description: "JSON: `{\"limit\":9,\"offset\":0}`", example: "{\"limit\":9,\"offset\":0}" },
+              {
+                name: "input",
+                in: "query",
+                schema: { type: "string" },
+                description: 'JSON: `{"limit":9,"offset":0}`',
+                example: '{"limit":9,"offset":0}',
+              },
             ],
             responses: {
               "200": {
@@ -458,7 +658,12 @@ async function startServer() {
                             data: {
                               type: "object",
                               properties: {
-                                posts: { type: "array", items: { "$ref": "#/components/schemas/BlogPost" } },
+                                posts: {
+                                  type: "array",
+                                  items: {
+                                    $ref: "#/components/schemas/BlogPost",
+                                  },
+                                },
                                 total: { type: "integer", example: 12 },
                               },
                             },
@@ -475,11 +680,19 @@ async function startServer() {
         "/trpc/blog.getBySlug": {
           get: {
             summary: "Get blog article by slug",
-            description: "Returns a single published article including full HTML content and JSON-LD structured data. Public endpoint.",
+            description:
+              "Returns a single published article including full HTML content and JSON-LD structured data. Public endpoint.",
             tags: ["Blog"],
             security: [],
             parameters: [
-              { name: "input", in: "query", required: true, schema: { type: "string" }, description: "JSON: `{\"slug\":\"article-slug\"}`", example: "{\"slug\":\"top-nba-betting-strategies-2026\"}" },
+              {
+                name: "input",
+                in: "query",
+                required: true,
+                schema: { type: "string" },
+                description: 'JSON: `{"slug":"article-slug"}`',
+                example: '{"slug":"top-nba-betting-strategies-2026"}',
+              },
             ],
             responses: {
               "200": {
@@ -494,8 +707,14 @@ async function startServer() {
                           properties: {
                             data: {
                               allOf: [
-                                { "$ref": "#/components/schemas/BlogPost" },
-                                { type: "object", properties: { contentHtml: { type: "string" }, jsonLd: { type: "string" } } },
+                                { $ref: "#/components/schemas/BlogPost" },
+                                {
+                                  type: "object",
+                                  properties: {
+                                    contentHtml: { type: "string" },
+                                    jsonLd: { type: "string" },
+                                  },
+                                },
                               ],
                             },
                           },
@@ -505,19 +724,28 @@ async function startServer() {
                   },
                 },
               },
-              "404": { description: "Article not found", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "404": {
+                description: "Article not found",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/ErrorResponse" },
+                  },
+                },
+              },
             },
           },
         },
         "/trpc/subscription.plans": {
           get: {
             summary: "Get available subscription plans",
-            description: "Returns all subscription plans with pricing and features. Public endpoint.",
+            description:
+              "Returns all subscription plans with pricing and features. Public endpoint.",
             tags: ["Subscriptions"],
             security: [],
             responses: {
               "200": {
-                description: "Available plans: Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr",
+                description:
+                  "Available plans: Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr",
                 content: {
                   "application/json": {
                     schema: {
@@ -526,7 +754,12 @@ async function startServer() {
                         result: {
                           type: "object",
                           properties: {
-                            data: { type: "array", items: { "$ref": "#/components/schemas/SubscriptionPlan" } },
+                            data: {
+                              type: "array",
+                              items: {
+                                $ref: "#/components/schemas/SubscriptionPlan",
+                              },
+                            },
                           },
                         },
                       },
@@ -534,9 +767,35 @@ async function startServer() {
                     example: {
                       result: {
                         data: [
-                          { id: "basic", name: "Basic", price: 9.99, interval: "month", features: ["10 AI picks/day", "Basic stats"] },
-                          { id: "pro", name: "Pro", price: 19.99, interval: "month", features: ["Unlimited picks", "Live odds", "Arbitrage scanner"] },
-                          { id: "yearly", name: "Elite", price: 59.99, interval: "year", features: ["Everything in Pro", "Priority support", "Advanced analytics"] },
+                          {
+                            id: "basic",
+                            name: "Basic",
+                            price: 9.99,
+                            interval: "month",
+                            features: ["10 AI picks/day", "Basic stats"],
+                          },
+                          {
+                            id: "pro",
+                            name: "Pro",
+                            price: 19.99,
+                            interval: "month",
+                            features: [
+                              "Unlimited picks",
+                              "Live odds",
+                              "Arbitrage scanner",
+                            ],
+                          },
+                          {
+                            id: "yearly",
+                            name: "Elite",
+                            price: 59.99,
+                            interval: "year",
+                            features: [
+                              "Everything in Pro",
+                              "Priority support",
+                              "Advanced analytics",
+                            ],
+                          },
                         ],
                       },
                     },
@@ -549,7 +808,8 @@ async function startServer() {
         "/trpc/subscription.createCheckout": {
           post: {
             summary: "Create Stripe Checkout Session",
-            description: "Creates a Stripe Checkout Session for the selected plan. Supports the CHALK15 promo code for 15% off. Requires authentication.",
+            description:
+              "Creates a Stripe Checkout Session for the selected plan. Supports the CHALK15 promo code for 15% off. Requires authentication.",
             tags: ["Subscriptions"],
             security: [{ cookieAuth: [] }],
             requestBody: {
@@ -562,10 +822,26 @@ async function startServer() {
                       "0": {
                         type: "object",
                         properties: {
-                          planId: { type: "string", enum: ["basic", "pro", "yearly"], example: "pro" },
-                          promoCode: { type: "string", example: "CHALK15", description: "Optional promo code for discount" },
-                          successUrl: { type: "string", format: "uri", example: "https://chalkpicks.live/payment-success" },
-                          cancelUrl: { type: "string", format: "uri", example: "https://chalkpicks.live/pricing" },
+                          planId: {
+                            type: "string",
+                            enum: ["basic", "pro", "yearly"],
+                            example: "pro",
+                          },
+                          promoCode: {
+                            type: "string",
+                            example: "CHALK15",
+                            description: "Optional promo code for discount",
+                          },
+                          successUrl: {
+                            type: "string",
+                            format: "uri",
+                            example: "https://chalkpicks.live/payment-success",
+                          },
+                          cancelUrl: {
+                            type: "string",
+                            format: "uri",
+                            example: "https://chalkpicks.live/pricing",
+                          },
                         },
                         required: ["planId", "successUrl", "cancelUrl"],
                       },
@@ -588,7 +864,12 @@ async function startServer() {
                             data: {
                               type: "object",
                               properties: {
-                                url: { type: "string", format: "uri", example: "https://checkout.stripe.com/pay/cs_xxx" },
+                                url: {
+                                  type: "string",
+                                  format: "uri",
+                                  example:
+                                    "https://checkout.stripe.com/pay/cs_xxx",
+                                },
                               },
                             },
                           },
@@ -598,18 +879,38 @@ async function startServer() {
                   },
                 },
               },
-              "401": { description: "Not authenticated", content: { "application/json": { schema: { "$ref": "#/components/schemas/ErrorResponse" } } } },
+              "401": {
+                description: "Not authenticated",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/ErrorResponse" },
+                  },
+                },
+              },
             },
           },
         },
       },
       tags: [
-        { name: "Authentication", description: "Email/password registration, login, and session management" },
-        { name: "Picks", description: "AI-generated sports picks with confidence scores" },
+        {
+          name: "Authentication",
+          description:
+            "Email/password registration, login, and session management",
+        },
+        {
+          name: "Picks",
+          description: "AI-generated sports picks with confidence scores",
+        },
         { name: "Odds", description: "Real-time odds from 10+ sportsbooks" },
-        { name: "Arbitrage", description: "Guaranteed-profit arbitrage opportunity scanner" },
+        {
+          name: "Arbitrage",
+          description: "Guaranteed-profit arbitrage opportunity scanner",
+        },
         { name: "Blog", description: "Sports betting content and analysis" },
-        { name: "Subscriptions", description: "Subscription plans and Stripe Checkout" },
+        {
+          name: "Subscriptions",
+          description: "Subscription plans and Stripe Checkout",
+        },
       ],
     });
   });
@@ -633,17 +934,19 @@ async function startServer() {
   app.post("/api/scheduled/picks-blog", picksBlogHandler);
   app.post("/api/scheduled/discord-post", discordPostHandler);
   app.post("/api/scheduled/twitter-post", twitterPostHandler);
-app.post("/api/scheduled/twitter-pick-results", twitterPickResultHandler);
+  app.post("/api/scheduled/twitter-pick-results", twitterPickResultHandler);
   app.post("/api/scheduled/ollama-warmup", ollamaWarmupHandler);
   app.post("/api/scheduled/cloud-sync", cloudSyncHandler);
   app.post("/api/scheduled/sync-babylovegrow", babyloveGrowSyncHandler);
   app.post("/api/scheduled/distribute-payouts", async (req, res) => {
     try {
-      console.log("[Payout] Weekly distribution triggered");
+      console.warn("[Payout] Weekly distribution triggered");
       res.json({ ok: true, message: "Payout distribution queued" });
     } catch (error) {
       console.error("[Payout] Distribution error:", error);
-      res.status(500).json({ error: String(error), timestamp: new Date().toISOString() });
+      res
+        .status(500)
+        .json({ error: String(error), timestamp: new Date().toISOString() });
     }
   });
 
@@ -660,14 +963,15 @@ app.post("/api/scheduled/twitter-pick-results", twitterPickResultHandler);
       return;
     }
     // Fail open to the static, build-time-generated sitemap.
-    import('path').then(({ resolve, join }) => {
-      const publicDir = process.env.NODE_ENV === 'development'
-        ? resolve(process.cwd(), 'client', 'public')
-        : resolve(import.meta.dirname, 'public');
-      res.set('Content-Type', 'application/xml');
-      res.set('Cache-Control', 'public, max-age=3600');
-      res.sendFile(join(publicDir, 'sitemap.xml'), (err) => {
-        if (err) res.status(404).send('Not found');
+    import("path").then(({ resolve, join }) => {
+      const publicDir =
+        process.env.NODE_ENV === "development"
+          ? resolve(process.cwd(), "client", "public")
+          : resolve(import.meta.dirname, "public");
+      res.set("Content-Type", "application/xml");
+      res.set("Cache-Control", "public, max-age=3600");
+      res.sendFile(join(publicDir, "sitemap.xml"), err => {
+        if (err) res.status(404).send("Not found");
       });
     });
   });
@@ -675,25 +979,30 @@ app.post("/api/scheduled/twitter-pick-results", twitterPickResultHandler);
   // Blog-only sitemap — separate XML for blog posts, served before SPA catch-all
   app.get("/sitemap-blog.xml", async (_req, res) => {
     try {
-      const { getDb } = await import('../db');
-      const { blogPosts } = await import('../../drizzle/schema');
-      const { desc } = await import('drizzle-orm');
+      const { getDb } = await import("../db");
+      const { blogPosts } = await import("../../drizzle/schema");
+      const { desc } = await import("drizzle-orm");
       const db = await getDb();
-      if (!db) throw new Error('DB unavailable');
-      const posts = await db.select({ slug: blogPosts.slug, updatedAt: blogPosts.updatedAt })
+      if (!db) throw new Error("DB unavailable");
+      const posts = await db
+        .select({ slug: blogPosts.slug, updatedAt: blogPosts.updatedAt })
         .from(blogPosts)
         .orderBy(desc(blogPosts.updatedAt))
         .limit(500);
-      const urls = posts.map((p: { slug: string; updatedAt: Date | null }) => {
-        const lastmod = p.updatedAt ? new Date(p.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
-        return `  <url>\n    <loc>https://chalkpicks.live/blog/${p.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
-      }).join('\n');
+      const urls = posts
+        .map((p: { slug: string; updatedAt: Date | null }) => {
+          const lastmod = p.updatedAt
+            ? new Date(p.updatedAt).toISOString().split("T")[0]
+            : new Date().toISOString().split("T")[0];
+          return `  <url>\n    <loc>https://chalkpicks.live/blog/${p.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
+        })
+        .join("\n");
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
-      res.set('Content-Type', 'application/xml');
-      res.set('Cache-Control', 'public, max-age=900');
+      res.set("Content-Type", "application/xml");
+      res.set("Cache-Control", "public, max-age=900");
       res.send(xml);
     } catch (e) {
-      res.status(500).send('Error generating blog sitemap');
+      res.status(500).send("Error generating blog sitemap");
     }
   });
 
@@ -702,21 +1011,29 @@ app.post("/api/scheduled/twitter-pick-results", twitterPickResultHandler);
 
   // Explicit routes for SEO/verification XML files — must come before SPA catch-all
   // (chalkpicks2026indexnow.txt is served by registerIndexNowKeyRoute above)
-  const xmlFiles = ['BingSiteAuth.xml', 'sitemap.xsl', 'llms.txt', 'robots.txt'];
+  const xmlFiles = [
+    "BingSiteAuth.xml",
+    "sitemap.xsl",
+    "llms.txt",
+    "robots.txt",
+  ];
   xmlFiles.forEach(filename => {
     app.get(`/${filename}`, (req, res) => {
-      import('path').then(({ resolve, join }) => {
-        const publicDir = process.env.NODE_ENV === 'development'
-          ? resolve(process.cwd(), 'client', 'public')
-          : resolve(import.meta.dirname, 'public');
+      import("path").then(({ resolve, join }) => {
+        const publicDir =
+          process.env.NODE_ENV === "development"
+            ? resolve(process.cwd(), "client", "public")
+            : resolve(import.meta.dirname, "public");
         const filePath = join(publicDir, filename);
-        const contentType = filename.endsWith('.xml') ? 'application/xml'
-          : filename.endsWith('.xsl') ? 'application/xslt+xml'
-          : 'text/plain';
-        res.set('Content-Type', contentType);
-        res.set('Cache-Control', 'public, max-age=86400');
-        res.sendFile(filePath, (err) => {
-          if (err) res.status(404).send('Not found');
+        const contentType = filename.endsWith(".xml")
+          ? "application/xml"
+          : filename.endsWith(".xsl")
+            ? "application/xslt+xml"
+            : "text/plain";
+        res.set("Content-Type", contentType);
+        res.set("Cache-Control", "public, max-age=86400");
+        res.sendFile(filePath, err => {
+          if (err) res.status(404).send("Not found");
         });
       });
     });
@@ -734,16 +1051,17 @@ app.post("/api/scheduled/twitter-pick-results", twitterPickResultHandler);
   const preferredPort = parseInt(process.env.PORT || "3000");
   // In production, NEVER shift ports — the health check and load balancer
   // expect exactly the PORT env var. Only auto-scan in development.
-  const port = process.env.NODE_ENV === "production"
-    ? preferredPort
-    : await findAvailablePort(preferredPort);
+  const port =
+    process.env.NODE_ENV === "production"
+      ? preferredPort
+      : await findAvailablePort(preferredPort);
 
   if (port !== preferredPort) {
-    console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
+    console.warn(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
   server.listen(port, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${port}/`);
+    console.warn(`Server running on http://localhost:${port}/`);
     // Initialize WebSocket for real-time updates
     initializeWebSocket(server);
     // Start live data streaming

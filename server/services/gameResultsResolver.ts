@@ -1,13 +1,14 @@
 /**
  * Game Results Resolver
- * 
+ *
  * Fetches final scores from ESPN and resolves pending picks.
- * Runs on a schedule to automatically settle picks based on real game outcomes.
+ * Also grades pick_ledger rows so CLV Skill Rating can update.
  */
 import { getDb } from "../db";
 import { picks, games } from "../../drizzle/schema";
-import { eq, and, isNull, sql } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { fetchLiveScores } from "./dataService";
+import { gradeLedgerEntry } from "../_core/pick-ledger";
 
 interface GameResult {
   homeTeam: string;
@@ -17,9 +18,6 @@ interface GameResult {
   status: string;
 }
 
-/**
- * Resolve pending picks by checking final game scores from ESPN
- */
 export async function resolveGameResults(): Promise<{
   resolved: number;
   wins: number;
@@ -28,29 +26,39 @@ export async function resolveGameResults(): Promise<{
   errors: string[];
 }> {
   const db = await getDb();
-  if (!db) return { resolved: 0, wins: 0, losses: 0, pushes: 0, errors: ["Database unavailable"] };
+  if (!db)
+    return {
+      resolved: 0,
+      wins: 0,
+      losses: 0,
+      pushes: 0,
+      errors: ["Database unavailable"],
+    };
 
   const errors: string[] = [];
-  let wins = 0, losses = 0, pushes = 0;
+  let wins = 0,
+    losses = 0,
+    pushes = 0;
 
-  // Get all pending picks from the last 7 days
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const sevenDaysAgoStr = sevenDaysAgo.toISOString().split("T")[0];
 
-  const pendingPicks = await db.select().from(picks).where(
-    and(
-      eq(picks.result, "pending"),
-      eq(picks.isActive, true),
-      sql`${picks.pickDate} >= ${sevenDaysAgoStr}`
-    )
-  );
+  const pendingPicks = await db
+    .select()
+    .from(picks)
+    .where(
+      and(
+        eq(picks.result, "pending"),
+        eq(picks.isActive, true),
+        sql`${picks.pickDate} >= ${sevenDaysAgoStr}`
+      )
+    );
 
   if (pendingPicks.length === 0) {
     return { resolved: 0, wins: 0, losses: 0, pushes: 0, errors: [] };
   }
 
-  // Fetch final scores for all relevant sports
   const sports = Array.from(new Set(pendingPicks.map(p => p.sportKey)));
   const allFinalGames: GameResult[] = [];
 
@@ -58,25 +66,37 @@ export async function resolveGameResults(): Promise<{
     try {
       const scores = await fetchLiveScores(sport);
       const finals = scores.filter(s => s.status === "final");
-      allFinalGames.push(...finals.map(s => ({
-        homeTeam: s.homeTeam,
-        awayTeam: s.awayTeam,
-        homeScore: s.homeScore,
-        awayScore: s.awayScore,
-        status: s.status,
-      })));
+      allFinalGames.push(
+        ...finals.map(s => ({
+          homeTeam: s.homeTeam,
+          awayTeam: s.awayTeam,
+          homeScore: s.homeScore,
+          awayScore: s.awayScore,
+          status: s.status,
+        }))
+      );
     } catch (err) {
-      errors.push(`Failed to fetch scores for ${sport}: ${(err as Error).message}`);
+      errors.push(
+        `Failed to fetch scores for ${sport}: ${(err as Error).message}`
+      );
     }
   }
 
-  // Resolve each pending pick
   for (const pick of pendingPicks) {
-    const matchingGame = allFinalGames.find(g =>
-      (g.homeTeam.toLowerCase().includes(pick.homeTeam?.toLowerCase().split(" ").pop() || "___") ||
-       pick.homeTeam?.toLowerCase().includes(g.homeTeam.toLowerCase().split(" ").pop() || "___")) &&
-      (g.awayTeam.toLowerCase().includes(pick.awayTeam?.toLowerCase().split(" ").pop() || "___") ||
-       pick.awayTeam?.toLowerCase().includes(g.awayTeam.toLowerCase().split(" ").pop() || "___"))
+    const matchingGame = allFinalGames.find(
+      g =>
+        (g.homeTeam
+          .toLowerCase()
+          .includes(pick.homeTeam?.toLowerCase().split(" ").pop() || "___") ||
+          pick.homeTeam
+            ?.toLowerCase()
+            .includes(g.homeTeam.toLowerCase().split(" ").pop() || "___")) &&
+        (g.awayTeam
+          .toLowerCase()
+          .includes(pick.awayTeam?.toLowerCase().split(" ").pop() || "___") ||
+          pick.awayTeam
+            ?.toLowerCase()
+            .includes(g.awayTeam.toLowerCase().split(" ").pop() || "___"))
     );
 
     if (!matchingGame) continue;
@@ -84,31 +104,33 @@ export async function resolveGameResults(): Promise<{
     try {
       const result = determinePickResult(pick, matchingGame);
       if (result) {
-        await db.update(picks)
-          .set({ result })
-          .where(eq(picks.id, pick.id));
+        await db.update(picks).set({ result }).where(eq(picks.id, pick.id));
 
-        // Note: Auto-alerts for pick resolution are created via the notifications router
-        // when users track picks in their dashboard. The pick result is stored in the database
-        // and users can view it in their alerts via the /notifications page.
+        // Grade immutable ledger (CLV may be null until closing-line job lands)
+        void gradeLedgerEntry(pick.id, {
+          result,
+          closingLine: null,
+          clvValue: null,
+        }).catch(e => console.warn("[GameResults] ledger grade failed:", e));
 
         if (result === "win") wins++;
         else if (result === "loss") losses++;
         else if (result === "push") pushes++;
       }
     } catch (err) {
-      errors.push(`Failed to resolve pick ${pick.id}: ${(err as Error).message}`);
+      errors.push(
+        `Failed to resolve pick ${pick.id}: ${(err as Error).message}`
+      );
     }
   }
 
   const resolved = wins + losses + pushes;
-  console.log(`[GameResults] Resolved ${resolved} picks: ${wins}W / ${losses}L / ${pushes}P`);
+  console.warn(
+    `[GameResults] Resolved ${resolved} picks: ${wins}W / ${losses}L / ${pushes}P`
+  );
   return { resolved, wins, losses, pushes, errors };
 }
 
-/**
- * Determine if a pick won, lost, or pushed based on game result
- */
 function determinePickResult(
   pick: typeof picks.$inferSelect,
   game: GameResult
@@ -123,8 +145,9 @@ function determinePickResult(
 
   switch (pickType) {
     case "moneyline": {
-      // Check if the recommended team won
-      const pickedHome = rec.includes(homeTeam?.toLowerCase().split(" ").pop() || "___");
+      const pickedHome = rec.includes(
+        homeTeam?.toLowerCase().split(" ").pop() || "___"
+      );
       if (pickedHome) {
         return scoreDiff > 0 ? "win" : scoreDiff < 0 ? "loss" : "push";
       } else {
@@ -133,19 +156,21 @@ function determinePickResult(
     }
 
     case "spread": {
-      // Parse spread value from recommendation (e.g., "Chiefs -7.5")
       const spreadMatch = rec.match(/([+-]?\d+\.?\d*)/);
       if (!spreadMatch) return null;
       const spread = parseFloat(spreadMatch[1]);
-      const pickedHome = rec.includes(homeTeam?.toLowerCase().split(" ").pop() || "___");
-      const adjustedDiff = pickedHome ? scoreDiff + spread : -scoreDiff + spread;
+      const pickedHome = rec.includes(
+        homeTeam?.toLowerCase().split(" ").pop() || "___"
+      );
+      const adjustedDiff = pickedHome
+        ? scoreDiff + spread
+        : -scoreDiff + spread;
       if (adjustedDiff > 0) return "win";
       if (adjustedDiff < 0) return "loss";
       return "push";
     }
 
     case "over_under": {
-      // Parse total from recommendation (e.g., "Over 224.5")
       const totalMatch = rec.match(/(\d+\.?\d*)/);
       if (!totalMatch) return null;
       const line = parseFloat(totalMatch[1]);
@@ -157,20 +182,14 @@ function determinePickResult(
       }
     }
 
-    case "player_prop": {
-      // Player props can't be resolved from box score alone without player stats
-      // Mark as resolved via manual review or future player stats API
+    case "player_prop":
       return null;
-    }
 
     default:
       return null;
   }
 }
 
-/**
- * Update the games table with latest scores from ESPN
- */
 export async function syncGameScores(): Promise<number> {
   const db = await getDb();
   if (!db) return 0;
@@ -182,12 +201,16 @@ export async function syncGameScores(): Promise<number> {
     try {
       const scores = await fetchLiveScores(sport);
       for (const score of scores) {
-        // Upsert game record
-        const existing = await db.select().from(games)
+        const existing = await db
+          .select()
+          .from(games)
           .where(eq(games.externalId, score.id))
           .limit(1);
 
-        const statusMap: Record<string, "scheduled" | "live" | "final" | "postponed" | "cancelled"> = {
+        const statusMap: Record<
+          string,
+          "scheduled" | "live" | "final" | "postponed" | "cancelled"
+        > = {
           scheduled: "scheduled",
           in_progress: "live",
           final: "final",
@@ -195,7 +218,8 @@ export async function syncGameScores(): Promise<number> {
         };
 
         if (existing.length > 0) {
-          await db.update(games)
+          await db
+            .update(games)
             .set({
               homeScore: score.homeScore,
               awayScore: score.awayScore,
@@ -217,7 +241,10 @@ export async function syncGameScores(): Promise<number> {
         synced++;
       }
     } catch (err) {
-      console.error(`[GameSync] Error syncing ${sport}:`, (err as Error).message);
+      console.error(
+        `[GameSync] Error syncing ${sport}:`,
+        (err as Error).message
+      );
     }
   }
 

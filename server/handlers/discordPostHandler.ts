@@ -21,7 +21,7 @@ export async function discordPostHandler(req: Request, res: Response) {
   const taskUid = (req.headers["x-manus-cron-task-uid"] as string) || "manual";
   const slot = (req.body?.slot as DiscordSlot) || "morning";
 
-  console.log(`[DiscordPost] Triggered — slot: ${slot}, task: ${taskUid}`);
+  console.warn(`[DiscordPost] Triggered — slot: ${slot}, task: ${taskUid}`);
 
   try {
     let result: { success: boolean; error?: string };
@@ -44,10 +44,12 @@ export async function discordPostHandler(req: Request, res: Response) {
     }
 
     if (result.success) {
-      console.log(`[DiscordPost] Success — slot: ${slot}`);
+      console.warn(`[DiscordPost] Success — slot: ${slot}`);
       res.json({ ok: true, slot });
     } else {
-      console.error(`[DiscordPost] Failed — slot: ${slot}, error: ${result.error}`);
+      console.error(
+        `[DiscordPost] Failed — slot: ${slot}, error: ${result.error}`
+      );
       // Return 200 so Heartbeat doesn't retry (webhook failures are not transient)
       res.json({ ok: false, slot, error: result.error });
     }

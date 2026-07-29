@@ -10,9 +10,13 @@
  *  2. Add your iOS/Android API keys to VITE_REVENUECAT_IOS_KEY and VITE_REVENUECAT_ANDROID_KEY
  *  3. Create products in App Store Connect / Google Play Console matching the IDs below
  *  4. Add those products to a RevenueCat Offering called "default"
+ *  5. In RevenueCat dashboard → Integrations → Webhooks, add:
+ *       URL: https://chalkpicks.live/api/revenuecat/webhook
+ *       Authorization: value of REVENUECAT_WEBHOOK_SECRET env var
  */
 import { useState, useEffect, useCallback } from "react";
 import { Capacitor } from "@capacitor/core";
+import { trpc } from "@/lib/trpc";
 
 // RevenueCat product IDs — must match App Store Connect / Google Play Console
 export const RC_PRODUCTS = {
@@ -50,6 +54,15 @@ export function useRevenueCat(): UseRevenueCatReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Get the current user's numeric ID to bind to RevenueCat so the
+  // server-side webhook can match App Store / Google Play purchases back
+  // to the correct ChalkPicks account.
+  const { data: currentUser } = trpc.auth.me.useQuery(undefined, {
+    enabled: isNative,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
   // Initialize RevenueCat on native platforms only
   useEffect(() => {
     if (!isNative) return;
@@ -72,6 +85,19 @@ export function useRevenueCat(): UseRevenueCatReturn {
         }
 
         await Purchases.configure({ apiKey });
+
+        // Bind the logged-in user's numeric ID as the RevenueCat appUserId.
+        // This is what the server-side webhook uses to look up the user in DB.
+        if (currentUser?.id) {
+          try {
+            await Purchases.logIn({ appUserID: String(currentUser.id) });
+            console.warn(`[RevenueCat] Logged in as user ${currentUser.id}`);
+          } catch (loginErr) {
+            // Non-fatal — anonymous purchases still work, webhook matching won't
+            console.warn("[RevenueCat] logIn failed (non-fatal):", loginErr);
+          }
+        }
+
         setIsConfigured(true);
 
         // Fetch initial customer info
@@ -97,7 +123,7 @@ export function useRevenueCat(): UseRevenueCatReturn {
     };
 
     initRC();
-  }, [isNative]);
+  }, [isNative, currentUser?.id]);
 
   const purchaseTier = useCallback(
     async (tier: RCTier): Promise<{ success: boolean; error?: string }> => {

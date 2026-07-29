@@ -1814,3 +1814,20 @@
 - [x] Register sport pick routes in App.tsx (already existed)
 - [x] Persist dashboard analyticsDateRange + analyticsSport to localStorage
 - [x] Ping IndexNow for 8 new SEO routes (200 OK)
+
+## Stats Page Accuracy + Auto-Refresh (Jul 29, 2026)
+
+- [ ] Audit Stats page: verify Win Rate, Total Picks, Wins, Losses, Streak, ROI all pull from live DB
+- [ ] Fix bets.summary: ensure Win Rate = wins/(wins+losses), ROI = net profit / total staked, Streak = consecutive wins/losses from most recent settled bets
+- [ ] Add refetchInterval (30s) to Stats page queries so cards auto-refresh without reload
+- [ ] Add staleTime config so data never shows stale values on revisit
+
+## Stats Page Accuracy Fixes (Jul 29, 2026)
+
+- [x] picks.performance: Remove hardcoded fallback values (wins 1104, roi 18.4%) — use real DB data
+- [x] picks.performance: Compute ROI from actual pick odds + results (American odds formula)
+- [x] picks.performance: Compute monthlyTrend and byPickType from real DB data
+- [x] picks.performance: Compute longestStreak correctly (full scan)
+- [x] Performance page: Remove hardcoded ?? fallbacks from StatCard renders
+- [x] Performance page + FreePick: Add refetchInterval 30s + staleTime 0 for auto-refresh
+- [x] Streak card: Show W/L suffix correctly based on sign of currentStreak

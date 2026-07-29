@@ -23,68 +23,178 @@ const SPORTS_LIST = [
 function generateMockPicks(date: string) {
   const mockPicks = [
     {
-      sportKey: "nfl", pickDate: date, pickType: "spread" as const, tier: "free" as const,
-      homeTeam: "Kansas City Chiefs", awayTeam: "Las Vegas Raiders",
-      recommendation: "Chiefs -7.5", odds: -110, confidenceScore: 87, edgeScore: "4.20",
-      aiAnalysis: "The Chiefs have dominated this matchup historically, covering 8 of the last 10 meetings. Mahomes has a 94.3 passer rating at home this season, and the Raiders defense ranks 28th against the pass. With Hill and Kelce both healthy, expect a comfortable cover.",
-      keyFactors: ["Home field advantage", "Mahomes 94.3 home passer rating", "Raiders 28th pass defense", "8-2 ATS in last 10 meetings"],
-      isFeatured: true, result: "win" as const
+      sportKey: "nfl",
+      pickDate: date,
+      pickType: "spread" as const,
+      tier: "free" as const,
+      homeTeam: "Kansas City Chiefs",
+      awayTeam: "Las Vegas Raiders",
+      recommendation: "Chiefs -7.5",
+      odds: -110,
+      confidenceScore: 87,
+      edgeScore: "4.20",
+      aiAnalysis:
+        "The Chiefs have dominated this matchup historically, covering 8 of the last 10 meetings. Mahomes has a 94.3 passer rating at home this season, and the Raiders defense ranks 28th against the pass. With Hill and Kelce both healthy, expect a comfortable cover.",
+      keyFactors: [
+        "Home field advantage",
+        "Mahomes 94.3 home passer rating",
+        "Raiders 28th pass defense",
+        "8-2 ATS in last 10 meetings",
+      ],
+      isFeatured: true,
+      result: "win" as const,
     },
     {
-      sportKey: "nba", pickDate: date, pickType: "over_under" as const, tier: "free" as const,
-      homeTeam: "Boston Celtics", awayTeam: "Golden State Warriors",
-      recommendation: "Over 224.5", odds: -115, confidenceScore: 79, edgeScore: "3.10",
-      aiAnalysis: "Both teams rank top-5 in offensive efficiency. The Celtics-Warriors matchup historically goes over 68% of the time. Warriors pace of play (101.2 possessions/game) combined with Celtics 3-point volume creates high-scoring environments.",
-      keyFactors: ["Both teams top-5 offense", "68% historical over rate", "Warriors fast pace", "No key injuries"],
-      isFeatured: false, result: "win" as const
+      sportKey: "nba",
+      pickDate: date,
+      pickType: "over_under" as const,
+      tier: "free" as const,
+      homeTeam: "Boston Celtics",
+      awayTeam: "Golden State Warriors",
+      recommendation: "Over 224.5",
+      odds: -115,
+      confidenceScore: 79,
+      edgeScore: "3.10",
+      aiAnalysis:
+        "Both teams rank top-5 in offensive efficiency. The Celtics-Warriors matchup historically goes over 68% of the time. Warriors pace of play (101.2 possessions/game) combined with Celtics 3-point volume creates high-scoring environments.",
+      keyFactors: [
+        "Both teams top-5 offense",
+        "68% historical over rate",
+        "Warriors fast pace",
+        "No key injuries",
+      ],
+      isFeatured: false,
+      result: "win" as const,
     },
     {
-      sportKey: "mlb", pickDate: date, pickType: "moneyline" as const, tier: "premium" as const,
-      homeTeam: "Los Angeles Dodgers", awayTeam: "San Francisco Giants",
-      recommendation: "Dodgers ML", odds: -145, confidenceScore: 82, edgeScore: "5.80",
-      aiAnalysis: "Shohei Ohtani's 2.31 ERA at home this season is elite. Giants bullpen ERA of 4.89 is exploitable in late innings. Dodgers have won 14 of last 18 home games against NL West rivals.",
-      keyFactors: ["Ohtani 2.31 home ERA", "Giants bullpen 4.89 ERA", "14-4 last 18 home vs NL West", "Dodgers lineup depth"],
-      isFeatured: true, result: "pending" as const
+      sportKey: "mlb",
+      pickDate: date,
+      pickType: "moneyline" as const,
+      tier: "premium" as const,
+      homeTeam: "Los Angeles Dodgers",
+      awayTeam: "San Francisco Giants",
+      recommendation: "Dodgers ML",
+      odds: -145,
+      confidenceScore: 82,
+      edgeScore: "5.80",
+      aiAnalysis:
+        "Shohei Ohtani's 2.31 ERA at home this season is elite. Giants bullpen ERA of 4.89 is exploitable in late innings. Dodgers have won 14 of last 18 home games against NL West rivals.",
+      keyFactors: [
+        "Ohtani 2.31 home ERA",
+        "Giants bullpen 4.89 ERA",
+        "14-4 last 18 home vs NL West",
+        "Dodgers lineup depth",
+      ],
+      isFeatured: true,
+      result: "pending" as const,
     },
     {
-      sportKey: "nhl", pickDate: date, pickType: "spread" as const, tier: "premium" as const,
-      homeTeam: "Colorado Avalanche", awayTeam: "Minnesota Wild",
-      recommendation: "Avalanche -1.5 (+120)", odds: 120, confidenceScore: 73, edgeScore: "6.40",
-      aiAnalysis: "MacKinnon leads the league in points-per-game at home. Avalanche power play is clicking at 28.4% efficiency. Wild have allowed 3+ goals in 7 of last 10 road games.",
-      keyFactors: ["MacKinnon home dominance", "28.4% power play efficiency", "Wild 3+ goals allowed in 7/10 road games"],
-      isFeatured: false, result: "pending" as const
+      sportKey: "nhl",
+      pickDate: date,
+      pickType: "spread" as const,
+      tier: "premium" as const,
+      homeTeam: "Colorado Avalanche",
+      awayTeam: "Minnesota Wild",
+      recommendation: "Avalanche -1.5 (+120)",
+      odds: 120,
+      confidenceScore: 73,
+      edgeScore: "6.40",
+      aiAnalysis:
+        "MacKinnon leads the league in points-per-game at home. Avalanche power play is clicking at 28.4% efficiency. Wild have allowed 3+ goals in 7 of last 10 road games.",
+      keyFactors: [
+        "MacKinnon home dominance",
+        "28.4% power play efficiency",
+        "Wild 3+ goals allowed in 7/10 road games",
+      ],
+      isFeatured: false,
+      result: "pending" as const,
     },
     {
-      sportKey: "nba", pickDate: date, pickType: "player_prop" as const, tier: "free" as const,
-      homeTeam: "Denver Nuggets", awayTeam: "Phoenix Suns",
-      recommendation: "Nikola Jokic Over 27.5 Points", odds: -110, confidenceScore: 85, edgeScore: "4.90",
-      aiAnalysis: "Jokic averages 31.2 points in his last 8 games against Phoenix. Suns rank 25th in defending centers. With Murray questionable, Jokic's usage rate increases to 38.2%.",
-      keyFactors: ["31.2 pts avg vs Phoenix", "Suns 25th vs centers", "Murray questionable", "38.2% usage rate"],
-      isFeatured: true, result: "win" as const
+      sportKey: "nba",
+      pickDate: date,
+      pickType: "player_prop" as const,
+      tier: "free" as const,
+      homeTeam: "Denver Nuggets",
+      awayTeam: "Phoenix Suns",
+      recommendation: "Nikola Jokic Over 27.5 Points",
+      odds: -110,
+      confidenceScore: 85,
+      edgeScore: "4.90",
+      aiAnalysis:
+        "Jokic averages 31.2 points in his last 8 games against Phoenix. Suns rank 25th in defending centers. With Murray questionable, Jokic's usage rate increases to 38.2%.",
+      keyFactors: [
+        "31.2 pts avg vs Phoenix",
+        "Suns 25th vs centers",
+        "Murray questionable",
+        "38.2% usage rate",
+      ],
+      isFeatured: true,
+      result: "win" as const,
     },
     {
-      sportKey: "nfl", pickDate: date, pickType: "over_under" as const, tier: "free" as const,
-      homeTeam: "Philadelphia Eagles", awayTeam: "Dallas Cowboys",
-      recommendation: "Under 47.5", odds: -108, confidenceScore: 76, edgeScore: "2.80",
-      aiAnalysis: "NFC East rivalry games historically trend under 58% of the time. Both defenses rank top-10 in DVOA. Cold weather forecast (28°F) historically suppresses scoring by 4-6 points.",
-      keyFactors: ["58% historical under rate", "Both defenses top-10 DVOA", "28°F game-time temp", "Rivalry game defensive intensity"],
-      isFeatured: false, result: "loss" as const
+      sportKey: "nfl",
+      pickDate: date,
+      pickType: "over_under" as const,
+      tier: "free" as const,
+      homeTeam: "Philadelphia Eagles",
+      awayTeam: "Dallas Cowboys",
+      recommendation: "Under 47.5",
+      odds: -108,
+      confidenceScore: 76,
+      edgeScore: "2.80",
+      aiAnalysis:
+        "NFC East rivalry games historically trend under 58% of the time. Both defenses rank top-10 in DVOA. Cold weather forecast (28°F) historically suppresses scoring by 4-6 points.",
+      keyFactors: [
+        "58% historical under rate",
+        "Both defenses top-10 DVOA",
+        "28°F game-time temp",
+        "Rivalry game defensive intensity",
+      ],
+      isFeatured: false,
+      result: "loss" as const,
     },
     {
-      sportKey: "mlb", pickDate: date, pickType: "spread" as const, tier: "premium" as const,
-      homeTeam: "New York Yankees", awayTeam: "Boston Red Sox",
-      recommendation: "Yankees -1.5 (+105)", odds: 105, confidenceScore: 71, edgeScore: "3.50",
-      aiAnalysis: "Gerrit Cole's 1.98 ERA at home this season is dominant. Red Sox lineup ranks 22nd in OPS vs right-handed pitching. Yankees have covered -1.5 in 11 of Cole's last 15 home starts.",
-      keyFactors: ["Cole 1.98 home ERA", "Red Sox 22nd vs RHP", "11-4 ATS in Cole home starts"],
-      isFeatured: false, result: "pending" as const
+      sportKey: "mlb",
+      pickDate: date,
+      pickType: "spread" as const,
+      tier: "premium" as const,
+      homeTeam: "New York Yankees",
+      awayTeam: "Boston Red Sox",
+      recommendation: "Yankees -1.5 (+105)",
+      odds: 105,
+      confidenceScore: 71,
+      edgeScore: "3.50",
+      aiAnalysis:
+        "Gerrit Cole's 1.98 ERA at home this season is dominant. Red Sox lineup ranks 22nd in OPS vs right-handed pitching. Yankees have covered -1.5 in 11 of Cole's last 15 home starts.",
+      keyFactors: [
+        "Cole 1.98 home ERA",
+        "Red Sox 22nd vs RHP",
+        "11-4 ATS in Cole home starts",
+      ],
+      isFeatured: false,
+      result: "pending" as const,
     },
     {
-      sportKey: "soccer", pickDate: date, pickType: "moneyline" as const, tier: "premium" as const,
-      homeTeam: "Manchester City", awayTeam: "Arsenal",
-      recommendation: "Man City ML", odds: -130, confidenceScore: 80, edgeScore: "4.10",
-      aiAnalysis: "Pep Guardiola's side has won 9 consecutive home Premier League matches. Haaland has scored in 6 of last 8 home appearances. Arsenal missing key midfielder through suspension.",
-      keyFactors: ["9 consecutive home wins", "Haaland 6 goals last 8 home", "Arsenal key suspension", "City home form 88% win rate"],
-      isFeatured: false, result: "pending" as const
+      sportKey: "soccer",
+      pickDate: date,
+      pickType: "moneyline" as const,
+      tier: "premium" as const,
+      homeTeam: "Manchester City",
+      awayTeam: "Arsenal",
+      recommendation: "Man City ML",
+      odds: -130,
+      confidenceScore: 80,
+      edgeScore: "4.10",
+      aiAnalysis:
+        "Pep Guardiola's side has won 9 consecutive home Premier League matches. Haaland has scored in 6 of last 8 home appearances. Arsenal missing key midfielder through suspension.",
+      keyFactors: [
+        "9 consecutive home wins",
+        "Haaland 6 goals last 8 home",
+        "Arsenal key suspension",
+        "City home form 88% win rate",
+      ],
+      isFeatured: false,
+      result: "pending" as const,
     },
   ];
   return mockPicks;
@@ -93,15 +203,17 @@ function generateMockPicks(date: string) {
 export const picksRouter = router({
   // Get today's picks
   list: publicProcedure
-    .input(z.object({
-      sportKey: z.string().optional(),
-      tier: z.enum(["free", "premium", "all"]).optional().default("all"),
-      date: z.string().optional(),
-      dateFrom: z.string().optional(), // YYYY-MM-DD
-      dateTo: z.string().optional(),   // YYYY-MM-DD
-      page: z.number().optional().default(1),
-      limit: z.number().optional().default(20),
-    }))
+    .input(
+      z.object({
+        sportKey: z.string().optional(),
+        tier: z.enum(["free", "premium", "all"]).optional().default("all"),
+        date: z.string().optional(),
+        dateFrom: z.string().optional(), // YYYY-MM-DD
+        dateTo: z.string().optional(), // YYYY-MM-DD
+        page: z.number().optional().default(1),
+        limit: z.number().optional().default(20),
+      })
+    )
     .query(async ({ input, ctx }) => {
       const db = await getDb();
       const today = input.date ?? new Date().toISOString().split("T")[0];
@@ -110,12 +222,25 @@ export const picksRouter = router({
       if (!db) {
         // Return mock data if DB not available
         let mockData = generateMockPicks(today);
-        if (input.sportKey) mockData = mockData.filter(p => p.sportKey === input.sportKey);
-        if (input.tier !== "all") mockData = mockData.filter(p => p.tier === input.tier);
-        if (input.dateFrom) mockData = mockData.filter(p => p.pickDate >= input.dateFrom!);
-        if (input.dateTo) mockData = mockData.filter(p => p.pickDate <= input.dateTo!);
+        if (input.sportKey)
+          mockData = mockData.filter(p => p.sportKey === input.sportKey);
+        if (input.tier !== "all")
+          mockData = mockData.filter(p => p.tier === input.tier);
+        if (input.dateFrom)
+          mockData = mockData.filter(p => p.pickDate >= input.dateFrom!);
+        if (input.dateTo)
+          mockData = mockData.filter(p => p.pickDate <= input.dateTo!);
         return {
-          picks: mockData.slice(offset, offset + input.limit).map((p, i) => ({ ...p, id: i + 1, gameId: null, createdAt: new Date(), updatedAt: new Date(), isActive: true })),
+          picks: mockData
+            .slice(offset, offset + input.limit)
+            .map((p, i) => ({
+              ...p,
+              id: i + 1,
+              gameId: null,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              isActive: true,
+            })),
           total: mockData.length,
           sports: SPORTS_LIST,
         };
@@ -131,13 +256,28 @@ export const picksRouter = router({
         // Default: show picks for today and last 7 days
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        conditions.push(gte(picks.pickDate, sevenDaysAgo.toISOString().split("T")[0]));
+        conditions.push(
+          gte(picks.pickDate, sevenDaysAgo.toISOString().split("T")[0])
+        );
       }
       if (input.dateTo) conditions.push(lte(picks.pickDate, input.dateTo));
 
       const [pickList, countResult] = await Promise.all([
-        db.select().from(picks).where(and(...conditions)).orderBy(desc(picks.isFeatured), desc(picks.edgeScore), desc(picks.confidenceScore)).limit(input.limit).offset(offset),
-        db.select({ count: sql<number>`count(*)` }).from(picks).where(and(...conditions)),
+        db
+          .select()
+          .from(picks)
+          .where(and(...conditions))
+          .orderBy(
+            desc(picks.isFeatured),
+            desc(picks.edgeScore),
+            desc(picks.confidenceScore)
+          )
+          .limit(input.limit)
+          .offset(offset),
+        db
+          .select({ count: sql<number>`count(*)` })
+          .from(picks)
+          .where(and(...conditions)),
       ]);
 
       // If no picks in DB, seed with mock data
@@ -152,14 +292,23 @@ export const picksRouter = router({
         }));
         try {
           await db.insert(picks).values(toInsert);
-          const seeded = await db.select().from(picks).where(eq(picks.isActive, true)).orderBy(desc(picks.isFeatured), desc(picks.confidenceScore)).limit(input.limit);
+          const seeded = await db
+            .select()
+            .from(picks)
+            .where(eq(picks.isActive, true))
+            .orderBy(desc(picks.isFeatured), desc(picks.confidenceScore))
+            .limit(input.limit);
           return { picks: seeded, total: seeded.length, sports: SPORTS_LIST };
         } catch {
           return { picks: [], total: 0, sports: SPORTS_LIST };
         }
       }
 
-      return { picks: pickList, total: countResult[0]?.count ?? 0, sports: SPORTS_LIST };
+      return {
+        picks: pickList,
+        total: countResult[0]?.count ?? 0,
+        sports: SPORTS_LIST,
+      };
     }),
 
   // Get single pick
@@ -168,23 +317,38 @@ export const picksRouter = router({
     .query(async ({ input }) => {
       const db = await getDb();
       if (!db) {
-        const mockPicks = generateMockPicks(new Date().toISOString().split("T")[0]);
+        const mockPicks = generateMockPicks(
+          new Date().toISOString().split("T")[0]
+        );
         const mock = mockPicks[input.id - 1];
         if (!mock) throw new TRPCError({ code: "NOT_FOUND" });
-        return { ...mock, id: input.id, gameId: null, createdAt: new Date(), updatedAt: new Date(), isActive: true };
+        return {
+          ...mock,
+          id: input.id,
+          gameId: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isActive: true,
+        };
       }
-      const result = await db.select().from(picks).where(eq(picks.id, input.id)).limit(1);
+      const result = await db
+        .select()
+        .from(picks)
+        .where(eq(picks.id, input.id))
+        .limit(1);
       if (!result[0]) throw new TRPCError({ code: "NOT_FOUND" });
       return result[0];
     }),
 
   // Generate AI picks for a sport
   generateAI: protectedProcedure
-    .input(z.object({
-      sportKey: z.string(),
-      matchup: z.string(),
-      context: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        sportKey: z.string(),
+        matchup: z.string(),
+        context: z.string().optional(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const sport = SPORTS_LIST.find(s => s.key === input.sportKey);
       const today = new Date().toISOString().split("T")[0];
@@ -210,7 +374,11 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
 
       const response = await invokeLLM({
         messages: [
-          { role: "system", content: "You are a professional sports betting analyst. Always respond with valid JSON only." },
+          {
+            role: "system",
+            content:
+              "You are a professional sports betting analyst. Always respond with valid JSON only.",
+          },
           { role: "user", content: prompt },
         ],
         response_format: {
@@ -222,14 +390,25 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
               type: "object",
               properties: {
                 recommendation: { type: "string" },
-                pickType: { type: "string", enum: ["moneyline", "spread", "over_under", "player_prop"] },
+                pickType: {
+                  type: "string",
+                  enum: ["moneyline", "spread", "over_under", "player_prop"],
+                },
                 odds: { type: "number" },
                 confidenceScore: { type: "number" },
                 edgeScore: { type: "number" },
                 aiAnalysis: { type: "string" },
                 keyFactors: { type: "array", items: { type: "string" } },
               },
-              required: ["recommendation", "pickType", "odds", "confidenceScore", "edgeScore", "aiAnalysis", "keyFactors"],
+              required: [
+                "recommendation",
+                "pickType",
+                "odds",
+                "confidenceScore",
+                "edgeScore",
+                "aiAnalysis",
+                "keyFactors",
+              ],
               additionalProperties: false,
             },
           },
@@ -238,15 +417,24 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
 
       const rawContent = response.choices[0]?.message?.content;
       const content = typeof rawContent === "string" ? rawContent : null;
-      if (!content) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "AI generation failed" });
+      if (!content)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "AI generation failed",
+        });
 
       let parsed: any;
       try {
         parsed = JSON.parse(content);
       } catch {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "AI response parsing failed — invalid JSON returned" });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "AI response parsing failed — invalid JSON returned",
+        });
       }
-      const [homeTeam, awayTeam] = input.matchup.split(" vs ").map(s => s.trim());
+      const [homeTeam, awayTeam] = input.matchup
+        .split(" vs ")
+        .map(s => s.trim());
 
       const db = await getDb();
       if (db) {
@@ -259,7 +447,10 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
           awayTeam: awayTeam ?? "",
           recommendation: parsed.recommendation,
           odds: Math.round(parsed.odds),
-          confidenceScore: Math.min(95, Math.max(50, Math.round(parsed.confidenceScore))),
+          confidenceScore: Math.min(
+            95,
+            Math.max(50, Math.round(parsed.confidenceScore))
+          ),
           edgeScore: String(Math.min(10, Math.max(0, parsed.edgeScore))),
           aiAnalysis: parsed.aiAnalysis,
           keyFactors: parsed.keyFactors,
@@ -280,10 +471,13 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
               secret: process.env.N8N_WEBHOOK_SECRET,
             }),
             signal: AbortSignal.timeout(5000),
-          }).catch((e) => console.warn("[n8n] picks webhook failed:", e));
+          }).catch(e => console.warn("[n8n] picks webhook failed:", e));
         }
         // Fire +EV push alert for high-confidence picks (≥80% confidence)
-        const confidence = Math.min(95, Math.max(50, Math.round(parsed.confidenceScore)));
+        const confidence = Math.min(
+          95,
+          Math.max(50, Math.round(parsed.confidenceScore))
+        );
         if (confidence >= 80) {
           sendEVAlert({
             sport: input.sportKey,
@@ -292,110 +486,252 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
             ev: parsed.edgeScore ? Number(parsed.edgeScore) * 2 : 5,
             odds: Math.round(parsed.odds),
             confidence,
-          }).catch((err) => console.warn("[picks] EV push alert failed:", err));
+          }).catch(err => console.warn("[picks] EV push alert failed:", err));
         }
-        return { success: true, pick: { ...parsed, id: (inserted as any).insertId } };
+        return {
+          success: true,
+          pick: { ...parsed, id: (inserted as any).insertId },
+        };
       }
 
       return { success: true, pick: parsed };
     }),
 
-    // Get performance stats — public, no auth required
+  // Get performance stats — public, no auth required
   performance: publicProcedure.query(async () => {
-    const FALLBACK = {
-      overall: { wins: 1104, losses: 96, pushes: 41, winRate: 92.0, roi: 18.4, totalPicks: 1241, currentStreak: 7, longestStreak: 14 },
-      bySport: [
-        { sport: "NFL", wins: 281, losses: 42, pushes: 8, winRate: 87.0, roi: 16.8 },
-        { sport: "NBA", wins: 260, losses: 23, pushes: 11, winRate: 91.9, roi: 19.2 },
-        { sport: "MLB", wins: 261, losses: 32, pushes: 9, winRate: 89.1, roi: 18.9 },
-        { sport: "NHL", wins: 276, losses: 24, pushes: 13, winRate: 92.0, roi: 17.6 },
-        { sport: "NCAAF", wins: 26, losses: 4, pushes: 0, winRate: 86.7, roi: 14.2 },
-      ],
-      monthlyTrend: [
-        { month: "Oct", winRate: 88.5, roi: 12.1, picks: 94 },
-        { month: "Nov", winRate: 89.2, roi: 15.3, picks: 112 },
-        { month: "Dec", winRate: 90.8, roi: 19.7, picks: 98 },
-        { month: "Jan", winRate: 91.5, roi: 18.4, picks: 134 },
-        { month: "Feb", winRate: 92.1, roi: 21.3, picks: 118 },
-        { month: "Mar", winRate: 92.8, roi: 23.1, picks: 141 },
-        { month: "Apr", winRate: 91.2, roi: 20.5, picks: 127 },
-        { month: "May", winRate: 93.0, roi: 24.2, picks: 139 },
-        { month: "Jun", winRate: 92.4, roi: 22.8, picks: 148 },
-        { month: "Jul", winRate: 91.8, roi: 21.1, picks: 130 },
-      ],
-      byPickType: [
-        { type: "Moneyline", wins: 421, losses: 38, winRate: 91.7 },
-        { type: "Spread", wins: 318, losses: 29, winRate: 91.6 },
-        { type: "Over/Under", wins: 214, losses: 18, winRate: 92.2 },
-        { type: "Player Prop", wins: 151, losses: 11, winRate: 93.2 },
-      ],
-    };
     const db = await getDb();
-    if (!db) return FALLBACK;
-    const allPicks = await db.select({
-      result: picks.result,
-      sportKey: picks.sportKey,
-      pickType: picks.pickType,
-      createdAt: picks.createdAt,
-    }).from(picks).where(eq(picks.isActive, true));
+    if (!db) {
+      return {
+        overall: {
+          wins: 0,
+          losses: 0,
+          pushes: 0,
+          winRate: 0,
+          roi: 0,
+          totalPicks: 0,
+          currentStreak: 0,
+          longestStreak: 0,
+        },
+        bySport: [],
+        monthlyTrend: [],
+        byPickType: [],
+      };
+    }
+    const allPicks = await db
+      .select({
+        result: picks.result,
+        sportKey: picks.sportKey,
+        pickType: picks.pickType,
+        odds: picks.odds,
+        createdAt: picks.createdAt,
+      })
+      .from(picks)
+      .where(eq(picks.isActive, true));
     const settled = allPicks.filter(p => p.result !== "pending");
     const wins = settled.filter(p => p.result === "win").length;
     const losses = settled.filter(p => p.result === "loss").length;
     const pushes = settled.filter(p => p.result === "push").length;
     const total = wins + losses;
     const winRate = total > 0 ? Math.round((wins / total) * 1000) / 10 : 0;
+
+    // ROI: assume $100 flat stake per pick, payout based on American odds
+    // American odds: +150 → profit $150 on $100; -110 → profit $90.91 on $100
+    const totalStaked = total * 100;
+    let totalProfit = 0;
+    for (const p of settled) {
+      if (p.result === "push") continue;
+      const o = p.odds ?? -110;
+      const profit = o > 0 ? o : 10000 / Math.abs(o);
+      if (p.result === "win") totalProfit += profit;
+      else totalProfit -= 100;
+    }
+    const roi =
+      totalStaked > 0
+        ? Math.round((totalProfit / totalStaked) * 10000) / 100
+        : 0;
+
     // By sport
-    const sportMap: Record<string, { wins: number; losses: number; pushes: number }> = {};
+    const sportMap: Record<
+      string,
+      {
+        wins: number;
+        losses: number;
+        pushes: number;
+        profit: number;
+        staked: number;
+      }
+    > = {};
     for (const p of settled) {
       const s = p.sportKey.toUpperCase();
-      if (!sportMap[s]) sportMap[s] = { wins: 0, losses: 0, pushes: 0 };
-      if (p.result === "win") sportMap[s].wins++;
-      else if (p.result === "loss") sportMap[s].losses++;
-      else sportMap[s].pushes++;
+      if (!sportMap[s])
+        sportMap[s] = { wins: 0, losses: 0, pushes: 0, profit: 0, staked: 0 };
+      if (p.result === "push") {
+        sportMap[s].pushes++;
+        continue;
+      }
+      const o = p.odds ?? -110;
+      const payout = o > 0 ? o : 10000 / Math.abs(o);
+      if (p.result === "win") {
+        sportMap[s].wins++;
+        sportMap[s].profit += payout;
+        sportMap[s].staked += 100;
+      } else {
+        sportMap[s].losses++;
+        sportMap[s].profit -= 100;
+        sportMap[s].staked += 100;
+      }
     }
     const bySport = Object.entries(sportMap).map(([sport, s]) => ({
-      sport, wins: s.wins, losses: s.losses, pushes: s.pushes,
-      winRate: s.wins + s.losses > 0 ? Math.round((s.wins / (s.wins + s.losses)) * 1000) / 10 : 0,
-      roi: 18.4,
+      sport,
+      wins: s.wins,
+      losses: s.losses,
+      pushes: s.pushes,
+      winRate:
+        s.wins + s.losses > 0
+          ? Math.round((s.wins / (s.wins + s.losses)) * 1000) / 10
+          : 0,
+      roi: s.staked > 0 ? Math.round((s.profit / s.staked) * 10000) / 100 : 0,
     }));
-    // Current win streak
-    const sorted = [...settled].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    // By pick type
+    const typeMap: Record<string, { wins: number; losses: number }> = {};
+    for (const p of settled) {
+      const t = p.pickType ?? "moneyline";
+      if (!typeMap[t]) typeMap[t] = { wins: 0, losses: 0 };
+      if (p.result === "win") typeMap[t].wins++;
+      else if (p.result === "loss") typeMap[t].losses++;
+    }
+    const byPickType = Object.entries(typeMap).map(([type, t]) => ({
+      type: type.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
+      wins: t.wins,
+      losses: t.losses,
+      winRate:
+        t.wins + t.losses > 0
+          ? Math.round((t.wins / (t.wins + t.losses)) * 1000) / 10
+          : 0,
+    }));
+
+    // Monthly trend (last 12 months)
+    const monthMap: Record<
+      string,
+      { wins: number; losses: number; profit: number; staked: number }
+    > = {};
+    for (const p of settled) {
+      const d = new Date(p.createdAt);
+      const key = d.toLocaleString("en-US", {
+        month: "short",
+        year: "2-digit",
+      });
+      if (!monthMap[key])
+        monthMap[key] = { wins: 0, losses: 0, profit: 0, staked: 0 };
+      if (p.result === "push") continue;
+      const o = p.odds ?? -110;
+      const payout = o > 0 ? o : 10000 / Math.abs(o);
+      if (p.result === "win") {
+        monthMap[key].wins++;
+        monthMap[key].profit += payout;
+        monthMap[key].staked += 100;
+      } else {
+        monthMap[key].losses++;
+        monthMap[key].profit -= 100;
+        monthMap[key].staked += 100;
+      }
+    }
+    const monthlyTrend = Object.entries(monthMap)
+      .slice(-12)
+      .map(([month, m]) => ({
+        month: month.split(" ")[0],
+        winRate:
+          m.wins + m.losses > 0
+            ? Math.round((m.wins / (m.wins + m.losses)) * 1000) / 10
+            : 0,
+        roi: m.staked > 0 ? Math.round((m.profit / m.staked) * 10000) / 100 : 0,
+        picks: m.wins + m.losses,
+      }));
+
+    // Current & longest win streak
+    const sorted = [...settled].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
     let currentStreak = 0;
     for (const p of sorted) {
       if (p.result === "win") currentStreak++;
-      else break;
+      else if (p.result === "loss") break;
     }
+    // Longest streak (scan forward)
+    let longestStreak = 0;
+    let runStreak = 0;
+    for (const p of [...sorted].reverse()) {
+      if (p.result === "win") {
+        runStreak++;
+        longestStreak = Math.max(longestStreak, runStreak);
+      } else if (p.result === "loss") runStreak = 0;
+    }
+
     return {
-      overall: { wins, losses, pushes, winRate, roi: 18.4, totalPicks: allPicks.length, currentStreak, longestStreak: Math.max(currentStreak, 7) },
-      bySport: bySport.length > 0 ? bySport : FALLBACK.bySport,
-      monthlyTrend: FALLBACK.monthlyTrend,
-      byPickType: FALLBACK.byPickType,
+      overall: {
+        wins,
+        losses,
+        pushes,
+        winRate,
+        roi,
+        totalPicks: allPicks.length,
+        currentStreak,
+        longestStreak,
+      },
+      bySport: bySport.length > 0 ? bySport : [],
+      monthlyTrend: monthlyTrend.length > 0 ? monthlyTrend : [],
+      byPickType: byPickType.length > 0 ? byPickType : [],
     };
   }),
 
   // Recent settled picks for public performance page
   recentSettled: publicProcedure
-    .input(z.object({ limit: z.number().min(1).max(20).default(10) }).optional())
+    .input(
+      z.object({ limit: z.number().min(1).max(20).default(10) }).optional()
+    )
     .query(async ({ input }) => {
       const limit = input?.limit ?? 10;
       const db = await getDb();
       if (!db) {
         const mock = generateMockPicks(new Date().toISOString().split("T")[0]);
-        return { picks: mock.filter(p => p.result !== "pending").slice(0, limit).map((p, i) => ({
-          id: i + 1, sportKey: p.sportKey, pickType: p.pickType,
-          homeTeam: p.homeTeam, awayTeam: p.awayTeam,
-          recommendation: p.recommendation, odds: p.odds,
-          confidenceScore: p.confidenceScore, edgeScore: p.edgeScore,
-          result: p.result, tier: p.tier, createdAt: new Date(),
-        })) };
+        return {
+          picks: mock
+            .filter(p => p.result !== "pending")
+            .slice(0, limit)
+            .map((p, i) => ({
+              id: i + 1,
+              sportKey: p.sportKey,
+              pickType: p.pickType,
+              homeTeam: p.homeTeam,
+              awayTeam: p.awayTeam,
+              recommendation: p.recommendation,
+              odds: p.odds,
+              confidenceScore: p.confidenceScore,
+              edgeScore: p.edgeScore,
+              result: p.result,
+              tier: p.tier,
+              createdAt: new Date(),
+            })),
+        };
       }
-      const recent = await db.select({
-        id: picks.id, sportKey: picks.sportKey, pickType: picks.pickType,
-        homeTeam: picks.homeTeam, awayTeam: picks.awayTeam,
-        recommendation: picks.recommendation, odds: picks.odds,
-        confidenceScore: picks.confidenceScore, edgeScore: picks.edgeScore,
-        result: picks.result, tier: picks.tier, createdAt: picks.createdAt,
-      }).from(picks)
+      const recent = await db
+        .select({
+          id: picks.id,
+          sportKey: picks.sportKey,
+          pickType: picks.pickType,
+          homeTeam: picks.homeTeam,
+          awayTeam: picks.awayTeam,
+          recommendation: picks.recommendation,
+          odds: picks.odds,
+          confidenceScore: picks.confidenceScore,
+          edgeScore: picks.edgeScore,
+          result: picks.result,
+          tier: picks.tier,
+          createdAt: picks.createdAt,
+        })
+        .from(picks)
         .where(and(eq(picks.isActive, true), sql`${picks.result} != 'pending'`))
         .orderBy(desc(picks.createdAt))
         .limit(limit);
@@ -407,10 +743,12 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
 
   // Archive of past picks grouped by date (public, powers /daily-picks SEO page)
   archive: publicProcedure
-    .input(z.object({
-      sportKey: z.string().optional(),
-      days: z.number().min(1).max(90).optional().default(30),
-    }))
+    .input(
+      z.object({
+        sportKey: z.string().optional(),
+        days: z.number().min(1).max(90).optional().default(30),
+      })
+    )
     .query(async ({ input }) => {
       const db = await getDb();
       const cutoff = new Date();
@@ -420,29 +758,35 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       if (!db) {
         const today = new Date().toISOString().split("T")[0];
         let mockData = generateMockPicks(today);
-        if (input.sportKey) mockData = mockData.filter(p => p.sportKey === input.sportKey);
+        if (input.sportKey)
+          mockData = mockData.filter(p => p.sportKey === input.sportKey);
         return {
-          days: [{
-            date: today,
-            picks: mockData.map((p, i) => ({
-              id: i + 1,
-              pickDate: today,
-              sportKey: p.sportKey,
-              pickType: p.pickType as string,
-              homeTeam: p.homeTeam,
-              awayTeam: p.awayTeam,
-              recommendation: p.recommendation,
-              odds: p.odds,
-              confidenceScore: p.confidenceScore,
-              result: p.result as string,
-              tier: p.tier as string,
-            })),
-          }],
+          days: [
+            {
+              date: today,
+              picks: mockData.map((p, i) => ({
+                id: i + 1,
+                pickDate: today,
+                sportKey: p.sportKey,
+                pickType: p.pickType as string,
+                homeTeam: p.homeTeam,
+                awayTeam: p.awayTeam,
+                recommendation: p.recommendation,
+                odds: p.odds,
+                confidenceScore: p.confidenceScore,
+                result: p.result as string,
+                tier: p.tier as string,
+              })),
+            },
+          ],
           sports: SPORTS_LIST,
         };
       }
 
-      const conditions = [eq(picks.isActive, true), gte(picks.pickDate, cutoffStr)];
+      const conditions = [
+        eq(picks.isActive, true),
+        gte(picks.pickDate, cutoffStr),
+      ];
       if (input.sportKey) conditions.push(eq(picks.sportKey, input.sportKey));
 
       const rows = await db
@@ -472,7 +816,10 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       }
 
       return {
-        days: Array.from(byDate.entries()).map(([date, dayPicks]) => ({ date, picks: dayPicks })),
+        days: Array.from(byDate.entries()).map(([date, dayPicks]) => ({
+          date,
+          picks: dayPicks,
+        })),
         sports: SPORTS_LIST,
       };
     }),
@@ -484,18 +831,32 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
     if (!db) {
       const mock = generateMockPicks(today).filter(p => p.tier === "free");
       if (mock.length === 0) return { pick: null, date: today };
-      const best = mock.sort((a, b) => b.confidenceScore - a.confidenceScore)[0];
-      return { pick: { ...best, id: 1, gameId: null, createdAt: new Date(), updatedAt: new Date(), isActive: true }, date: today };
+      const best = mock.sort(
+        (a, b) => b.confidenceScore - a.confidenceScore
+      )[0];
+      return {
+        pick: {
+          ...best,
+          id: 1,
+          gameId: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isActive: true,
+        },
+        date: today,
+      };
     }
     // Get today's highest-confidence free pick
     const [freePick] = await db
       .select()
       .from(picks)
-      .where(and(
-        eq(picks.tier, "free"),
-        eq(picks.isActive, true),
-        eq(picks.pickDate, today)
-      ))
+      .where(
+        and(
+          eq(picks.tier, "free"),
+          eq(picks.isActive, true),
+          eq(picks.pickDate, today)
+        )
+      )
       .orderBy(desc(picks.confidenceScore))
       .limit(1);
     // Fallback: get most recent free pick from last 7 days
@@ -505,11 +866,13 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       const [recentFree] = await db
         .select()
         .from(picks)
-        .where(and(
-          eq(picks.tier, "free"),
-          eq(picks.isActive, true),
-          gte(picks.pickDate, sevenDaysAgo.toISOString().split("T")[0])
-        ))
+        .where(
+          and(
+            eq(picks.tier, "free"),
+            eq(picks.isActive, true),
+            gte(picks.pickDate, sevenDaysAgo.toISOString().split("T")[0])
+          )
+        )
         .orderBy(desc(picks.confidenceScore))
         .limit(1);
       return { pick: recentFree ?? null, date: today };
@@ -523,7 +886,15 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
     if (!db) {
       // Return mock counts if DB not available
       return {
-        nfl: 4, nba: 3, mlb: 5, nhl: 2, ncaaf: 2, ncaab: 2, soccer: 1, tennis: 1, mma: 1,
+        nfl: 4,
+        nba: 3,
+        mlb: 5,
+        nhl: 2,
+        ncaaf: 2,
+        ncaab: 2,
+        soccer: 1,
+        tennis: 1,
+        mma: 1,
       } as Record<string, number>;
     }
     const sevenDaysAgo = new Date();
@@ -531,10 +902,12 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
     const rows = await db
       .select({ sportKey: picks.sportKey, count: sql<number>`count(*)` })
       .from(picks)
-      .where(and(
-        eq(picks.isActive, true),
-        gte(picks.pickDate, sevenDaysAgo.toISOString().split("T")[0]),
-      ))
+      .where(
+        and(
+          eq(picks.isActive, true),
+          gte(picks.pickDate, sevenDaysAgo.toISOString().split("T")[0])
+        )
+      )
       .groupBy(picks.sportKey);
     const result: Record<string, number> = {};
     for (const row of rows) {
@@ -551,11 +924,8 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
     const rows = await db
       .select({ sportKey: picks.sportKey })
       .from(picks)
-      .where(and(
-        eq(picks.isActive, true),
-        gte(picks.createdAt, oneDayAgo),
-      ))
+      .where(and(eq(picks.isActive, true), gte(picks.createdAt, oneDayAgo)))
       .groupBy(picks.sportKey);
-    return rows.map((r) => r.sportKey);
+    return rows.map(r => r.sportKey);
   }),
 });

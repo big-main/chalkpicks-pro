@@ -1771,11 +1771,11 @@
 
 ## UI Feature Enhancements (Jul 29, 2026)
 
-- [ ] Odds page: Add Steam Detection + High Kelly filter controls with highlight logic
-- [ ] /methodology page: Add interactive Mermaid-style diagrams illustrating AI model pipeline
-- [ ] /how-it-works page: Add interactive flow diagrams showing platform user journey
-- [ ] Dashboard: Monte Carlo backtesting results visualization component (histogram + percentile bands)
-- [ ] Dashboard: Poisson Matrix distribution heatmap visualization component
+- [x] Odds page: Add Steam Detection + High Kelly filter controls with highlight logic
+- [x] /methodology page: Add interactive Mermaid-style diagrams illustrating AI model pipeline
+- [x] /how-it-works page: Add interactive flow diagrams showing platform user journey
+- [x] Dashboard: Monte Carlo backtesting results visualization component (histogram + percentile bands)
+- [x] Dashboard: Poisson Matrix distribution heatmap visualization component
 
 ## UI Features — Quant Visualization (Jul 29, 2026)
 
@@ -1788,3 +1788,14 @@
 - [x] PoissonHeatmap component — interactive score probability heatmap grid with over/under probabilities
 - [x] UserDashboard Analytics tab — Monte Carlo + Poisson visualizations for premium subscribers
 - [x] 0 TypeScript errors, 182 tests passing
+
+## Homepage Redesign + UI Enhancement (Jul 29, 2026)
+
+- [x] Homepage hero: Rewrite with clean layout, gradient headline, social proof bar, proper SEO h1
+- [x] Homepage: Fix live feed ticker (thin strip, no garish badges)
+- [x] Homepage: Fix article cards (proper spacing, no overlapping badges)
+- [x] Homepage: Reduce social icon prominence, improve mobile nav
+- [x] Odds page: Add sorting dropdown (Kelly %, Steam Score, Edge %, Sport, Time)
+- [x] Diagram nodes: Make clickable with Dialog modal showing detailed process explanation
+- [x] Dashboard: Add DateRangePicker + SportSelector to filter Monte Carlo/Poisson visualizations
+- [x] Navbar: Reduce logo size (260x88 → 180x60), remove social icons from nav

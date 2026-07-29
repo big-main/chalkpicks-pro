@@ -69,7 +69,7 @@ const BET_TYPES = [
 function ExportCSVButton() {
   const { isAuthenticated } = useAuth();
   const {
-    data: allBets,
+    data: _allBets,
     refetch,
     isFetching,
   } = trpc.bets.list.useQuery(
@@ -168,11 +168,13 @@ function ExportCSVButton() {
 }
 
 export default function UserDashboard() {
-  const { isAuthenticated, user, loading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const [addOpen, setAddOpen] = useState(false);
   const [filterResult, setFilterResult] = useState<
     "all" | "win" | "loss" | "push" | "pending"
   >("all");
+  const [analyticsDateRange, setAnalyticsDateRange] = useState("all");
+  const [analyticsSport, setAnalyticsSport] = useState("all");
 
   const [form, setForm] = useState({
     sportKey: "nfl",
@@ -848,6 +850,68 @@ export default function UserDashboard() {
                           <Legend />
                         </PieChart>
                       </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* ─── FILTER BAR: Date Range + Sport Selector ─── */}
+                {mySubscription?.isActive && (
+                  <Card className="bg-card border-border lg:col-span-2">
+                    <CardContent className="p-4">
+                      <div className="flex flex-wrap items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <Label className="text-xs text-muted-foreground whitespace-nowrap">
+                            Date Range
+                          </Label>
+                          <Select
+                            value={analyticsDateRange}
+                            onValueChange={setAnalyticsDateRange}
+                          >
+                            <SelectTrigger className="w-[140px] h-8 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="7d">Last 7 Days</SelectItem>
+                              <SelectItem value="30d">Last 30 Days</SelectItem>
+                              <SelectItem value="90d">Last 90 Days</SelectItem>
+                              <SelectItem value="6m">Last 6 Months</SelectItem>
+                              <SelectItem value="1y">Last Year</SelectItem>
+                              <SelectItem value="all">All Time</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Label className="text-xs text-muted-foreground whitespace-nowrap">
+                            Sport
+                          </Label>
+                          <Select
+                            value={analyticsSport}
+                            onValueChange={setAnalyticsSport}
+                          >
+                            <SelectTrigger className="w-[120px] h-8 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Sports</SelectItem>
+                              <SelectItem value="nfl">NFL</SelectItem>
+                              <SelectItem value="nba">NBA</SelectItem>
+                              <SelectItem value="mlb">MLB</SelectItem>
+                              <SelectItem value="nhl">NHL</SelectItem>
+                              <SelectItem value="soccer">Soccer</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="ml-auto text-[10px] text-muted-foreground">
+                          Showing{" "}
+                          {analyticsDateRange === "all"
+                            ? "all"
+                            : analyticsDateRange}{" "}
+                          ·{" "}
+                          {analyticsSport === "all"
+                            ? "All Sports"
+                            : analyticsSport.toUpperCase()}
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 )}

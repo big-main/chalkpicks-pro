@@ -6,17 +6,47 @@ import { Link, useLocation } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Menu, X, Zap, ChevronDown, Bell, Crown, Cpu, ArrowRight,
-  BarChart3, Target, TrendingUp, Calculator, Layers, Eye,
-  Trophy, Users, Settings, LogOut, Star, Percent,
-  Activity, BookOpen, DollarSign, GitCompare, LineChart,
-  Brain, Flame, Shield, Dices, Sigma, FlaskConical, Swords, CheckCircle2
+  Menu,
+  X,
+  Zap,
+  ChevronDown,
+  Bell,
+  Crown,
+  Cpu,
+  ArrowRight,
+  BarChart3,
+  Target,
+  TrendingUp,
+  Calculator,
+  Layers,
+  Eye,
+  Trophy,
+  Users,
+  Settings,
+  LogOut,
+  Star,
+  Percent,
+  Activity,
+  BookOpen,
+  DollarSign,
+  GitCompare,
+  LineChart,
+  Brain,
+  Flame,
+  Shield,
+  Dices,
+  Sigma,
+  FlaskConical,
+  Swords,
+  CheckCircle2,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 // Logo URLs — gold crown + red splatter
-const LOGO_FULL = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png";
-const LOGO_ICON = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png";
+const LOGO_FULL =
+  "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png";
+const LOGO_ICON =
+  "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png";
 
 function LlmStatusBadge() {
   const { data } = trpc.system.llmStatus.useQuery(undefined, {
@@ -24,10 +54,25 @@ function LlmStatusBadge() {
     staleTime: 15_000,
   });
   if (!data) return null;
-  const providerConfig: Record<string, { label: string; color: string; title: string }> = {
-    qwen: { label: "Qwen", color: "#39ff14", title: "Qwen 2.5 7B (Local — Free)" },
-    "gpt-4o-mini": { label: "GPT-4o", color: "#0ea5e9", title: "GPT-4o-mini (OpenRouter)" },
-    gemini: { label: "Gemini", color: "#06b6d4", title: "Gemini Flash (Forge)" },
+  const providerConfig: Record<
+    string,
+    { label: string; color: string; title: string }
+  > = {
+    qwen: {
+      label: "Qwen",
+      color: "#39ff14",
+      title: "Qwen 2.5 7B (Local — Free)",
+    },
+    "gpt-4o-mini": {
+      label: "GPT-4o",
+      color: "#0ea5e9",
+      title: "GPT-4o-mini (OpenRouter)",
+    },
+    gemini: {
+      label: "Gemini",
+      color: "#06b6d4",
+      title: "Gemini Flash (Forge)",
+    },
   };
   const cfg = providerConfig[data.provider] ?? providerConfig.gemini;
   return (
@@ -42,7 +87,10 @@ function LlmStatusBadge() {
     >
       <Cpu className="w-3 h-3" />
       <span>{cfg.label}</span>
-      <span className="w-1.5 h-1.5 rounded-full animate-pulse-green" style={{ background: cfg.color }} />
+      <span
+        className="w-1.5 h-1.5 rounded-full animate-pulse-green"
+        style={{ background: cfg.color }}
+      />
     </div>
   );
 }
@@ -53,76 +101,306 @@ const navGroups = [
     label: "Analytics",
     color: "#39ff14",
     items: [
-      { href: "/picks", label: "AI Picks", icon: Brain, desc: "Daily AI-generated picks with confidence scores" },
-      { href: "/ev-finder", label: "+EV Finder", icon: Percent, desc: "Find positive expected value bets in real-time" },
-      { href: "/performance", label: "Performance", icon: BarChart3, desc: "Verified track record & ROI stats" },
-      { href: "/stats", label: "Live Stats", icon: Activity, desc: "Real-time game data & line movement" },
-      { href: "/elo-ratings", label: "Elo Power Ratings", icon: Sigma, desc: "AI team power ratings & win probability" },
-      { href: "/strategy-builder", label: "Strategy Builder", icon: Brain, desc: "Build & backtest custom betting strategies" },
-      { href: "/public-betting", label: "Public Betting %", icon: Users, desc: "See where public money is going" },
-      { href: "/results", label: "Pick Results", icon: CheckCircle2, desc: "Verified AI pick track record & graded results" },
+      {
+        href: "/picks",
+        label: "AI Picks",
+        icon: Brain,
+        desc: "Daily AI-generated picks with confidence scores",
+      },
+      {
+        href: "/ev-finder",
+        label: "+EV Finder",
+        icon: Percent,
+        desc: "Find positive expected value bets in real-time",
+      },
+      {
+        href: "/performance",
+        label: "Performance",
+        icon: BarChart3,
+        desc: "Verified track record & ROI stats",
+      },
+      {
+        href: "/stats",
+        label: "Live Stats",
+        icon: Activity,
+        desc: "Real-time game data & line movement",
+      },
+      {
+        href: "/elo-ratings",
+        label: "Elo Power Ratings",
+        icon: Sigma,
+        desc: "AI team power ratings & win probability",
+      },
+      {
+        href: "/strategy-builder",
+        label: "Strategy Builder",
+        icon: Brain,
+        desc: "Build & backtest custom betting strategies",
+      },
+      {
+        href: "/public-betting",
+        label: "Public Betting %",
+        icon: Users,
+        desc: "See where public money is going",
+      },
+      {
+        href: "/results",
+        label: "Pick Results",
+        icon: CheckCircle2,
+        desc: "Verified AI pick track record & graded results",
+      },
     ],
   },
   {
     label: "Tools",
     color: "#06b6d4",
     items: [
-      { href: "/arbitrage", label: "Arbitrage", icon: GitCompare, desc: "Guaranteed profit opportunities" },
-      { href: "/parlay-builder", label: "Parlay Builder", icon: Layers, desc: "AI-optimized correlated parlays" },
-      { href: "/parlay-flow", label: "Visual Parlay Flow", icon: Layers, desc: "Interactive node-based parlay diagram" },
-      { href: "/clv-tracker", label: "CLV Tracker", icon: TrendingUp, desc: "Track closing line value on every bet" },
-      { href: "/line-movement", label: "Line Movement", icon: LineChart, desc: "Detect sharp money movements" },
-      { href: "/prop-builder", label: "Prop Builder", icon: Target, desc: "Build and analyze player props" },
-      { href: "/correlation-finder", label: "Correlations", icon: Eye, desc: "Find correlated bet combinations" },
-      { href: "/dfs-optimizer", label: "DFS Optimizer", icon: Dices, desc: "Optimal DraftKings & FanDuel lineups" },
-      { href: "/monte-carlo", label: "Monte Carlo", icon: FlaskConical, desc: "Bankroll risk & growth simulation" },
-      { href: "/sharp-money", label: "Sharp Money", icon: TrendingUp, desc: "Detect sharp money vs. public action" },
-      { href: "/consensus", label: "Consensus", icon: Users, desc: "Public betting % vs CP AI recommendation" },
-      { href: "/api-access", label: "API Access", icon: Brain, desc: "Integrate ChalkPicks data into your tools" },
+      {
+        href: "/arbitrage",
+        label: "Arbitrage",
+        icon: GitCompare,
+        desc: "Guaranteed profit opportunities",
+      },
+      {
+        href: "/parlay-builder",
+        label: "Parlay Builder",
+        icon: Layers,
+        desc: "AI-optimized correlated parlays",
+      },
+      {
+        href: "/parlay-flow",
+        label: "Visual Parlay Flow",
+        icon: Layers,
+        desc: "Interactive node-based parlay diagram",
+      },
+      {
+        href: "/clv-tracker",
+        label: "CLV Tracker",
+        icon: TrendingUp,
+        desc: "Track closing line value on every bet",
+      },
+      {
+        href: "/line-movement",
+        label: "Line Movement",
+        icon: LineChart,
+        desc: "Detect sharp money movements",
+      },
+      {
+        href: "/prop-builder",
+        label: "Prop Builder",
+        icon: Target,
+        desc: "Build and analyze player props",
+      },
+      {
+        href: "/correlation-finder",
+        label: "Correlations",
+        icon: Eye,
+        desc: "Find correlated bet combinations",
+      },
+      {
+        href: "/dfs-optimizer",
+        label: "DFS Optimizer",
+        icon: Dices,
+        desc: "Optimal DraftKings & FanDuel lineups",
+      },
+      {
+        href: "/monte-carlo",
+        label: "Monte Carlo",
+        icon: FlaskConical,
+        desc: "Bankroll risk & growth simulation",
+      },
+      {
+        href: "/sharp-money",
+        label: "Sharp Money",
+        icon: TrendingUp,
+        desc: "Detect sharp money vs. public action",
+      },
+      {
+        href: "/consensus",
+        label: "Consensus",
+        icon: Users,
+        desc: "Public betting % vs CP AI recommendation",
+      },
+      {
+        href: "/api-access",
+        label: "API Access",
+        icon: Brain,
+        desc: "Integrate ChalkPicks data into your tools",
+      },
     ],
   },
   {
     label: "Calculators",
     color: "#60a5fa",
     items: [
-      { href: "/tools", label: "All Tools", icon: Calculator, desc: "Full suite of betting calculators" },
-      { href: "/tools/odds-calculator", label: "Odds Calculator", icon: Calculator, desc: "Convert odds formats instantly" },
-      { href: "/tools/roi-calculator", label: "ROI Calculator", icon: DollarSign, desc: "Calculate return on investment" },
-      { href: "/tools/bankroll-manager", label: "Bankroll Manager", icon: Shield, desc: "Manage your betting bankroll" },
-      { href: "/bet-calculator", label: "Bet Calculator", icon: Calculator, desc: "Kelly Criterion & bet sizing" },
-      { href: "/tools/devig-calculator", label: "Devig Calculator", icon: Sigma, desc: "Remove vig & find true odds" },
-      { href: "/tools/parlay-calculator", label: "Parlay Calculator", icon: Layers, desc: "Calculate parlay odds & payouts" },
-      { href: "/tools/kelly-calculator", label: "Kelly Calculator", icon: Target, desc: "Optimal bet sizing with Kelly Criterion" },
-      { href: "/tools/ev-calculator", label: "EV Calculator", icon: TrendingUp, desc: "Calculate expected value on any bet" },
-      { href: "/tools/free-bet-converter", label: "Free Bet Converter", icon: DollarSign, desc: "Convert free bets to guaranteed cash" },
-      { href: "/tools/middles-finder", label: "Middles Finder", icon: Target, desc: "Find middle opportunities across books" },
+      {
+        href: "/tools",
+        label: "All Tools",
+        icon: Calculator,
+        desc: "Full suite of betting calculators",
+      },
+      {
+        href: "/tools/odds-calculator",
+        label: "Odds Calculator",
+        icon: Calculator,
+        desc: "Convert odds formats instantly",
+      },
+      {
+        href: "/tools/roi-calculator",
+        label: "ROI Calculator",
+        icon: DollarSign,
+        desc: "Calculate return on investment",
+      },
+      {
+        href: "/tools/bankroll-manager",
+        label: "Bankroll Manager",
+        icon: Shield,
+        desc: "Manage your betting bankroll",
+      },
+      {
+        href: "/bet-calculator",
+        label: "Bet Calculator",
+        icon: Calculator,
+        desc: "Kelly Criterion & bet sizing",
+      },
+      {
+        href: "/tools/devig-calculator",
+        label: "Devig Calculator",
+        icon: Sigma,
+        desc: "Remove vig & find true odds",
+      },
+      {
+        href: "/tools/parlay-calculator",
+        label: "Parlay Calculator",
+        icon: Layers,
+        desc: "Calculate parlay odds & payouts",
+      },
+      {
+        href: "/tools/kelly-calculator",
+        label: "Kelly Calculator",
+        icon: Target,
+        desc: "Optimal bet sizing with Kelly Criterion",
+      },
+      {
+        href: "/tools/ev-calculator",
+        label: "EV Calculator",
+        icon: TrendingUp,
+        desc: "Calculate expected value on any bet",
+      },
+      {
+        href: "/tools/free-bet-converter",
+        label: "Free Bet Converter",
+        icon: DollarSign,
+        desc: "Convert free bets to guaranteed cash",
+      },
+      {
+        href: "/tools/middles-finder",
+        label: "Middles Finder",
+        icon: Target,
+        desc: "Find middle opportunities across books",
+      },
     ],
   },
   {
     label: "Sport Picks",
     color: "#f97316",
     items: [
-      { href: "/nfl-picks", label: "NFL Picks", icon: Swords, desc: "AI-powered NFL predictions today" },
-      { href: "/nba-picks", label: "NBA Picks", icon: Swords, desc: "AI-powered NBA predictions today" },
-      { href: "/mlb-picks", label: "MLB Picks", icon: Swords, desc: "AI-powered MLB predictions today" },
-      { href: "/nhl-picks", label: "NHL Picks", icon: Swords, desc: "AI-powered NHL predictions today" },
-      { href: "/ncaaf-picks", label: "NCAAF Picks", icon: Swords, desc: "College football AI picks" },
-      { href: "/ncaab-picks", label: "NCAAB Picks", icon: Swords, desc: "College basketball AI picks" },
-      { href: "/mma-picks", label: "MMA Picks", icon: Swords, desc: "UFC & MMA fight predictions" },
-      { href: "/soccer-picks", label: "Soccer Picks", icon: Swords, desc: "EPL, MLS & soccer predictions" },
+      {
+        href: "/nfl-picks",
+        label: "NFL Picks",
+        icon: Swords,
+        desc: "AI-powered NFL predictions today",
+      },
+      {
+        href: "/nba-picks",
+        label: "NBA Picks",
+        icon: Swords,
+        desc: "AI-powered NBA predictions today",
+      },
+      {
+        href: "/mlb-picks",
+        label: "MLB Picks",
+        icon: Swords,
+        desc: "AI-powered MLB predictions today",
+      },
+      {
+        href: "/nhl-picks",
+        label: "NHL Picks",
+        icon: Swords,
+        desc: "AI-powered NHL predictions today",
+      },
+      {
+        href: "/ncaaf-picks",
+        label: "NCAAF Picks",
+        icon: Swords,
+        desc: "College football AI picks",
+      },
+      {
+        href: "/ncaab-picks",
+        label: "NCAAB Picks",
+        icon: Swords,
+        desc: "College basketball AI picks",
+      },
+      {
+        href: "/mma-picks",
+        label: "MMA Picks",
+        icon: Swords,
+        desc: "UFC & MMA fight predictions",
+      },
+      {
+        href: "/soccer-picks",
+        label: "Soccer Picks",
+        icon: Swords,
+        desc: "EPL, MLS & soccer predictions",
+      },
     ],
   },
   {
     label: "Community",
     color: "#06b6d4",
     items: [
-      { href: "/leaderboard", label: "Leaderboard", icon: Trophy, desc: "Top performers this month" },
-      { href: "/backtesting", label: "Backtesting", icon: BookOpen, desc: "Test strategies on historical data" },
-      { href: "/kalshi", label: "Kalshi Markets", icon: Flame, desc: "Prediction market opportunities" },
-      { href: "/sportsbooks", label: "Sportsbooks", icon: Star, desc: "Best books & sign-up bonuses" },
-      { href: "/odds-comparison", label: "Odds Compare", icon: GitCompare, desc: "Compare lines across books" },
-      { href: "/guides", label: "Betting Guides", icon: BookOpen, desc: "Free sports betting strategy guides" },
-      { href: "/referral", label: "Referral", icon: Users, desc: "Earn rewards by referring friends" },
+      {
+        href: "/leaderboard",
+        label: "Leaderboard",
+        icon: Trophy,
+        desc: "Top performers this month",
+      },
+      {
+        href: "/backtesting",
+        label: "Backtesting",
+        icon: BookOpen,
+        desc: "Test strategies on historical data",
+      },
+      {
+        href: "/kalshi",
+        label: "Kalshi Markets",
+        icon: Flame,
+        desc: "Prediction market opportunities",
+      },
+      {
+        href: "/sportsbooks",
+        label: "Sportsbooks",
+        icon: Star,
+        desc: "Best books & sign-up bonuses",
+      },
+      {
+        href: "/odds-comparison",
+        label: "Odds Compare",
+        icon: GitCompare,
+        desc: "Compare lines across books",
+      },
+      {
+        href: "/guides",
+        label: "Betting Guides",
+        icon: BookOpen,
+        desc: "Free sports betting strategy guides",
+      },
+      {
+        href: "/referral",
+        label: "Referral",
+        icon: Users,
+        desc: "Earn rewards by referring friends",
+      },
     ],
   },
 ];
@@ -137,8 +415,12 @@ const primaryLinks = [
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
-  const { data: newPickSports } = trpc.picks.newPickSports.useQuery(undefined, { refetchInterval: 60_000 });
-  const { data: siteStats } = trpc.system.siteStats.useQuery(undefined, { staleTime: 120_000 });
+  const { data: newPickSports } = trpc.picks.newPickSports.useQuery(undefined, {
+    refetchInterval: 60_000,
+  });
+  const { data: siteStats } = trpc.system.siteStats.useQuery(undefined, {
+    staleTime: 120_000,
+  });
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -155,17 +437,25 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (megaRef.current && !megaRef.current.contains(e.target as Node)) setMegaOpen(false);
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) setUserMenuOpen(false);
+      if (megaRef.current && !megaRef.current.contains(e.target as Node))
+        setMegaOpen(false);
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(e.target as Node)
+      )
+        setUserMenuOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const { data: notifCount } = trpc.notifications.getUnreadCount.useQuery(undefined, {
-    enabled: isAuthenticated,
-    refetchInterval: 30000,
-  });
+  const { data: notifCount } = trpc.notifications.getUnreadCount.useQuery(
+    undefined,
+    {
+      enabled: isAuthenticated,
+      refetchInterval: 30000,
+    }
+  );
 
   const isPremium = user?.subscriptionTier && user.subscriptionTier !== "free";
 
@@ -173,9 +463,7 @@ export default function Navbar() {
     <nav
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
       style={{
-        background: scrolled
-          ? "rgba(6, 6, 12, 0.95)"
-          : "rgba(6, 6, 12, 0.7)",
+        background: scrolled ? "rgba(6, 6, 12, 0.95)" : "rgba(6, 6, 12, 0.7)",
         backdropFilter: "blur(24px) saturate(1.4)",
         WebkitBackdropFilter: "blur(24px) saturate(1.4)",
         borderBottom: scrolled
@@ -188,34 +476,41 @@ export default function Navbar() {
     >
       <div className="max-w-[1400px] mx-auto px-4 lg:px-6">
         <div className="flex items-center justify-between h-[76px]">
-
           {/* ── LOGO ── */}
-          <Link href="/" className="flex items-center gap-0 group flex-shrink-0">
+          <Link
+            href="/"
+            className="flex items-center gap-0 group flex-shrink-0"
+          >
             {/* Mobile: icon only */}
-            <div className="md:hidden relative w-16 h-16 overflow-hidden flex items-center justify-center">
+            <div className="md:hidden relative w-12 h-12 overflow-hidden flex items-center justify-center">
               <img
                 src={LOGO_ICON}
                 alt="ChalkPicks"
-                className="w-[80px] h-[80px] object-contain transition-all duration-300 group-hover:scale-105"
+                className="w-[48px] h-[48px] object-contain transition-all duration-300 group-hover:scale-105"
                 style={{
-                  filter: "drop-shadow(0 0 14px rgba(57, 255, 20, 0.5)) drop-shadow(0 0 6px rgba(6, 182, 212, 0.35))",
+                  filter:
+                    "drop-shadow(0 0 10px rgba(57, 255, 20, 0.4)) drop-shadow(0 0 4px rgba(6, 182, 212, 0.25))",
                 }}
               />
             </div>
             {/* Desktop: full logo */}
-            <div className="hidden md:flex items-center relative overflow-hidden" style={{ width: 260, height: 88 }}>
+            <div
+              className="hidden md:flex items-center relative overflow-hidden"
+              style={{ width: 180, height: 60 }}
+            >
               <img
                 src={LOGO_FULL}
                 alt="ChalkPicks"
                 className="absolute transition-all duration-300 group-hover:scale-[1.04]"
                 style={{
-                  filter: "drop-shadow(0 0 18px rgba(57, 255, 20, 0.45)) drop-shadow(0 0 8px rgba(6, 182, 212, 0.30))",
+                  filter:
+                    "drop-shadow(0 0 12px rgba(57, 255, 20, 0.35)) drop-shadow(0 0 5px rgba(6, 182, 212, 0.2))",
                   width: "100%",
                   height: "auto",
                   top: "50%",
                   left: "50%",
                   transform: "translate(-50%, -50%)",
-                  maxWidth: 300,
+                  maxWidth: 200,
                 }}
               />
             </div>
@@ -223,7 +518,7 @@ export default function Navbar() {
 
           {/* ── DESKTOP NAV ── */}
           <div className="hidden lg:flex items-center gap-0.5 mx-4">
-            {primaryLinks.map((link) => {
+            {primaryLinks.map(link => {
               const isActive = location === link.href;
               return (
                 <Link
@@ -232,31 +527,52 @@ export default function Navbar() {
                   className="relative px-4 py-2 text-[13.5px] font-medium rounded-lg transition-all duration-200"
                   style={{
                     color: isActive ? "#39ff14" : "rgba(255, 255, 255, 0.58)",
-                    background: isActive ? "rgba(57, 255, 20, 0.06)" : "transparent",
+                    background: isActive
+                      ? "rgba(57, 255, 20, 0.06)"
+                      : "transparent",
                   }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.85)";
+                  onMouseEnter={e => {
+                    if (!isActive)
+                      (e.currentTarget as HTMLElement).style.color =
+                        "rgba(255,255,255,0.85)";
                   }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.58)";
+                  onMouseLeave={e => {
+                    if (!isActive)
+                      (e.currentTarget as HTMLElement).style.color =
+                        "rgba(255,255,255,0.58)";
                   }}
                 >
                   {link.label}
-                  {link.href === "/picks" && siteStats && siteStats.picksToday > 0 && (
-                    <span
-                      className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
-                      style={{ background: "#39ff14", color: "#000", boxShadow: "0 0 8px rgba(57,255,20,0.7)" }}
-                    >
-                      {siteStats.picksToday}
-                    </span>
-                  )}
-                  {link.href === "/picks" && (!siteStats || siteStats.picksToday === 0) && newPickSports && newPickSports.length > 0 && (
-                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-cyan-400 animate-pulse" style={{ boxShadow: "0 0 8px rgba(6, 182, 212, 0.8)" }} />
-                  )}
+                  {link.href === "/picks" &&
+                    siteStats &&
+                    siteStats.picksToday > 0 && (
+                      <span
+                        className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
+                        style={{
+                          background: "#39ff14",
+                          color: "#000",
+                          boxShadow: "0 0 8px rgba(57,255,20,0.7)",
+                        }}
+                      >
+                        {siteStats.picksToday}
+                      </span>
+                    )}
+                  {link.href === "/picks" &&
+                    (!siteStats || siteStats.picksToday === 0) &&
+                    newPickSports &&
+                    newPickSports.length > 0 && (
+                      <span
+                        className="absolute top-1 right-1 w-2 h-2 rounded-full bg-cyan-400 animate-pulse"
+                        style={{ boxShadow: "0 0 8px rgba(6, 182, 212, 0.8)" }}
+                      />
+                    )}
                   {isActive && (
                     <span
                       className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-4 h-[2px] rounded-full"
-                      style={{ background: "#39ff14", boxShadow: "0 0 8px rgba(57, 255, 20, 0.7)" }}
+                      style={{
+                        background: "#39ff14",
+                        boxShadow: "0 0 8px rgba(57, 255, 20, 0.7)",
+                      }}
                     />
                   )}
                 </Link>
@@ -267,14 +583,19 @@ export default function Navbar() {
             <div ref={megaRef} className="relative">
               <button
                 className="flex items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium rounded-lg transition-all duration-200"
-                style={{ color: megaOpen ? "#39ff14" : "rgba(255, 255, 255, 0.58)" }}
+                style={{
+                  color: megaOpen ? "#39ff14" : "rgba(255, 255, 255, 0.58)",
+                }}
                 aria-label="Tools & More menu"
                 aria-expanded={megaOpen}
                 onMouseEnter={() => setMegaOpen(true)}
                 onClick={() => setMegaOpen(!megaOpen)}
               >
                 Tools & More
-                <motion.div animate={{ rotate: megaOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                <motion.div
+                  animate={{ rotate: megaOpen ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
                   <ChevronDown className="w-3.5 h-3.5" />
                 </motion.div>
               </button>
@@ -290,7 +611,8 @@ export default function Navbar() {
                     style={{
                       background: "rgba(8, 8, 16, 0.97)",
                       border: "1px solid rgba(255, 255, 255, 0.08)",
-                      boxShadow: "0 24px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(57, 255, 20, 0.04), inset 0 1px 0 rgba(255,255,255,0.05)",
+                      boxShadow:
+                        "0 24px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(57, 255, 20, 0.04), inset 0 1px 0 rgba(255,255,255,0.05)",
                       backdropFilter: "blur(24px)",
                     }}
                     onMouseLeave={() => setMegaOpen(false)}
@@ -299,12 +621,14 @@ export default function Navbar() {
                     <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[rgba(57,255,20,0.3)] to-transparent" />
 
                     <div className="p-5 grid grid-cols-5 gap-4">
-                      {navGroups.map((group) => (
+                      {navGroups.map(group => (
                         <div key={group.label}>
                           {/* Group header */}
                           <div
                             className="flex items-center gap-1.5 mb-3 pb-2"
-                            style={{ borderBottom: `1px solid ${group.color}15` }}
+                            style={{
+                              borderBottom: `1px solid ${group.color}15`,
+                            }}
                           >
                             <span
                               className="text-[10px] font-bold tracking-widest uppercase"
@@ -316,7 +640,7 @@ export default function Navbar() {
 
                           {/* Group items */}
                           <div className="space-y-0.5">
-                            {group.items.map((item) => {
+                            {group.items.map(item => {
                               const Icon = item.icon;
                               const isActive = location === item.href;
                               return (
@@ -326,13 +650,21 @@ export default function Navbar() {
                                   onClick={() => setMegaOpen(false)}
                                   className="flex items-start gap-2.5 px-2.5 py-2 rounded-xl transition-all duration-150 group/item"
                                   style={{
-                                    background: isActive ? `${group.color}08` : "transparent",
+                                    background: isActive
+                                      ? `${group.color}08`
+                                      : "transparent",
                                   }}
-                                  onMouseEnter={(e) => {
-                                    (e.currentTarget as HTMLElement).style.background = `${group.color}08`;
+                                  onMouseEnter={e => {
+                                    (
+                                      e.currentTarget as HTMLElement
+                                    ).style.background = `${group.color}08`;
                                   }}
-                                  onMouseLeave={(e) => {
-                                    (e.currentTarget as HTMLElement).style.background = isActive ? `${group.color}08` : "transparent";
+                                  onMouseLeave={e => {
+                                    (
+                                      e.currentTarget as HTMLElement
+                                    ).style.background = isActive
+                                      ? `${group.color}08`
+                                      : "transparent";
                                   }}
                                 >
                                   <div
@@ -342,12 +674,19 @@ export default function Navbar() {
                                       border: `1px solid ${group.color}18`,
                                     }}
                                   >
-                                    <Icon className="w-3.5 h-3.5" style={{ color: group.color }} />
+                                    <Icon
+                                      className="w-3.5 h-3.5"
+                                      style={{ color: group.color }}
+                                    />
                                   </div>
                                   <div className="min-w-0">
                                     <div
                                       className="text-[12.5px] font-semibold leading-tight"
-                                      style={{ color: isActive ? group.color : "rgba(255,255,255,0.85)" }}
+                                      style={{
+                                        color: isActive
+                                          ? group.color
+                                          : "rgba(255,255,255,0.85)",
+                                      }}
                                     >
                                       {item.label}
                                     </div>
@@ -390,23 +729,6 @@ export default function Navbar() {
 
           {/* ── RIGHT SIDE ── */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Social icons — desktop only */}
-            <div className="hidden lg:flex items-center gap-1 mr-1">
-              {([
-                { href: "https://x.com/chalkpickspro", label: "X", d: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
-                { href: "https://instagram.com/chalkpicks", label: "Instagram", d: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" },
-                { href: "https://youtube.com/@chalkpicks", label: "YouTube", d: "M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" },
-              ] as { href: string; label: string; d: string }[]).map(({ href, label, d }) => (
-                <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                  className="flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200"
-                  style={{ color: "rgba(255,255,255,0.35)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#84cc16"; (e.currentTarget as HTMLElement).style.background = "rgba(132,204,22,0.08)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.35)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}
-                >
-                  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 15, height: 15 }}><path d={d} /></svg>
-                </a>
-              ))}
-            </div>
             <LlmStatusBadge />
 
             {isAuthenticated ? (
@@ -444,8 +766,16 @@ export default function Navbar() {
                     <span className="hidden sm:block text-sm font-medium max-w-24 truncate text-white/80">
                       {user?.name ?? "User"}
                     </span>
-                    {isPremium && <Crown className="w-3.5 h-3.5 hidden sm:block" style={{ color: "#a78bfa" }} />}
-                    <motion.div animate={{ rotate: userMenuOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                    {isPremium && (
+                      <Crown
+                        className="w-3.5 h-3.5 hidden sm:block"
+                        style={{ color: "#a78bfa" }}
+                      />
+                    )}
+                    <motion.div
+                      animate={{ rotate: userMenuOpen ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
                       <ChevronDown className="w-3 h-3 text-white/30" />
                     </motion.div>
                   </button>
@@ -456,12 +786,16 @@ export default function Navbar() {
                         initial={{ opacity: 0, y: 8, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.97 }}
-                        transition={{ duration: 0.18, ease: [0.25, 0.4, 0.25, 1] }}
+                        transition={{
+                          duration: 0.18,
+                          ease: [0.25, 0.4, 0.25, 1],
+                        }}
                         className="absolute top-full right-0 mt-2 w-64 rounded-2xl overflow-hidden"
                         style={{
                           background: "rgba(8, 8, 16, 0.97)",
                           border: "1px solid rgba(255, 255, 255, 0.08)",
-                          boxShadow: "0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.05)",
+                          boxShadow:
+                            "0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.05)",
                           backdropFilter: "blur(24px)",
                         }}
                       >
@@ -476,8 +810,12 @@ export default function Navbar() {
                             </AvatarFallback>
                           </Avatar>
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold truncate text-white/90">{user?.name ?? "User"}</p>
-                            <p className="text-xs text-white/40 truncate">{user?.email}</p>
+                            <p className="text-sm font-semibold truncate text-white/90">
+                              {user?.name ?? "User"}
+                            </p>
+                            <p className="text-xs text-white/40 truncate">
+                              {user?.email}
+                            </p>
                             <Badge className="mt-1 text-[10px] capitalize badge-premium border-0 rounded-full">
                               {user?.subscriptionTier ?? "free"}
                             </Badge>
@@ -489,13 +827,39 @@ export default function Navbar() {
                         {/* Menu items */}
                         <div className="p-2 space-y-0.5">
                           {[
-                            { href: "/dashboard", label: "My Dashboard", icon: BarChart3 },
-                            { href: "/subscription-dashboard", label: "Subscription", icon: Crown },
-                            { href: "/credits", label: "Credits", icon: Zap, color: "#39ff14" },
-                            { href: "/account-settings", label: "Account Settings", icon: Settings },
-                            { href: "/tools", label: "Power Tools", icon: Calculator },
-                            { href: "/pricing", label: "Upgrade Plan", icon: Star, color: "#a78bfa" },
-                          ].map((item) => {
+                            {
+                              href: "/dashboard",
+                              label: "My Dashboard",
+                              icon: BarChart3,
+                            },
+                            {
+                              href: "/subscription-dashboard",
+                              label: "Subscription",
+                              icon: Crown,
+                            },
+                            {
+                              href: "/credits",
+                              label: "Credits",
+                              icon: Zap,
+                              color: "#39ff14",
+                            },
+                            {
+                              href: "/account-settings",
+                              label: "Account Settings",
+                              icon: Settings,
+                            },
+                            {
+                              href: "/tools",
+                              label: "Power Tools",
+                              icon: Calculator,
+                            },
+                            {
+                              href: "/pricing",
+                              label: "Upgrade Plan",
+                              icon: Star,
+                              color: "#a78bfa",
+                            },
+                          ].map(item => {
                             const Icon = item.icon;
                             return (
                               <Link
@@ -504,7 +868,13 @@ export default function Navbar() {
                                 onClick={() => setUserMenuOpen(false)}
                                 className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all duration-150 text-sm text-white/70 hover:text-white hover:bg-white/5"
                               >
-                                <Icon className="w-4 h-4" style={{ color: item.color ?? "rgba(255,255,255,0.4)" }} />
+                                <Icon
+                                  className="w-4 h-4"
+                                  style={{
+                                    color:
+                                      item.color ?? "rgba(255,255,255,0.4)",
+                                  }}
+                                />
                                 {item.label}
                               </Link>
                             );
@@ -529,7 +899,10 @@ export default function Navbar() {
 
                         <div className="p-2">
                           <button
-                            onClick={() => { setUserMenuOpen(false); logout(); }}
+                            onClick={() => {
+                              setUserMenuOpen(false);
+                              logout();
+                            }}
                             className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl transition-all duration-150 text-sm text-red-400/80 hover:text-red-400 hover:bg-red-500/5"
                           >
                             <LogOut className="w-4 h-4" />
@@ -572,7 +945,11 @@ export default function Navbar() {
               style={{ color: "rgba(255, 255, 255, 0.7)" }}
               onClick={() => setMobileOpen(!mobileOpen)}
             >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </Button>
           </div>
         </div>
@@ -590,7 +967,7 @@ export default function Navbar() {
               <div className="py-4">
                 <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-3" />
 
-                {navGroups.map((group) => (
+                {navGroups.map(group => (
                   <div key={group.label} className="mb-4">
                     <div
                       className="px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase"
@@ -599,7 +976,7 @@ export default function Navbar() {
                       {group.label}
                     </div>
                     <div className="space-y-0.5">
-                      {group.items.map((item) => {
+                      {group.items.map(item => {
                         const Icon = item.icon;
                         const isActive = location === item.href;
                         return (
@@ -609,11 +986,20 @@ export default function Navbar() {
                             onClick={() => setMobileOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg transition-all"
                             style={{
-                              color: isActive ? group.color : "rgba(255, 255, 255, 0.65)",
-                              background: isActive ? `${group.color}08` : "transparent",
+                              color: isActive
+                                ? group.color
+                                : "rgba(255, 255, 255, 0.65)",
+                              background: isActive
+                                ? `${group.color}08`
+                                : "transparent",
                             }}
                           >
-                            <Icon className="w-4 h-4 opacity-60" style={{ color: isActive ? group.color : undefined }} />
+                            <Icon
+                              className="w-4 h-4 opacity-60"
+                              style={{
+                                color: isActive ? group.color : undefined,
+                              }}
+                            />
                             {item.label}
                           </Link>
                         );
@@ -626,7 +1012,10 @@ export default function Navbar() {
                   <div className="pt-3 mt-2 border-t border-white/5">
                     <button
                       className="w-full btn-premium justify-center"
-                      onClick={() => { setMobileOpen(false); window.location.href = "/signup"; }}
+                      onClick={() => {
+                        setMobileOpen(false);
+                        window.location.href = "/signup";
+                      }}
                     >
                       <Zap className="w-3.5 h-3.5" />
                       Get Started Free

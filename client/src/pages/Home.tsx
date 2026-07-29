@@ -4,7 +4,6 @@ import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import {
-  Zap,
   BarChart3,
   Trophy,
   Brain,
@@ -12,7 +11,6 @@ import {
   CheckCircle2,
   Star,
   Target,
-  Lock,
   TrendingUp,
   Percent,
   Calculator,
@@ -269,194 +267,17 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-16 md:pb-0">
       <Navbar />
-      <HorizontalScrollTicker />
 
-      <div
-        className="absolute inset-0 top-0 h-screen pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 800px 600px at 50% 30%, rgba(57, 255, 20, 0.08) 0%, rgba(57, 255, 20, 0.02) 40%, transparent 100%)",
-          zIndex: 0,
-        }}
-      />
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full relative flex flex-col items-center justify-center overflow-hidden select-none"
-        style={{ marginTop: "20px", zIndex: 1 }}
-      >
+      {/* ─── HERO SECTION ─── */}
+      <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-28 overflow-hidden">
+        {/* Background effects */}
         <div
+          className="absolute inset-0 pointer-events-none"
           style={{
-            position: "relative",
-            width: "100%",
-            maxWidth: "100vw",
-            aspectRatio: "1 / 0.75",
-            maxHeight: "80vh",
+            background:
+              "radial-gradient(ellipse 900px 700px at 50% 20%, rgba(57, 255, 20, 0.07) 0%, rgba(57, 255, 20, 0.02) 40%, transparent 100%)",
           }}
-          aria-hidden="true"
-        >
-          <picture>
-            <source
-              srcSet="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/hero-400.webp 400w, https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/hero-800.webp 800w"
-              sizes="(max-width: 480px) 400px, 800px"
-              type="image/webp"
-            />
-            <img
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/hero-800.webp"
-              alt="ChalkPicks"
-              width={800}
-              height={600}
-              fetchPriority="high"
-              loading="eager"
-              decoding="async"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-                display: "block",
-                opacity: 1,
-              }}
-            />
-          </picture>
-          <div
-            className="absolute bottom-0 left-0 right-0 pointer-events-none"
-            style={{
-              height: "30%",
-              background:
-                "linear-gradient(to bottom, transparent 0%, var(--background) 100%)",
-            }}
-          />
-          <div
-            className="absolute inset-y-0 left-0 w-[6%] pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to right, var(--background), transparent)",
-            }}
-          />
-          <div
-            className="absolute inset-y-0 right-0 w-[6%] pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to left, var(--background), transparent)",
-            }}
-          />
-        </div>
-
-        <div
-          className="flex items-center gap-5 pointer-events-auto"
-          style={{ marginTop: "-48px", zIndex: 10, position: "relative" }}
-        >
-          {[
-            {
-              href: "https://facebook.com/chalkpicks",
-              label: "Facebook",
-              icon: (
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
-              ),
-            },
-            {
-              href: "https://x.com/chalkpickspro",
-              label: "X (Twitter)",
-              icon: (
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              ),
-            },
-            {
-              href: "https://instagram.com/chalkpicks",
-              label: "Instagram",
-              icon: (
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-                </svg>
-              ),
-            },
-            {
-              href: "https://youtube.com/@chalkpicks",
-              label: "YouTube",
-              icon: (
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                </svg>
-              ),
-            },
-            {
-              href: "https://reddit.com/r/chalkpicks",
-              label: "Reddit",
-              icon: (
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z" />
-                </svg>
-              ),
-            },
-          ].map(({ href, label, icon }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              className="group flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300"
-              style={{
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                color: "rgba(255,255,255,0.5)",
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.background =
-                  "rgba(132,204,22,0.15)";
-                (e.currentTarget as HTMLElement).style.borderColor =
-                  "rgba(132,204,22,0.5)";
-                (e.currentTarget as HTMLElement).style.color = "#84cc16";
-                (e.currentTarget as HTMLElement).style.transform =
-                  "translateY(-2px)";
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.background =
-                  "rgba(255,255,255,0.06)";
-                (e.currentTarget as HTMLElement).style.borderColor =
-                  "rgba(255,255,255,0.1)";
-                (e.currentTarget as HTMLElement).style.color =
-                  "rgba(255,255,255,0.5)";
-                (e.currentTarget as HTMLElement).style.transform =
-                  "translateY(0)";
-              }}
-            >
-              {icon}
-            </a>
-          ))}
-        </div>
-      </motion.div>
-
-      <section
-        className="relative pt-0 pb-20 lg:pt-0 lg:pb-28 overflow-hidden"
-        style={{ marginTop: "-120px" }}
-      >
+        />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
             className="absolute animate-orb"
@@ -466,7 +287,7 @@ export default function Home() {
               width: "60vw",
               height: "60vw",
               background:
-                "radial-gradient(ellipse, rgba(57, 255, 20, 0.07) 0%, transparent 60%)",
+                "radial-gradient(ellipse, rgba(57, 255, 20, 0.06) 0%, transparent 60%)",
               filter: "blur(80px)",
             }}
           />
@@ -478,62 +299,32 @@ export default function Home() {
               width: "50vw",
               height: "50vw",
               background:
-                "radial-gradient(ellipse, rgba(59, 130, 246, 0.06) 0%, transparent 60%)",
+                "radial-gradient(ellipse, rgba(59, 130, 246, 0.05) 0%, transparent 60%)",
               filter: "blur(80px)",
               animationDelay: "-7s",
             }}
           />
-          <div
-            className="absolute animate-orb"
-            style={{
-              top: "40%",
-              right: "20%",
-              width: "30vw",
-              height: "30vw",
-              background:
-                "radial-gradient(ellipse, rgba(168, 85, 247, 0.04) 0%, transparent 60%)",
-              filter: "blur(60px)",
-              animationDelay: "-14s",
-            }}
-          />
         </div>
-
         <div className="hidden md:block">
           <HeroBackground />
         </div>
-        <div className="absolute inset-0 cyber-grid-bg opacity-40 pointer-events-none" />
+        <div className="absolute inset-0 cyber-grid-bg opacity-30 pointer-events-none" />
 
         <div className="container relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left column — headline + CTA */}
             <div className="text-center lg:text-left">
               <motion.div
                 initial={{ opacity: 0, y: -12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="mb-8"
+                className="mb-6"
               >
-                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card-static text-xs font-semibold tracking-wide">
-                    <span className="live-dot" />
-                    <span style={{ color: "rgba(255, 255, 255, 0.7)" }}>
-                      AI-Powered Sports Analytics
-                    </span>
-                  </div>
-                  {siteStats && (
-                    <div
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
-                      style={{
-                        background: "rgba(57,255,20,0.1)",
-                        border: "1px solid rgba(57,255,20,0.25)",
-                        color: "#39ff14",
-                      }}
-                    >
-                      <Users className="w-3 h-3" />
-                      <span>
-                        {siteStats.totalMembers.toLocaleString()} members
-                      </span>
-                    </div>
-                  )}
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card-static text-xs font-semibold tracking-wide">
+                  <span className="live-dot" />
+                  <span style={{ color: "rgba(255, 255, 255, 0.7)" }}>
+                    AI-Powered Sports Analytics Platform
+                  </span>
                 </div>
               </motion.div>
 
@@ -542,31 +333,33 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1 }}
                 className="font-display mb-6 leading-[1.05]"
-                style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}
+                style={{ fontSize: "clamp(2.4rem, 5vw, 4.2rem)" }}
               >
-                <span className="text-emerald-gradient">AI-Powered Picks.</span>
+                <span className="text-emerald-gradient">
+                  AI Sports Betting Picks
+                </span>
                 <br />
-                <span className="text-white">Quantitative Edge. </span>
-                <span className="text-cyan-400">Data-Backed Results.</span>
+                <span className="text-white">with </span>
+                <span className="text-cyan-400">Quantitative Edge</span>
               </motion.h1>
 
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="mb-10 max-w-lg text-lg leading-relaxed"
+                className="mb-8 max-w-lg text-lg leading-relaxed mx-auto lg:mx-0"
                 style={{ color: "rgba(255, 255, 255, 0.55)" }}
               >
-                Real-time +EV detection, predictive modeling, steam tracking,
-                bankroll optimization, and institutional-grade sports analytics
-                in one platform.
+                Real-time +EV detection, Monte Carlo backtesting, steam move
+                tracking, Kelly Criterion sizing, and institutional-grade
+                predictive modeling — all in one platform.
               </motion.p>
 
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex flex-col sm:flex-row items-center lg:items-start gap-4 mb-6"
+                className="flex flex-col sm:flex-row items-center lg:items-start gap-4 mb-8"
               >
                 {isAuthenticated ? (
                   <Link href="/picks">
@@ -582,19 +375,59 @@ export default function Home() {
                     Start Winning Today <ArrowRight className="w-4 h-4" />
                   </button>
                 )}
+                <Link href="/methodology">
+                  <button className="btn-outline-premium text-base px-6 py-4">
+                    How It Works
+                  </button>
+                </Link>
+              </motion.div>
+
+              {/* Social proof badges */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-4"
+              >
+                <div className="flex items-center gap-1.5 text-sm text-white/50">
+                  <Users className="w-3.5 h-3.5 text-[#39ff14]" />
+                  <span className="font-semibold text-white/70">
+                    {siteStats
+                      ? `${(siteStats.totalMembers / 1000).toFixed(1)}K+`
+                      : "12.8K+"}
+                  </span>
+                  <span>members</span>
+                </div>
+                <div className="w-px h-4 bg-white/10" />
+                <div className="flex items-center gap-1.5 text-sm text-white/50">
+                  <Star className="w-3.5 h-3.5 text-[#f0b800]" />
+                  <span className="font-semibold text-white/70">4.9</span>
+                  <span>rating</span>
+                </div>
+                <div className="w-px h-4 bg-white/10" />
+                <div className="flex items-center gap-1.5 text-sm text-white/50">
+                  <Brain className="w-3.5 h-3.5 text-[#60a5fa]" />
+                  <span className="font-semibold text-white/70">
+                    {siteStats
+                      ? `${Math.round(siteStats.totalPicksGenerated / 1000)}K+`
+                      : "847K+"}
+                  </span>
+                  <span>picks</span>
+                </div>
               </motion.div>
 
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="text-sm"
-                style={{ color: "rgba(255, 255, 255, 0.35)" }}
+                transition={{ delay: 0.6 }}
+                className="text-xs mt-4"
+                style={{ color: "rgba(255, 255, 255, 0.3)" }}
               >
                 Free tools available · Pro from $9.99/mo · Cancel anytime
               </motion.p>
             </div>
 
+            {/* Right column — Live dashboard preview */}
             <div className="hidden lg:block">
               <LiveDashboardPreview />
             </div>
@@ -602,7 +435,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-6 border-y border-white/5 relative">
+      {/* ─── LIVE TICKER ─── */}
+      <div className="border-y border-white/5">
+        <HorizontalScrollTicker />
+      </div>
+
+      {/* ─── STATS BAR ─── */}
+      <section className="py-6 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(57,255,20,0.02)] to-transparent" />
         <div className="container relative z-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-12">
@@ -649,6 +488,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── TRANSPARENT RESULTS ─── */}
       <section className="py-24 relative">
         <div className="absolute inset-0 bg-mesh pointer-events-none" />
         <div className="container relative z-10">
@@ -711,6 +551,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── FEATURES GRID ─── */}
       <section className="py-24 relative">
         <div className="container relative z-10">
           <div className="text-center mb-16">
@@ -772,6 +613,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── HOW IT WORKS ─── */}
       <section className="py-24 relative border-t border-white/5">
         <div className="absolute inset-0 bg-mesh pointer-events-none opacity-50" />
         <div className="container relative z-10">
@@ -834,6 +676,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── TRUST / NEWSLETTER ─── */}
       <section className="py-24">
         <div className="container">
           <div className="text-center mb-14">
@@ -951,6 +794,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── FINAL CTA ─── */}
       <section className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
@@ -1007,6 +851,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── FOOTER ─── */}
       <footer className="border-t border-white/5 py-16">
         <div className="container">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 pb-8 border-b border-white/5">

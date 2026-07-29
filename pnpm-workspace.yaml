@@ -1,17 +1,30 @@
 packages:
   - '.'
 
+patchedDependencies:
+  wouter@3.7.1: patches/wouter@3.7.1.patch
+
 overrides:
-  # Security fixes — high severity
+  # Security fixes — all vulnerabilities resolved
   axios: '>=1.18.0'
   fast-uri: '>=3.1.4'
   ajv>fast-uri: '>=3.1.4'
   fast-xml-parser: '>=5.10.1'
   postcss: '>=8.5.18'
-  # Previously in package.json pnpm.overrides (now ignored by pnpm v10)
   tailwindcss>nanoid: '3.3.7'
-  tar: '>=7.5.11'
+  tar: '>=7.5.22'
   form-data: '>=4.0.6'
   lodash: '>=4.18.0'
   lodash-es: '>=4.18.0'
   express>path-to-regexp: '0.1.13'
+  path-to-regexp: '>=0.1.13'
+  body-parser: '>=1.20.6'
+  qs: '>=6.15.2'
+  '@hono/node-server': '>=2.0.5'
+  mermaid: '>=11.15.0'
+  dompurify: '>=3.4.12'
+  '@smithy/config-resolver': '>=4.4.0'
+  '@babel/core': '>=7.29.6'
+  uuid: '>=11.1.1'
+  mdast-util-to-hast: '>=13.2.1'
+  esbuild: '>=0.28.1'

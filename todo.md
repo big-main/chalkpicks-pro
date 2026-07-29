@@ -1901,3 +1901,11 @@
 - [x] /app-link-test page: admin-only deep link verification page at /app-link-test, registered in App.tsx
 - [x] Firebase project: google-services.json.template + GoogleService-Info.plist.template created; manual project creation required at console.firebase.google.com with big.main666@gmail.com
 - [x] App store screenshots: scripts/generate-screenshots.py with Pillow device mockups (Pixel 8 + iPhone 15 Pro, 12 framed images generated)
+
+## RevenueCat Webhook + API Keys (Jul 29 2026)
+
+- [x] VITE_REVENUECAT_IOS_KEY set to sk_cvQquzBeBkNHjTZHilcsbJUTqmBTN
+- [x] VITE_REVENUECAT_ANDROID_KEY set to sk_cvQquzBeBkNHjTZHilcsbJUTqmBTN
+- [x] server/revenuecat-webhook.ts: handles INITIAL_PURCHASE/RENEWAL/CANCELLATION/EXPIRATION events
+- [x] registerRevenueCatWebhook registered in server/\_core/index.ts at /api/revenuecat/webhook
+- [x] server/revenuecat.test.ts: 3 tests validating key format and presence (185/185 passing)

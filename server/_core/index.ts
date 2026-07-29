@@ -10,6 +10,7 @@ import { registerPrerenderMiddleware } from "../prerender";
 import { registerStripeWebhook } from "../webhook";
 import { registerStorageProxy } from "./storageProxy";
 import { registerPayPalWebhook } from "../paypal-webhook";
+import { registerRevenueCatWebhook } from "../revenuecat-webhook";
 import { startScheduler } from "../scheduler";
 import { initializeWebSocket } from "../websocket";
 import { startLiveDataStreaming } from "./liveDataStreamer";
@@ -61,6 +62,7 @@ async function startServer() {
   // Register webhooks BEFORE body parsers (needs raw body)
   registerStripeWebhook(app);
   registerPayPalWebhook(app);
+  registerRevenueCatWebhook(app); // RevenueCat App Store / Google Play events
   // Storage proxy for uploaded assets
   registerStorageProxy(app);
 

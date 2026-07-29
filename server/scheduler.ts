@@ -1,7 +1,7 @@
 import { getDb } from "./db";
-import { picks, pickFeedback } from "../drizzle/schema";
+import { picks } from "../drizzle/schema";
 import { invokeLLM } from "./_core/llm";
-import { and, gte, lte, desc } from "drizzle-orm";
+import { and, gte, lte } from "drizzle-orm";
 import {
   sendDailyPicksToAllUsers,
   sendDailyDigestToAllUsers,
@@ -248,8 +248,13 @@ export async function runDailyPicksJob() {
     return;
   }
 
+  const hasOddsKey = Boolean(
+    process.env.ODDS_API_IO_KEY || process.env.ODDS_API_KEY
+  );
+  const isProd = process.env.NODE_ENV === "production";
+
   let slate: SlateEntry[];
-  if (process.env.ODDS_API_IO_KEY || process.env.ODDS_API_KEY) {
+  if (hasOddsKey) {
     slate = await buildDailySlate();
     if (slate.length === 0) {
       console.warn(
@@ -257,8 +262,16 @@ export async function runDailyPicksJob() {
       );
       return;
     }
+  } else if (isProd) {
+    // HARD STOP: never invent matchups in production
+    console.error(
+      "[Scheduler] REFUSING pick generation: ODDS_API_KEY missing in production. No fabricated picks."
+    );
+    return;
   } else {
-    console.warn("[Scheduler] Odds API key missing — DEV fallback matchups.");
+    console.warn(
+      "[Scheduler] Odds API key missing — DEV fallback matchups only (non-production)."
+    );
     slate = DEV_FALLBACK_MATCHUPS.map(matchup => ({ matchup }));
   }
 

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "NODE_ENV=development tsx watch server/_core/index.ts",
     "build": "vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
-    "start": "NODE_ENV=production node dist/index.js",
+    "start": "node scripts/prod-start-guard.mjs && NODE_ENV=production node dist/index.js",
     "check": "tsc --noEmit",
     "format": "prettier --write .",
     "test": "vitest run",
@@ -15,7 +15,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "husky || true",
-    "postinstall": "npx --yes @socketsecurity/socket-patch apply || echo 'socket-patch: no patches to apply'"
+    "postinstall": "npx --yes @socketsecurity/socket-patch apply || echo 'socket-patch: no patches to apply'",
+    "wire:remaining": "node scripts/apply-remaining-wires.mjs",
+    "mobile:sync": "pnpm build && npx cap sync",
+    "mobile:ios": "npx cap open ios",
+    "mobile:android": "npx cap open android",
+    "mobile:add": "npx cap add ios && npx cap add android"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.94.0",

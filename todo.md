@@ -1807,3 +1807,10 @@
 - [x] SEO: Add missing route meta for /odds-comparison, /methodology, /how-it-works, /ai-leaderboard, /nfl-picks, /nba-picks, /mlb-picks, /nhl-picks
 - [x] Back button: Already global via BackButton.tsx — verified it shows on all sub-pages
 - [x] Methodology page: Update "hover over" copy to "click each node"
+
+## Sport Pick Pages + IndexNow + Filter Persistence (Jul 29, 2026)
+
+- [x] Build /nfl-picks, /nba-picks, /mlb-picks, /nhl-picks as filtered pick pages (SportPicks component)
+- [x] Register sport pick routes in App.tsx (already existed)
+- [x] Persist dashboard analyticsDateRange + analyticsSport to localStorage
+- [x] Ping IndexNow for 8 new SEO routes (200 OK)

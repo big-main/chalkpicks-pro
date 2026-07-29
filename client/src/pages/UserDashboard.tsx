@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
@@ -173,8 +173,25 @@ export default function UserDashboard() {
   const [filterResult, setFilterResult] = useState<
     "all" | "win" | "loss" | "push" | "pending"
   >("all");
-  const [analyticsDateRange, setAnalyticsDateRange] = useState("all");
-  const [analyticsSport, setAnalyticsSport] = useState("all");
+  const [analyticsDateRange, setAnalyticsDateRange] = useState<string>(() =>
+    typeof window !== "undefined"
+      ? (localStorage.getItem("cp_analytics_range") ?? "all")
+      : "all"
+  );
+  const [analyticsSport, setAnalyticsSport] = useState<string>(() =>
+    typeof window !== "undefined"
+      ? (localStorage.getItem("cp_analytics_sport") ?? "all")
+      : "all"
+  );
+
+  // Persist filter selections to localStorage
+  useEffect(() => {
+    localStorage.setItem("cp_analytics_range", analyticsDateRange);
+  }, [analyticsDateRange]);
+
+  useEffect(() => {
+    localStorage.setItem("cp_analytics_sport", analyticsSport);
+  }, [analyticsSport]);
 
   // Compute ISO dateFrom from the range selector
   const analyticsDateFrom = useMemo(() => {

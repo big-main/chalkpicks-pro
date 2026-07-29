@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { X, Target, Zap, Clock } from "lucide-react";
+import { X, Target, Zap, Clock, Gift } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 const SESSION_KEY = "exit_intent_shown";
+const PROMO_CODE = "EXIT15";
 
 function useCountdown(seconds: number) {
   const [remaining, setRemaining] = useState(seconds);
@@ -21,6 +22,7 @@ function useCountdown(seconds: number) {
 export default function ExitIntentPopup() {
   const { user } = useAuth();
   const [visible, setVisible] = useState(false);
+  const [copied, setCopied] = useState(false);
   const triggered = useRef(false);
   const { mins, secs } = useCountdown(900); // 15 minutes
 
@@ -42,6 +44,12 @@ export default function ExitIntentPopup() {
     document.addEventListener("mouseleave", handleMouseLeave);
     return () => document.removeEventListener("mouseleave", handleMouseLeave);
   }, [isSubscribed]);
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(PROMO_CODE);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   if (!visible) return null;
 
@@ -94,17 +102,41 @@ export default function ExitIntentPopup() {
           </div>
 
           {/* Headline */}
-          <div className="text-2xl mb-1">🎯</div>
           <h2 className="text-2xl font-bold text-white mb-2">
-            Wait! Don't Leave<br />Empty-Handed
+            Wait! Get 15% Off<br />Your First Month
           </h2>
-          <p className="text-slate-400 text-sm mb-6">
-            Get your first month of <span className="text-[#39ff14] font-semibold">ChalkPicks Pro</span> for just{" "}
-            <span className="text-white font-bold">$19.99</span> — AI picks, +EV finder, sharp money alerts, and more.
+          <p className="text-slate-400 text-sm mb-5">
+            Use code <span className="text-[#39ff14] font-bold">{PROMO_CODE}</span> at checkout for{" "}
+            <span className="text-white font-bold">15% off</span> ChalkPicks Pro — AI picks, +EV finder, sharp money alerts, and more.
           </p>
 
+          {/* Promo Code Box */}
+          <div
+            className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl mb-5 mx-auto max-w-xs"
+            style={{
+              background: "rgba(57,255,20,0.05)",
+              border: "2px dashed rgba(57,255,20,0.4)",
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <Gift className="w-4 h-4 text-[#39ff14]" />
+              <span className="font-mono font-bold text-lg text-[#39ff14] tracking-wider">{PROMO_CODE}</span>
+            </div>
+            <button
+              onClick={handleCopyCode}
+              className="text-xs px-3 py-1.5 rounded-lg font-medium transition-all"
+              style={{
+                background: copied ? "rgba(57,255,20,0.2)" : "rgba(255,255,255,0.05)",
+                color: copied ? "#39ff14" : "#94a3b8",
+                border: `1px solid ${copied ? "rgba(57,255,20,0.5)" : "rgba(255,255,255,0.1)"}`,
+              }}
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+
           {/* Countdown */}
-          <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="flex items-center justify-center gap-3 mb-5">
             <Clock className="w-4 h-4 text-amber-400" />
             <span className="text-amber-400 text-sm font-medium">Offer expires in</span>
             <div
@@ -132,8 +164,8 @@ export default function ExitIntentPopup() {
             ))}
           </div>
 
-          {/* CTA */}
-          <Link href="/pricing" onClick={() => setVisible(false)}>
+          {/* CTA — links to pricing with promo pre-applied */}
+          <Link href={`/pricing?promo=${PROMO_CODE}`} onClick={() => setVisible(false)}>
             <Button
               className="w-full h-12 text-base font-bold mb-3"
               style={{
@@ -142,15 +174,19 @@ export default function ExitIntentPopup() {
                 boxShadow: "0 0 20px rgba(57,255,20,0.4)",
               }}
             >
-              Claim Offer Now →
+              Claim 15% Off Now →
             </Button>
           </Link>
+
+          <p className="text-xs text-slate-500 mb-3">
+            Code auto-applied at checkout. $16.99/mo instead of $19.99/mo.
+          </p>
 
           <button
             onClick={() => setVisible(false)}
             className="text-xs text-slate-600 hover:text-slate-400 transition-colors"
           >
-            No thanks, I'll miss out on winning picks
+            No thanks, I'll pay full price later
           </button>
         </div>
       </div>

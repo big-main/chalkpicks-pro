@@ -207,6 +207,17 @@ export default function Pricing() {
   const [promoValidating, setPromoValidating] = useState(false);
   const [promoQueryCode, setPromoQueryCode] = useState("");
 
+  // Auto-apply promo code from URL params (e.g. /pricing?promo=EXIT15)
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlPromo = params.get("promo");
+    if (urlPromo && !promoApplied && !promoCode) {
+      setPromoCode(urlPromo.toUpperCase());
+      setPromoQueryCode(urlPromo.toUpperCase());
+      setPromoValidating(true);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const { data: promoResult, error: promoQueryError } = trpc.promoCode.validate.useQuery(
     { code: promoQueryCode, tier: "monthly" },
     {

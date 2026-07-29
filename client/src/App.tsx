@@ -108,6 +108,7 @@ const EVCalculator = lazy(() => import("@/pages/EVCalculator"));
 
 const StrategyBuilder = lazy(() => import("@/pages/StrategyBuilder"));
 const FreePicks = lazy(() => import("@/pages/FreePicks"));
+const AILeaderboard = lazy(() => import("@/pages/AILeaderboard"));
 const FreeBetConverter = lazy(() => import("@/pages/FreeBetConverter"));
 const MiddlesFinder = lazy(() => import("@/pages/MiddlesFinder"));
 const GuidesHub = lazy(() => import("@/pages/GuidesHub"));
@@ -235,6 +236,7 @@ function Router() {
           <Route path="/tools/ev-calculator" component={EVCalculator} />
           <Route path="/strategy-builder" component={StrategyBuilder} />
           <Route path="/free-picks" component={FreePicks} />
+          <Route path="/ai-leaderboard" component={AILeaderboard} />
           <Route path="/tools/free-bet-converter" component={FreeBetConverter} />
           <Route path="/tools/middles-finder" component={MiddlesFinder} />
           <Route path="/guides" component={GuidesHub} />

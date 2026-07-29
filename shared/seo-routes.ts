@@ -318,6 +318,14 @@ export const routeSEO: RouteSEOEntry[] = [
     priority: 0.9,
   },
   {
+    path: "/ai-leaderboard",
+    title: "AI Picks Leaderboard — Win Rates by Sport | ChalkPicks",
+    description: "See ChalkPicks AI performance leaderboard — win rates, streaks, and ROI by sport. Track which sports our AI model performs best on in real-time.",
+    sitemap: true,
+    changefreq: "daily",
+    priority: 0.85,
+  },
+  {
     path: "/free-picks",
     title: "Free Sports Betting Picks Today — AI-Powered | ChalkPicks",
     description: "Get free AI-generated sports betting picks every day. NFL, NBA, MLB, NHL picks with confidence scores. No credit card required.",

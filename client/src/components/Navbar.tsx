@@ -39,6 +39,7 @@ import {
   FlaskConical,
   Swords,
   CheckCircle2,
+  MessageCircle,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
@@ -916,6 +917,21 @@ export default function Navbar() {
               </>
             ) : (
               <>
+                <a
+                  href="https://discord.gg/rUrkBW9N"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:flex"
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm flex items-center gap-1.5"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    Discord
+                  </Button>
+                </a>
                 <Link href="/login">
                   <Button
                     variant="ghost"

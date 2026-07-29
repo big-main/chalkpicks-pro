@@ -22,6 +22,7 @@ import {
   Shield,
   Sparkles,
   Users,
+  MessageCircle,
 } from "lucide-react";
 import NeonCard from "@/components/NeonCard";
 import { HeroBackground } from "@/components/HeroBackground";
@@ -384,6 +385,16 @@ export default function Home() {
                     Start Winning Today <ArrowRight className="w-4 h-4" />
                   </button>
                 )}
+                <a
+                  href="https://discord.gg/rUrkBW9N"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <button className="btn-outline-premium text-base px-6 py-4 flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4" />
+                    Join Discord
+                  </button>
+                </a>
                 <Link href="/methodology">
                   <button className="btn-outline-premium text-base px-6 py-4">
                     How It Works

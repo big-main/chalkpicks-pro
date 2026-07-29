@@ -21,6 +21,18 @@ Native Android push notifications require Firebase Cloud Messaging (FCM). The we
 4. SHA-1 certificate fingerprint: `C1:F9:43:1D:E1:86:6F:85:5D:84:63:37:1E:96:4B:43:99:A9:7D:98`
 5. Download `google-services.json`
 6. Place it at: `android/app/google-services.json`
+   (A template is available at `android/app/google-services.json.template` — rename and fill in real values)
+
+### 2b. Add iOS App to Firebase
+
+1. In Firebase Console → Project Settings → General → "Add app" → iOS
+2. Bundle ID: `live.chalkpicks.app`
+3. App nickname: `ChalkPicks Pro`
+4. Download `GoogleService-Info.plist`
+5. Place it at: `ios/App/App/GoogleService-Info.plist`
+   (A template is available at `ios/App/App/GoogleService-Info.plist.template`)
+6. In Xcode: drag the file into the App target, ensure "Copy items if needed" is checked
+7. In Firebase Console → Project Settings → Cloud Messaging → iOS app → upload your APNs Auth Key (.p8) from Apple Developer Portal
 
 ### 3. Get Server Key
 

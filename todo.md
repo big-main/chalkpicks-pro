@@ -1891,3 +1891,13 @@
 - [x] App Store Connect metadata: description, keywords, privacy URL, categories, screenshots spec
 - [x] Firebase Cloud Messaging: full setup guide in docs/FCM_SETUP.md (requires Firebase project creation)
 - [x] Branded splash screen: ChalkPicks neon logo on dark bg, all densities + iOS asset catalog
+
+## Privacy/Terms + RevenueCat + Firebase + Screenshots (Jul 29 2026)
+
+- [x] /privacy page: full privacy policy with data collection, cookies, analytics, third-party services (already existed)
+- [x] /terms page: terms of service with subscription terms, disclaimers, user conduct (already existed)
+- [x] Register /privacy and /terms routes in App.tsx and add to Navbar footer (already registered)
+- [x] RevenueCat Capacitor SDK: useRevenueCat hook + NativePurchaseButton component (Stripe on web, RevenueCat on native)
+- [x] /app-link-test page: admin-only deep link verification page at /app-link-test, registered in App.tsx
+- [x] Firebase project: google-services.json.template + GoogleService-Info.plist.template created; manual project creation required at console.firebase.google.com with big.main666@gmail.com
+- [x] App store screenshots: scripts/generate-screenshots.py with Pillow device mockups (Pixel 8 + iPhone 15 Pro, 12 framed images generated)

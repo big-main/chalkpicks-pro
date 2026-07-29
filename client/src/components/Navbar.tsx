@@ -10,7 +10,7 @@ import {
   BarChart3, Target, TrendingUp, Calculator, Layers, Eye,
   Trophy, Users, Settings, LogOut, Star, Percent,
   Activity, BookOpen, DollarSign, GitCompare, LineChart,
-  Brain, Flame, Shield, Dices, Sigma, FlaskConical, Swords
+  Brain, Flame, Shield, Dices, Sigma, FlaskConical, Swords, CheckCircle2
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
@@ -60,6 +60,7 @@ const navGroups = [
       { href: "/elo-ratings", label: "Elo Power Ratings", icon: Sigma, desc: "AI team power ratings & win probability" },
       { href: "/strategy-builder", label: "Strategy Builder", icon: Brain, desc: "Build & backtest custom betting strategies" },
       { href: "/public-betting", label: "Public Betting %", icon: Users, desc: "See where public money is going" },
+      { href: "/results", label: "Pick Results", icon: CheckCircle2, desc: "Verified AI pick track record & graded results" },
     ],
   },
   {

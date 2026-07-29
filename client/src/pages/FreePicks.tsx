@@ -47,6 +47,12 @@ function ConfidenceBar({ score }: { score: number }) {
 export default function FreePicks() {
   const [emailInput, setEmailInput] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [emailError, setEmailError] = useState("");
+
+  const subscribeMutation = trpc.newsletter.subscribe.useMutation({
+    onSuccess: () => setSubmitted(true),
+    onError: (err) => setEmailError(err.message || "Something went wrong. Please try again."),
+  });
 
   const { data: picksData } = trpc.picks.list.useQuery({
     sport: "all",
@@ -58,7 +64,8 @@ export default function FreePicks() {
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setEmailError("");
+    subscribeMutation.mutate({ email: emailInput, source: "free-picks" });
   };
 
   return (
@@ -124,12 +131,14 @@ export default function FreePicks() {
                   value={emailInput}
                   onChange={(e) => setEmailInput(e.target.value)}
                   placeholder="your@email.com"
-                  className="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-foreground text-sm focus:outline-none focus:border-[#39ff14]/50"
+                  disabled={subscribeMutation.isPending}
+                  className="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-foreground text-sm focus:outline-none focus:border-[#39ff14]/50 disabled:opacity-50"
                 />
-                <Button type="submit" className="bg-[#39ff14] hover:bg-[#32e012] text-black font-bold px-4">
-                  Subscribe
+                <Button type="submit" disabled={subscribeMutation.isPending} className="bg-[#39ff14] hover:bg-[#32e012] text-black font-bold px-4">
+                  {subscribeMutation.isPending ? "..." : "Subscribe"}
                 </Button>
               </form>
+              {emailError && <p className="text-red-400 text-xs mt-2">{emailError}</p>}
             </>
           )}
         </NeonCard>

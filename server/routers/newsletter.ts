@@ -4,6 +4,7 @@ import { publicProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { newsletterSubscribers } from "../../drizzle/schema";
 import { sendEmail } from "../email";
+import { ENV } from "../_core/env";
 
 export const newsletterRouter = router({
   /**
@@ -63,6 +64,20 @@ export const newsletterRouter = router({
           });
         }
       }).catch(() => {});
+
+      // Fire n8n drip webhook for new free-picks subscribers
+      if (ENV.n8nDripWebhookUrl) {
+        fetch(ENV.n8nDripWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: input.email,
+            source: input.source,
+            event: "free_picks_subscribe",
+            timestamp: new Date().toISOString(),
+          }),
+        }).catch(() => {});
+      }
 
       return { ok: true, isNew: true };
     }),

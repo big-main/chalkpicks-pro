@@ -373,6 +373,14 @@ export const routeSEO: RouteSEOEntry[] = [
     changefreq: "daily",
     priority: 0.9,
   },
+  {
+    path: "/results",
+    title: "AI Pick Results & Track Record — Verified Win Rate | ChalkPicks",
+    description: "Full transparency on ChalkPicks AI pick results. View every graded pick with win/loss outcomes, confidence scores, and 30-day performance calendar.",
+    sitemap: true,
+    changefreq: "daily",
+    priority: 0.95,
+  },
 ];
 
 /** Blog post slugs for sitemap + prerender (metadata lives in client/src/data/blog-posts.ts) */

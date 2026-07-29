@@ -113,6 +113,7 @@ const FreeBetConverter = lazy(() => import("@/pages/FreeBetConverter"));
 const MiddlesFinder = lazy(() => import("@/pages/MiddlesFinder"));
 const GuidesHub = lazy(() => import("@/pages/GuidesHub"));
 const PublicBetting = lazy(() => import("@/pages/PublicBetting"));
+const Results = lazy(() => import("@/pages/Results"));
 
 const Terms = lazy(() => import("@/pages/Terms"));
 const LeaderboardProfile = lazy(() => import("@/pages/LeaderboardProfile"));
@@ -241,6 +242,7 @@ function Router() {
           <Route path="/tools/middles-finder" component={MiddlesFinder} />
           <Route path="/guides" component={GuidesHub} />
           <Route path="/public-betting" component={PublicBetting} />
+          <Route path="/results" component={Results} />
           <Route path="/blog" component={Blog} />
           <Route path="/blog/best-sports-betting-picks" component={BlogBestPicks} />
           <Route path="/blog/ai-sports-betting" component={BlogAISportsBetting} />

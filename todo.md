@@ -1528,3 +1528,11 @@
 - [x] IndexNow ping all 7 new pages (200 OK confirmed for all)
 - [x] Build /ai-leaderboard public page (sport-by-sport AI performance rankings, no login required)
 - [x] Sync to Cloud Computer + rebuild (PM2 online, build success)
+
+## Next Steps (Jul 28, 2026)
+- [x] Store xAI API key (XAI_API_KEY) — valid, needs credits at console.x.ai to activate inference
+- [x] Fix baseline-browser-mapping dev warning (pnpm add -D baseline-browser-mapping@latest)
+- [x] Add email capture gate on /free-picks with n8n drip trigger (wired to newsletter.subscribe + n8n webhook)
+- [x] Build /results public calendar page with graded picks win/loss outcomes (30-day calendar, sport filter, overall stats)
+- [ ] Wire Grok-4 into strategy-builder and pick analysis once xAI credits added
+- [ ] Note: Similarweb connected via Google Analytics — use for traffic analysis

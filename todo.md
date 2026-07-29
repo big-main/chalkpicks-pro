@@ -1842,3 +1842,11 @@
 - [x] SEO routeMeta: Add NCAAF/NCAAB/MMA/Soccer pick page meta entries
 - [x] seo-routes.ts: Add NCAAF/NCAAB/MMA/Soccer routes with sitemap entries
 - [x] generate-snapshots.mjs: Add NCAAF/NCAAB/MMA/Soccer to prerenderPaths + body copy
+
+## Blog CTA Fix + IndexNow + Snapshot Rebuild (Jul 29, 2026)
+
+- [x] BlogAISportsBetting: Make "Start Free Trial" CTA context-aware (admin/subscriber → picks)
+- [x] BlogBestPicks: Make "Start Free Trial" CTA context-aware (admin/subscriber → picks)
+- [x] BlogStrategy: Make "Start Free Trial" CTA context-aware (admin/subscriber → picks)
+- [x] IndexNow: Ping 4 new sport routes on cloud computer (200 OK)
+- [x] Snapshot rebuild: Regenerated 25 HTML snapshots on cloud computer (ncaaf/ncaab/mma/soccer added)

@@ -48,7 +48,7 @@ export const newsletterRouter = router({
                 </ul>
               </div>
               <p style="color: #666; font-size: 14px;">
-                Start your free trial at <a href="https://chalkpicks.live" style="color: #d4af37;">chalkpicks.live</a>
+                Get started at <a href="https://chalkpicks.live" style="color: #d4af37;">chalkpicks.live</a>
               </p>
               <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
               <p style="color: #999; font-size: 12px;">

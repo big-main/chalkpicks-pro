@@ -18,6 +18,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { LEARN_PAGES_META } from "@shared/learnPagesMeta";
 import { PAGE_META_MAP as ROUTE_META_MAP } from "@shared/routeMeta";
+import { esc } from "./_core/seo";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,7 +52,7 @@ const BOT_PATTERNS = [
 ];
 
 function isBot(userAgent: string): boolean {
-  return BOT_PATTERNS.some((pattern) => pattern.test(userAgent));
+  return BOT_PATTERNS.some(pattern => pattern.test(userAgent));
 }
 
 // ─── JSON-LD builders ─────────────────────────────────────────────────────────
@@ -99,7 +100,7 @@ function faqLd(faqs: Array<{ q: string; a: string }>): object {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
+    mainEntity: faqs.map(faq => ({
       "@type": "Question",
       name: faq.q,
       acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -142,7 +143,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/picks",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Picks", path: "/picks" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "Picks", path: "/picks" },
+      ]),
     ],
   },
   "/ev-finder": {
@@ -152,7 +156,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/ev-finder",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "+EV Finder", path: "/ev-finder" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "+EV Finder", path: "/ev-finder" },
+      ]),
     ],
   },
   "/arbitrage": {
@@ -162,7 +169,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/arbitrage",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Arbitrage", path: "/arbitrage" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "Arbitrage", path: "/arbitrage" },
+      ]),
     ],
   },
   "/clv-tracker": {
@@ -172,7 +182,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/clv-tracker",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "CLV Tracker", path: "/clv-tracker" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "CLV Tracker", path: "/clv-tracker" },
+      ]),
     ],
   },
   "/line-movement": {
@@ -182,7 +195,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/line-movement",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Line Movement", path: "/line-movement" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "Line Movement", path: "/line-movement" },
+      ]),
     ],
   },
   "/nfl-picks": {
@@ -192,11 +208,16 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/nfl-picks",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "NFL Picks", path: "/nfl-picks" }]),
-      faqLd([{
-        q: "What are the best NFL picks today?",
-        a: "ChalkPicks uses AI and statistical modeling to identify the best NFL picks daily, focusing on positive expected value (+EV) bets priced against sharp books like Pinnacle.",
-      }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "NFL Picks", path: "/nfl-picks" },
+      ]),
+      faqLd([
+        {
+          q: "What are the best NFL picks today?",
+          a: "ChalkPicks uses AI and statistical modeling to identify the best NFL picks daily, focusing on positive expected value (+EV) bets priced against sharp books like Pinnacle.",
+        },
+      ]),
     ],
   },
   "/nba-picks": {
@@ -206,7 +227,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/nba-picks",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "NBA Picks", path: "/nba-picks" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "NBA Picks", path: "/nba-picks" },
+      ]),
     ],
   },
   "/mlb-picks": {
@@ -216,7 +240,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/mlb-picks",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "MLB Picks", path: "/mlb-picks" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "MLB Picks", path: "/mlb-picks" },
+      ]),
     ],
   },
   "/nhl-picks": {
@@ -226,7 +253,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/nhl-picks",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "NHL Picks", path: "/nhl-picks" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "NHL Picks", path: "/nhl-picks" },
+      ]),
     ],
   },
   "/ncaaf-picks": {
@@ -236,7 +266,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/ncaaf-picks",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "NCAAF Picks", path: "/ncaaf-picks" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "NCAAF Picks", path: "/ncaaf-picks" },
+      ]),
     ],
   },
   "/ncaab-picks": {
@@ -246,7 +279,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/ncaab-picks",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "NCAAB Picks", path: "/ncaab-picks" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "NCAAB Picks", path: "/ncaab-picks" },
+      ]),
     ],
   },
   "/mma-picks": {
@@ -256,7 +292,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/mma-picks",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "MMA Picks", path: "/mma-picks" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "MMA Picks", path: "/mma-picks" },
+      ]),
     ],
   },
   "/soccer-picks": {
@@ -266,7 +305,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/soccer-picks",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Soccer Picks", path: "/soccer-picks" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "Soccer Picks", path: "/soccer-picks" },
+      ]),
     ],
   },
   "/tools/devig-calculator": {
@@ -281,10 +323,12 @@ const PAGE_META: Record<string, PageMeta> = {
         { name: "Tools", path: "/tools" },
         { name: "Devig Calculator", path: "/tools/devig-calculator" },
       ]),
-      faqLd([{
-        q: "What is devigging in sports betting?",
-        a: "Devigging (removing the vig) is the process of converting bookmaker odds into true probability estimates by removing the bookmaker's built-in margin (juice). This reveals the fair odds for each outcome.",
-      }]),
+      faqLd([
+        {
+          q: "What is devigging in sports betting?",
+          a: "Devigging (removing the vig) is the process of converting bookmaker odds into true probability estimates by removing the bookmaker's built-in margin (juice). This reveals the fair odds for each outcome.",
+        },
+      ]),
     ],
   },
   "/dfs-optimizer": {
@@ -294,7 +338,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/dfs-optimizer",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "DFS Optimizer", path: "/dfs-optimizer" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "DFS Optimizer", path: "/dfs-optimizer" },
+      ]),
     ],
   },
   "/pricing": {
@@ -304,7 +351,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/pricing",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Pricing", path: "/pricing" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "Pricing", path: "/pricing" },
+      ]),
     ],
   },
   "/blog": {
@@ -314,7 +364,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/blog",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "Blog", path: "/blog" },
+      ]),
     ],
   },
   "/sharp-money": {
@@ -324,7 +377,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/sharp-money",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Sharp Money", path: "/sharp-money" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "Sharp Money", path: "/sharp-money" },
+      ]),
     ],
   },
   "/consensus": {
@@ -334,7 +390,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/consensus",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Consensus", path: "/consensus" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "Consensus", path: "/consensus" },
+      ]),
     ],
   },
   "/api-access": {
@@ -344,7 +403,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/api-access",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "API Access", path: "/api-access" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "API Access", path: "/api-access" },
+      ]),
     ],
   },
   "/parlay-flow": {
@@ -354,7 +416,10 @@ const PAGE_META: Record<string, PageMeta> = {
     canonicalPath: "/parlay-flow",
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Parlay Flow", path: "/parlay-flow" }]),
+      breadcrumbLd([
+        { name: "Home", path: "/" },
+        { name: "Parlay Flow", path: "/parlay-flow" },
+      ]),
     ],
   },
 };
@@ -401,7 +466,10 @@ const routeFallbackEntries = Object.entries(ROUTE_META_MAP)
         canonicalPath: routePath,
         jsonLd: [
           orgLd(),
-          breadcrumbLd([{ name: "Home", path: "/" }, { name: breadcrumbName, path: routePath }]),
+          breadcrumbLd([
+            { name: "Home", path: "/" },
+            { name: breadcrumbName, path: routePath },
+          ]),
         ],
       },
     ];
@@ -409,15 +477,6 @@ const routeFallbackEntries = Object.entries(ROUTE_META_MAP)
 Object.assign(PAGE_META, Object.fromEntries(routeFallbackEntries));
 
 // ─── HTML shell builder ───────────────────────────────────────────────────────
-
-/** Escape text for safe embedding into HTML attribute/text positions. */
-function esc(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
 
 function buildPrerenderedHtml(meta: PageMeta): string {
   const canonical = `${BASE_URL}${meta.canonicalPath}`;
@@ -430,7 +489,7 @@ function buildPrerenderedHtml(meta: PageMeta): string {
   // the client-rendered equivalent of these same blocks.
   const jsonLdScripts = meta.jsonLd
     .map(
-      (ld) =>
+      ld =>
         `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>`
     )
     .join("\n    ");
@@ -502,7 +561,10 @@ export function registerPrerenderMiddleware(app: Express): void {
     // the actual text even without executing JS) straight from the DB on every
     // request, so let those two routes fall through to it instead of stopping
     // here.
-    if (/^\/blog\/[a-z0-9-]+$/i.test(requestPath) || /^\/picks\/\d+$/.test(requestPath)) {
+    if (
+      /^\/blog\/[a-z0-9-]+$/i.test(requestPath) ||
+      /^\/picks\/\d+$/.test(requestPath)
+    ) {
       return next();
     }
 
@@ -513,8 +575,14 @@ export function registerPrerenderMiddleware(app: Express): void {
         : path.resolve(__dirname, "public");
 
     const snapshotSlug =
-      requestPath === "/" ? "index" : requestPath.replace(/\//g, "_").replace(/^_/, "");
-    const snapshotPath = path.join(distBase, "snapshots", `${snapshotSlug}.html`);
+      requestPath === "/"
+        ? "index"
+        : requestPath.replace(/\//g, "_").replace(/^_/, "");
+    const snapshotPath = path.join(
+      distBase,
+      "snapshots",
+      `${snapshotSlug}.html`
+    );
 
     if (fs.existsSync(snapshotPath)) {
       res.set("X-Prerendered", "1");

@@ -27,6 +27,7 @@ import {
 import NeonCard from "@/components/NeonCard";
 import { HeroBackground } from "@/components/HeroBackground";
 import { FadeIn } from "@/components/animations";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 // Lazy-load Recharts to reduce TBT on initial page load
@@ -859,6 +860,9 @@ export default function Home() {
                 Get Started Free <ArrowRight className="w-4 h-4" />
               </button>
             )}
+          </div>
+          <div className="mt-12 mb-8">
+            <NewsletterSignup />
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/35">
             <span className="flex items-center gap-1.5">

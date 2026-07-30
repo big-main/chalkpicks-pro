@@ -1924,3 +1924,11 @@
 - [x] Add Discord invite CTA to Navbar (Join Discord button) — https://discord.gg/rUrkBW9N
 - [x] Add Discord invite CTA to Home page hero section — "Join Discord" button with MessageCircle icon
 - [x] Wire steam alerts to separate Discord channel webhook — DISCORD_STEAM_WEBHOOK_URL configured and validated (4/4 tests passing)
+
+## Navbar & UX Polish (Jul 30 2026)
+
+- [x] Fix Navbar header padding/margins on small screens (prevent overlapping)
+- [x] Improve mobile nav responsiveness — ensure all items fit on xs/sm screens
+- [x] Add smooth scroll effect to navigation links
+- [x] Create reusable PricingCard component extracted from Pricing.tsx
+- [x] Create pricing skill file at /home/ubuntu/skills/chalkpicks-pricing/SKILL.md

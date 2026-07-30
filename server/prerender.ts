@@ -389,19 +389,24 @@ for (const page of LEARN_PAGES_META) {
 // come from), so reuse it here as a baseline instead of hand-writing dozens
 // more near-identical PAGE_META entries: every route with real routeMeta
 // but no richer hand-curated entry above gets an org + breadcrumb baseline.
-for (const [routePath, meta] of Object.entries(ROUTE_META_MAP)) {
-  if (PAGE_META[routePath]) continue; // already hand-curated with richer schema above
-  const breadcrumbName = meta.title.split(" | ")[0].split(" — ")[0];
-  PAGE_META[routePath] = {
-    title: meta.title,
-    description: meta.description,
-    canonicalPath: routePath,
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: breadcrumbName, path: routePath }]),
-    ],
-  };
-}
+const routeFallbackEntries = Object.entries(ROUTE_META_MAP)
+  .filter(([routePath]) => !PAGE_META[routePath]) // skip routes already hand-curated with richer schema above
+  .map(([routePath, meta]): [string, PageMeta] => {
+    const breadcrumbName = meta.title.split(" | ")[0].split(" — ")[0];
+    return [
+      routePath,
+      {
+        title: meta.title,
+        description: meta.description,
+        canonicalPath: routePath,
+        jsonLd: [
+          orgLd(),
+          breadcrumbLd([{ name: "Home", path: "/" }, { name: breadcrumbName, path: routePath }]),
+        ],
+      },
+    ];
+  });
+Object.assign(PAGE_META, Object.fromEntries(routeFallbackEntries));
 
 // ─── HTML shell builder ───────────────────────────────────────────────────────
 

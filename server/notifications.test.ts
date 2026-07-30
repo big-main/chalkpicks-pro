@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
@@ -234,19 +234,49 @@ describe("Notification System", () => {
 
   // ── Scheduled Daily Picks (public endpoint) ───────────────────────────────
   describe("notifications.scheduledDailyPicks", () => {
+    // Configured per-test rather than relying on a default baked into the
+    // source: this endpoint is publicProcedure, so the secret is its only
+    // access control and a committed fallback would be a published credential.
+    const configuredValue = `scheduler-fixture-${Date.now()}`;
+
+    beforeEach(() => {
+      process.env.SCHEDULER_SECRET = configuredValue;
+    });
+
+    afterEach(() => {
+      delete process.env.SCHEDULER_SECRET;
+    });
+
     it("rejects unauthorized requests", async () => {
       const caller = createCaller();
-      const result = await caller.notifications.scheduledDailyPicks({ secret: "wrong-secret" });
+      const result = await caller.notifications.scheduledDailyPicks({
+        secret: "wrong-value",
+      });
       expect(result.success).toBe(false);
       expect(result.message).toBe("Unauthorized");
     });
 
-    it("accepts correct scheduler secret", async () => {
+    it("accepts the configured scheduler secret", async () => {
       const caller = createCaller();
       const result = await caller.notifications.scheduledDailyPicks({
-        secret: "chalkpicks-scheduler-2024",
+        secret: configuredValue,
       });
       expect(result.success).toBe(true);
+    });
+
+    it("fails closed when SCHEDULER_SECRET is not configured", async () => {
+      delete process.env.SCHEDULER_SECRET;
+      const caller = createCaller();
+      // Every value must be rejected when no secret is set — including the
+      // empty string, which is what a naive `!==` check would have accepted
+      // against an undefined expected value.
+      for (const attempt of ["", "anything", configuredValue]) {
+        const result = await caller.notifications.scheduledDailyPicks({
+          secret: attempt,
+        });
+        expect(result.success).toBe(false);
+        expect(result.message).toBe("Unauthorized");
+      }
     });
   });
 });

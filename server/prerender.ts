@@ -18,6 +18,10 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { LEARN_PAGES_META } from "@shared/learnPagesMeta";
 import { PAGE_META_MAP as ROUTE_META_MAP } from "@shared/routeMeta";
+import {
+  buildBreadcrumbListJsonLd,
+  buildFaqPageJsonLd,
+} from "@shared/jsonLdBuilders";
 import { esc } from "./_core/seo";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -84,28 +88,13 @@ function websiteLd(): object {
 }
 
 function breadcrumbLd(items: Array<{ name: string; path: string }>): object {
-  return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, idx) => ({
-      "@type": "ListItem",
-      position: idx + 1,
-      name: item.name,
-      item: `${BASE_URL}${item.path}`,
-    })),
-  };
+  return buildBreadcrumbListJsonLd(items, BASE_URL);
 }
 
 function faqLd(faqs: Array<{ q: string; a: string }>): object {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map(faq => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: { "@type": "Answer", text: faq.a },
-    })),
-  };
+  return buildFaqPageJsonLd(
+    faqs.map(faq => ({ question: faq.q, answer: faq.a }))
+  );
 }
 
 // ─── Route → page metadata map ────────────────────────────────────────────────

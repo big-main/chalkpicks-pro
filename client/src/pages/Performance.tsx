@@ -170,7 +170,7 @@ export default function Performance() {
           ) : (
             <Link href="/pricing">
               <button className="btn-premium">
-                Start Free 3-Day Trial <ArrowRight className="w-4 h-4" />
+                Get Premium Access <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
           )}
@@ -604,7 +604,7 @@ export default function Performance() {
           <div className="flex gap-4 justify-center flex-wrap">
             <Link href="/pricing">
               <button className="btn-premium">
-                Start Free 3-Day Trial <ArrowRight className="w-4 h-4" />
+                Get Premium Access <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
             <Link href="/picks">

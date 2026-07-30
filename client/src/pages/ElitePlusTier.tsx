@@ -1,5 +1,12 @@
 import { motion } from "framer-motion";
-import { Crown, Zap, MessageSquare, TrendingUp, Bell, Lock } from "lucide-react";
+import {
+  Crown,
+  Zap,
+  MessageSquare,
+  TrendingUp,
+  Bell,
+  Lock,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -23,7 +30,8 @@ export default function ElitePlusTier() {
     {
       icon: <Bell className="w-6 h-6" />,
       title: "Custom Alerts",
-      description: "Set up alerts for specific sports, leagues, and odds ranges",
+      description:
+        "Set up alerts for specific sports, leagues, and odds ranges",
     },
     {
       icon: <Lock className="w-6 h-6" />,
@@ -68,7 +76,9 @@ export default function ElitePlusTier() {
           <Card className="glass-card border-yellow-400/30 p-8 text-center">
             <p className="text-muted-foreground mb-2">Monthly Subscription</p>
             <p className="text-5xl font-bold text-yellow-400 mb-1">$99</p>
-            <p className="text-sm text-muted-foreground mb-6">/month, cancel anytime</p>
+            <p className="text-sm text-muted-foreground mb-6">
+              /month, cancel anytime
+            </p>
             <Button className="w-full btn-premium mb-4">
               Upgrade to Elite+
             </Button>
@@ -89,8 +99,12 @@ export default function ElitePlusTier() {
             >
               <Card className="glass-card border-green-400/20 p-6 h-full hover:border-green-400/40 transition-all">
                 <div className="text-yellow-400 mb-4">{feature.icon}</div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {feature.description}
+                </p>
               </Card>
             </motion.div>
           ))}
@@ -103,35 +117,84 @@ export default function ElitePlusTier() {
           transition={{ delay: 0.3 }}
           className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-foreground mb-6 text-center">Plan Comparison</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6 text-center">
+            Plan Comparison
+          </h2>
           <Card className="glass-card border-green-400/20 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-green-400/20">
-                    <th className="text-left p-4 text-foreground font-semibold">Feature</th>
-                    <th className="text-center p-4 text-foreground font-semibold">Free</th>
-                    <th className="text-center p-4 text-foreground font-semibold">Pro</th>
-                    <th className="text-center p-4 text-yellow-400 font-semibold">Elite+</th>
+                    <th className="text-left p-4 text-foreground font-semibold">
+                      Feature
+                    </th>
+                    <th className="text-center p-4 text-foreground font-semibold">
+                      Free
+                    </th>
+                    <th className="text-center p-4 text-foreground font-semibold">
+                      Pro
+                    </th>
+                    <th className="text-center p-4 text-yellow-400 font-semibold">
+                      Elite+
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {[
                     { feature: "Daily Picks", free: "✓", pro: "✓", elite: "✓" },
                     { feature: "+EV Finder", free: "✓", pro: "✓", elite: "✓" },
-                    { feature: "Email Alerts", free: "✗", pro: "✓", elite: "✓" },
+                    {
+                      feature: "Email Alerts",
+                      free: "✗",
+                      pro: "✓",
+                      elite: "✓",
+                    },
                     { feature: "SMS Alerts", free: "✗", pro: "✗", elite: "✓" },
-                    { feature: "Priority Picks", free: "✗", pro: "✗", elite: "✓" },
-                    { feature: "1-on-1 Coaching", free: "✗", pro: "✗", elite: "✓" },
-                    { feature: "Custom Alerts", free: "✗", pro: "✗", elite: "✓" },
-                    { feature: "Private Discord", free: "✗", pro: "✗", elite: "✓" },
-                    { feature: "24/7 Support", free: "✗", pro: "✗", elite: "✓" },
+                    {
+                      feature: "Priority Picks",
+                      free: "✗",
+                      pro: "✗",
+                      elite: "✓",
+                    },
+                    {
+                      feature: "1-on-1 Coaching",
+                      free: "✗",
+                      pro: "✗",
+                      elite: "✓",
+                    },
+                    {
+                      feature: "Custom Alerts",
+                      free: "✗",
+                      pro: "✗",
+                      elite: "✓",
+                    },
+                    {
+                      feature: "Private Discord",
+                      free: "✗",
+                      pro: "✗",
+                      elite: "✓",
+                    },
+                    {
+                      feature: "24/7 Support",
+                      free: "✗",
+                      pro: "✗",
+                      elite: "✓",
+                    },
                   ].map((row, idx) => (
-                    <tr key={idx} className="border-b border-green-400/10 hover:bg-white/5">
+                    <tr
+                      key={idx}
+                      className="border-b border-green-400/10 hover:bg-white/5"
+                    >
                       <td className="p-4 text-foreground">{row.feature}</td>
-                      <td className="p-4 text-center text-muted-foreground">{row.free}</td>
-                      <td className="p-4 text-center text-green-400">{row.pro}</td>
-                      <td className="p-4 text-center text-yellow-400 font-semibold">{row.elite}</td>
+                      <td className="p-4 text-center text-muted-foreground">
+                        {row.free}
+                      </td>
+                      <td className="p-4 text-center text-green-400">
+                        {row.pro}
+                      </td>
+                      <td className="p-4 text-center text-yellow-400 font-semibold">
+                        {row.elite}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -148,10 +211,10 @@ export default function ElitePlusTier() {
           className="text-center"
         >
           <Button className="btn-premium px-8 py-3 text-lg">
-            Start Your Elite+ Trial
+            Upgrade to Elite+
           </Button>
           <p className="text-muted-foreground text-sm mt-4">
-            No credit card required. 30-day free trial.
+            Full access to every Elite+ feature. Cancel anytime.
           </p>
         </motion.div>
       </div>

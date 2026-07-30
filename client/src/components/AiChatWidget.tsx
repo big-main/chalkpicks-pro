@@ -15,7 +15,7 @@ const GREETING: ChatMsg = {
 
 const SUGGESTIONS = [
   "What is a +EV bet?",
-  "How does the free trial work?",
+  "What plans do you offer?",
   "Explain closing line value",
 ];
 
@@ -32,7 +32,10 @@ export function AiChatWidget() {
 
   const ask = trpc.assistant.ask.useMutation({
     onSuccess: data => {
-      setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+      setMessages(prev => [
+        ...prev,
+        { role: "assistant", content: data.reply },
+      ]);
     },
     onError: err => {
       setMessages(prev => [
@@ -49,7 +52,10 @@ export function AiChatWidget() {
   });
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages, ask.isPending]);
 
   const send = (text: string) => {
@@ -101,25 +107,46 @@ export function AiChatWidget() {
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4" style={{ color: "#39ff14" }} />
           <span className="font-semibold text-white text-sm">ChalkPal</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(57,255,20,0.12)", color: "#39ff14" }}>
+          <span
+            className="text-[10px] px-1.5 py-0.5 rounded-full"
+            style={{ background: "rgba(57,255,20,0.12)", color: "#39ff14" }}
+          >
             AI
           </span>
         </div>
-        <button onClick={() => setOpen(false)} aria-label="Close chat" className="text-white/50 hover:text-white transition-colors">
+        <button
+          onClick={() => setOpen(false)}
+          aria-label="Close chat"
+          className="text-white/50 hover:text-white transition-colors"
+        >
           <X className="w-4 h-4" />
         </button>
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto px-3 py-3 space-y-2"
+      >
         {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+          <div
+            key={i}
+            className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+          >
             <div
               className="max-w-[85%] px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap"
               style={
                 m.role === "user"
-                  ? { background: "rgba(57,255,20,0.14)", color: "#eaffea", borderBottomRightRadius: 6 }
-                  : { background: "rgba(255,255,255,0.06)", color: "rgba(235,235,245,0.92)", borderBottomLeftRadius: 6 }
+                  ? {
+                      background: "rgba(57,255,20,0.14)",
+                      color: "#eaffea",
+                      borderBottomRightRadius: 6,
+                    }
+                  : {
+                      background: "rgba(255,255,255,0.06)",
+                      color: "rgba(235,235,245,0.92)",
+                      borderBottomLeftRadius: 6,
+                    }
               }
             >
               {m.content}
@@ -128,11 +155,32 @@ export function AiChatWidget() {
         ))}
         {ask.isPending && (
           <div className="flex justify-start">
-            <div className="px-3 py-2 rounded-2xl text-sm" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(235,235,245,0.6)" }}>
+            <div
+              className="px-3 py-2 rounded-2xl text-sm"
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                color: "rgba(235,235,245,0.6)",
+              }}
+            >
               <span className="inline-flex gap-1">
-                <span className="animate-bounce" style={{ animationDelay: "0ms" }}>·</span>
-                <span className="animate-bounce" style={{ animationDelay: "120ms" }}>·</span>
-                <span className="animate-bounce" style={{ animationDelay: "240ms" }}>·</span>
+                <span
+                  className="animate-bounce"
+                  style={{ animationDelay: "0ms" }}
+                >
+                  ·
+                </span>
+                <span
+                  className="animate-bounce"
+                  style={{ animationDelay: "120ms" }}
+                >
+                  ·
+                </span>
+                <span
+                  className="animate-bounce"
+                  style={{ animationDelay: "240ms" }}
+                >
+                  ·
+                </span>
               </span>
             </div>
           </div>
@@ -144,7 +192,11 @@ export function AiChatWidget() {
                 key={s}
                 onClick={() => send(s)}
                 className="text-xs px-2.5 py-1.5 rounded-full transition-colors"
-                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(235,235,245,0.75)", border: "1px solid rgba(255,255,255,0.1)" }}
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  color: "rgba(235,235,245,0.75)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                }}
               >
                 {s}
               </button>
@@ -168,20 +220,28 @@ export function AiChatWidget() {
           placeholder="Ask about tools, EV, pricing…"
           maxLength={1000}
           className="flex-1 bg-transparent text-sm text-white placeholder:text-white/35 outline-none px-3 py-2 rounded-xl"
-          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
+          style={{
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.1)",
+          }}
         />
         <button
           type="submit"
           disabled={!input.trim() || ask.isPending}
           aria-label="Send message"
           className="flex items-center justify-center w-9 h-9 rounded-xl transition-opacity disabled:opacity-40"
-          style={{ background: "linear-gradient(135deg, #39ff14 0%, #f0b800 100%)" }}
+          style={{
+            background: "linear-gradient(135deg, #39ff14 0%, #f0b800 100%)",
+          }}
         >
           <Send className="w-4 h-4 text-black" />
         </button>
       </form>
 
-      <div className="px-3 pb-2 text-center text-[10px]" style={{ color: "rgba(255,255,255,0.3)" }}>
+      <div
+        className="px-3 pb-2 text-center text-[10px]"
+        style={{ color: "rgba(255,255,255,0.3)" }}
+      >
         Analytics & education — not betting advice. 21+ · 1-800-GAMBLER
       </div>
     </div>

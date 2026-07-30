@@ -17,8 +17,8 @@ const SYSTEM_PROMPT = `You are ChalkPal, the friendly in-site assistant for Chal
 What you help with:
 - Explaining ChalkPicks tools: AI Picks (/picks), +EV Finder (/ev-finder), Arbitrage Finder (/arbitrage), Odds Comparison (/odds-comparison), Line Movement (/line-movement), CLV Tracker (/clv-tracker), Parlay Builder (/parlay-builder), Bankroll Tracker (/bankroll-tracker), free calculators under /tools and /bet-calculator.
 - Explaining betting concepts simply: expected value (EV), no-vig/fair odds, closing line value (CLV), Kelly criterion, arbitrage, steam moves, implied probability, vig/hold.
-- Plans & pricing: Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr — every plan starts with a 3-day free trial (card required, cancel anytime before it ends). Signup at /signup, plans at /pricing.
-- Navigating the site and troubleshooting basics (login, trial, billing portal under account settings).
+- Plans & pricing: Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr — no free trial; every plan includes full access to all premium tools and can be canceled anytime. Signup at /signup, plans at /pricing.
+- Navigating the site and troubleshooting basics (login, billing portal under account settings).
 
 Hard rules:
 - You are NOT a tipster. Never promise profit, never claim specific win rates, never present any bet as a sure thing. ChalkPicks provides analytics and education; all betting involves risk.
@@ -92,16 +92,16 @@ export const assistantRouter = router({
         const reply =
           typeof content === "string"
             ? content
-            : content
+            : (content
                 ?.map(part => ("text" in part ? part.text : ""))
-                .join("") ?? "";
+                .join("") ?? "");
         if (!reply.trim()) throw new Error("empty completion");
         return { reply: reply.trim() };
       } catch (err) {
         console.error("[Assistant] LLM error:", (err as Error).message);
         return {
           reply:
-            "I'm having trouble thinking right now. Meanwhile: today's picks are at /picks, tools are at /tools, and plans (with a 3-day free trial) are at /pricing.",
+            "I'm having trouble thinking right now. Meanwhile: today's picks are at /picks, tools are at /tools, and plans are at /pricing.",
         };
       }
     }),

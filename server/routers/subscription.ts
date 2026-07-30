@@ -16,16 +16,17 @@ function requireStripe(): Stripe {
   if (!key) {
     throw new TRPCError({
       code: "PRECONDITION_FAILED",
-      message: "Payments are temporarily unavailable. Please try again shortly.",
+      message:
+        "Payments are temporarily unavailable. Please try again shortly.",
     });
   }
   _stripe = new Stripe(key);
   return _stripe;
 }
 
-// Length of the free trial applied to new subscriptions, in days. Keep this in
-// sync with the trial length advertised in the marketing copy / dashboard.
-export const TRIAL_DAYS = 3;
+// Free trial removed (Jul 30, 2026) — subscriptions bill immediately at checkout.
+// Kept as a constant so a trial can be re-enabled easily if marketing changes.
+export const TRIAL_DAYS = 0;
 
 export const PLANS = {
   daily: {
@@ -34,7 +35,12 @@ export const PLANS = {
     amountCents: 999,
     interval: "month",
     description: "Essential picks for casual bettors",
-    features: ["All premium picks daily", "AI analysis & confidence scores", "Player props & live odds", "Email alerts"],
+    features: [
+      "All premium picks daily",
+      "AI analysis & confidence scores",
+      "Player props & live odds",
+      "Email alerts",
+    ],
     badge: "Starter",
   },
   monthly: {
@@ -43,7 +49,15 @@ export const PLANS = {
     amountCents: 1999,
     interval: "month",
     description: "Best value for serious bettors",
-    features: ["All premium picks daily", "AI picks generator", "Backtesting engine", "Bet tracker & analytics", "Leaderboard access", "Priority email support", "Daily pick alerts"],
+    features: [
+      "All premium picks daily",
+      "AI picks generator",
+      "Backtesting engine",
+      "Bet tracker & analytics",
+      "Leaderboard access",
+      "Priority email support",
+      "Daily pick alerts",
+    ],
     badge: "Most Popular",
     popular: true,
   },
@@ -53,7 +67,14 @@ export const PLANS = {
     amountCents: 5999,
     interval: "year",
     description: "Maximum savings for pros",
-    features: ["Everything in Pro", "Early access to new features", "Advanced backtesting", "Custom AI pick generation", "VIP Discord access", "1-on-1 strategy sessions"],
+    features: [
+      "Everything in Pro",
+      "Early access to new features",
+      "Advanced backtesting",
+      "Custom AI pick generation",
+      "VIP Discord access",
+      "1-on-1 strategy sessions",
+    ],
     badge: "Best Value",
     savings: "Save $14/mo vs Pro",
   },
@@ -63,15 +84,16 @@ export const subscriptionRouter = router({
   plans: publicProcedure.query(() => PLANS),
 
   createCheckout: protectedProcedure
-    .input(z.object({
-      tier: z.enum(["daily", "monthly", "yearly"]),
-      origin: z.string(),
-      promoCode: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        tier: z.enum(["daily", "monthly", "yearly"]),
+        origin: z.string(),
+        promoCode: z.string().optional(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const plan = PLANS[input.tier];
       if (!plan) throw new TRPCError({ code: "BAD_REQUEST" });
-
 
       // Look up Stripe promotion code if user provided one
       let stripePromotionCodeId: string | undefined;
@@ -79,7 +101,11 @@ export const subscriptionRouter = router({
 
       if (input.promoCode) {
         // Validate against our DB first
-        const { validatePromoCode, getPromoCodeByCode, incrementPromoCodeUsage } = await import("../db");
+        const {
+          validatePromoCode,
+          getPromoCodeByCode,
+          incrementPromoCodeUsage,
+        } = await import("../db");
         const validation = await validatePromoCode(input.promoCode, input.tier);
 
         if (!validation.valid) {
@@ -111,7 +137,8 @@ export const subscriptionRouter = router({
 
       try {
         // Build session params using actual Stripe price IDs
-        const isSubscription = plan.interval === "month" || plan.interval === "year";
+        const isSubscription =
+          plan.interval === "month" || plan.interval === "year";
         const sessionParams: any = {
           mode: isSubscription ? "subscription" : "payment",
           payment_method_types: ["card"],
@@ -122,11 +149,9 @@ export const subscriptionRouter = router({
               quantity: 1,
             },
           ],
-          // 3-day free trial on subscriptions — the whole funnel advertises it,
-          // so honor it here. Card is still collected up front; Stripe charges
-          // automatically when the trial ends. Trials never apply to one-off
-          // (payment-mode) purchases.
-          ...(isSubscription
+          // No free trial — subscriptions are charged immediately at checkout.
+          // (Setting TRIAL_DAYS > 0 re-enables a Stripe trial if ever needed.)
+          ...(isSubscription && TRIAL_DAYS > 0
             ? { subscription_data: { trial_period_days: TRIAL_DAYS } }
             : {}),
           success_url: `${input.origin}/payment/success?tier=${input.tier}&session_id={CHECKOUT_SESSION_ID}`,
@@ -153,32 +178,52 @@ export const subscriptionRouter = router({
         // If user provided a promo code but it's not in Stripe, we apply it via metadata
         // and the webhook will handle recording the discount
 
-        const session = await requireStripe().checkout.sessions.create(sessionParams);
+        const session =
+          await requireStripe().checkout.sessions.create(sessionParams);
 
         return { url: session.url };
       } catch (err: any) {
         console.error("[Checkout] Error creating session:", err.message);
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: err.message });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 
   mySubscription: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
-    if (!db) return { tier: "free", expiresAt: null, isActive: false, accountBalance: 0 };
+    if (!db)
+      return {
+        tier: "free",
+        expiresAt: null,
+        isActive: false,
+        accountBalance: 0,
+      };
 
-    const user = await db.select({
-      subscriptionTier: users.subscriptionTier,
-      subscriptionExpiresAt: users.subscriptionExpiresAt,
-      stripeSubscriptionId: users.stripeSubscriptionId,
-      accountBalance: users.accountBalance,
-    }).from(users).where(eq(users.id, ctx.user.id)).limit(1);
+    const user = await db
+      .select({
+        subscriptionTier: users.subscriptionTier,
+        subscriptionExpiresAt: users.subscriptionExpiresAt,
+        stripeSubscriptionId: users.stripeSubscriptionId,
+        accountBalance: users.accountBalance,
+      })
+      .from(users)
+      .where(eq(users.id, ctx.user.id))
+      .limit(1);
 
     const u = user[0];
-    if (!u) return { tier: "free", expiresAt: null, isActive: false, accountBalance: 0 };
+    if (!u)
+      return {
+        tier: "free",
+        expiresAt: null,
+        isActive: false,
+        accountBalance: 0,
+      };
 
-    const isActive = (u.subscriptionTier !== "free") && (
-      !u.subscriptionExpiresAt || u.subscriptionExpiresAt > new Date()
-    );
+    const isActive =
+      u.subscriptionTier !== "free" &&
+      (!u.subscriptionExpiresAt || u.subscriptionExpiresAt > new Date());
 
     return {
       tier: u.subscriptionTier === "trial" ? "trial" : u.subscriptionTier,
@@ -190,17 +235,21 @@ export const subscriptionRouter = router({
 
   // Called after successful payment
   activate: protectedProcedure
-    .input(z.object({
-      sessionId: z.string(),
-      tier: z.enum(["daily", "monthly", "yearly"]),
-    }))
+    .input(
+      z.object({
+        sessionId: z.string(),
+        tier: z.enum(["daily", "monthly", "yearly"]),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
       let session: Stripe.Checkout.Session | null = null;
       try {
-        session = await requireStripe().checkout.sessions.retrieve(input.sessionId);
+        session = await requireStripe().checkout.sessions.retrieve(
+          input.sessionId
+        );
       } catch {
         // If Stripe not configured, use mock activation
       }
@@ -217,14 +266,19 @@ export const subscriptionRouter = router({
         expiresAt.setMonth(expiresAt.getMonth() + 1);
       }
 
-      await db.update(users).set({
-        subscriptionTier,
-        subscriptionExpiresAt: expiresAt,
-        stripeSubscriptionId: session?.subscription?.toString() ?? null,
-        // Persist the Stripe customer id (when the session resolved) so the
-        // billing portal works even if the webhook hasn't landed yet.
-        ...(session?.customer ? { stripeCustomerId: session.customer.toString() } : {}),
-      }).where(eq(users.id, ctx.user.id));
+      await db
+        .update(users)
+        .set({
+          subscriptionTier,
+          subscriptionExpiresAt: expiresAt,
+          stripeSubscriptionId: session?.subscription?.toString() ?? null,
+          // Persist the Stripe customer id (when the session resolved) so the
+          // billing portal works even if the webhook hasn't landed yet.
+          ...(session?.customer
+            ? { stripeCustomerId: session.customer.toString() }
+            : {}),
+        })
+        .where(eq(users.id, ctx.user.id));
 
       // Record order
       await db.insert(subscriptionOrders).values({
@@ -246,9 +300,13 @@ export const subscriptionRouter = router({
     const db = await getDb();
     if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-    const user = await db.select({
-      stripeSubscriptionId: users.stripeSubscriptionId,
-    }).from(users).where(eq(users.id, ctx.user.id)).limit(1);
+    const user = await db
+      .select({
+        stripeSubscriptionId: users.stripeSubscriptionId,
+      })
+      .from(users)
+      .where(eq(users.id, ctx.user.id))
+      .limit(1);
 
     const u = user[0];
     if (u?.stripeSubscriptionId) {
@@ -259,30 +317,42 @@ export const subscriptionRouter = router({
       }
     }
 
-    await db.update(users).set({
-      subscriptionTier: "free",
-      subscriptionExpiresAt: null,
-      stripeSubscriptionId: null,
-    }).where(eq(users.id, ctx.user.id));
+    await db
+      .update(users)
+      .set({
+        subscriptionTier: "free",
+        subscriptionExpiresAt: null,
+        stripeSubscriptionId: null,
+      })
+      .where(eq(users.id, ctx.user.id));
 
     return { success: true };
   }),
 
   getBillingPortalUrl: protectedProcedure
-    .input(z.object({
-      origin: z.string(),
-    }))
+    .input(
+      z.object({
+        origin: z.string(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-      const user = await db.select({
-        stripeCustomerId: users.stripeCustomerId,
-      }).from(users).where(eq(users.id, ctx.user.id)).limit(1);
+      const user = await db
+        .select({
+          stripeCustomerId: users.stripeCustomerId,
+        })
+        .from(users)
+        .where(eq(users.id, ctx.user.id))
+        .limit(1);
 
       const u = user[0];
       if (!u?.stripeCustomerId) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "No Stripe customer found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No Stripe customer found",
+        });
       }
 
       try {
@@ -294,7 +364,10 @@ export const subscriptionRouter = router({
         return { url: session.url };
       } catch (err) {
         console.error("Stripe billing portal error:", err);
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create billing portal session" });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create billing portal session",
+        });
       }
     }),
 });

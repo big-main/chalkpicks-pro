@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import * as db from "./db";
 
-describe("Promo Code System", () => {
+// Exercises real DB inserts/queries — meaningless without a provisioned
+// DATABASE_URL, so skip cleanly rather than crash on a null db handle.
+describe.skipIf(!process.env.DATABASE_URL)("Promo Code System", () => {
   const testCode = "TEST_PROMO_" + Date.now();
 
   beforeAll(async () => {

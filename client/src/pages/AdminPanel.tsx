@@ -55,6 +55,7 @@ export default function AdminPanel() {
     | "picks"
     | "notifications"
     | "performance"
+    | "directories"
   >("overview");
   const [psUrl, setPsUrl] = useState("https://www.chalkpicks.live");
   const [psResult, setPsResult] = useState<null | {
@@ -170,6 +171,7 @@ export default function AdminPanel() {
     { id: "picks", label: "Picks Engine", icon: Activity },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "performance", label: "PageSpeed", icon: Gauge },
+    { id: "directories", label: "Directories", icon: Eye },
   ] as const;
 
   return (
@@ -1686,7 +1688,482 @@ export default function AdminPanel() {
               })()}
           </div>
         )}
+
+        {/* ─── Directories Tab ─── */}
+        {activeTab === "directories" && <DirectoriesTab />}
       </div>
+    </div>
+  );
+}
+
+/* ─── Directories Tab Component ─── */
+function DirectoriesTab() {
+  const [tierFilter, setTierFilter] = useLocalState("all");
+  const [addOpen, setAddOpen] = useLocalState(false);
+  const [newName, setNewName] = useLocalState("");
+  const [newUrl, setNewUrl] = useLocalState("");
+  const [newTier, setNewTier] = useLocalState("tier1");
+  const [newDa, setNewDa] = useLocalState("");
+  const [newNotes, setNewNotes] = useLocalState("");
+
+  const utils = trpc.useUtils();
+  const { data: submissions, isLoading } = trpc.directoryTracker.list.useQuery(
+    tierFilter === "all" ? undefined : { tier: tierFilter as any }
+  );
+  const { data: stats } = trpc.directoryTracker.stats.useQuery();
+  const updateStatus = trpc.directoryTracker.updateStatus.useMutation({
+    onSuccess: () => {
+      utils.directoryTracker.list.invalidate();
+      utils.directoryTracker.stats.invalidate();
+      toast.success("Status updated");
+    },
+  });
+  const addSubmission = trpc.directoryTracker.add.useMutation({
+    onSuccess: () => {
+      utils.directoryTracker.list.invalidate();
+      utils.directoryTracker.stats.invalidate();
+      setAddOpen(false);
+      setNewName("");
+      setNewUrl("");
+      setNewNotes("");
+      toast.success("Directory added");
+    },
+  });
+  const removeSubmission = trpc.directoryTracker.remove.useMutation({
+    onSuccess: () => {
+      utils.directoryTracker.list.invalidate();
+      utils.directoryTracker.stats.invalidate();
+      toast.success("Removed");
+    },
+  });
+
+  const tierLabels: Record<string, string> = {
+    tier1: "Tier 1 — High DA",
+    tier2: "Tier 2 — AI Dirs",
+    tier3: "Tier 3 — Startup",
+    tier4: "Tier 4 — Niche",
+    reddit: "Reddit",
+    guest_post: "Guest Posts",
+  };
+  const statusColors: Record<string, string> = {
+    not_started: "#6b7280",
+    in_progress: "#f59e0b",
+    submitted: "#3b82f6",
+    verified: "#39ff14",
+    rejected: "#ef4444",
+  };
+
+  const cardStyle = {
+    background: "rgba(12,12,22,0.9)",
+    border: "1px solid rgba(57,255,20,0.15)",
+    borderRadius: "8px",
+    padding: "1.5rem",
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        {[
+          "not_started",
+          "in_progress",
+          "submitted",
+          "verified",
+          "rejected",
+        ].map(s => (
+          <div
+            key={s}
+            style={{
+              ...cardStyle,
+              borderColor: `${statusColors[s]}40`,
+              padding: "1rem",
+            }}
+          >
+            <div
+              style={{
+                color: statusColors[s],
+                fontSize: "1.5rem",
+                fontWeight: 700,
+              }}
+            >
+              {stats?.byStatus[s] ?? 0}
+            </div>
+            <div
+              style={{
+                color: "rgba(200,200,220,0.6)",
+                fontSize: "0.75rem",
+                textTransform: "capitalize",
+              }}
+            >
+              {s.replace("_", " ")}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Positioning Copy */}
+      <div style={{ ...cardStyle, borderColor: "rgba(245,158,11,0.3)" }}>
+        <h4
+          style={{ color: "#f59e0b", fontWeight: 700, marginBottom: "0.5rem" }}
+        >
+          Positioning Copy
+        </h4>
+        <p
+          style={{
+            color: "rgba(200,200,220,0.8)",
+            fontSize: "0.85rem",
+            marginBottom: "0.5rem",
+          }}
+        >
+          <strong style={{ color: "white" }}>Tagline:</strong> AI-Powered Sports
+          Betting Analytics with Cryptographically Verified Picks — +EV Finder,
+          CLV Tracker, Steam Move Alerts
+        </p>
+        <p
+          style={{
+            color: "rgba(200,200,220,0.8)",
+            fontSize: "0.85rem",
+            marginBottom: "0.5rem",
+          }}
+        >
+          <strong style={{ color: "white" }}>Short (150 chars):</strong> AI
+          sports betting analytics with cryptographically verified picks. +EV
+          finder, CLV tracker, steam move alerts. Free tier available.
+        </p>
+        <p style={{ color: "rgba(200,200,220,0.8)", fontSize: "0.85rem" }}>
+          <strong style={{ color: "white" }}>Pricing:</strong> Basic $9.99/mo ·
+          Pro $19.99/mo · Elite $59.99/yr
+        </p>
+      </div>
+
+      {/* Filter + Add */}
+      <div className="flex flex-wrap items-center gap-3">
+        <select
+          value={tierFilter}
+          onChange={e => setTierFilter(e.target.value)}
+          style={{
+            background: "rgba(0,0,0,0.6)",
+            border: "1px solid rgba(57,255,20,0.2)",
+            borderRadius: "6px",
+            color: "white",
+            padding: "0.5rem 1rem",
+            fontSize: "0.85rem",
+          }}
+        >
+          <option value="all">All Tiers</option>
+          {Object.entries(tierLabels).map(([k, v]) => (
+            <option key={k} value={k}>
+              {v}
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={() => setAddOpen(!addOpen)}
+          style={{
+            background: "rgba(57,255,20,0.15)",
+            border: "1px solid rgba(57,255,20,0.3)",
+            borderRadius: "6px",
+            color: "#39ff14",
+            padding: "0.5rem 1rem",
+            fontSize: "0.85rem",
+            cursor: "pointer",
+          }}
+        >
+          + Add Directory
+        </button>
+      </div>
+
+      {/* Add Form */}
+      {addOpen && (
+        <div
+          style={cardStyle}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+        >
+          <input
+            placeholder="Directory Name"
+            value={newName}
+            onChange={e => setNewName(e.target.value)}
+            style={{
+              background: "rgba(0,0,0,0.5)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "6px",
+              padding: "0.5rem",
+              color: "white",
+              fontSize: "0.85rem",
+            }}
+          />
+          <input
+            placeholder="URL"
+            value={newUrl}
+            onChange={e => setNewUrl(e.target.value)}
+            style={{
+              background: "rgba(0,0,0,0.5)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "6px",
+              padding: "0.5rem",
+              color: "white",
+              fontSize: "0.85rem",
+            }}
+          />
+          <select
+            value={newTier}
+            onChange={e => setNewTier(e.target.value)}
+            style={{
+              background: "rgba(0,0,0,0.5)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "6px",
+              padding: "0.5rem",
+              color: "white",
+              fontSize: "0.85rem",
+            }}
+          >
+            {Object.entries(tierLabels).map(([k, v]) => (
+              <option key={k} value={k}>
+                {v}
+              </option>
+            ))}
+          </select>
+          <input
+            placeholder="DA (optional)"
+            value={newDa}
+            onChange={e => setNewDa(e.target.value)}
+            type="number"
+            style={{
+              background: "rgba(0,0,0,0.5)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "6px",
+              padding: "0.5rem",
+              color: "white",
+              fontSize: "0.85rem",
+            }}
+          />
+          <input
+            placeholder="Notes"
+            value={newNotes}
+            onChange={e => setNewNotes(e.target.value)}
+            className="sm:col-span-2"
+            style={{
+              background: "rgba(0,0,0,0.5)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "6px",
+              padding: "0.5rem",
+              color: "white",
+              fontSize: "0.85rem",
+            }}
+          />
+          <button
+            onClick={() => {
+              if (!newName || !newUrl)
+                return toast.error("Name and URL required");
+              addSubmission.mutate({
+                name: newName,
+                url: newUrl,
+                tier: newTier as any,
+                domainAuthority: newDa ? parseInt(newDa) : null,
+                notes: newNotes || undefined,
+              });
+            }}
+            style={{
+              background: "rgba(57,255,20,0.2)",
+              border: "1px solid rgba(57,255,20,0.4)",
+              borderRadius: "6px",
+              color: "#39ff14",
+              padding: "0.5rem 1.5rem",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
+          >
+            {addSubmission.isPending ? "Adding..." : "Add"}
+          </button>
+        </div>
+      )}
+
+      {/* Submissions Table */}
+      {isLoading ? (
+        <div
+          style={{
+            color: "rgba(200,200,220,0.6)",
+            textAlign: "center",
+            padding: "2rem",
+          }}
+        >
+          Loading...
+        </div>
+      ) : (
+        <div style={{ ...cardStyle, padding: "0", overflow: "auto" }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              fontSize: "0.85rem",
+            }}
+          >
+            <thead>
+              <tr style={{ borderBottom: "1px solid rgba(57,255,20,0.1)" }}>
+                <th
+                  style={{
+                    padding: "0.75rem 1rem",
+                    textAlign: "left",
+                    color: "rgba(200,200,220,0.6)",
+                    fontWeight: 600,
+                  }}
+                >
+                  Directory
+                </th>
+                <th
+                  style={{
+                    padding: "0.75rem 0.5rem",
+                    textAlign: "center",
+                    color: "rgba(200,200,220,0.6)",
+                    fontWeight: 600,
+                  }}
+                >
+                  DA
+                </th>
+                <th
+                  style={{
+                    padding: "0.75rem 0.5rem",
+                    textAlign: "center",
+                    color: "rgba(200,200,220,0.6)",
+                    fontWeight: 600,
+                  }}
+                >
+                  Tier
+                </th>
+                <th
+                  style={{
+                    padding: "0.75rem 0.5rem",
+                    textAlign: "center",
+                    color: "rgba(200,200,220,0.6)",
+                    fontWeight: 600,
+                  }}
+                >
+                  Status
+                </th>
+                <th
+                  style={{
+                    padding: "0.75rem 1rem",
+                    textAlign: "left",
+                    color: "rgba(200,200,220,0.6)",
+                    fontWeight: 600,
+                  }}
+                >
+                  Notes
+                </th>
+                <th
+                  style={{
+                    padding: "0.75rem 0.5rem",
+                    textAlign: "center",
+                    color: "rgba(200,200,220,0.6)",
+                    fontWeight: 600,
+                  }}
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {(submissions ?? []).map(sub => (
+                <tr
+                  key={sub.id}
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                >
+                  <td style={{ padding: "0.6rem 1rem" }}>
+                    <a
+                      href={sub.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "#60a5fa", textDecoration: "none" }}
+                    >
+                      {sub.name}
+                    </a>
+                  </td>
+                  <td
+                    style={{
+                      padding: "0.6rem 0.5rem",
+                      textAlign: "center",
+                      color: sub.domainAuthority
+                        ? "#f59e0b"
+                        : "rgba(200,200,220,0.3)",
+                    }}
+                  >
+                    {sub.domainAuthority ?? "—"}
+                  </td>
+                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center" }}>
+                    <span
+                      style={{
+                        background: "rgba(57,255,20,0.1)",
+                        border: "1px solid rgba(57,255,20,0.2)",
+                        borderRadius: "4px",
+                        padding: "0.15rem 0.5rem",
+                        fontSize: "0.75rem",
+                        color: "#39ff14",
+                      }}
+                    >
+                      {sub.tier.replace("_", " ")}
+                    </span>
+                  </td>
+                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center" }}>
+                    <select
+                      value={sub.status}
+                      onChange={e =>
+                        updateStatus.mutate({
+                          id: sub.id,
+                          status: e.target.value as any,
+                        })
+                      }
+                      style={{
+                        background: "rgba(0,0,0,0.4)",
+                        border: `1px solid ${statusColors[sub.status]}50`,
+                        borderRadius: "4px",
+                        color: statusColors[sub.status],
+                        padding: "0.2rem 0.4rem",
+                        fontSize: "0.75rem",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <option value="not_started">Not Started</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="submitted">Submitted</option>
+                      <option value="verified">Verified</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  </td>
+                  <td
+                    style={{
+                      padding: "0.6rem 1rem",
+                      color: "rgba(200,200,220,0.6)",
+                      maxWidth: "200px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {sub.notes || "—"}
+                  </td>
+                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center" }}>
+                    <button
+                      onClick={() => {
+                        if (confirm(`Remove ${sub.name}?`))
+                          removeSubmission.mutate({ id: sub.id });
+                      }}
+                      style={{
+                        color: "#ef4444",
+                        cursor: "pointer",
+                        background: "none",
+                        border: "none",
+                        fontSize: "0.8rem",
+                      }}
+                    >
+                      ×
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

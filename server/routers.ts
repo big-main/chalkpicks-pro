@@ -49,6 +49,7 @@ import { n8nWebhookRouter } from "./routers/n8nWebhook";
 import { antigravityRouter } from "./routers/antigravity";
 import { strategyRouter } from "./routers/strategy";
 import { pageSpeedRouter } from "./routers/pageSpeed";
+import { directoryTrackerRouter } from "./routers/directoryTracker";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -292,6 +293,7 @@ export const appRouter = router({
   n8nWebhook: n8nWebhookRouter,
   strategy: strategyRouter,
   pageSpeed: pageSpeedRouter,
+  directoryTracker: directoryTrackerRouter,
 });
 
 export type AppRouter = typeof appRouter;

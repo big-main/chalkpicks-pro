@@ -1938,3 +1938,10 @@
 - [x] Host Ahrefs IndexNow key file at /k937cd84x3s9krpmgd5r19dgutqc11hw.txt
 - [x] Add PageSpeed Insights API key (AIzaSyCGJoltLOP4RKkGgFx140NGGcAl6_h_93c) as secret
 - [x] Add PageSpeed performance tab to admin panel
+
+## Directory Submissions Tracker (Jul 30 2026)
+
+- [x] Create database table for directory submissions tracking
+- [x] Create admin page with directory tracker UI (tiers, status, links)
+- [x] Pre-populate with all directories from the Claude artifact
+- [x] Add corrected positioning copy as reference in the admin page

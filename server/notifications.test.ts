@@ -236,16 +236,18 @@ describe("Notification System", () => {
   describe("notifications.scheduledDailyPicks", () => {
     it("rejects unauthorized requests", async () => {
       const caller = createCaller();
-      const result = await caller.notifications.scheduledDailyPicks({ secret: "wrong-secret" });
+      const result = await caller.notifications.scheduledDailyPicks({
+        secret: "wrong-secret",
+      });
       expect(result.success).toBe(false);
       expect(result.message).toBe("Unauthorized");
     });
 
     it("accepts correct scheduler secret", async () => {
       const caller = createCaller();
-      const result = await caller.notifications.scheduledDailyPicks({
-        secret: "chalkpicks-scheduler-2024",
-      });
+      const secret =
+        process.env.SCHEDULER_SECRET || "chalkpicks-scheduler-2024";
+      const result = await caller.notifications.scheduledDailyPicks({ secret });
       expect(result.success).toBe(true);
     });
   });

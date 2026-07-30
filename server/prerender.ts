@@ -503,13 +503,16 @@ export function registerPrerenderMiddleware(app: Express): void {
       requestPath === "/"
         ? "index"
         : requestPath.replace(/\//g, "_").replace(/^_/, "");
-    const snapshotPath = path.join(
-      distBase,
-      "snapshots",
-      `${snapshotSlug}.html`
-    );
+    const snapshotsDir = path.resolve(distBase, "snapshots");
+    const snapshotPath = path.resolve(snapshotsDir, `${snapshotSlug}.html`);
+    // requestPath is attacker-controlled (req.path); the slug replacement
+    // above already strips "/" so path.resolve can't leave snapshotsDir, but
+    // verify it explicitly rather than relying on that being the only guard.
+    const isWithinSnapshotsDir =
+      snapshotPath === snapshotsDir ||
+      snapshotPath.startsWith(snapshotsDir + path.sep);
 
-    if (fs.existsSync(snapshotPath)) {
+    if (isWithinSnapshotsDir && fs.existsSync(snapshotPath)) {
       res.set("X-Prerendered", "1");
       res.set("Cache-Control", "public, max-age=3600");
       res.set("Content-Type", "text/html; charset=utf-8");

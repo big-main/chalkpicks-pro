@@ -1,11 +1,15 @@
 import { describe, it, expect } from "vitest";
 
-const hasVapidKeys = Boolean(process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY);
+const hasAnyVapidKey = Boolean(
+  process.env.VAPID_PUBLIC_KEY || process.env.VAPID_PRIVATE_KEY
+);
 
 // Validates the deployed VAPID keypair, not application code — meaningless
-// without a real, provisioned keypair, so skip cleanly rather than fail when
-// this environment (e.g. a sandbox) has none configured.
-describe.skipIf(!hasVapidKeys)("VAPID Keys Validation", () => {
+// without any real key material, so skip cleanly when this environment (e.g.
+// a sandbox) has neither configured. Skip only on "neither set", not "either
+// set": a broken half-configured keypair (one key present, one missing) must
+// still fail the per-key assertions below rather than being silently skipped.
+describe.skipIf(!hasAnyVapidKey)("VAPID Keys Validation", () => {
   it("should have VAPID_PUBLIC_KEY set", () => {
     const key = process.env.VAPID_PUBLIC_KEY;
     expect(key).toBeDefined();

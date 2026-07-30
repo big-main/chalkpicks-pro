@@ -3,14 +3,16 @@
  */
 import { describe, it, expect } from "vitest";
 
-const hasRevenueCatKeys = Boolean(
-  process.env.VITE_REVENUECAT_IOS_KEY && process.env.VITE_REVENUECAT_ANDROID_KEY
+const hasAnyRevenueCatKey = Boolean(
+  process.env.VITE_REVENUECAT_IOS_KEY || process.env.VITE_REVENUECAT_ANDROID_KEY
 );
 
 // Validates deployed RevenueCat keys, not application code — meaningless
-// without the real values, so skip cleanly rather than fail when this
-// environment (e.g. a sandbox) has none configured.
-describe.skipIf(!hasRevenueCatKeys)("RevenueCat API Keys", () => {
+// without any real values, so skip cleanly when this environment (e.g. a
+// sandbox) has neither configured. Skip only on "neither set", not "either
+// set": a partial config (one key present, one missing) must still fail the
+// per-key assertion below rather than being silently skipped along with it.
+describe.skipIf(!hasAnyRevenueCatKey)("RevenueCat API Keys", () => {
   it("VITE_REVENUECAT_IOS_KEY should be set and valid", () => {
     const key = process.env.VITE_REVENUECAT_IOS_KEY;
     expect(key, "VITE_REVENUECAT_IOS_KEY must be set").toBeTruthy();

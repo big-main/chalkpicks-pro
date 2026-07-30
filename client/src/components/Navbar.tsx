@@ -476,7 +476,7 @@ export default function Navbar() {
       }}
     >
       <div className="max-w-[1400px] mx-auto px-4 lg:px-6">
-        <div className="flex items-center justify-between h-[76px] gap-2 overflow-hidden">
+        <div className="flex items-center justify-between h-[76px] gap-2 min-w-0">
           {/* ── LOGO ── */}
           <Link
             href="/"
@@ -729,7 +729,7 @@ export default function Navbar() {
           </div>
 
           {/* ── RIGHT SIDE ── */}
-          <div className="flex items-center gap-1.5 flex-shrink-0 min-w-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
             <LlmStatusBadge />
 
             {isAuthenticated ? (
@@ -942,7 +942,7 @@ export default function Navbar() {
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <button className="hidden sm:flex btn-premium text-sm py-2.5 px-5">
+                  <button className="hidden sm:flex btn-premium text-sm py-2 sm:py-2.5 px-4 sm:px-5">
                     <Zap className="w-3.5 h-3.5" />
                     Get Started
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -1025,7 +1025,44 @@ export default function Navbar() {
                 ))}
 
                 {!isAuthenticated && (
-                  <div className="pt-3 mt-2 border-t border-white/5">
+                  <div className="pt-3 mt-2 border-t border-white/5 space-y-2">
+                    <div className="flex gap-2">
+                      <a
+                        href="https://discord.gg/rUrkBW9N"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <button
+                          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                          style={{
+                            background: "rgba(255,255,255,0.04)",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            color: "rgba(255,255,255,0.6)",
+                          }}
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          Discord
+                        </button>
+                      </a>
+                      <Link
+                        href="/login"
+                        className="flex-1"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <button
+                          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                          style={{
+                            background: "rgba(255,255,255,0.04)",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            color: "rgba(255,255,255,0.6)",
+                          }}
+                        >
+                          Sign In
+                        </button>
+                      </Link>
+                    </div>
                     <button
                       className="w-full btn-premium justify-center"
                       onClick={() => {

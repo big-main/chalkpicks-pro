@@ -48,6 +48,7 @@ import { railwayRouter } from "./routers/railway";
 import { n8nWebhookRouter } from "./routers/n8nWebhook";
 import { antigravityRouter } from "./routers/antigravity";
 import { strategyRouter } from "./routers/strategy";
+import { pageSpeedRouter } from "./routers/pageSpeed";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -290,6 +291,7 @@ export const appRouter = router({
   railway: railwayRouter,
   n8nWebhook: n8nWebhookRouter,
   strategy: strategyRouter,
+  pageSpeed: pageSpeedRouter,
 });
 
 export type AppRouter = typeof appRouter;

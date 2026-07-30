@@ -17,6 +17,12 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { LEARN_PAGES_META } from "@shared/learnPagesMeta";
+import { PAGE_META_MAP as ROUTE_META_MAP } from "@shared/routeMeta";
+import {
+  buildBreadcrumbListJsonLd,
+  buildFaqPageJsonLd,
+} from "@shared/jsonLdBuilders";
+import { esc } from "./_core/seo";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,7 +56,7 @@ const BOT_PATTERNS = [
 ];
 
 function isBot(userAgent: string): boolean {
-  return BOT_PATTERNS.some((pattern) => pattern.test(userAgent));
+  return BOT_PATTERNS.some(pattern => pattern.test(userAgent));
 }
 
 // ─── JSON-LD builders ─────────────────────────────────────────────────────────
@@ -82,28 +88,13 @@ function websiteLd(): object {
 }
 
 function breadcrumbLd(items: Array<{ name: string; path: string }>): object {
-  return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, idx) => ({
-      "@type": "ListItem",
-      position: idx + 1,
-      name: item.name,
-      item: `${BASE_URL}${item.path}`,
-    })),
-  };
+  return buildBreadcrumbListJsonLd(items, BASE_URL);
 }
 
 function faqLd(faqs: Array<{ q: string; a: string }>): object {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: { "@type": "Answer", text: faq.a },
-    })),
-  };
+  return buildFaqPageJsonLd(
+    faqs.map(faq => ({ question: faq.q, answer: faq.a }))
+  );
 }
 
 // ─── Route → page metadata map ────────────────────────────────────────────────
@@ -134,229 +125,199 @@ const PAGE_META: Record<string, PageMeta> = {
       },
     ],
   },
-  "/picks": {
+};
+
+// Every other hand-curated page shares the exact same org + breadcrumb (+
+// optional FAQ) JSON-LD shape — writing that out per-page literal was pure
+// copy-paste (and the largest source of duplicated code in this file), so
+// it's expressed as data run through one builder instead, same convention
+// as LEARN_PAGES_META below and routeFallbackEntries further down.
+interface CuratedPage {
+  path: string;
+  title: string;
+  description: string;
+  /** Breadcrumb trail after "Home" — most pages are a single entry. */
+  breadcrumb: Array<{ name: string; path: string }>;
+  faqs?: Array<{ q: string; a: string }>;
+}
+
+const CURATED_PAGES: CuratedPage[] = [
+  {
+    path: "/picks",
     title: "AI Daily Sports Betting Picks — ChalkPicks",
     description:
       "Today's AI-generated sports betting picks with confidence scores, edge analysis, and +EV ratings across NFL, NBA, MLB, NHL, and more.",
-    canonicalPath: "/picks",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Picks", path: "/picks" }]),
-    ],
+    breadcrumb: [{ name: "Picks", path: "/picks" }],
   },
-  "/ev-finder": {
+  {
+    path: "/ev-finder",
     title: "+EV Finder — Real Expected Value Bets | ChalkPicks",
     description:
       "Find positive expected value (+EV) bets in real time. Devigged odds from 15+ sportsbooks with Pinnacle as the sharp reference line.",
-    canonicalPath: "/ev-finder",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "+EV Finder", path: "/ev-finder" }]),
-    ],
+    breadcrumb: [{ name: "+EV Finder", path: "/ev-finder" }],
   },
-  "/arbitrage": {
+  {
+    path: "/arbitrage",
     title: "Sports Betting Arbitrage Finder — ChalkPicks",
     description:
       "Lock in guaranteed profit by betting both sides across sportsbooks. Real-time arbitrage scanner across DraftKings, FanDuel, BetMGM, Caesars, and more.",
-    canonicalPath: "/arbitrage",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Arbitrage", path: "/arbitrage" }]),
-    ],
+    breadcrumb: [{ name: "Arbitrage", path: "/arbitrage" }],
   },
-  "/clv-tracker": {
+  {
+    path: "/clv-tracker",
     title: "Closing Line Value (CLV) Tracker — ChalkPicks",
     description:
       "Track your closing line value to measure betting sharpness. CLV is the #1 predictor of long-term profitability in sports betting.",
-    canonicalPath: "/clv-tracker",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "CLV Tracker", path: "/clv-tracker" }]),
-    ],
+    breadcrumb: [{ name: "CLV Tracker", path: "/clv-tracker" }],
   },
-  "/line-movement": {
+  {
+    path: "/line-movement",
     title: "Line Movement Tracker & Steam Moves — ChalkPicks",
     description:
       "Track real-time line movement, steam moves, and reverse line movement (RLM) across all major sportsbooks. Follow the sharp money.",
-    canonicalPath: "/line-movement",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Line Movement", path: "/line-movement" }]),
-    ],
+    breadcrumb: [{ name: "Line Movement", path: "/line-movement" }],
   },
-  "/nfl-picks": {
+  {
+    path: "/nfl-picks",
     title: "NFL Picks Today — AI Predictions & Best Bets",
     description:
       "Today's best NFL picks with AI-powered analysis, spread predictions, moneyline value, and over/under recommendations. Updated daily.",
-    canonicalPath: "/nfl-picks",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "NFL Picks", path: "/nfl-picks" }]),
-      faqLd([{
+    breadcrumb: [{ name: "NFL Picks", path: "/nfl-picks" }],
+    faqs: [
+      {
         q: "What are the best NFL picks today?",
         a: "ChalkPicks uses AI and statistical modeling to identify the best NFL picks daily, focusing on positive expected value (+EV) bets priced against sharp books like Pinnacle.",
-      }]),
+      },
     ],
   },
-  "/nba-picks": {
+  {
+    path: "/nba-picks",
     title: "NBA Picks Today — AI Predictions & Best Bets",
     description:
       "Today's best NBA picks with AI-powered analysis, spread predictions, player prop recommendations, and over/under value. Updated daily.",
-    canonicalPath: "/nba-picks",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "NBA Picks", path: "/nba-picks" }]),
-    ],
+    breadcrumb: [{ name: "NBA Picks", path: "/nba-picks" }],
   },
-  "/mlb-picks": {
+  {
+    path: "/mlb-picks",
     title: "MLB Picks Today — AI Predictions & Best Bets",
     description:
       "Today's best MLB picks with AI-powered analysis, run line value, moneyline predictions, and over/under recommendations.",
-    canonicalPath: "/mlb-picks",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "MLB Picks", path: "/mlb-picks" }]),
-    ],
+    breadcrumb: [{ name: "MLB Picks", path: "/mlb-picks" }],
   },
-  "/nhl-picks": {
+  {
+    path: "/nhl-picks",
     title: "NHL Picks Today — AI Predictions & Best Bets",
     description:
       "Today's best NHL picks with AI-powered analysis, puck line value, moneyline predictions, and over/under recommendations.",
-    canonicalPath: "/nhl-picks",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "NHL Picks", path: "/nhl-picks" }]),
-    ],
+    breadcrumb: [{ name: "NHL Picks", path: "/nhl-picks" }],
   },
-  "/ncaaf-picks": {
+  {
+    path: "/ncaaf-picks",
     title: "College Football Picks Today — NCAAF Best Bets",
     description:
       "Today's best NCAAF picks with AI-powered analysis, spread predictions, and over/under value. College football betting made smarter.",
-    canonicalPath: "/ncaaf-picks",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "NCAAF Picks", path: "/ncaaf-picks" }]),
-    ],
+    breadcrumb: [{ name: "NCAAF Picks", path: "/ncaaf-picks" }],
   },
-  "/ncaab-picks": {
+  {
+    path: "/ncaab-picks",
     title: "College Basketball Picks Today — NCAAB Best Bets",
     description:
       "Today's best NCAAB picks with AI-powered analysis, spread predictions, and over/under value. College basketball betting made smarter.",
-    canonicalPath: "/ncaab-picks",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "NCAAB Picks", path: "/ncaab-picks" }]),
-    ],
+    breadcrumb: [{ name: "NCAAB Picks", path: "/ncaab-picks" }],
   },
-  "/mma-picks": {
+  {
+    path: "/mma-picks",
     title: "MMA & UFC Picks Today — AI Fight Predictions",
     description:
       "Today's best MMA and UFC picks with AI-powered analysis, moneyline value, and method of victory predictions.",
-    canonicalPath: "/mma-picks",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "MMA Picks", path: "/mma-picks" }]),
-    ],
+    breadcrumb: [{ name: "MMA Picks", path: "/mma-picks" }],
   },
-  "/soccer-picks": {
+  {
+    path: "/soccer-picks",
     title: "Soccer Picks Today — EPL, MLS & La Liga Best Bets",
     description:
       "Today's best soccer picks for EPL, MLS, La Liga, and more with AI-powered analysis, moneyline value, and over/under recommendations.",
-    canonicalPath: "/soccer-picks",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Soccer Picks", path: "/soccer-picks" }]),
-    ],
+    breadcrumb: [{ name: "Soccer Picks", path: "/soccer-picks" }],
   },
-  "/tools/devig-calculator": {
+  {
+    path: "/tools/devig-calculator",
     title: "Devig Calculator — Remove Vig & Find Fair Odds",
     description:
       "Free devig calculator to remove bookmaker vig and find true fair odds. Supports proportional, additive, and power devigging methods.",
-    canonicalPath: "/tools/devig-calculator",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([
-        { name: "Home", path: "/" },
-        { name: "Tools", path: "/tools" },
-        { name: "Devig Calculator", path: "/tools/devig-calculator" },
-      ]),
-      faqLd([{
+    breadcrumb: [
+      { name: "Tools", path: "/tools" },
+      { name: "Devig Calculator", path: "/tools/devig-calculator" },
+    ],
+    faqs: [
+      {
         q: "What is devigging in sports betting?",
         a: "Devigging (removing the vig) is the process of converting bookmaker odds into true probability estimates by removing the bookmaker's built-in margin (juice). This reveals the fair odds for each outcome.",
-      }]),
+      },
     ],
   },
-  "/dfs-optimizer": {
+  {
+    path: "/dfs-optimizer",
     title: "DFS Lineup Optimizer — DraftKings & FanDuel",
     description:
       "Free DFS lineup optimizer for DraftKings and FanDuel. Maximize your projected points within salary cap constraints for NFL, NBA, and MLB.",
-    canonicalPath: "/dfs-optimizer",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "DFS Optimizer", path: "/dfs-optimizer" }]),
-    ],
+    breadcrumb: [{ name: "DFS Optimizer", path: "/dfs-optimizer" }],
   },
-  "/pricing": {
+  {
+    path: "/pricing",
     title: "ChalkPicks Pricing — Pro & Elite Plans",
     description:
       "ChalkPicks Pro at $19.99/month or Elite at $59.99/year. Full AI picks, +EV finder, arbitrage alerts, CLV tracking, and more.",
-    canonicalPath: "/pricing",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Pricing", path: "/pricing" }]),
-    ],
+    breadcrumb: [{ name: "Pricing", path: "/pricing" }],
   },
-  "/blog": {
+  {
+    path: "/blog",
     title: "Sports Betting Blog — Strategy, Tips & Analysis",
     description:
       "Expert sports betting strategy, tips, and analysis from the ChalkPicks team. Learn about +EV betting, CLV, arbitrage, and bankroll management.",
-    canonicalPath: "/blog",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }]),
-    ],
+    breadcrumb: [{ name: "Blog", path: "/blog" }],
   },
-  "/sharp-money": {
+  {
+    path: "/sharp-money",
     title: "Sharp Money Detector — Real-Time Line Movement",
     description:
       "Detect sharp money moves and public betting divergence in real-time. Track where the smart money is going across all major sportsbooks.",
-    canonicalPath: "/sharp-money",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Sharp Money", path: "/sharp-money" }]),
-    ],
+    breadcrumb: [{ name: "Sharp Money", path: "/sharp-money" }],
   },
-  "/consensus": {
+  {
+    path: "/consensus",
     title: "Consensus Picks — Public vs AI Recommendations",
     description:
       "Compare public betting consensus against ChalkPicks AI recommendations. See where the crowd is wrong and find contrarian value.",
-    canonicalPath: "/consensus",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Consensus", path: "/consensus" }]),
-    ],
+    breadcrumb: [{ name: "Consensus", path: "/consensus" }],
   },
-  "/api-access": {
+  {
+    path: "/api-access",
     title: "ChalkPicks API — EV, CLV & Devig Endpoints",
     description:
       "Access ChalkPicks data programmatically. Get +EV picks, CLV tracking, and devig calculations via our paid REST API.",
-    canonicalPath: "/api-access",
-    jsonLd: [
-      orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "API Access", path: "/api-access" }]),
-    ],
+    breadcrumb: [{ name: "API Access", path: "/api-access" }],
   },
-  "/parlay-flow": {
+  {
+    path: "/parlay-flow",
     title: "Visual Parlay Builder — Drag & Drop Creator",
     description:
       "Build parlays visually with our drag-and-drop flow builder. See correlations, calculate odds, and optimize your multi-leg bets.",
-    canonicalPath: "/parlay-flow",
+    breadcrumb: [{ name: "Parlay Flow", path: "/parlay-flow" }],
+  },
+];
+
+for (const page of CURATED_PAGES) {
+  PAGE_META[page.path] = {
+    title: page.title,
+    description: page.description,
+    canonicalPath: page.path,
     jsonLd: [
       orgLd(),
-      breadcrumbLd([{ name: "Home", path: "/" }, { name: "Parlay Flow", path: "/parlay-flow" }]),
+      breadcrumbLd([{ name: "Home", path: "/" }, ...page.breadcrumb]),
+      ...(page.faqs ? [faqLd(page.faqs)] : []),
     ],
-  },
-};
+  };
+}
 
 // The four /learn/* pages are built from shared/learnPagesMeta.ts instead of
 // hand-written per-page literals here — same orgLd()/breadcrumbLd()/faqLd()
@@ -379,12 +340,72 @@ for (const page of LEARN_PAGES_META) {
   };
 }
 
+// Before this loop, only the ~20 pages hand-curated above (plus /learn/*)
+// were visible to non-JS-executing crawlers (GPTBot, ClaudeBot,
+// PerplexityBot, ChatGPT-User, Googlebot, ...) — every other route existed
+// only in the client-side SPA bundle, invisible to any bot that doesn't run
+// JavaScript. shared/routeMeta.ts already carries a real title/description
+// for nearly every public route (it's the source client <title>/meta tags
+// come from), so reuse it here as a baseline instead of hand-writing dozens
+// more near-identical PAGE_META entries: every route with real routeMeta
+// but no richer hand-curated entry above gets an org + breadcrumb baseline.
+// robots.txt's own "Private/authenticated areas" disallow list — the
+// fallback below must not turn account-gated routes into an indexable bot
+// shell just because they happen to have a client-side title/description.
+const PRIVATE_ROUTE_PREFIXES = [
+  "/dashboard",
+  "/admin",
+  "/payment/",
+  "/account-settings",
+  "/subscription-management",
+];
+
+const routeFallbackEntries = Object.entries(ROUTE_META_MAP)
+  .filter(([routePath]) => !PAGE_META[routePath]) // skip routes already hand-curated with richer schema above
+  .filter(
+    ([routePath]) =>
+      !PRIVATE_ROUTE_PREFIXES.some(prefix => routePath.startsWith(prefix))
+  )
+  .map(([routePath, meta]): [string, PageMeta] => {
+    const breadcrumbName = meta.title.split(" | ")[0].split(" — ")[0];
+    return [
+      routePath,
+      {
+        title: meta.title,
+        description: meta.description,
+        canonicalPath: routePath,
+        jsonLd: [
+          orgLd(),
+          breadcrumbLd([
+            { name: "Home", path: "/" },
+            { name: breadcrumbName, path: routePath },
+          ]),
+        ],
+      },
+    ];
+  });
+Object.assign(PAGE_META, Object.fromEntries(routeFallbackEntries));
+
 // ─── HTML shell builder ───────────────────────────────────────────────────────
 
 function buildPrerenderedHtml(meta: PageMeta): string {
-  const canonical = `${BASE_URL}${meta.canonicalPath}`;
+  // meta.canonicalPath is attacker-controlled for unknown routes (the
+  // genericMeta fallback below sets it straight from req.path), so it must
+  // be escaped like title/description before landing in an HTML attribute —
+  // this was the one interpolation site esc() never covered.
+  const canonical = esc(`${BASE_URL}${meta.canonicalPath}`);
+  const title = esc(meta.title);
+  const description = esc(meta.description);
+  // JSON.stringify never escapes "<", so a "</script>" substring inside any
+  // string value would otherwise close the tag early and let the rest of the
+  // payload be parsed as HTML — escape "<" as "\u003c", matching the same
+  // technique client/src/components/seo/schema-jsonld.tsx already uses for
+  // the client-rendered equivalent of these same blocks.
   const jsonLdScripts = meta.jsonLd
-    .map((ld) => `<script type="application/ld+json">${JSON.stringify(ld)}</script>`)
+    .map(
+      ld =>
+        `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>`
+    )
     .join("\n    ");
 
   return `<!DOCTYPE html>
@@ -392,23 +413,23 @@ function buildPrerenderedHtml(meta: PageMeta): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${meta.title}</title>
-  <meta name="description" content="${meta.description}" />
+  <title>${title}</title>
+  <meta name="description" content="${description}" />
   <link rel="canonical" href="${canonical}" />
-  <meta property="og:title" content="${meta.title}" />
-  <meta property="og:description" content="${meta.description}" />
+  <meta property="og:title" content="${title}" />
+  <meta property="og:description" content="${description}" />
   <meta property="og:url" content="${canonical}" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="${LOGO_URL}" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="${meta.title}" />
-  <meta name="twitter:description" content="${meta.description}" />
+  <meta name="twitter:title" content="${title}" />
+  <meta name="twitter:description" content="${description}" />
   <meta name="robots" content="index, follow" />
   ${jsonLdScripts}
 </head>
 <body>
-  <h1>${meta.title}</h1>
-  <p>${meta.description}</p>
+  <h1>${title}</h1>
+  <p>${description}</p>
   <p>Visit <a href="${BASE_URL}">ChalkPicks</a> for the full interactive experience.</p>
   <nav>
     <ul>
@@ -454,7 +475,10 @@ export function registerPrerenderMiddleware(app: Express): void {
     // the actual text even without executing JS) straight from the DB on every
     // request, so let those two routes fall through to it instead of stopping
     // here.
-    if (/^\/blog\/[a-z0-9-]+$/i.test(requestPath) || /^\/picks\/\d+$/.test(requestPath)) {
+    if (
+      /^\/blog\/[a-z0-9-]+$/i.test(requestPath) ||
+      /^\/picks\/\d+$/.test(requestPath)
+    ) {
       return next();
     }
 
@@ -465,10 +489,19 @@ export function registerPrerenderMiddleware(app: Express): void {
         : path.resolve(__dirname, "public");
 
     const snapshotSlug =
-      requestPath === "/" ? "index" : requestPath.replace(/\//g, "_").replace(/^_/, "");
-    const snapshotPath = path.join(distBase, "snapshots", `${snapshotSlug}.html`);
+      requestPath === "/"
+        ? "index"
+        : requestPath.replace(/\//g, "_").replace(/^_/, "");
+    const snapshotsDir = path.resolve(distBase, "snapshots");
+    const snapshotPath = path.resolve(snapshotsDir, `${snapshotSlug}.html`);
+    // requestPath is attacker-controlled (req.path); the slug replacement
+    // above already strips "/" so path.resolve can't leave snapshotsDir, but
+    // verify it explicitly rather than relying on that being the only guard.
+    const isWithinSnapshotsDir =
+      snapshotPath === snapshotsDir ||
+      snapshotPath.startsWith(snapshotsDir + path.sep);
 
-    if (fs.existsSync(snapshotPath)) {
+    if (isWithinSnapshotsDir && fs.existsSync(snapshotPath)) {
       res.set("X-Prerendered", "1");
       res.set("Cache-Control", "public, max-age=3600");
       res.set("Content-Type", "text/html; charset=utf-8");

@@ -1932,3 +1932,9 @@
 - [x] Add smooth scroll effect to navigation links
 - [x] Create reusable PricingCard component extracted from Pricing.tsx
 - [x] Create pricing skill file at /home/ubuntu/skills/chalkpicks-pricing/SKILL.md
+
+## Ahrefs IndexNow + PageSpeed Insights (Jul 30 2026)
+
+- [x] Host Ahrefs IndexNow key file at /k937cd84x3s9krpmgd5r19dgutqc11hw.txt
+- [x] Add PageSpeed Insights API key (AIzaSyCGJoltLOP4RKkGgFx140NGGcAl6_h_93c) as secret
+- [x] Add PageSpeed performance tab to admin panel

@@ -59,6 +59,9 @@ jspm_packages/
 # TypeScript cache
 *.tsbuildinfo
 
+# Node.js compile cache (NODE_COMPILE_CACHE / --experimental-default-type)
+node-compile-cache/
+
 # Optional npm cache directory
 .npm
 

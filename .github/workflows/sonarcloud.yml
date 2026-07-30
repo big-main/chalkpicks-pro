@@ -28,7 +28,7 @@ jobs:
       matrix:
         # Adjust languages based on your repository
         # Supported: 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby', 'typescript'
-        language: [ 'javascript', 'python' ]
+        language: [ 'javascript' ]
 
     steps:
       - name: Checkout repository

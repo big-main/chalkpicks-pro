@@ -30,7 +30,10 @@ export const ENV = {
   n8nPicksWebhookUrl: process.env.N8N_PICKS_WEBHOOK_URL ?? "",
   n8nWebhookSecret: process.env.N8N_WEBHOOK_SECRET ?? "",
   railwayApiToken: process.env.RAILWAY_API_TOKEN ?? "",
-  hasOddsApiKey: Boolean(process.env.ODDS_API_KEY || process.env.ODDS_API_IO_KEY),
+  hasOddsApiKey: Boolean(
+    process.env.ODDS_API_KEY || process.env.ODDS_API_IO_KEY
+  ),
+  pageSpeedApiKey: process.env.PAGESPEED_API_KEY ?? "",
 };
 
 /** Call once at boot. Fails hard in production if critical secrets missing. */

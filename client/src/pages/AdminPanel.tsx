@@ -4,14 +4,31 @@ import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import { Link } from "wouter";
 import {
-  Users, Shield, TrendingUp, DollarSign, Activity,
-  BarChart3, Settings, Eye, Ban, CheckCircle2,
-  AlertCircle, Crown, Calendar, Search, RefreshCw, Bell, Send, Megaphone
+  Users,
+  Shield,
+  TrendingUp,
+  DollarSign,
+  Activity,
+  BarChart3,
+  Settings,
+  Eye,
+  Ban,
+  CheckCircle2,
+  AlertCircle,
+  Crown,
+  Calendar,
+  Search,
+  RefreshCw,
+  Bell,
+  Send,
+  Megaphone,
+  Gauge,
 } from "lucide-react";
 import { useState as useLocalState } from "react";
 import { toast } from "sonner";
 
-const LOGO_URL = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png";
+const LOGO_URL =
+  "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png";
 
 const cardStyle = {
   background: "rgba(12,12,22,0.9)",
@@ -31,7 +48,19 @@ export default function AdminPanel() {
   const { user, isAuthenticated } = useAuth();
   const [searchEmail, setSearchEmail] = useState("");
   const [elevateEmail, setElevateEmail] = useState("");
-  const [activeTab, setActiveTab] = useState<"overview" | "users" | "subscriptions" | "picks" | "notifications">("overview");
+  const [activeTab, setActiveTab] = useState<
+    | "overview"
+    | "users"
+    | "subscriptions"
+    | "picks"
+    | "notifications"
+    | "performance"
+  >("overview");
+  const [psUrl, setPsUrl] = useState("https://www.chalkpicks.live");
+  const [psResult, setPsResult] = useState<null | {
+    mobile: ReturnType<typeof Object.create>;
+    desktop: ReturnType<typeof Object.create>;
+  }>(null);
   const [broadcastTitle, setBroadcastTitle] = useState("");
   const [broadcastBody, setBroadcastBody] = useState("");
   const [broadcastUrl, setBroadcastUrl] = useState("");
@@ -39,23 +68,37 @@ export default function AdminPanel() {
   const [emailHtml, setEmailHtml] = useState("");
   const [announcementTitle, setAnnouncementTitle] = useState("");
   const [announcementBody, setAnnouncementBody] = useState("");
-  const [announcementType, setAnnouncementType] = useState<"info" | "warning" | "success" | "promo">("info");
+  const [announcementType, setAnnouncementType] = useState<
+    "info" | "warning" | "success" | "promo"
+  >("info");
   const [userPage, setUserPage] = useState(0);
   const PAGE_SIZE = 25;
 
   // Fetch platform stats
-  const { data: leaderboardData } = trpc.leaderboard.list.useQuery({ limit: 10 });
-  const { data: picksData } = trpc.picks.list.useQuery({ limit: 5, tier: "all" });
+  const { data: leaderboardData } = trpc.leaderboard.list.useQuery({
+    limit: 10,
+  });
+  const { data: picksData } = trpc.picks.list.useQuery({
+    limit: 5,
+    tier: "all",
+  });
 
   // Fetch real users from DB
-  const { data: usersData, isLoading: usersLoading, refetch: refetchUsers } = trpc.admin.getUsers.useQuery(
+  const {
+    data: usersData,
+    isLoading: usersLoading,
+    refetch: refetchUsers,
+  } = trpc.admin.getUsers.useQuery(
     { limit: PAGE_SIZE, offset: userPage * PAGE_SIZE },
     { enabled: activeTab === "users" }
   );
 
   const updateTierMutation = trpc.admin.updateUserTier.useMutation({
-    onSuccess: () => { toast.success("User tier updated"); refetchUsers(); },
-    onError: (err) => toast.error(err.message || "Failed to update tier"),
+    onSuccess: () => {
+      toast.success("User tier updated");
+      refetchUsers();
+    },
+    onError: err => toast.error(err.message || "Failed to update tier"),
   });
 
   const elevateMutation = trpc.auth.elevateToAdmin.useMutation({
@@ -63,7 +106,7 @@ export default function AdminPanel() {
       toast.success(`Admin privileges granted to ${elevateEmail}`);
       setElevateEmail("");
     },
-    onError: (err) => toast.error(err.message || "Failed to elevate user"),
+    onError: err => toast.error(err.message || "Failed to elevate user"),
   });
 
   // Redirect non-admins
@@ -78,11 +121,7 @@ export default function AdminPanel() {
           Admin privileges required.
         </p>
         <Link href="/">
-          <button
-            className="mt-6 btn-premium"
-          >
-            Go Home
-          </button>
+          <button className="mt-6 btn-premium">Go Home</button>
         </Link>
       </div>
     );
@@ -90,22 +129,38 @@ export default function AdminPanel() {
 
   // Notifications mutations
   const broadcastPush = trpc.notifications.broadcastPush.useMutation({
-    onSuccess: (d) => toast.success(`Push sent to ${d.pushCount} subscribers`),
+    onSuccess: d => toast.success(`Push sent to ${d.pushCount} subscribers`),
     onError: () => toast.error("Broadcast failed"),
   });
   const emailBlast = trpc.notifications.emailBlast.useMutation({
-    onSuccess: (d) => toast.success(`Email sent to ${d.sent} subscribers (${d.errors} errors)`),
+    onSuccess: d =>
+      toast.success(`Email sent to ${d.sent} subscribers (${d.errors} errors)`),
     onError: () => toast.error("Email blast failed"),
   });
   const createAnnouncement = trpc.notifications.createAnnouncement.useMutation({
-    onSuccess: () => { toast.success("Announcement created"); setAnnouncementTitle(""); setAnnouncementBody(""); },
+    onSuccess: () => {
+      toast.success("Announcement created");
+      setAnnouncementTitle("");
+      setAnnouncementBody("");
+    },
     onError: () => toast.error("Failed to create announcement"),
   });
-  const { data: announcementsList, refetch: refetchAnnouncements } = trpc.notifications.listAnnouncements.useQuery(undefined, {
-    enabled: activeTab === "notifications",
-  });
+  const { data: announcementsList, refetch: refetchAnnouncements } =
+    trpc.notifications.listAnnouncements.useQuery(undefined, {
+      enabled: activeTab === "notifications",
+    });
   const deleteAnnouncement = trpc.notifications.deleteAnnouncement.useMutation({
-    onSuccess: () => { toast.success("Deleted"); refetchAnnouncements(); },
+    onSuccess: () => {
+      toast.success("Deleted");
+      refetchAnnouncements();
+    },
+  });
+
+  const psAudit = trpc.pageSpeed.auditBoth.useMutation({
+    onSuccess: d => {
+      setPsResult(d as never);
+    },
+    onError: e => toast.error(e.message || "PageSpeed audit failed"),
   });
 
   const tabs = [
@@ -114,6 +169,7 @@ export default function AdminPanel() {
     { id: "subscriptions", label: "Subscriptions", icon: Crown },
     { id: "picks", label: "Picks Engine", icon: Activity },
     { id: "notifications", label: "Notifications", icon: Bell },
+    { id: "performance", label: "PageSpeed", icon: Gauge },
   ] as const;
 
   return (
@@ -124,30 +180,65 @@ export default function AdminPanel() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <img src={LOGO_URL} alt="ChalkPicks" className="h-12 w-auto" style={{ filter: "drop-shadow(0 0 14px rgba(245, 158, 11, 0.55)) drop-shadow(0 0 6px rgba(239, 68, 68, 0.35))" }} />
+            <img
+              src={LOGO_URL}
+              alt="ChalkPicks"
+              className="h-12 w-auto"
+              style={{
+                filter:
+                  "drop-shadow(0 0 14px rgba(245, 158, 11, 0.55)) drop-shadow(0 0 6px rgba(239, 68, 68, 0.35))",
+              }}
+            />
             <div>
-              <h1 style={{ fontWeight: 700, fontSize: "1.75rem", textTransform: "uppercase", color: "white" }}>
+              <h1
+                style={{
+                  fontWeight: 700,
+                  fontSize: "1.75rem",
+                  textTransform: "uppercase",
+                  color: "white",
+                }}
+              >
                 Admin Panel
               </h1>
-              <p style={{ color: "rgba(57,255,20,0.8)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              <p
+                style={{
+                  color: "rgba(57,255,20,0.8)",
+                  fontSize: "0.8rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                }}
+              >
                 ChalkPicks Control Center
               </p>
             </div>
           </div>
           <div
             className="flex items-center gap-2 px-3 py-1.5"
-            style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.3)", borderRadius: "6px" }}
+            style={{
+              background: "rgba(57,255,20,0.1)",
+              border: "1px solid rgba(57,255,20,0.3)",
+              borderRadius: "6px",
+            }}
           >
             <Shield className="w-4 h-4" style={{ color: "#39ff14" }} />
-            <span style={{ color: "#39ff14", fontSize: "0.8rem", fontWeight: 700 }}>
+            <span
+              style={{ color: "#39ff14", fontSize: "0.8rem", fontWeight: 700 }}
+            >
               ADMIN: {user?.name || user?.email}
             </span>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-1 mb-8 p-1" style={{ background: "rgba(0,0,0,0.4)", borderRadius: "8px", width: "fit-content" }}>
-          {tabs.map((tab) => {
+        <div
+          className="flex gap-1 mb-8 p-1"
+          style={{
+            background: "rgba(0,0,0,0.4)",
+            borderRadius: "8px",
+            width: "fit-content",
+          }}
+        >
+          {tabs.map(tab => {
             const Icon = tab.icon;
             const active = activeTab === tab.id;
             return (
@@ -157,7 +248,9 @@ export default function AdminPanel() {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all"
                 style={{
                   background: active ? "rgba(57,255,20,0.15)" : "transparent",
-                  border: active ? "1px solid rgba(57,255,20,0.3)" : "1px solid transparent",
+                  border: active
+                    ? "1px solid rgba(57,255,20,0.3)"
+                    : "1px solid transparent",
                   borderRadius: "6px",
                   color: active ? "#39ff14" : "rgba(200,200,220,0.6)",
                   cursor: "pointer",
@@ -176,24 +269,67 @@ export default function AdminPanel() {
             {/* Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: "Total Users", value: "—", sub: "Registered accounts", color: "#39ff14", icon: Users },
-                { label: "Active Subs", value: "—", sub: "Paying subscribers", color: "#f0b800", icon: Crown },
-                { label: "Picks Today", value: picksData?.picks?.length ?? "—", sub: "AI picks generated", color: "#d4a017", icon: Activity },
-                { label: "Revenue MTD", value: "—", sub: "Month to date", color: "#fbbf24", icon: DollarSign },
-              ].map((stat) => {
+                {
+                  label: "Total Users",
+                  value: "—",
+                  sub: "Registered accounts",
+                  color: "#39ff14",
+                  icon: Users,
+                },
+                {
+                  label: "Active Subs",
+                  value: "—",
+                  sub: "Paying subscribers",
+                  color: "#f0b800",
+                  icon: Crown,
+                },
+                {
+                  label: "Picks Today",
+                  value: picksData?.picks?.length ?? "—",
+                  sub: "AI picks generated",
+                  color: "#d4a017",
+                  icon: Activity,
+                },
+                {
+                  label: "Revenue MTD",
+                  value: "—",
+                  sub: "Month to date",
+                  color: "#fbbf24",
+                  icon: DollarSign,
+                },
+              ].map(stat => {
                 const Icon = stat.icon;
                 return (
                   <div key={stat.label} style={statCard(stat.color)}>
                     <div className="flex items-center justify-between mb-2">
-                      <span style={{ color: "rgba(180,180,210,0.7)", fontSize: "0.8rem", textTransform: "uppercase" }}>
+                      <span
+                        style={{
+                          color: "rgba(180,180,210,0.7)",
+                          fontSize: "0.8rem",
+                          textTransform: "uppercase",
+                        }}
+                      >
                         {stat.label}
                       </span>
                       <Icon className="w-4 h-4" style={{ color: stat.color }} />
                     </div>
-                    <div style={{ fontWeight: 700, fontSize: "2rem", color: stat.color }}>
+                    <div
+                      style={{
+                        fontWeight: 700,
+                        fontSize: "2rem",
+                        color: stat.color,
+                      }}
+                    >
                       {stat.value}
                     </div>
-                    <div style={{ color: "rgba(140,140,170,0.7)", fontSize: "0.75rem" }}>{stat.sub}</div>
+                    <div
+                      style={{
+                        color: "rgba(140,140,170,0.7)",
+                        fontSize: "0.75rem",
+                      }}
+                    >
+                      {stat.sub}
+                    </div>
                   </div>
                 );
               })}
@@ -203,7 +339,16 @@ export default function AdminPanel() {
             <div className="grid lg:grid-cols-2 gap-6">
               {/* Elevate to Admin */}
               <div style={cardStyle}>
-                <h3 style={{ fontWeight: 700, color: "#39ff14", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
+                <h3
+                  style={{
+                    fontWeight: 700,
+                    color: "#39ff14",
+                    textTransform: "uppercase",
+                    fontSize: "0.85rem",
+                    letterSpacing: "0.05em",
+                    marginBottom: "1rem",
+                  }}
+                >
                   <Shield className="w-4 h-4 inline mr-2" />
                   Elevate User to Admin
                 </h3>
@@ -212,7 +357,7 @@ export default function AdminPanel() {
                     type="email"
                     placeholder="user@example.com"
                     value={elevateEmail}
-                    onChange={(e) => setElevateEmail(e.target.value)}
+                    onChange={e => setElevateEmail(e.target.value)}
                     className="flex-1 px-3 py-2 text-sm"
                     style={{
                       background: "rgba(255,255,255,0.05)",
@@ -240,28 +385,62 @@ export default function AdminPanel() {
                     {elevateMutation.isPending ? "..." : "Grant Admin"}
                   </button>
                 </div>
-                <p style={{ color: "rgba(140,140,170,0.6)", fontSize: "0.75rem", marginTop: "0.5rem" }}>
-                  Grants admin role + yearly subscription to the specified email.
+                <p
+                  style={{
+                    color: "rgba(140,140,170,0.6)",
+                    fontSize: "0.75rem",
+                    marginTop: "0.5rem",
+                  }}
+                >
+                  Grants admin role + yearly subscription to the specified
+                  email.
                 </p>
               </div>
 
               {/* Platform Links */}
               <div style={cardStyle}>
-                <h3 style={{ fontWeight: 700, color: "#f0b800", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
+                <h3
+                  style={{
+                    fontWeight: 700,
+                    color: "#f0b800",
+                    textTransform: "uppercase",
+                    fontSize: "0.85rem",
+                    letterSpacing: "0.05em",
+                    marginBottom: "1rem",
+                  }}
+                >
                   <Settings className="w-4 h-4 inline mr-2" />
                   Quick Links
                 </h3>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { label: "Stripe Dashboard", href: "https://dashboard.stripe.com", color: "#d4a017" },
-                    { label: "Admin Promos", href: "/admin/promos", color: "#39ff14" },
-                    { label: "Feedback Analytics", href: "/feedback-analytics", color: "#f0b800" },
-                    { label: "Subscription Mgmt", href: "/subscription-management", color: "#fbbf24" },
-                  ].map((link) => (
+                    {
+                      label: "Stripe Dashboard",
+                      href: "https://dashboard.stripe.com",
+                      color: "#d4a017",
+                    },
+                    {
+                      label: "Admin Promos",
+                      href: "/admin/promos",
+                      color: "#39ff14",
+                    },
+                    {
+                      label: "Feedback Analytics",
+                      href: "/feedback-analytics",
+                      color: "#f0b800",
+                    },
+                    {
+                      label: "Subscription Mgmt",
+                      href: "/subscription-management",
+                      color: "#fbbf24",
+                    },
+                  ].map(link => (
                     <a
                       key={link.label}
                       href={link.href}
-                      target={link.href.startsWith("http") ? "_blank" : undefined}
+                      target={
+                        link.href.startsWith("http") ? "_blank" : undefined
+                      }
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-3 py-2 text-xs font-medium transition-all hover:opacity-80"
                       style={{
@@ -282,21 +461,42 @@ export default function AdminPanel() {
 
             {/* Recent Picks */}
             <div style={cardStyle}>
-              <h3 style={{ fontWeight: 700, color: "#d4a017", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
+              <h3
+                style={{
+                  fontWeight: 700,
+                  color: "#d4a017",
+                  textTransform: "uppercase",
+                  fontSize: "0.85rem",
+                  letterSpacing: "0.05em",
+                  marginBottom: "1rem",
+                }}
+              >
                 <Activity className="w-4 h-4 inline mr-2" />
                 Recent AI Picks
               </h3>
               {picksData?.picks?.length ? (
                 <div className="space-y-2">
-                  {picksData.picks.map((pick) => (
+                  {picksData.picks.map(pick => (
                     <div
                       key={pick.id}
                       className="flex items-center justify-between p-3"
-                      style={{ background: "rgba(255,255,255,0.03)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.06)" }}
+                      style={{
+                        background: "rgba(255,255,255,0.03)",
+                        borderRadius: "6px",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                      }}
                     >
                       <div>
-                        <div className="font-medium text-sm" style={{ color: "white" }}>{pick.recommendation}</div>
-                        <div className="text-xs mt-0.5" style={{ color: "rgba(140,140,170,0.7)" }}>
+                        <div
+                          className="font-medium text-sm"
+                          style={{ color: "white" }}
+                        >
+                          {pick.recommendation}
+                        </div>
+                        <div
+                          className="text-xs mt-0.5"
+                          style={{ color: "rgba(140,140,170,0.7)" }}
+                        >
                           {pick.sportKey} · {pick.pickType} · {pick.odds}
                         </div>
                       </div>
@@ -304,10 +504,16 @@ export default function AdminPanel() {
                         <div
                           className="px-2 py-0.5 text-xs font-bold"
                           style={{
-                            background: (pick.confidenceScore ?? 0) >= 75 ? "rgba(57,255,20,0.15)" : "rgba(251,191,36,0.15)",
+                            background:
+                              (pick.confidenceScore ?? 0) >= 75
+                                ? "rgba(57,255,20,0.15)"
+                                : "rgba(251,191,36,0.15)",
                             border: `1px solid ${(pick.confidenceScore ?? 0) >= 75 ? "rgba(57,255,20,0.3)" : "rgba(251,191,36,0.3)"}`,
                             borderRadius: "4px",
-                            color: (pick.confidenceScore ?? 0) >= 75 ? "#39ff14" : "#fbbf24",
+                            color:
+                              (pick.confidenceScore ?? 0) >= 75
+                                ? "#39ff14"
+                                : "#fbbf24",
                           }}
                         >
                           {pick.confidenceScore}% CONF
@@ -315,10 +521,16 @@ export default function AdminPanel() {
                         <div
                           className="px-2 py-0.5 text-xs font-bold"
                           style={{
-                            background: pick.tier === "free" ? "rgba(140,140,170,0.1)" : "rgba(212,160,23,0.15)",
+                            background:
+                              pick.tier === "free"
+                                ? "rgba(140,140,170,0.1)"
+                                : "rgba(212,160,23,0.15)",
                             border: `1px solid ${pick.tier === "free" ? "rgba(140,140,170,0.2)" : "rgba(212,160,23,0.3)"}`,
                             borderRadius: "4px",
-                            color: pick.tier === "free" ? "rgba(180,180,210,0.7)" : "#d4a017",
+                            color:
+                              pick.tier === "free"
+                                ? "rgba(180,180,210,0.7)"
+                                : "#d4a017",
                           }}
                         >
                           {pick.tier?.toUpperCase()}
@@ -328,7 +540,14 @@ export default function AdminPanel() {
                   ))}
                 </div>
               ) : (
-                <p style={{ color: "rgba(140,140,170,0.6)", fontSize: "0.875rem" }}>No picks found.</p>
+                <p
+                  style={{
+                    color: "rgba(140,140,170,0.6)",
+                    fontSize: "0.875rem",
+                  }}
+                >
+                  No picks found.
+                </p>
               )}
             </div>
           </div>
@@ -338,7 +557,15 @@ export default function AdminPanel() {
         {activeTab === "users" && (
           <div style={cardStyle}>
             <div className="flex items-center justify-between mb-4">
-              <h3 style={{ fontWeight: 700, color: "#39ff14", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
+              <h3
+                style={{
+                  fontWeight: 700,
+                  color: "#39ff14",
+                  textTransform: "uppercase",
+                  fontSize: "0.85rem",
+                  letterSpacing: "0.05em",
+                }}
+              >
                 <Users className="w-4 h-4 inline mr-2" />
                 Members ({usersData?.total ?? "…"})
               </h3>
@@ -346,17 +573,25 @@ export default function AdminPanel() {
                 <button
                   onClick={() => refetchUsers()}
                   className="p-1.5 rounded"
-                  style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.2)", color: "#39ff14", cursor: "pointer" }}
+                  style={{
+                    background: "rgba(57,255,20,0.1)",
+                    border: "1px solid rgba(57,255,20,0.2)",
+                    color: "#39ff14",
+                    cursor: "pointer",
+                  }}
                   title="Refresh"
                 >
                   <RefreshCw className="w-4 h-4" />
                 </button>
-                <Search className="w-4 h-4" style={{ color: "rgba(140,140,170,0.6)" }} />
+                <Search
+                  className="w-4 h-4"
+                  style={{ color: "rgba(140,140,170,0.6)" }}
+                />
                 <input
                   type="text"
                   placeholder="Filter by email..."
                   value={searchEmail}
-                  onChange={(e) => setSearchEmail(e.target.value)}
+                  onChange={e => setSearchEmail(e.target.value)}
                   className="px-3 py-1.5 text-sm"
                   style={{
                     background: "rgba(255,255,255,0.05)",
@@ -371,85 +606,237 @@ export default function AdminPanel() {
             </div>
 
             {usersLoading ? (
-              <div className="p-8 text-center" style={{ color: "rgba(140,140,170,0.6)" }}>
-                <RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin" style={{ color: "#39ff14" }} />
+              <div
+                className="p-8 text-center"
+                style={{ color: "rgba(140,140,170,0.6)" }}
+              >
+                <RefreshCw
+                  className="w-6 h-6 mx-auto mb-2 animate-spin"
+                  style={{ color: "#39ff14" }}
+                />
                 Loading members...
               </div>
             ) : (
               <>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm" style={{ borderCollapse: "collapse" }}>
+                  <table
+                    className="w-full text-sm"
+                    style={{ borderCollapse: "collapse" }}
+                  >
                     <thead>
-                      <tr style={{ borderBottom: "1px solid rgba(57,255,20,0.15)" }}>
-                        {["Name", "Email", "Tier", "Role", "Bets", "Joined", "Actions"].map((h) => (
-                          <th key={h} className="text-left py-2 px-3" style={{ color: "rgba(140,140,170,0.7)", fontWeight: 600, fontSize: "0.75rem", textTransform: "uppercase" }}>{h}</th>
+                      <tr
+                        style={{
+                          borderBottom: "1px solid rgba(57,255,20,0.15)",
+                        }}
+                      >
+                        {[
+                          "Name",
+                          "Email",
+                          "Tier",
+                          "Role",
+                          "Bets",
+                          "Joined",
+                          "Actions",
+                        ].map(h => (
+                          <th
+                            key={h}
+                            className="text-left py-2 px-3"
+                            style={{
+                              color: "rgba(140,140,170,0.7)",
+                              fontWeight: 600,
+                              fontSize: "0.75rem",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            {h}
+                          </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {(usersData?.users ?? []).filter(u =>
-                        !searchEmail || u.email?.toLowerCase().includes(searchEmail.toLowerCase())
-                      ).map((u) => (
-                        <tr key={u.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }} className="hover:bg-white/[0.02]">
-                          <td className="py-2 px-3" style={{ color: "white", fontWeight: 500 }}>{u.name || "—"}</td>
-                          <td className="py-2 px-3" style={{ color: "rgba(180,180,210,0.8)" }}>{u.email}</td>
-                          <td className="py-2 px-3">
-                            <select
-                              defaultValue={u.subscriptionTier || "free"}
-                              onChange={(e) => updateTierMutation.mutate({ userId: u.id, subscriptionTier: e.target.value as any })}
-                              className="text-xs px-2 py-0.5"
+                      {(usersData?.users ?? [])
+                        .filter(
+                          u =>
+                            !searchEmail ||
+                            u.email
+                              ?.toLowerCase()
+                              .includes(searchEmail.toLowerCase())
+                        )
+                        .map(u => (
+                          <tr
+                            key={u.id}
+                            style={{
+                              borderBottom: "1px solid rgba(255,255,255,0.04)",
+                            }}
+                            className="hover:bg-white/[0.02]"
+                          >
+                            <td
+                              className="py-2 px-3"
+                              style={{ color: "white", fontWeight: 500 }}
+                            >
+                              {u.name || "—"}
+                            </td>
+                            <td
+                              className="py-2 px-3"
+                              style={{ color: "rgba(180,180,210,0.8)" }}
+                            >
+                              {u.email}
+                            </td>
+                            <td className="py-2 px-3">
+                              <select
+                                defaultValue={u.subscriptionTier || "free"}
+                                onChange={e =>
+                                  updateTierMutation.mutate({
+                                    userId: u.id,
+                                    subscriptionTier: e.target.value as any,
+                                  })
+                                }
+                                className="text-xs px-2 py-0.5"
+                                style={{
+                                  background: "rgba(57,255,20,0.1)",
+                                  border: "1px solid rgba(57,255,20,0.25)",
+                                  borderRadius: "4px",
+                                  color: "#39ff14",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                {[
+                                  "free",
+                                  "trial",
+                                  "daily",
+                                  "monthly",
+                                  "yearly",
+                                ].map(t => (
+                                  <option
+                                    key={t}
+                                    value={t}
+                                    style={{
+                                      background: "#0c0c16",
+                                      color: "white",
+                                    }}
+                                  >
+                                    {t}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td className="py-2 px-3">
+                              <span
+                                className="text-xs px-2 py-0.5"
+                                style={{
+                                  background:
+                                    u.role === "admin"
+                                      ? "rgba(212,160,23,0.15)"
+                                      : "rgba(255,255,255,0.05)",
+                                  border: `1px solid ${u.role === "admin" ? "rgba(212,160,23,0.3)" : "rgba(255,255,255,0.1)"}`,
+                                  borderRadius: "4px",
+                                  color:
+                                    u.role === "admin"
+                                      ? "#d4a017"
+                                      : "rgba(180,180,210,0.7)",
+                                }}
+                              >
+                                {u.role}
+                              </span>
+                            </td>
+                            <td
+                              className="py-2 px-3"
+                              style={{ color: "rgba(140,140,170,0.7)" }}
+                            >
+                              {u.totalBets ?? 0}
+                            </td>
+                            <td
+                              className="py-2 px-3"
                               style={{
-                                background: "rgba(57,255,20,0.1)",
-                                border: "1px solid rgba(57,255,20,0.25)",
-                                borderRadius: "4px",
-                                color: "#39ff14",
-                                cursor: "pointer",
+                                color: "rgba(140,140,170,0.6)",
+                                fontSize: "0.75rem",
                               }}
                             >
-                              {["free", "trial", "daily", "monthly", "yearly"].map((t) => (
-                                <option key={t} value={t} style={{ background: "#0c0c16", color: "white" }}>{t}</option>
-                              ))}
-                            </select>
-                          </td>
-                          <td className="py-2 px-3">
-                            <span className="text-xs px-2 py-0.5" style={{
-                              background: u.role === "admin" ? "rgba(212,160,23,0.15)" : "rgba(255,255,255,0.05)",
-                              border: `1px solid ${u.role === "admin" ? "rgba(212,160,23,0.3)" : "rgba(255,255,255,0.1)"}`,
-                              borderRadius: "4px",
-                              color: u.role === "admin" ? "#d4a017" : "rgba(180,180,210,0.7)",
-                            }}>{u.role}</span>
-                          </td>
-                          <td className="py-2 px-3" style={{ color: "rgba(140,140,170,0.7)" }}>{u.totalBets ?? 0}</td>
-                          <td className="py-2 px-3" style={{ color: "rgba(140,140,170,0.6)", fontSize: "0.75rem" }}>
-                            {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}
-                          </td>
-                          <td className="py-2 px-3">
-                            <button
-                              onClick={() => { setElevateEmail(u.email || ""); setActiveTab("overview"); }}
-                              className="text-xs px-2 py-0.5"
-                              style={{ background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.2)", borderRadius: "4px", color: "#39ff14", cursor: "pointer" }}
-                            >
-                              Edit
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                              {u.createdAt
+                                ? new Date(u.createdAt).toLocaleDateString()
+                                : "—"}
+                            </td>
+                            <td className="py-2 px-3">
+                              <button
+                                onClick={() => {
+                                  setElevateEmail(u.email || "");
+                                  setActiveTab("overview");
+                                }}
+                                className="text-xs px-2 py-0.5"
+                                style={{
+                                  background: "rgba(57,255,20,0.08)",
+                                  border: "1px solid rgba(57,255,20,0.2)",
+                                  borderRadius: "4px",
+                                  color: "#39ff14",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Edit
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
                 {/* Pagination */}
                 {(usersData?.total ?? 0) > PAGE_SIZE && (
-                  <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                    <span style={{ color: "rgba(140,140,170,0.6)", fontSize: "0.8rem" }}>
-                      Showing {userPage * PAGE_SIZE + 1}–{Math.min((userPage + 1) * PAGE_SIZE, usersData?.total ?? 0)} of {usersData?.total} members
+                  <div
+                    className="flex items-center justify-between mt-4 pt-3"
+                    style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+                  >
+                    <span
+                      style={{
+                        color: "rgba(140,140,170,0.6)",
+                        fontSize: "0.8rem",
+                      }}
+                    >
+                      Showing {userPage * PAGE_SIZE + 1}–
+                      {Math.min(
+                        (userPage + 1) * PAGE_SIZE,
+                        usersData?.total ?? 0
+                      )}{" "}
+                      of {usersData?.total} members
                     </span>
                     <div className="flex gap-2">
-                      <button onClick={() => setUserPage(p => Math.max(0, p - 1))} disabled={userPage === 0}
-                        className="px-3 py-1 text-xs" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", color: "white", cursor: userPage === 0 ? "not-allowed" : "pointer", opacity: userPage === 0 ? 0.4 : 1 }}>
+                      <button
+                        onClick={() => setUserPage(p => Math.max(0, p - 1))}
+                        disabled={userPage === 0}
+                        className="px-3 py-1 text-xs"
+                        style={{
+                          background: "rgba(255,255,255,0.05)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "4px",
+                          color: "white",
+                          cursor: userPage === 0 ? "not-allowed" : "pointer",
+                          opacity: userPage === 0 ? 0.4 : 1,
+                        }}
+                      >
                         ← Prev
                       </button>
-                      <button onClick={() => setUserPage(p => p + 1)} disabled={(userPage + 1) * PAGE_SIZE >= (usersData?.total ?? 0)}
-                        className="px-3 py-1 text-xs" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", color: "white", cursor: (userPage + 1) * PAGE_SIZE >= (usersData?.total ?? 0) ? "not-allowed" : "pointer", opacity: (userPage + 1) * PAGE_SIZE >= (usersData?.total ?? 0) ? 0.4 : 1 }}>
+                      <button
+                        onClick={() => setUserPage(p => p + 1)}
+                        disabled={
+                          (userPage + 1) * PAGE_SIZE >= (usersData?.total ?? 0)
+                        }
+                        className="px-3 py-1 text-xs"
+                        style={{
+                          background: "rgba(255,255,255,0.05)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "4px",
+                          color: "white",
+                          cursor:
+                            (userPage + 1) * PAGE_SIZE >=
+                            (usersData?.total ?? 0)
+                              ? "not-allowed"
+                              : "pointer",
+                          opacity:
+                            (userPage + 1) * PAGE_SIZE >=
+                            (usersData?.total ?? 0)
+                              ? 0.4
+                              : 1,
+                        }}
+                      >
                         Next →
                       </button>
                     </div>
@@ -459,8 +846,19 @@ export default function AdminPanel() {
             )}
 
             {/* Stripe link remains */}
-            <div className="mt-4 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <p style={{ color: "rgba(140,140,170,0.5)", fontSize: "0.75rem", marginBottom: "0.5rem" }}>For payment history and subscription management:</p>
+            <div
+              className="mt-4 pt-4"
+              style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+            >
+              <p
+                style={{
+                  color: "rgba(140,140,170,0.5)",
+                  fontSize: "0.75rem",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                For payment history and subscription management:
+              </p>
               <a
                 href="https://dashboard.stripe.com/customers"
                 target="_blank"
@@ -485,31 +883,91 @@ export default function AdminPanel() {
         {activeTab === "subscriptions" && (
           <div className="space-y-4">
             <div style={cardStyle}>
-              <h3 style={{ fontWeight: 700, color: "#f0b800", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
+              <h3
+                style={{
+                  fontWeight: 700,
+                  color: "#f0b800",
+                  textTransform: "uppercase",
+                  fontSize: "0.85rem",
+                  letterSpacing: "0.05em",
+                  marginBottom: "1rem",
+                }}
+              >
                 <Crown className="w-4 h-4 inline mr-2" />
                 Subscription Tiers
               </h3>
               <div className="grid md:grid-cols-3 gap-4">
                 {[
-                  { tier: "Basic", price: "$9.99/mo", color: "#f0b800", features: ["All AI picks", "Basic tools", "Live scores"] },
-                  { tier: "Pro", price: "$19.99/mo", color: "#39ff14", features: ["All Basic features", "+EV Finder", "Arbitrage", "Parlay Builder", "CLV Tracker", "Bankroll Tracker"] },
-                  { tier: "Elite", price: "$59.99/yr", color: "#d4a017", features: ["All Pro features", "Priority support", "Best value"] },
-                ].map((plan) => (
+                  {
+                    tier: "Basic",
+                    price: "$9.99/mo",
+                    color: "#f0b800",
+                    features: ["All AI picks", "Basic tools", "Live scores"],
+                  },
+                  {
+                    tier: "Pro",
+                    price: "$19.99/mo",
+                    color: "#39ff14",
+                    features: [
+                      "All Basic features",
+                      "+EV Finder",
+                      "Arbitrage",
+                      "Parlay Builder",
+                      "CLV Tracker",
+                      "Bankroll Tracker",
+                    ],
+                  },
+                  {
+                    tier: "Elite",
+                    price: "$59.99/yr",
+                    color: "#d4a017",
+                    features: [
+                      "All Pro features",
+                      "Priority support",
+                      "Best value",
+                    ],
+                  },
+                ].map(plan => (
                   <div
                     key={plan.tier}
                     className="p-4"
-                    style={{ background: `${plan.color}08`, border: `1px solid ${plan.color}25`, borderRadius: "8px" }}
+                    style={{
+                      background: `${plan.color}08`,
+                      border: `1px solid ${plan.color}25`,
+                      borderRadius: "8px",
+                    }}
                   >
-                    <div style={{ fontWeight: 700, fontSize: "1.1rem", color: plan.color, textTransform: "uppercase" }}>
+                    <div
+                      style={{
+                        fontWeight: 700,
+                        fontSize: "1.1rem",
+                        color: plan.color,
+                        textTransform: "uppercase",
+                      }}
+                    >
                       {plan.tier}
                     </div>
-                    <div style={{ fontWeight: 700, fontSize: "1.5rem", color: "white", margin: "0.5rem 0" }}>
+                    <div
+                      style={{
+                        fontWeight: 700,
+                        fontSize: "1.5rem",
+                        color: "white",
+                        margin: "0.5rem 0",
+                      }}
+                    >
                       {plan.price}
                     </div>
                     <ul className="space-y-1">
-                      {plan.features.map((f) => (
-                        <li key={f} className="flex items-center gap-2 text-xs" style={{ color: "rgba(180,180,210,0.8)" }}>
-                          <CheckCircle2 className="w-3 h-3 flex-shrink-0" style={{ color: plan.color }} />
+                      {plan.features.map(f => (
+                        <li
+                          key={f}
+                          className="flex items-center gap-2 text-xs"
+                          style={{ color: "rgba(180,180,210,0.8)" }}
+                        >
+                          <CheckCircle2
+                            className="w-3 h-3 flex-shrink-0"
+                            style={{ color: plan.color }}
+                          />
                           {f}
                         </li>
                       ))}
@@ -520,17 +978,42 @@ export default function AdminPanel() {
             </div>
 
             <div style={cardStyle}>
-              <h3 style={{ fontWeight: 700, color: "#fbbf24", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em", marginBottom: "1rem" }}>
+              <h3
+                style={{
+                  fontWeight: 700,
+                  color: "#fbbf24",
+                  textTransform: "uppercase",
+                  fontSize: "0.85rem",
+                  letterSpacing: "0.05em",
+                  marginBottom: "1rem",
+                }}
+              >
                 <DollarSign className="w-4 h-4 inline mr-2" />
                 Stripe Management
               </h3>
               <div className="grid md:grid-cols-2 gap-3">
                 {[
-                  { label: "View All Subscriptions", href: "https://dashboard.stripe.com/subscriptions", desc: "Active, canceled, and past due" },
-                  { label: "View Payments", href: "https://dashboard.stripe.com/payments", desc: "All payment history" },
-                  { label: "Manage Products", href: "https://dashboard.stripe.com/products", desc: "Edit prices and plans" },
-                  { label: "Webhook Logs", href: "https://dashboard.stripe.com/webhooks", desc: "Monitor webhook delivery" },
-                ].map((link) => (
+                  {
+                    label: "View All Subscriptions",
+                    href: "https://dashboard.stripe.com/subscriptions",
+                    desc: "Active, canceled, and past due",
+                  },
+                  {
+                    label: "View Payments",
+                    href: "https://dashboard.stripe.com/payments",
+                    desc: "All payment history",
+                  },
+                  {
+                    label: "Manage Products",
+                    href: "https://dashboard.stripe.com/products",
+                    desc: "Edit prices and plans",
+                  },
+                  {
+                    label: "Webhook Logs",
+                    href: "https://dashboard.stripe.com/webhooks",
+                    desc: "Monitor webhook delivery",
+                  },
+                ].map(link => (
                   <a
                     key={link.label}
                     href={link.href}
@@ -544,10 +1027,23 @@ export default function AdminPanel() {
                       textDecoration: "none",
                     }}
                   >
-                    <TrendingUp className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "#fbbf24" }} />
+                    <TrendingUp
+                      className="w-4 h-4 mt-0.5 flex-shrink-0"
+                      style={{ color: "#fbbf24" }}
+                    />
                     <div>
-                      <div className="text-sm font-medium" style={{ color: "#fbbf24" }}>{link.label}</div>
-                      <div className="text-xs mt-0.5" style={{ color: "rgba(140,140,170,0.6)" }}>{link.desc}</div>
+                      <div
+                        className="text-sm font-medium"
+                        style={{ color: "#fbbf24" }}
+                      >
+                        {link.label}
+                      </div>
+                      <div
+                        className="text-xs mt-0.5"
+                        style={{ color: "rgba(140,140,170,0.6)" }}
+                      >
+                        {link.desc}
+                      </div>
                     </div>
                   </a>
                 ))}
@@ -560,47 +1056,135 @@ export default function AdminPanel() {
         {activeTab === "picks" && (
           <div style={cardStyle}>
             <div className="flex items-center justify-between mb-4">
-              <h3 style={{ fontWeight: 700, color: "#d4a017", textTransform: "uppercase", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
+              <h3
+                style={{
+                  fontWeight: 700,
+                  color: "#d4a017",
+                  textTransform: "uppercase",
+                  fontSize: "0.85rem",
+                  letterSpacing: "0.05em",
+                }}
+              >
                 <Activity className="w-4 h-4 inline mr-2" />
                 AI Picks Engine
               </h3>
               <div
                 className="flex items-center gap-1.5 px-2 py-1 text-xs font-bold"
-                style={{ background: "rgba(57,255,20,0.1)", border: "1px solid rgba(57,255,20,0.3)", borderRadius: "4px", color: "#39ff14" }}
+                style={{
+                  background: "rgba(57,255,20,0.1)",
+                  border: "1px solid rgba(57,255,20,0.3)",
+                  borderRadius: "4px",
+                  color: "#39ff14",
+                }}
               >
                 <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
                 SCHEDULER ACTIVE
               </div>
             </div>
             <div className="space-y-3">
-              <div className="p-4" style={{ background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div className="text-sm font-medium mb-1" style={{ color: "white" }}>Daily Picks Generation</div>
-                <p style={{ color: "rgba(140,140,170,0.7)", fontSize: "0.8rem", lineHeight: 1.6 }}>
-                  Picks are auto-generated daily at 6:00 AM PT via the scheduler. Uses Claude for deep qualitative analysis and OpenAI for concise summaries. Weather data from Open-Meteo is factored in for NFL and MLB games.
+              <div
+                className="p-4"
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                  borderRadius: "6px",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                <div
+                  className="text-sm font-medium mb-1"
+                  style={{ color: "white" }}
+                >
+                  Daily Picks Generation
+                </div>
+                <p
+                  style={{
+                    color: "rgba(140,140,170,0.7)",
+                    fontSize: "0.8rem",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Picks are auto-generated daily at 6:00 AM PT via the
+                  scheduler. Uses Claude for deep qualitative analysis and
+                  OpenAI for concise summaries. Weather data from Open-Meteo is
+                  factored in for NFL and MLB games.
                 </p>
               </div>
-              <div className="p-4" style={{ background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div className="text-sm font-medium mb-1" style={{ color: "white" }}>Supported Sports</div>
+              <div
+                className="p-4"
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                  borderRadius: "6px",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                <div
+                  className="text-sm font-medium mb-1"
+                  style={{ color: "white" }}
+                >
+                  Supported Sports
+                </div>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {["NFL", "NBA", "MLB", "NHL", "NCAAF", "NCAAB", "MMA/UFC", "Soccer"].map((sport) => (
+                  {[
+                    "NFL",
+                    "NBA",
+                    "MLB",
+                    "NHL",
+                    "NCAAF",
+                    "NCAAB",
+                    "MMA/UFC",
+                    "Soccer",
+                  ].map(sport => (
                     <span
                       key={sport}
                       className="px-2 py-0.5 text-xs font-bold"
-                      style={{ background: "rgba(212,160,23,0.15)", border: "1px solid rgba(212,160,23,0.3)", borderRadius: "4px", color: "#d4a017" }}
+                      style={{
+                        background: "rgba(212,160,23,0.15)",
+                        border: "1px solid rgba(212,160,23,0.3)",
+                        borderRadius: "4px",
+                        color: "#d4a017",
+                      }}
                     >
                       {sport}
                     </span>
                   ))}
                 </div>
               </div>
-              <div className="p-4" style={{ background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div className="text-sm font-medium mb-2" style={{ color: "white" }}>Recent Picks</div>
-                {picksData?.picks?.slice(0, 5).map((pick) => (
-                  <div key={pick.id} className="flex items-center justify-between py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                    <div className="text-sm" style={{ color: "rgba(200,200,220,0.8)" }}>{pick.recommendation}</div>
+              <div
+                className="p-4"
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                  borderRadius: "6px",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                <div
+                  className="text-sm font-medium mb-2"
+                  style={{ color: "white" }}
+                >
+                  Recent Picks
+                </div>
+                {picksData?.picks?.slice(0, 5).map(pick => (
+                  <div
+                    key={pick.id}
+                    className="flex items-center justify-between py-2"
+                    style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                  >
+                    <div
+                      className="text-sm"
+                      style={{ color: "rgba(200,200,220,0.8)" }}
+                    >
+                      {pick.recommendation}
+                    </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs" style={{ color: "#39ff14" }}>{pick.confidenceScore}%</span>
-                      <span className="text-xs" style={{ color: "rgba(140,140,170,0.6)" }}>{pick.sportKey}</span>
+                      <span className="text-xs" style={{ color: "#39ff14" }}>
+                        {pick.confidenceScore}%
+                      </span>
+                      <span
+                        className="text-xs"
+                        style={{ color: "rgba(140,140,170,0.6)" }}
+                      >
+                        {pick.sportKey}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -610,36 +1194,64 @@ export default function AdminPanel() {
         )}
         {/* Notifications Tab */}
         {activeTab === "notifications" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "1.5rem",
+            }}
+          >
             {/* Broadcast Push */}
             <div style={cardStyle}>
               <div className="flex items-center gap-2 mb-4">
                 <Bell className="w-5 h-5" style={{ color: "#39ff14" }} />
-                <h3 style={{ fontWeight: 700, color: "white" }}>Broadcast Push</h3>
+                <h3 style={{ fontWeight: 700, color: "white" }}>
+                  Broadcast Push
+                </h3>
               </div>
               <div className="space-y-3">
                 <input
-                  placeholder="Title (e.g. 🔥 Breaking: Injury alert)" value={broadcastTitle}
-                  onChange={(e) => setBroadcastTitle(e.target.value)}
+                  placeholder="Title (e.g. 🔥 Breaking: Injury alert)"
+                  value={broadcastTitle}
+                  onChange={e => setBroadcastTitle(e.target.value)}
                   className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30"
                 />
                 <textarea
-                  placeholder="Message body" value={broadcastBody}
-                  onChange={(e) => setBroadcastBody(e.target.value)} rows={3}
+                  placeholder="Message body"
+                  value={broadcastBody}
+                  onChange={e => setBroadcastBody(e.target.value)}
+                  rows={3}
                   className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30 resize-none"
                 />
                 <input
-                  placeholder="URL (optional, e.g. /picks)" value={broadcastUrl}
-                  onChange={(e) => setBroadcastUrl(e.target.value)}
+                  placeholder="URL (optional, e.g. /picks)"
+                  value={broadcastUrl}
+                  onChange={e => setBroadcastUrl(e.target.value)}
                   className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30"
                 />
                 <button
-                  onClick={() => broadcastPush.mutate({ title: broadcastTitle, body: broadcastBody, url: broadcastUrl || undefined, saveAsAlert: true })}
-                  disabled={broadcastPush.isPending || !broadcastTitle || !broadcastBody}
+                  onClick={() =>
+                    broadcastPush.mutate({
+                      title: broadcastTitle,
+                      body: broadcastBody,
+                      url: broadcastUrl || undefined,
+                      saveAsAlert: true,
+                    })
+                  }
+                  disabled={
+                    broadcastPush.isPending || !broadcastTitle || !broadcastBody
+                  }
                   className="w-full py-2 text-sm font-bold rounded flex items-center justify-center gap-2"
-                  style={{ background: broadcastPush.isPending ? "rgba(57,255,20,0.2)" : "rgba(57,255,20,0.15)", border: "1px solid rgba(57,255,20,0.4)", color: "#39ff14" }}
+                  style={{
+                    background: broadcastPush.isPending
+                      ? "rgba(57,255,20,0.2)"
+                      : "rgba(57,255,20,0.15)",
+                    border: "1px solid rgba(57,255,20,0.4)",
+                    color: "#39ff14",
+                  }}
                 >
-                  <Send className="w-4 h-4" /> {broadcastPush.isPending ? "Sending..." : "Send Push to All"}
+                  <Send className="w-4 h-4" />{" "}
+                  {broadcastPush.isPending ? "Sending..." : "Send Push to All"}
                 </button>
               </div>
             </div>
@@ -652,22 +1264,39 @@ export default function AdminPanel() {
               </div>
               <div className="space-y-3">
                 <input
-                  placeholder="Subject line" value={emailSubject}
-                  onChange={(e) => setEmailSubject(e.target.value)}
+                  placeholder="Subject line"
+                  value={emailSubject}
+                  onChange={e => setEmailSubject(e.target.value)}
                   className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30"
                 />
                 <textarea
-                  placeholder="HTML body (paste full HTML or plain text)" value={emailHtml}
-                  onChange={(e) => setEmailHtml(e.target.value)} rows={6}
+                  placeholder="HTML body (paste full HTML or plain text)"
+                  value={emailHtml}
+                  onChange={e => setEmailHtml(e.target.value)}
+                  rows={6}
                   className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30 resize-none font-mono text-xs"
                 />
                 <button
-                  onClick={() => emailBlast.mutate({ subject: emailSubject, htmlBody: emailHtml })}
+                  onClick={() =>
+                    emailBlast.mutate({
+                      subject: emailSubject,
+                      htmlBody: emailHtml,
+                    })
+                  }
                   disabled={emailBlast.isPending || !emailSubject || !emailHtml}
                   className="w-full py-2 text-sm font-bold rounded flex items-center justify-center gap-2"
-                  style={{ background: emailBlast.isPending ? "rgba(212,160,23,0.2)" : "rgba(212,160,23,0.15)", border: "1px solid rgba(212,160,23,0.4)", color: "#d4a017" }}
+                  style={{
+                    background: emailBlast.isPending
+                      ? "rgba(212,160,23,0.2)"
+                      : "rgba(212,160,23,0.15)",
+                    border: "1px solid rgba(212,160,23,0.4)",
+                    color: "#d4a017",
+                  }}
                 >
-                  <Send className="w-4 h-4" /> {emailBlast.isPending ? "Sending..." : "Send Email to All Subscribers"}
+                  <Send className="w-4 h-4" />{" "}
+                  {emailBlast.isPending
+                    ? "Sending..."
+                    : "Send Email to All Subscribers"}
                 </button>
               </div>
             </div>
@@ -676,23 +1305,37 @@ export default function AdminPanel() {
             <div style={{ ...cardStyle, gridColumn: "1 / -1" }}>
               <div className="flex items-center gap-2 mb-4">
                 <Megaphone className="w-5 h-5" style={{ color: "#a78bfa" }} />
-                <h3 style={{ fontWeight: 700, color: "white" }}>Site Announcement Bar</h3>
+                <h3 style={{ fontWeight: 700, color: "white" }}>
+                  Site Announcement Bar
+                </h3>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "1rem",
+                }}
+              >
                 <div className="space-y-3">
                   <input
-                    placeholder="Announcement title" value={announcementTitle}
-                    onChange={(e) => setAnnouncementTitle(e.target.value)}
+                    placeholder="Announcement title"
+                    value={announcementTitle}
+                    onChange={e => setAnnouncementTitle(e.target.value)}
                     className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30"
                   />
                   <input
-                    placeholder="Body (optional)" value={announcementBody}
-                    onChange={(e) => setAnnouncementBody(e.target.value)}
+                    placeholder="Body (optional)"
+                    value={announcementBody}
+                    onChange={e => setAnnouncementBody(e.target.value)}
                     className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white placeholder:text-white/30"
                   />
                   <select
                     value={announcementType}
-                    onChange={(e) => setAnnouncementType(e.target.value as typeof announcementType)}
+                    onChange={e =>
+                      setAnnouncementType(
+                        e.target.value as typeof announcementType
+                      )
+                    }
                     className="w-full px-3 py-2 text-sm rounded bg-black/40 border border-white/10 text-white"
                   >
                     <option value="info">Info (blue)</option>
@@ -701,36 +1344,346 @@ export default function AdminPanel() {
                     <option value="promo">Promo (purple gradient)</option>
                   </select>
                   <button
-                    onClick={() => createAnnouncement.mutate({ title: announcementTitle, body: announcementBody, type: announcementType })}
-                    disabled={createAnnouncement.isPending || !announcementTitle}
+                    onClick={() =>
+                      createAnnouncement.mutate({
+                        title: announcementTitle,
+                        body: announcementBody,
+                        type: announcementType,
+                      })
+                    }
+                    disabled={
+                      createAnnouncement.isPending || !announcementTitle
+                    }
                     className="w-full py-2 text-sm font-bold rounded flex items-center justify-center gap-2"
-                    style={{ background: "rgba(167,139,250,0.15)", border: "1px solid rgba(167,139,250,0.4)", color: "#a78bfa" }}
+                    style={{
+                      background: "rgba(167,139,250,0.15)",
+                      border: "1px solid rgba(167,139,250,0.4)",
+                      color: "#a78bfa",
+                    }}
                   >
-                    <Megaphone className="w-4 h-4" /> {createAnnouncement.isPending ? "Creating..." : "Post Announcement"}
+                    <Megaphone className="w-4 h-4" />{" "}
+                    {createAnnouncement.isPending
+                      ? "Creating..."
+                      : "Post Announcement"}
                   </button>
                 </div>
                 <div>
-                  <p className="text-xs mb-2" style={{ color: "rgba(140,140,170,0.7)" }}>Active announcements:</p>
+                  <p
+                    className="text-xs mb-2"
+                    style={{ color: "rgba(140,140,170,0.7)" }}
+                  >
+                    Active announcements:
+                  </p>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {(announcementsList ?? []).length === 0 ? (
-                      <p className="text-xs" style={{ color: "rgba(140,140,170,0.4)" }}>None</p>
-                    ) : (announcementsList ?? []).map((a) => (
-                      <div key={a.id} className="flex items-center justify-between gap-2 p-2 rounded" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-white truncate">{a.title}</p>
-                          <p className="text-xs" style={{ color: a.isActive ? "#39ff14" : "rgba(140,140,170,0.5)" }}>{a.isActive ? "Active" : "Inactive"} · {a.type}</p>
+                      <p
+                        className="text-xs"
+                        style={{ color: "rgba(140,140,170,0.4)" }}
+                      >
+                        None
+                      </p>
+                    ) : (
+                      (announcementsList ?? []).map(a => (
+                        <div
+                          key={a.id}
+                          className="flex items-center justify-between gap-2 p-2 rounded"
+                          style={{
+                            background: "rgba(255,255,255,0.03)",
+                            border: "1px solid rgba(255,255,255,0.06)",
+                          }}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-white truncate">
+                              {a.title}
+                            </p>
+                            <p
+                              className="text-xs"
+                              style={{
+                                color: a.isActive
+                                  ? "#39ff14"
+                                  : "rgba(140,140,170,0.5)",
+                              }}
+                            >
+                              {a.isActive ? "Active" : "Inactive"} · {a.type}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() =>
+                              deleteAnnouncement.mutate({ id: a.id })
+                            }
+                            className="text-xs px-2 py-1 rounded"
+                            style={{
+                              background: "rgba(255,59,48,0.15)",
+                              border: "1px solid rgba(255,59,48,0.3)",
+                              color: "#ff3b30",
+                            }}
+                          >
+                            Delete
+                          </button>
                         </div>
-                        <button
-                          onClick={() => deleteAnnouncement.mutate({ id: a.id })}
-                          className="text-xs px-2 py-1 rounded"
-                          style={{ background: "rgba(255,59,48,0.15)", border: "1px solid rgba(255,59,48,0.3)", color: "#ff3b30" }}
-                        >Delete</button>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        )}
+        {/* PageSpeed Tab */}
+        {activeTab === "performance" && (
+          <div className="space-y-6">
+            <div style={cardStyle}>
+              <h3
+                style={{
+                  color: "#39ff14",
+                  fontWeight: 700,
+                  marginBottom: "1rem",
+                }}
+              >
+                Google PageSpeed Insights
+              </h3>
+              <div className="flex gap-3 mb-4">
+                <input
+                  value={psUrl}
+                  onChange={e => setPsUrl(e.target.value)}
+                  placeholder="https://www.chalkpicks.live"
+                  className="flex-1 px-3 py-2 rounded text-sm"
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    color: "white",
+                  }}
+                />
+                <button
+                  onClick={() => psAudit.mutate({ url: psUrl })}
+                  disabled={psAudit.isPending}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-bold rounded transition-all"
+                  style={{
+                    background: psAudit.isPending
+                      ? "rgba(57,255,20,0.3)"
+                      : "rgba(57,255,20,0.15)",
+                    border: "1px solid rgba(57,255,20,0.4)",
+                    color: "#39ff14",
+                    cursor: psAudit.isPending ? "wait" : "pointer",
+                  }}
+                >
+                  {psAudit.isPending ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Running...
+                    </>
+                  ) : (
+                    <>
+                      <Gauge className="w-4 h-4" /> Run Audit
+                    </>
+                  )}
+                </button>
+              </div>
+              <p className="text-xs" style={{ color: "rgba(140,140,170,0.6)" }}>
+                Runs both mobile and desktop Lighthouse audits via Google's API.
+                Takes ~15-30 seconds.
+              </p>
+            </div>
+
+            {psResult &&
+              (() => {
+                const r = psResult as {
+                  mobile: {
+                    scores: Record<string, number>;
+                    cwv: Record<string, string | null>;
+                    failingAudits: {
+                      id: string;
+                      title: string;
+                      score: number | null;
+                      displayValue: string | null;
+                    }[];
+                    fetchTime: string;
+                  };
+                  desktop: {
+                    scores: Record<string, number>;
+                    cwv: Record<string, string | null>;
+                    failingAudits: {
+                      id: string;
+                      title: string;
+                      score: number | null;
+                      displayValue: string | null;
+                    }[];
+                    fetchTime: string;
+                  };
+                };
+                const scoreColor = (s: number) =>
+                  s >= 90 ? "#39ff14" : s >= 50 ? "#f0b800" : "#ff4444";
+                const scoreLabel = (s: number) =>
+                  s >= 90 ? "Good" : s >= 50 ? "Needs Improvement" : "Poor";
+                return (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    {(["mobile", "desktop"] as const).map(strat => {
+                      const d = r[strat];
+                      return (
+                        <div key={strat} style={cardStyle}>
+                          <h4
+                            style={{
+                              color: "rgba(200,200,220,0.9)",
+                              fontWeight: 700,
+                              textTransform: "uppercase",
+                              fontSize: "0.85rem",
+                              marginBottom: "1rem",
+                            }}
+                          >
+                            {strat === "mobile" ? "📱 Mobile" : "🖥️ Desktop"}
+                            {d.fetchTime && (
+                              <span
+                                style={{
+                                  color: "rgba(140,140,170,0.5)",
+                                  fontSize: "0.7rem",
+                                  marginLeft: "0.5rem",
+                                }}
+                              >
+                                {new Date(d.fetchTime).toLocaleTimeString()}
+                              </span>
+                            )}
+                          </h4>
+                          {/* Score grid */}
+                          <div className="grid grid-cols-2 gap-3 mb-5">
+                            {Object.entries(d.scores).map(([k, v]) => (
+                              <div
+                                key={k}
+                                className="text-center p-3 rounded-lg"
+                                style={{
+                                  background: "rgba(0,0,0,0.3)",
+                                  border: `1px solid ${scoreColor(v as number)}30`,
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    fontSize: "2rem",
+                                    fontWeight: 800,
+                                    color: scoreColor(v as number),
+                                  }}
+                                >
+                                  {v}
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: "0.7rem",
+                                    color: "rgba(180,180,210,0.7)",
+                                    textTransform: "capitalize",
+                                  }}
+                                >
+                                  {k.replace(/([A-Z])/g, " $1")}
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: "0.65rem",
+                                    color: scoreColor(v as number),
+                                  }}
+                                >
+                                  {scoreLabel(v as number)}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          {/* Core Web Vitals */}
+                          <div className="mb-4">
+                            <p
+                              style={{
+                                color: "rgba(140,140,170,0.7)",
+                                fontSize: "0.75rem",
+                                textTransform: "uppercase",
+                                marginBottom: "0.5rem",
+                              }}
+                            >
+                              Core Web Vitals
+                            </p>
+                            <div className="grid grid-cols-3 gap-2">
+                              {Object.entries(d.cwv)
+                                .filter(([, v]) => v)
+                                .map(([k, v]) => (
+                                  <div
+                                    key={k}
+                                    className="p-2 rounded text-center"
+                                    style={{
+                                      background: "rgba(255,255,255,0.03)",
+                                      border:
+                                        "1px solid rgba(255,255,255,0.06)",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        fontSize: "0.85rem",
+                                        fontWeight: 700,
+                                        color: "white",
+                                      }}
+                                    >
+                                      {v}
+                                    </div>
+                                    <div
+                                      style={{
+                                        fontSize: "0.65rem",
+                                        color: "rgba(140,140,170,0.6)",
+                                        textTransform: "uppercase",
+                                      }}
+                                    >
+                                      {k.toUpperCase()}
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          </div>
+                          {/* Top failing audits */}
+                          {d.failingAudits.length > 0 && (
+                            <div>
+                              <p
+                                style={{
+                                  color: "rgba(140,140,170,0.7)",
+                                  fontSize: "0.75rem",
+                                  textTransform: "uppercase",
+                                  marginBottom: "0.5rem",
+                                }}
+                              >
+                                Top Issues
+                              </p>
+                              <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                                {d.failingAudits.map(a => (
+                                  <div
+                                    key={a.id}
+                                    className="flex items-center justify-between gap-2 p-2 rounded"
+                                    style={{
+                                      background: "rgba(255,255,255,0.03)",
+                                      border:
+                                        "1px solid rgba(255,255,255,0.05)",
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        fontSize: "0.75rem",
+                                        color: "rgba(200,200,220,0.8)",
+                                      }}
+                                    >
+                                      {a.title}
+                                    </span>
+                                    <span
+                                      style={{
+                                        fontSize: "0.7rem",
+                                        color: scoreColor(
+                                          Math.round((a.score ?? 0) * 100)
+                                        ),
+                                        whiteSpace: "nowrap",
+                                      }}
+                                    >
+                                      {a.displayValue ??
+                                        `${Math.round((a.score ?? 0) * 100)}`}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
           </div>
         )}
       </div>

@@ -1916,3 +1916,11 @@
 - [x] Add REVENUECAT_WEBHOOK_SECRET env var for webhook security (auto-generated 64-char hex)
 - [x] Discord bot: already running — 4 heartbeat slots (morning pick, afternoon alert, evening results, night preview)
 - [x] Discord bot: heartbeat jobs already registered (discord-morning-pick, discord-afternoon-alert, discord-evening-results, discord-night-preview)
+
+## Discord Server Wiring (Jul 29 2026)
+
+- [x] Set DISCORD_WEBHOOK_URL secret (webhook from #free-daily-pick channel) — https://discord.com/api/webhooks/1528595918369194006/WGgKV0aknXtCPssbDVbE2eaqUK3Onkz2ihZypTF2asgpe_032lF4dOBXrUPPj0ccgcMv
+- [x] Set DISCORD_STEAM_WEBHOOK_URL secret (webhook from #steam-alerts channel) — https://discord.com/api/webhooks/1532167176591507596/OAJP1AryvfTh8Sy0gzvG6NqfCekcDpSTRR43w6hwIEleSQFpJ8EE-Bwhfc6LO6dOypcK
+- [x] Add Discord invite CTA to Navbar (Join Discord button) — https://discord.gg/rUrkBW9N
+- [x] Add Discord invite CTA to Home page hero section — "Join Discord" button with MessageCircle icon
+- [x] Wire steam alerts to separate Discord channel webhook — DISCORD_STEAM_WEBHOOK_URL configured and validated (4/4 tests passing)

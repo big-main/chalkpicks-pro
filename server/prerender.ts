@@ -410,10 +410,29 @@ Object.assign(PAGE_META, Object.fromEntries(routeFallbackEntries));
 
 // ─── HTML shell builder ───────────────────────────────────────────────────────
 
+/** Escape text for safe embedding into HTML attribute/text positions. */
+function esc(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 function buildPrerenderedHtml(meta: PageMeta): string {
   const canonical = `${BASE_URL}${meta.canonicalPath}`;
+  const title = esc(meta.title);
+  const description = esc(meta.description);
+  // JSON.stringify never escapes "<", so a "</script>" substring inside any
+  // string value would otherwise close the tag early and let the rest of the
+  // payload be parsed as HTML — escape "<" as "\u003c", matching the same
+  // technique client/src/components/seo/schema-jsonld.tsx already uses for
+  // the client-rendered equivalent of these same blocks.
   const jsonLdScripts = meta.jsonLd
-    .map((ld) => `<script type="application/ld+json">${JSON.stringify(ld)}</script>`)
+    .map(
+      (ld) =>
+        `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>`
+    )
     .join("\n    ");
 
   return `<!DOCTYPE html>
@@ -421,23 +440,23 @@ function buildPrerenderedHtml(meta: PageMeta): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${meta.title}</title>
-  <meta name="description" content="${meta.description}" />
+  <title>${title}</title>
+  <meta name="description" content="${description}" />
   <link rel="canonical" href="${canonical}" />
-  <meta property="og:title" content="${meta.title}" />
-  <meta property="og:description" content="${meta.description}" />
+  <meta property="og:title" content="${title}" />
+  <meta property="og:description" content="${description}" />
   <meta property="og:url" content="${canonical}" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="${LOGO_URL}" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="${meta.title}" />
-  <meta name="twitter:description" content="${meta.description}" />
+  <meta name="twitter:title" content="${title}" />
+  <meta name="twitter:description" content="${description}" />
   <meta name="robots" content="index, follow" />
   ${jsonLdScripts}
 </head>
 <body>
-  <h1>${meta.title}</h1>
-  <p>${meta.description}</p>
+  <h1>${title}</h1>
+  <p>${description}</p>
   <p>Visit <a href="${BASE_URL}">ChalkPicks</a> for the full interactive experience.</p>
   <nav>
     <ul>

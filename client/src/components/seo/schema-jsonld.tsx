@@ -224,13 +224,9 @@ export function ProductJsonLd({ name, description, price, priceCurrency = "USD",
       priceValidUntil: "2027-12-31",
       seller: { "@id": "https://chalkpicks.live/#organization" },
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
-    },
+    // No aggregateRating: there's no reviews table backing one, and
+    // Google's structured-data policy treats fabricated review/rating
+    // markup as a manual-action risk.
   };
 
   return <JsonLdScript data={data} />;

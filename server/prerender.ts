@@ -17,6 +17,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { LEARN_PAGES_META } from "@shared/learnPagesMeta";
+import { PAGE_META_MAP as ROUTE_META_MAP } from "@shared/routeMeta";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -375,6 +376,29 @@ for (const page of LEARN_PAGES_META) {
         { name: page.breadcrumbName, path: page.path },
       ]),
       faqLd(page.faqs),
+    ],
+  };
+}
+
+// Before this loop, only the ~20 pages hand-curated above (plus /learn/*)
+// were visible to non-JS-executing crawlers (GPTBot, ClaudeBot,
+// PerplexityBot, ChatGPT-User, Googlebot, ...) — every other route existed
+// only in the client-side SPA bundle, invisible to any bot that doesn't run
+// JavaScript. shared/routeMeta.ts already carries a real title/description
+// for nearly every public route (it's the source client <title>/meta tags
+// come from), so reuse it here as a baseline instead of hand-writing dozens
+// more near-identical PAGE_META entries: every route with real routeMeta
+// but no richer hand-curated entry above gets an org + breadcrumb baseline.
+for (const [routePath, meta] of Object.entries(ROUTE_META_MAP)) {
+  if (PAGE_META[routePath]) continue; // already hand-curated with richer schema above
+  const breadcrumbName = meta.title.split(" | ")[0].split(" — ")[0];
+  PAGE_META[routePath] = {
+    title: meta.title,
+    description: meta.description,
+    canonicalPath: routePath,
+    jsonLd: [
+      orgLd(),
+      breadcrumbLd([{ name: "Home", path: "/" }, { name: breadcrumbName, path: routePath }]),
     ],
   };
 }

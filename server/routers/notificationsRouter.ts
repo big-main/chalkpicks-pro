@@ -6,7 +6,6 @@ import { getDb } from "../db";
 import {
   notificationPreferences,
   notifications,
-  notificationLogs,
   announcements,
   userAlerts,
   users,
@@ -279,9 +278,14 @@ export const notificationsRouter = router({
       if (!db) return { ok: false };
       const { id, ...rest } = input;
       const updates: Record<string, unknown> = {};
-      for (const [k, v] of Object.entries(rest))
-        if (v !== undefined)
-          updates[k] = k === "endsAt" ? (v ? new Date(v as string) : null) : v;
+      for (const [k, v] of Object.entries(rest)) {
+        if (v === undefined) continue;
+        if (k === "endsAt") {
+          updates[k] = v ? new Date(v as string) : null;
+        } else {
+          updates[k] = v;
+        }
+      }
       if (Object.keys(updates).length)
         await db
           .update(announcements)
@@ -389,6 +393,7 @@ export const notificationsRouter = router({
           sent++;
           if (sent % 10 === 0) await new Promise(r => setTimeout(r, 500));
         } catch (e) {
+          console.error(`[EmailBlast] Failed to send to ${sub.email}:`, e);
           errors.push(sub.email);
         }
       }

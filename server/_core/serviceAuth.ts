@@ -11,7 +11,7 @@
  * nothing is accepted and the endpoint is simply unavailable until an
  * operator sets it.
  */
-import { timingSafeEqual } from "crypto";
+import { timingSafeEqual } from "node:crypto";
 
 /**
  * Constant-time comparison of a caller-supplied secret against the one

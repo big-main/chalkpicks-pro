@@ -100,6 +100,57 @@ function getSharpOdds(bookOdds: BookOdds[]): BookOdds | null {
 }
 
 /**
+ * Archives one sport's live odds into oddsSnapshots, one row per
+ * event/bookmaker/market. Returns the number of rows actually inserted
+ * (duplicate/constraint errors are swallowed and don't count).
+ */
+async function stampSportSnapshots(
+  db: NonNullable<Awaited<ReturnType<typeof getDb>>>,
+  sport: string,
+  events: any[]
+): Promise<number> {
+  let inserted = 0;
+  for (const event of events) {
+    for (const bookmaker of event.bookmakers || []) {
+      for (const market of bookmaker.markets || []) {
+        try {
+          await db.insert(oddsSnapshots).values({
+            eventId: event.id,
+            sportKey: sport,
+            homeTeam: event.home_team,
+            awayTeam: event.away_team,
+            commenceTime: new Date(event.commence_time),
+            bookmaker: bookmaker.key,
+            marketKey: market.key,
+            outcomesJson: JSON.stringify(market.outcomes),
+          });
+          inserted++;
+        } catch {
+          // Ignore duplicate/constraint errors
+        }
+      }
+    }
+  }
+  return inserted;
+}
+
+/** Shared auth guard for the n8n cron endpoints below. */
+function assertCronAuth(serviceToken: string): void {
+  if (
+    !verifyServiceSecret(
+      serviceToken,
+      process.env.CRON_SERVICE_TOKEN,
+      "CRON_SERVICE_TOKEN"
+    )
+  ) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Invalid service token",
+    });
+  }
+}
+
+/**
  * Calculate EV for a single outcome given sharp book as reference.
  * Returns null if not enough data.
  */
@@ -245,18 +296,7 @@ export const evRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      if (
-        !verifyServiceSecret(
-          input.serviceToken,
-          process.env.CRON_SERVICE_TOKEN,
-          "CRON_SERVICE_TOKEN"
-        )
-      ) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Invalid service token",
-        });
-      }
+      assertCronAuth(input.serviceToken);
 
       const db = await getDb();
       if (!db)
@@ -269,28 +309,7 @@ export const evRouter = router({
 
       for (const sport of input.sports) {
         const events = await fetchLiveOdds(sport);
-
-        for (const event of events) {
-          for (const bookmaker of event.bookmakers || []) {
-            for (const market of bookmaker.markets || []) {
-              try {
-                await db.insert(oddsSnapshots).values({
-                  eventId: event.id,
-                  sportKey: sport,
-                  homeTeam: event.home_team,
-                  awayTeam: event.away_team,
-                  commenceTime: new Date(event.commence_time),
-                  bookmaker: bookmaker.key,
-                  marketKey: market.key,
-                  outcomesJson: JSON.stringify(market.outcomes),
-                });
-                totalInserted++;
-              } catch {
-                // Ignore duplicate/constraint errors
-              }
-            }
-          }
-        }
+        totalInserted += await stampSportSnapshots(db, sport, events);
       }
 
       return {
@@ -312,18 +331,7 @@ export const evRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      if (
-        !verifyServiceSecret(
-          input.serviceToken,
-          process.env.CRON_SERVICE_TOKEN,
-          "CRON_SERVICE_TOKEN"
-        )
-      ) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Invalid service token",
-        });
-      }
+      assertCronAuth(input.serviceToken);
 
       const db = await getDb();
       if (!db)

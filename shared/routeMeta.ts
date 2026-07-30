@@ -240,6 +240,50 @@ export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
     description:
       "AI-powered soccer picks for EPL, MLS, Champions League, and more. Daily predictions with expected goals, form analysis, and edge scores.",
   },
+  // These routes are live in App.tsx and listed in shared/seo-routes.ts's
+  // sitemap, but had no entry here — resolvePageMeta() was silently falling
+  // them all back to the homepage title/description. Copy matches the
+  // existing sitemap entries in shared/seo-routes.ts for consistency.
+  "/daily-picks": {
+    title: "Daily AI Picks Archive — Past Results by Date | ChalkPicks",
+    description:
+      "Browse the complete archive of ChalkPicks AI sports betting picks by date. Full transparency on wins, losses, and performance for NFL, NBA, MLB & NHL.",
+  },
+  "/free-pick": {
+    title: "Free Daily AI Sports Pick with Full Analysis | ChalkPicks",
+    description:
+      "Get one free AI sports pick every day with confidence score, edge rating, and full analysis. No account needed.",
+  },
+  "/responsible-gambling": {
+    title: "Responsible Gambling — Resources & Self-Exclusion | ChalkPicks",
+    description:
+      "ChalkPicks is committed to responsible gambling. Access self-exclusion tools, problem gambling resources, and bankroll management guidelines.",
+  },
+  "/results": {
+    title: "AI Pick Results & Track Record — Verified Win Rate | ChalkPicks",
+    description:
+      "Full transparency on ChalkPicks AI pick results. View every graded pick with win/loss outcomes, confidence scores, and 30-day performance calendar.",
+  },
+  "/tools/bankroll-manager": {
+    title: "Sports Betting Bankroll Manager — Track & Protect | ChalkPicks",
+    description:
+      "Free bankroll management tool for sports bettors. Set unit sizes, track deposits and withdrawals, and visualize bankroll growth over time.",
+  },
+  "/tools/ev-calculator": {
+    title: "Expected Value (EV) Calculator for Sports Betting | ChalkPicks",
+    description:
+      "Free EV calculator. Find +EV bets by comparing market odds to true probabilities and calculate expected profit.",
+  },
+  "/tools/kelly-calculator": {
+    title: "Kelly Criterion Calculator for Sports Betting | ChalkPicks",
+    description:
+      "Free Kelly Criterion calculator. Calculate optimal bet sizing to maximize bankroll growth while managing risk.",
+  },
+  "/verify": {
+    title: "Pick Verification Ledger — Cryptographic Proof | ChalkPicks",
+    description:
+      "Verify every ChalkPicks AI pick was locked before game start with SHA-256 hash proof. Full transparency, zero manipulation.",
+  },
 };
 
 // /learn/* pages: title/description come from the shared LEARN_PAGES_META
@@ -257,10 +301,8 @@ for (const page of LEARN_PAGES_META) {
  */
 export function resolvePageMeta(pathname: string): PageMetaConfig {
   const cleanPath = pathname.split("?")[0].replace(/\/$/, "") || "/";
-  return (
-    PAGE_META_MAP[cleanPath] ??
-    (cleanPath.startsWith("/picks/")
-      ? PAGE_META_MAP["/picks"]
-      : PAGE_META_MAP["/"])
-  );
+  if (PAGE_META_MAP[cleanPath]) return PAGE_META_MAP[cleanPath];
+  if (cleanPath.startsWith("/picks/")) return PAGE_META_MAP["/picks"];
+  if (cleanPath.startsWith("/verify/")) return PAGE_META_MAP["/verify"];
+  return PAGE_META_MAP["/"];
 }

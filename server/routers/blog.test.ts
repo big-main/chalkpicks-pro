@@ -14,20 +14,28 @@ describe("hasComplianceFooter", () => {
   });
 
   it("fails content missing the footer entirely", () => {
-    expect(hasComplianceFooter("Some article body with no disclaimer.")).toBe(false);
+    expect(hasComplianceFooter("Some article body with no disclaimer.")).toBe(
+      false
+    );
   });
 
   it("fails content with only one of the two required markers", () => {
     expect(hasComplianceFooter("Must be 21+ to bet.")).toBe(false);
-    expect(hasComplianceFooter("Call 1-800-GAMBLER if you have a problem.")).toBe(false);
+    expect(
+      hasComplianceFooter("Call 1-800-GAMBLER if you have a problem.")
+    ).toBe(false);
   });
 
   it("is case-insensitive on the gambler hotline", () => {
-    expect(hasComplianceFooter("21+ | Call 1-800-gambler for help.")).toBe(true);
+    expect(hasComplianceFooter("21+ | Call 1-800-gambler for help.")).toBe(
+      true
+    );
   });
 });
 
-describe("Blog Router", () => {
+// Exercises real DB inserts/queries — meaningless without a provisioned
+// DATABASE_URL, so skip cleanly rather than crash on a null db handle.
+describe.skipIf(!process.env.DATABASE_URL)("Blog Router", () => {
   let db: any;
 
   beforeAll(async () => {
@@ -40,9 +48,11 @@ describe("Blog Router", () => {
       slug: "test-sports-betting-strategy-" + Date.now(),
       excerpt: "Learn the best sports betting strategies",
       content: "# Sports Betting Strategy\n\nThis is a test article.",
-      contentHtml: "<h1>Sports Betting Strategy</h1><p>This is a test article.</p>",
+      contentHtml:
+        "<h1>Sports Betting Strategy</h1><p>This is a test article.</p>",
       heroImage: "https://example.com/hero.jpg",
-      seoDescription: "Learn the best sports betting strategies for profitable betting",
+      seoDescription:
+        "Learn the best sports betting strategies for profitable betting",
       jsonLd: '{"@context":"https://schema.org","@type":"BlogPosting"}',
       source: "babylovegrowth" as const,
       sourceArticleId: "test-123",

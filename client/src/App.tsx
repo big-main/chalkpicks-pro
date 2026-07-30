@@ -133,6 +133,7 @@ const ResponsibleGambling = lazy(() => import("@/pages/ResponsibleGambling"));
 const Verify = lazy(() => import("@/pages/Verify"));
 const Methodology = lazy(() => import("@/pages/Methodology"));
 const HowItWorks = lazy(() => import("@/pages/HowItWorks"));
+const AppLinkTest = lazy(() => import("@/pages/AppLinkTest"));
 
 function PageLoader() {
   return (
@@ -313,6 +314,7 @@ function Router() {
               />
               <Route path="/methodology" component={Methodology} />
               <Route path="/how-it-works" component={HowItWorks} />
+              <Route path="/app-link-test" component={AppLinkTest} />
               <Route path="/404" component={NotFound} />
               <Route component={NotFound} />
             </Switch>

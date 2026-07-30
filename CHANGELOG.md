@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `/learn/expected-value-betting` evergreen guide, rounding out the `/learn` fundamentals set (CLV, no-vig odds, Kelly Criterion, line movement) with an explainer on +EV betting, wired into sitemap/FAQ schema/route meta via the shared `learnPagesMeta.ts` pattern.
+
 ### Planned
 
 - Mobile app (Expo) companion

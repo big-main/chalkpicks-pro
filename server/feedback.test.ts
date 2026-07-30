@@ -27,7 +27,9 @@ function createAuthContext(): TrpcContext {
   };
 }
 
-describe("feedback router", () => {
+// Goes through the real tRPC router into the DB — meaningless without a
+// provisioned DATABASE_URL, so skip cleanly rather than crash on a null db handle.
+describe.skipIf(!process.env.DATABASE_URL)("feedback router", () => {
   it("should submit feedback for a pick", async () => {
     const ctx = createAuthContext();
     const caller = appRouter.createCaller(ctx);
@@ -68,7 +70,10 @@ describe("feedback router", () => {
     const ctx = createAuthContext();
     const caller = appRouter.createCaller(ctx);
 
-    const result = await caller.feedback.getTopRatedPicks({ limit: 5, minFeedback: 1 });
+    const result = await caller.feedback.getTopRatedPicks({
+      limit: 5,
+      minFeedback: 1,
+    });
 
     expect(Array.isArray(result)).toBe(true);
   }, 15000);
@@ -77,7 +82,10 @@ describe("feedback router", () => {
     const ctx = createAuthContext();
     const caller = appRouter.createCaller(ctx);
 
-    const result = await caller.feedback.getWorstRatedPicks({ limit: 5, minFeedback: 1 });
+    const result = await caller.feedback.getWorstRatedPicks({
+      limit: 5,
+      minFeedback: 1,
+    });
 
     expect(Array.isArray(result)).toBe(true);
   }, 15000);

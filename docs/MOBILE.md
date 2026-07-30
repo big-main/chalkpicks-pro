@@ -4,11 +4,11 @@
 
 **Capacitor** wraps the existing Vite/React app so one codebase serves:
 
-| Platform | Delivery |
-|----------|----------|
-| Web | chalkpicks.live |
-| iOS | App Store (WKWebView shell → live site or bundled `dist/public`) |
-| Android | Play Store (same) |
+| Platform | Delivery                                                         |
+| -------- | ---------------------------------------------------------------- |
+| Web      | chalkpicks.live                                                  |
+| iOS      | App Store (WKWebView shell → live site or bundled `dist/public`) |
+| Android  | Play Store (same)                                                |
 
 App ID: `live.chalkpicks.app`
 
@@ -25,19 +25,49 @@ App ID: `live.chalkpicks.app`
 - Apple Developer + Google Play accounts
 - Node 22 + pnpm
 
-## One-time setup
+## One-time setup (DONE — platforms already added)
+
+All Capacitor packages are installed. Android and iOS platforms are already added to the repo.
 
 ```bash
-pnpm add -D @capacitor/cli @capacitor/core
-pnpm add @capacitor/ios @capacitor/android @capacitor/app @capacitor/browser \
-  @capacitor/splash-screen @capacitor/status-bar @capacitor/push-notifications \
-  @capacitor/haptics @capacitor/keyboard @capacitor/network
-
-pnpm build
-npx cap add ios
-npx cap add android
-npx cap sync
+# Already done:
+# pnpm add -w @capacitor/cli @capacitor/android @capacitor/ios \
+#   @capacitor/push-notifications @capacitor/splash-screen @capacitor/status-bar
+# npx cap add android && npx cap add ios
 ```
+
+## Build Android Debug APK
+
+```bash
+export JAVA_HOME=/home/ubuntu/jdk-21.0.5+11   # Temurin JDK 21 (in sandbox)
+export ANDROID_HOME=/home/ubuntu/android-sdk
+export PATH=$JAVA_HOME/bin:$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+
+pnpm run build && npx cap sync
+cd android && ./gradlew assembleDebug
+# Output: android/app/build/outputs/apk/debug/app-debug.apk (7 MB)
+```
+
+## Build Android Release AAB (Google Play)
+
+1. Generate keystore (one-time):
+   ```bash
+   keytool -genkey -v -keystore chalkpicks-release.keystore \
+     -alias chalkpicks -keyalg RSA -keysize 2048 -validity 10000
+   ```
+2. Add signing config to `android/app/build.gradle` (see signingConfigs section)
+3. Build: `./gradlew bundleRelease`
+4. Upload `.aab` to Google Play Console → Internal Testing → Production
+
+## Android App Links (assetlinks.json)
+
+Get your release keystore SHA-256:
+
+```bash
+keytool -list -v -keystore chalkpicks-release.keystore -alias chalkpicks | grep SHA256
+```
+
+Update `client/public/.well-known/assetlinks.json` with the fingerprint, then redeploy.
 
 ## Daily workflow
 
@@ -79,6 +109,39 @@ npx cap open android  # Android Studio
 3. Biometric unlock for account
 4. Optional: reduce web chrome (hide marketing nav) when `Capacitor.isNativePlatform()`
 5. Offline cache of free picks / last performance snapshot
+
+## App Icons
+
+Icons are generated from `client/public/logo512.png` (neon green lightning bolt on black).
+
+To regenerate all icon sizes:
+
+```bash
+python3 /home/ubuntu/gen_icons.py
+# Outputs:
+#   android/app/src/main/res/mipmap-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/ic_launcher.png
+#   ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png (1024x1024)
+```
+
+## iOS Build (requires macOS)
+
+1. Clone the repo on a Mac with Xcode 15+
+2. Install deps: `pnpm install && pnpm run build && npx cap sync`
+3. Open Xcode: `npx cap open ios` (or `open ios/App/App.xcworkspace`)
+4. Select `App` target → Signing & Capabilities → set your Apple Developer Team
+5. Bundle ID: `live.chalkpicks.app`
+6. Add capabilities: **Push Notifications** + **Associated Domains** (`applinks:chalkpicks.live`)
+7. Product → Archive → Distribute App → App Store Connect → Upload
+
+## Release Keystore (Android)
+
+Keystore file: `chalkpicks-release.keystore` (in project root — **DO NOT commit to git**)
+
+- Alias: `chalkpicks`
+- SHA-256: `12:DA:DF:AC:43:88:56:B0:E7:92:7A:FA:8F:8B:4D:D5:09:57:1A:E4:CB:7C:3A:46:4B:AF:3A:85:70:3C:59:B1`
+- This fingerprint is already in `client/public/.well-known/assetlinks.json`
+
+**Back up the keystore file securely** — losing it means you cannot update the app on Google Play.
 
 ## Feature-detect in React
 

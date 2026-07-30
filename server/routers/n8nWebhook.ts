@@ -22,7 +22,12 @@ import { picks } from "../../drizzle/schema";
 /** Validate the shared n8n webhook secret */
 function validateSecret(secret: string | undefined) {
   const expected = process.env.N8N_WEBHOOK_SECRET;
-  if (!expected) return; // If not set, skip validation (dev mode)
+  if (!expected) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Unauthorized: N8N_WEBHOOK_SECRET unset in production");
+    }
+    return; // Not set outside production — skip validation (dev mode)
+  }
   if (secret !== expected) {
     throw new Error("Unauthorized: invalid n8n webhook secret");
   }

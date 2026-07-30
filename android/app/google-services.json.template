@@ -1,0 +1,39 @@
+{
+  "_comment": "TEMPLATE — Replace with the real google-services.json downloaded from Firebase Console.",
+  "_instructions": [
+    "1. Go to https://console.firebase.google.com and sign in with big.main666@gmail.com",
+    "2. Click 'Add project', name it 'ChalkPicks Pro', disable Google Analytics (optional)",
+    "3. In Project Settings > Your apps, click the Android icon",
+    "4. Register package name: live.chalkpicks.app",
+    "5. Download google-services.json and replace this file (rename to google-services.json)",
+    "6. In Firebase Console > Cloud Messaging, copy the Server key and add to VITE_FIREBASE_SERVER_KEY env var",
+    "7. Run: npx cap sync android && npx cap open android"
+  ],
+  "project_info": {
+    "project_number": "REPLACE_WITH_PROJECT_NUMBER",
+    "project_id": "chalkpicks-pro",
+    "storage_bucket": "chalkpicks-pro.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "REPLACE_WITH_APP_ID",
+        "android_client_info": {
+          "package_name": "live.chalkpicks.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "REPLACE_WITH_API_KEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

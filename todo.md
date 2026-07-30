@@ -1857,3 +1857,70 @@
 - [x] Sitemap: Regenerated with 61 URLs including 4 new sport routes (ncaaf/ncaab/mma/soccer)
 - [x] Cloud computer: Rebuilt snapshots (25 HTML files), restarted PM2
 - [x] GitHub: Merged Manus+Grok branches, pushed 2b4c9e9 to main
+
+## Mobile App — Android APK + iOS Xcode (Jul 29 2026)
+
+- [x] Audit Grok's Capacitor scaffold (capacitor.config.ts, well-known files, native.ts)
+- [x] Configure capacitor.config.ts: appId=live.chalkpicks.app, appName=ChalkPicks, webDir=dist/public, server.url for dev
+- [x] Install @capacitor/cli, @capacitor/android, @capacitor/ios, @capacitor/push-notifications, @capacitor/splash-screen, @capacitor/status-bar
+- [x] Generate app icons (1024x1024 source) and splash screens for Android + iOS (Capacitor defaults)
+- [x] Build web bundle (pnpm run build) and sync to Android/iOS (npx cap sync)
+- [x] Configure Android: update AndroidManifest.xml with deep links, push permissions, internet permission
+- [x] Configure iOS: update Info.plist with deep links, push notification entitlements
+- [x] Generate Android debug APK via Gradle (7 MB, BUILD SUCCESSFUL)
+- [x] Generate iOS Xcode project (requires macOS/Xcode to build IPA)
+- [x] Document app store submission steps (Google Play + Apple App Store) in docs/MOBILE.md
+- [x] Push to GitHub with mobile platform files (ef3b7d3)
+
+## Mobile Release Build (Jul 29 2026)
+
+- [x] Generate release keystore (chalkpicks-release.keystore, alias=chalkpicks, 10000 days)
+- [x] Update assetlinks.json with real SHA-256 fingerprint from keystore
+- [x] Add signingConfig to android/app/build.gradle for release builds
+- [x] Build signed release AAB (5.4 MB, BUILD SUCCESSFUL)
+- [x] Replace all Android mipmap icons (mdpi/hdpi/xhdpi/xxhdpi/xxxhdpi) with ChalkPicks neon logo
+- [x] Replace iOS AppIcon-512@2x.png (1024x1024) with ChalkPicks neon logo
+- [x] Document iOS Xcode build steps in docs/MOBILE.md
+- [x] Add keystore to .gitignore (never commit)
+- [x] Push to GitHub (bdcca82)
+
+## App Store Listings + FCM + Splash (Jul 29 2026)
+
+- [x] Play Store listing: title, short desc (80 chars), long desc (4000 chars), category, keywords
+- [x] Play Store feature graphic (1024x500) — generated with neon logo + analytics overlay
+- [x] App Store Connect metadata: description, keywords, privacy URL, categories, screenshots spec
+- [x] Firebase Cloud Messaging: full setup guide in docs/FCM_SETUP.md (requires Firebase project creation)
+- [x] Branded splash screen: ChalkPicks neon logo on dark bg, all densities + iOS asset catalog
+
+## Privacy/Terms + RevenueCat + Firebase + Screenshots (Jul 29 2026)
+
+- [x] /privacy page: full privacy policy with data collection, cookies, analytics, third-party services (already existed)
+- [x] /terms page: terms of service with subscription terms, disclaimers, user conduct (already existed)
+- [x] Register /privacy and /terms routes in App.tsx and add to Navbar footer (already registered)
+- [x] RevenueCat Capacitor SDK: useRevenueCat hook + NativePurchaseButton component (Stripe on web, RevenueCat on native)
+- [x] /app-link-test page: admin-only deep link verification page at /app-link-test, registered in App.tsx
+- [x] Firebase project: google-services.json.template + GoogleService-Info.plist.template created; manual project creation required at console.firebase.google.com with big.main666@gmail.com
+- [x] App store screenshots: scripts/generate-screenshots.py with Pillow device mockups (Pixel 8 + iPhone 15 Pro, 12 framed images generated)
+
+## RevenueCat Webhook + API Keys (Jul 29 2026)
+
+- [x] VITE_REVENUECAT_IOS_KEY set to sk_cvQquzBeBkNHjTZHilcsbJUTqmBTN
+- [x] VITE_REVENUECAT_ANDROID_KEY set to sk_cvQquzBeBkNHjTZHilcsbJUTqmBTN
+- [x] server/revenuecat-webhook.ts: handles INITIAL_PURCHASE/RENEWAL/CANCELLATION/EXPIRATION events
+- [x] registerRevenueCatWebhook registered in server/\_core/index.ts at /api/revenuecat/webhook
+- [x] server/revenuecat.test.ts: 3 tests validating key format and presence (185/185 passing)
+
+## Next Batch (Jul 29 2026)
+
+- [x] Pricing page: replace raw subscribe button with NativePurchaseButton component (smart Stripe/RevenueCat routing)
+- [x] Add REVENUECAT_WEBHOOK_SECRET env var for webhook security (auto-generated 64-char hex)
+- [x] Discord bot: already running — 4 heartbeat slots (morning pick, afternoon alert, evening results, night preview)
+- [x] Discord bot: heartbeat jobs already registered (discord-morning-pick, discord-afternoon-alert, discord-evening-results, discord-night-preview)
+
+## Discord Server Wiring (Jul 29 2026)
+
+- [x] Set DISCORD_WEBHOOK_URL secret (webhook from #free-daily-pick channel) — https://discord.com/api/webhooks/1528595918369194006/WGgKV0aknXtCPssbDVbE2eaqUK3Onkz2ihZypTF2asgpe_032lF4dOBXrUPPj0ccgcMv
+- [x] Set DISCORD_STEAM_WEBHOOK_URL secret (webhook from #steam-alerts channel) — https://discord.com/api/webhooks/1532167176591507596/OAJP1AryvfTh8Sy0gzvG6NqfCekcDpSTRR43w6hwIEleSQFpJ8EE-Bwhfc6LO6dOypcK
+- [x] Add Discord invite CTA to Navbar (Join Discord button) — https://discord.gg/rUrkBW9N
+- [x] Add Discord invite CTA to Home page hero section — "Join Discord" button with MessageCircle icon
+- [x] Wire steam alerts to separate Discord channel webhook — DISCORD_STEAM_WEBHOOK_URL configured and validated (4/4 tests passing)

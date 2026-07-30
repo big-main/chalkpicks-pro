@@ -22,10 +22,12 @@ import {
   Shield,
   Sparkles,
   Users,
+  MessageCircle,
 } from "lucide-react";
 import NeonCard from "@/components/NeonCard";
 import { HeroBackground } from "@/components/HeroBackground";
 import { FadeIn } from "@/components/animations";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 // Lazy-load Recharts to reduce TBT on initial page load
@@ -278,7 +280,7 @@ export default function Home() {
       <Navbar />
 
       {/* ─── HERO SECTION ─── */}
-      <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-28 overflow-hidden">
+      <section className="relative pt-28 pb-20 sm:pt-32 lg:pt-36 lg:pb-28 overflow-hidden">
         {/* Background effects */}
         <div
           className="absolute inset-0 pointer-events-none"
@@ -368,24 +370,34 @@ export default function Home() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex flex-col sm:flex-row items-center lg:items-start gap-4 mb-8"
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-8"
               >
                 {isAuthenticated ? (
                   <Link href="/picks">
-                    <button className="btn-premium text-base px-8 py-4">
+                    <button className="btn-premium text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4">
                       View Today's Picks <ArrowRight className="w-4 h-4" />
                     </button>
                   </Link>
                 ) : (
                   <button
-                    className="btn-premium text-base px-8 py-4"
+                    className="btn-premium text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4"
                     onClick={() => (window.location.href = "/signup")}
                   >
                     Start Winning Today <ArrowRight className="w-4 h-4" />
                   </button>
                 )}
+                <a
+                  href="https://discord.gg/rUrkBW9N"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <button className="btn-outline-premium text-sm sm:text-base px-5 sm:px-6 py-3 sm:py-4 flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4" />
+                    Join Discord
+                  </button>
+                </a>
                 <Link href="/methodology">
-                  <button className="btn-outline-premium text-base px-6 py-4">
+                  <button className="btn-outline-premium text-sm sm:text-base px-5 sm:px-6 py-3 sm:py-4">
                     How It Works
                   </button>
                 </Link>
@@ -848,6 +860,9 @@ export default function Home() {
                 Get Started Free <ArrowRight className="w-4 h-4" />
               </button>
             )}
+          </div>
+          <div className="mt-12 mb-8">
+            <NewsletterSignup />
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/35">
             <span className="flex items-center gap-1.5">

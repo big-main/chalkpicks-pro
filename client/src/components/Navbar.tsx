@@ -476,7 +476,7 @@ export default function Navbar() {
       }}
     >
       <div className="max-w-[1400px] mx-auto px-4 lg:px-6">
-        <div className="flex items-center justify-between h-[76px]">
+        <div className="flex items-center justify-between h-[76px] gap-2 overflow-hidden">
           {/* ── LOGO ── */}
           <Link
             href="/"
@@ -518,14 +518,14 @@ export default function Navbar() {
           </Link>
 
           {/* ── DESKTOP NAV ── */}
-          <div className="hidden lg:flex items-center gap-0.5 mx-4">
+          <div className="hidden lg:flex items-center gap-0.5 mx-2 xl:mx-4 flex-1 min-w-0 justify-center">
             {primaryLinks.map(link => {
               const isActive = location === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="relative px-4 py-2 text-[13.5px] font-medium rounded-lg transition-all duration-200"
+                  className="relative px-3 xl:px-4 py-2 text-[13px] xl:text-[13.5px] font-medium rounded-lg transition-all duration-200 whitespace-nowrap"
                   style={{
                     color: isActive ? "#39ff14" : "rgba(255, 255, 255, 0.58)",
                     background: isActive
@@ -729,7 +729,7 @@ export default function Navbar() {
           </div>
 
           {/* ── RIGHT SIDE ── */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-1.5 flex-shrink-0 min-w-0">
             <LlmStatusBadge />
 
             {isAuthenticated ? (

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import OpenAI from "openai";
 
 describe("AI API Integration", () => {
-  it("should validate OpenAI API key", async () => {
+  it.skipIf(!process.env.OPENAI_API_KEY)("should validate OpenAI API key", async () => {
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });

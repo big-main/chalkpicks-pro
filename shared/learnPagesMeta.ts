@@ -73,6 +73,32 @@ export const LEARN_PAGES_META: LearnPageMeta[] = [
     ],
   },
   {
+    slug: "expected-value-betting",
+    path: "/learn/expected-value-betting",
+    breadcrumbName: "Expected Value Betting",
+    title: "Expected Value (+EV) Betting Explained | ChalkPicks",
+    description:
+      "What +EV betting means, how to calculate expected value on any bet, and why finding +EV prices matters more than picking winners.",
+    faqs: [
+      {
+        q: "What does +EV mean in sports betting?",
+        a: "+EV (positive expected value) means a bet's true win probability is higher than the probability implied by its odds — so on average, over many repeated bets at that same price, you'd profit even though any single bet can still lose.",
+      },
+      {
+        q: "How do you calculate expected value on a bet?",
+        a: "EV = (probability of winning × amount won per $1) − (probability of losing × $1 staked). A bet is +EV whenever that number is positive — meaning your estimated true probability of winning exceeds the odds' implied probability.",
+      },
+      {
+        q: "Do +EV bets always win?",
+        a: "No — a single +EV bet can lose just as easily as a -EV one; the edge only shows up as expected profit averaged across a large enough sample. This is the same reason CLV, not win rate, is how sharp bettors actually judge whether their process is working.",
+      },
+      {
+        q: "How do you find +EV bets in practice?",
+        a: "Compare a book's offered price against the no-vig fair line from a sharp, high-limit book. If your price implies a lower probability than the sharp no-vig number, the gap between them is your edge. ChalkPicks' +EV Finder automates this comparison across 10+ sportsbooks in real time.",
+      },
+    ],
+  },
+  {
     slug: "kelly-criterion",
     path: "/learn/kelly-criterion",
     breadcrumbName: "Kelly Criterion",

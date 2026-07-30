@@ -25,7 +25,7 @@ import { eq, desc } from "drizzle-orm";
 const ORIGIN = "https://chalkpicks.live";
 
 /** Escape text for safe embedding into HTML attribute/text positions. */
-function esc(s: string): string {
+export function esc(s: string): string {
   return s
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

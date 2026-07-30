@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 describe("odds-api.io integration", () => {
-  it("should have ODDS_API_IO_KEY set in environment", () => {
+  it.skipIf(!process.env.ODDS_API_IO_KEY)("should have ODDS_API_IO_KEY set in environment", () => {
     const key = process.env.ODDS_API_IO_KEY;
     expect(key).toBeTruthy();
     expect(key?.length).toBeGreaterThan(20);

@@ -11,6 +11,10 @@
  */
 
 import React from "react";
+import {
+  buildBreadcrumbListJsonLd,
+  buildFaqPageJsonLd,
+} from "@shared/jsonLdBuilders";
 
 /**
  * Renders one <script type="application/ld+json"> tag for the given object.
@@ -24,7 +28,10 @@ import React from "react";
 function JsonLdScript({ data }: { data: object }) {
   const safeJson = JSON.stringify(data).replace(/</g, "\\u003c");
   return (
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJson }} />
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: safeJson }}
+    />
   );
 }
 
@@ -102,18 +109,7 @@ interface BreadcrumbJsonLdProps {
 }
 
 export function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
-  const data = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, idx) => ({
-      "@type": "ListItem",
-      position: idx + 1,
-      name: item.name,
-      item: item.url,
-    })),
-  };
-
-  return <JsonLdScript data={data} />;
+  return <JsonLdScript data={buildBreadcrumbListJsonLd(items)} />;
 }
 
 // ─── SportsEvent ──────────────────────────────────────────────────────────────
@@ -182,20 +178,7 @@ interface FaqJsonLdProps {
 }
 
 export function FaqJsonLd({ faqs }: FaqJsonLdProps) {
-  const data = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer,
-      },
-    })),
-  };
-
-  return <JsonLdScript data={data} />;
+  return <JsonLdScript data={buildFaqPageJsonLd(faqs)} />;
 }
 
 // ─── Product (Pricing Page) ──────────────────────────────────────────────────
@@ -208,7 +191,13 @@ interface ProductJsonLdProps {
   url?: string;
 }
 
-export function ProductJsonLd({ name, description, price, priceCurrency = "USD", url }: ProductJsonLdProps) {
+export function ProductJsonLd({
+  name,
+  description,
+  price,
+  priceCurrency = "USD",
+  url,
+}: ProductJsonLdProps) {
   const data = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -224,13 +213,9 @@ export function ProductJsonLd({ name, description, price, priceCurrency = "USD",
       priceValidUntil: "2027-12-31",
       seller: { "@id": "https://chalkpicks.live/#organization" },
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
-    },
+    // No aggregateRating: there's no reviews table backing one, and
+    // Google's structured-data policy treats fabricated review/rating
+    // markup as a manual-action risk.
   };
 
   return <JsonLdScript data={data} />;
@@ -250,7 +235,12 @@ interface HowToJsonLdProps {
   totalTime?: string; // ISO 8601 duration e.g. "PT2M"
 }
 
-export function HowToJsonLd({ name, description, steps, totalTime = "PT2M" }: HowToJsonLdProps) {
+export function HowToJsonLd({
+  name,
+  description,
+  steps,
+  totalTime = "PT2M",
+}: HowToJsonLdProps) {
   const data = {
     "@context": "https://schema.org",
     "@type": "HowTo",

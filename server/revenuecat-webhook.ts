@@ -54,6 +54,12 @@ export function registerRevenueCatWebhook(app: express.Application) {
     const authHeader = req.headers["authorization"];
     const webhookSecret = process.env.REVENUECAT_WEBHOOK_SECRET;
 
+    if (!webhookSecret && process.env.NODE_ENV === "production") {
+      console.error(
+        "[RCWebhook] REVENUECAT_WEBHOOK_SECRET unset in production — refusing request"
+      );
+      return res.status(401).json({ error: "Unauthorized" });
+    }
     if (webhookSecret && authHeader !== webhookSecret) {
       console.error("[RCWebhook] Unauthorized request — invalid secret");
       return res.status(401).json({ error: "Unauthorized" });

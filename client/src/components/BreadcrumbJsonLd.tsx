@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
+import { buildBreadcrumbListJsonLd } from "@shared/jsonLdBuilders";
 
 const BASE_URL = "https://chalkpicks.live";
 
@@ -107,16 +108,7 @@ const BREADCRUMB_MAP: Record<string, Array<{ name: string; path: string }>> = {
 };
 
 function buildJsonLd(crumbs: Array<{ name: string; path: string }>) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: crumbs.map((crumb, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: crumb.name,
-      item: `${BASE_URL}${crumb.path}`,
-    })),
-  };
+  return buildBreadcrumbListJsonLd(crumbs, BASE_URL);
 }
 
 const SCRIPT_ID = "breadcrumb-json-ld";

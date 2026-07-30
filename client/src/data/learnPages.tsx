@@ -161,9 +161,87 @@ export const LEARN_PAGES: Record<string, LearnPageContent> = {
             like Pinnacle. If your sportsbook's price implies a lower
             probability than the sharp no-vig fair number, the market thinks
             that outcome is more likely than your price suggests — that gap is
-            your expected value. ChalkPicks'{" "}
+            your{" "}
+            <InternalLink href="/learn/expected-value-betting">
+              expected value
+            </InternalLink>
+            . ChalkPicks'{" "}
             <InternalLink href="/ev-finder">+EV Finder</InternalLink> scans this
             exact comparison across 10+ sportsbooks in real time.
+          </p>
+        ),
+      },
+    ],
+  },
+
+  "expected-value-betting": {
+    path: "/learn/expected-value-betting",
+    badge: "Betting Fundamentals",
+    title: "Expected Value (+EV) Betting Explained",
+    intro:
+      "Winning bettors don't pick winners — they pick prices. The math that separates a real edge from a lucky guess.",
+    faqs: faqsFor("expected-value-betting"),
+    sections: [
+      {
+        title: "The Formula",
+        body: (
+          <>
+            <p>
+              Expected value:{" "}
+              <code className="text-emerald-400">
+                EV = (p × W) − (q × L)
+              </code>
+              , where <strong>p</strong> is your true win probability,{" "}
+              <strong>W</strong> is what you win per dollar staked,{" "}
+              <strong>q</strong> is 1 − p, and <strong>L</strong> is what you
+              lose per dollar staked.
+            </p>
+            <p>
+              Example: at +150 odds (win $1.50 per $1 staked) with a true win
+              probability of 50%, EV ={" "}
+              <code className="text-emerald-400">
+                (0.50 × 1.50) − (0.50 × 1) = +$0.25
+              </code>{" "}
+              per dollar — a real edge, even though the odds alone imply only
+              a 40% chance of winning.
+            </p>
+          </>
+        ),
+      },
+      {
+        title: "+EV Doesn't Mean the Bet Wins",
+        body: (
+          <p>
+            A single +EV bet loses all the time — the edge is a statement
+            about the average outcome across many bets at that same price,
+            not a prediction about any one game. That's exactly why{" "}
+            <InternalLink href="/learn/closing-line-value">
+              closing line value
+            </InternalLink>{" "}
+            (not win rate) is how sharp bettors actually track whether their
+            process is working: it isolates whether the price was good, not
+            whether that particular bet happened to cash.
+          </p>
+        ),
+      },
+      {
+        title: "Finding +EV Bets",
+        body: (
+          <p>
+            The standard method: convert a sharp, high-limit book's odds to{" "}
+            <InternalLink href="/learn/no-vig-odds">
+              no-vig fair probability
+            </InternalLink>
+            , then compare it against the price your own book is offering. If
+            your price implies a lower probability than the sharp fair
+            number, that gap is your expected value. ChalkPicks'{" "}
+            <InternalLink href="/ev-finder">+EV Finder</InternalLink> runs
+            this comparison across 10+ sportsbooks in real time, and once
+            you've confirmed a bet is +EV,{" "}
+            <InternalLink href="/learn/kelly-criterion">
+              Kelly Criterion sizing
+            </InternalLink>{" "}
+            tells you how much of your bankroll to put on it.
           </p>
         ),
       },
@@ -240,8 +318,9 @@ export const LEARN_PAGES: Record<string, LearnPageContent> = {
             <InternalLink href="/learn/no-vig-odds">
               no-vig fair odds
             </InternalLink>{" "}
-            to estimate true probability, confirm the bet is +EV, and only then
-            use Kelly to size it. ChalkPicks'{" "}
+            to estimate true probability, confirm the bet is{" "}
+            <InternalLink href="/learn/expected-value-betting">+EV</InternalLink>
+            , and only then use Kelly to size it. ChalkPicks'{" "}
             <InternalLink href="/bet-calculator">bet calculator</InternalLink>{" "}
             computes quarter-Kelly stake sizing directly from your probability
             and odds inputs.

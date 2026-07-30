@@ -27,7 +27,9 @@ describe("hasComplianceFooter", () => {
   });
 });
 
-describe("Blog Router", () => {
+// Exercises real DB inserts/queries — meaningless without a provisioned
+// DATABASE_URL, so skip cleanly rather than crash on a null db handle.
+describe.skipIf(!process.env.DATABASE_URL)("Blog Router", () => {
   let db: any;
 
   beforeAll(async () => {

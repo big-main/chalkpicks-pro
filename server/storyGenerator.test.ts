@@ -17,7 +17,9 @@ function createTestContext(): TrpcContext {
   };
 }
 
-describe("Story Generator & History", () => {
+// Goes through the real tRPC router into the DB — meaningless without a
+// provisioned DATABASE_URL, so skip cleanly rather than crash on a null db handle.
+describe.skipIf(!process.env.DATABASE_URL)("Story Generator & History", () => {
   const ctx = createTestContext();
   const caller = appRouter.createCaller(ctx);
 

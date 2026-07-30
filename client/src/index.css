@@ -945,9 +945,8 @@
   .btn-outline-premium {
     min-height: 44px;
   }
-  nav a {
-    padding: 0.5rem 0.625rem;
-  }
+  /* NOTE: Do NOT add nav a padding here — it overrides Navbar's carefully tuned
+     link sizing and causes overflow on medium touch screens (tablets). */
 }
 
 /* Safe area insets for notched phones */
@@ -956,6 +955,18 @@
     padding-bottom: calc(2rem + env(safe-area-inset-bottom));
   }
   /* Note: nav safe-area-inset-top is handled by the Navbar component itself */
+}
+
+/* Smooth scroll — respects prefers-reduced-motion */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Scroll margin so anchored sections clear the fixed Navbar (76px) + AnnouncementBar (~40px) */
+[id] {
+  scroll-margin-top: 90px;
 }
 
 /* Prevent horizontal overflow */

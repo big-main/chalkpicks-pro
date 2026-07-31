@@ -1964,3 +1964,11 @@
 - [x] Integrate cache into all 6 Odds API call sites (dataService, ev, sharpMoney, consensus, n8nWebhook, liveDataStreamer, sportsbookOddsScraper)
 - [x] Add cache stats and manual purge to admin panel (API Cache tab)
 - [x] Write tests for cache hit/miss/stale scenarios (6 tests passing)
+
+## Cache Warm-Up + Discord/Telegram Automation (Jul 30 2026)
+
+- [x] Add cache warm-up Heartbeat job (every 5 min, peak hours 3-9 PM PT, skips if quota low)
+- [x] Add monthly quota reset Heartbeat job (1st of each month at 00:05 UTC)
+- [x] Discord daily pick + steam alerts: already running (4 Heartbeat jobs active, firing daily)
+- [x] Telegram daily pick posting: new Heartbeat job at 8 AM PT via telegramPickHandler.ts
+- [x] DISCORD_WEBHOOK_URL, DISCORD_STEAM_WEBHOOK_URL, TELEGRAM_BOT_TOKEN all set and validated

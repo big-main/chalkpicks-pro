@@ -2025,3 +2025,11 @@
 - [x] Smoke test 3: /verify/:hash returns found=true for real ledger hash
 - [x] Smoke test 4: Homepage clean — no "92%", "every time", "free trial", dead trial copy
 - [x] pnpm dev:check → all 7/7 green (health, robots, sitemap, /, /free-picks, /verify, /openapi.json)
+
+## Product Hunt Launch Package + Skill (Jul 31 2026)
+
+- [x] Write docs/PRODUCT_HUNT_LAUNCH.md with form fields, first comment, gallery guide
+- [x] Capture gallery screenshots (picks-ui, verify-proof, tools-page, pricing)
+- [x] Write docs/X_LAUNCH_THREAD.md (6-tweet trust-first thread)
+- [x] Write docs/INDIE_HACKERS_POST.md (builder story, trust angle)
+- [x] Create webdev-remote-sync skill (7-phase reconciliation + smoke test workflow)

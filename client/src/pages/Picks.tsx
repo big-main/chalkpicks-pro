@@ -1288,7 +1288,7 @@ export default function Picks() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
         className="w-full flex items-center justify-center overflow-visible pointer-events-none select-none"
-        style={{ marginTop: "64px", zIndex: 0 }}
+        style={{ marginTop: "var(--navbar-height)", zIndex: 0 }}
         aria-hidden="true"
       >
         <div

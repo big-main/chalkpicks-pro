@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X, Info, AlertTriangle, CheckCircle, Tag } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
@@ -23,10 +23,11 @@ const TYPE_STYLES = {
 };
 
 export function AnnouncementBar() {
-  const { data: announcements } = trpc.notifications.getActiveAnnouncements.useQuery(undefined, {
-    staleTime: 5 * 60 * 1000, // 5 min
-    refetchOnWindowFocus: false,
-  });
+  const { data: announcements } =
+    trpc.notifications.getActiveAnnouncements.useQuery(undefined, {
+      staleTime: 5 * 60 * 1000, // 5 min
+      refetchOnWindowFocus: false,
+    });
 
   const [dismissed, setDismissed] = useState<Set<number>>(() => {
     try {
@@ -38,27 +39,55 @@ export function AnnouncementBar() {
   });
 
   const dismiss = (id: number) => {
-    setDismissed((prev) => {
+    setDismissed(prev => {
       const next = new Set(prev);
       next.add(id);
       try {
-        sessionStorage.setItem("dismissed_announcements", JSON.stringify(Array.from(next)));
+        sessionStorage.setItem(
+          "dismissed_announcements",
+          JSON.stringify(Array.from(next))
+        );
       } catch {}
       return next;
     });
   };
 
-  const visible = (announcements ?? []).filter((a) => !dismissed.has(a.id));
+  const visible = (announcements ?? []).filter(a => !dismissed.has(a.id));
+  const barRef = useRef<HTMLDivElement>(null);
+
+  // Update --announcement-bar-height so Navbar and page containers can offset correctly
+  useEffect(() => {
+    if (visible.length && barRef.current) {
+      const h = barRef.current.offsetHeight;
+      document.documentElement.style.setProperty(
+        "--announcement-bar-height",
+        `${h}px`
+      );
+    } else {
+      document.documentElement.style.setProperty(
+        "--announcement-bar-height",
+        "0px"
+      );
+    }
+  }, [visible.length]);
 
   if (!visible.length) return null;
 
   // Show only the first active announcement
   const announcement = visible[0];
-  const styles = TYPE_STYLES[announcement.type as keyof typeof TYPE_STYLES] ?? TYPE_STYLES.info;
+  const styles =
+    TYPE_STYLES[announcement.type as keyof typeof TYPE_STYLES] ??
+    TYPE_STYLES.info;
   const Icon = styles.icon;
 
   return (
-    <div className={cn("w-full py-2 px-4 flex items-center justify-center gap-3 text-sm font-medium relative z-50", styles.bar)}>
+    <div
+      ref={barRef}
+      className={cn(
+        "w-full py-2 px-4 flex items-center justify-center gap-3 text-sm font-medium relative z-50",
+        styles.bar
+      )}
+    >
       <Icon className="h-4 w-4 flex-shrink-0" />
       <span className="flex-1 text-center max-w-2xl">
         {announcement.title}

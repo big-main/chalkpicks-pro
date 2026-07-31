@@ -72,6 +72,13 @@
 }
 
 :root {
+  /* ─── Layout height tokens ─── */
+  --announcement-bar-height: 0px; /* updated by AnnouncementBar.tsx when visible */
+  --navbar-bar-height: 76px; /* Navbar inner bar height */
+  --navbar-height: calc(
+    var(--navbar-bar-height) + var(--announcement-bar-height)
+  );
+
   /* ─── Premium Dark Theme — Deep Space ─── */
   --background: oklch(0.07 0.012 260);
   --foreground: oklch(0.93 0.005 270);
@@ -206,6 +213,19 @@
       padding-right: 2rem;
       max-width: 1400px;
     }
+  }
+
+  /* ─── Navbar-aware page offset ─── */
+  /* Use padding-top: var(--navbar-height) on page root divs instead of hardcoded pt-20/pt-24 */
+  .page-top {
+    padding-top: var(--navbar-height);
+  }
+  /* Smooth transition when announcement bar appears/disappears */
+  .page-top,
+  [style*="marginTop"] {
+    transition:
+      padding-top 0.2s ease,
+      margin-top 0.2s ease;
   }
 
   /* ─── Typography ─── */

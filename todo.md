@@ -2039,3 +2039,9 @@
 - [x] OddsCalculator: FaqJsonLd (5 Q&A), H1 → "Free Sports Betting Odds Calculator", on-page FAQ, internal links, removed 92% CTA
 - [x] ROICalculator: FaqJsonLd (5 Q&A), H1 → "Free Sports Betting ROI Calculator", on-page FAQ, projection disclaimer, internal links, removed 92% CTA
 - [x] ParlayCalculator: PageMeta added, FaqJsonLd (5 Q&A), on-page FAQ, internal links, CTA → Parlay Builder (no win-rate claim)
+
+## Dynamic Navbar Height + IndexNow (Jul 31 2026)
+
+- [ ] Add --navbar-height CSS variable to Navbar that updates dynamically when AnnouncementBar is visible
+- [ ] Update page containers to use dynamic navbar height instead of hardcoded pt-24
+- [ ] Submit three tool URLs to IndexNow for fast re-indexing

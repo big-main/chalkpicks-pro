@@ -1997,8 +1997,8 @@
 - [x] Implement 3-tier cascade: SharpAPI → odds-api.io → The Odds API
 - [x] Normalize SharpAPI flat response to OddsEvent[] format
 - [x] Fix flaky Discord webhook test timeout (increased to 15s)
-- [ ] Add SHARPAPI_KEY secret via webdev_request_secrets
-- [ ] Verify SharpAPI integration end-to-end with live API key
+- [x] Add SHARPAPI_KEY secret via webdev_request_secrets
+- [x] Verify SharpAPI integration end-to-end with live API key (sk_live_YZp... → 200 OK with live MLB odds)
 
 ## Git Remote Reconciliation (Jul 31 2026)
 

@@ -5,6 +5,7 @@ import { getDb } from "../db";
 import { picks, playerProps, games, sports } from "../../drizzle/schema";
 import { eq, desc, and, gte, lte, like, sql } from "drizzle-orm";
 import { invokeLLM } from "../_core/llm";
+import { afterPickCreated } from "../_core/after-pick-created";
 import { TRPCError } from "@trpc/server";
 
 const SPORTS_LIST = [
@@ -19,7 +20,7 @@ const SPORTS_LIST = [
   { key: "mma", name: "MMA/UFC", icon: "🥊" },
 ];
 
-// Seed realistic mock picks for demo
+// Seed realistic mock picks for demo (dev/fallback only — never invent in prod scheduler)
 function generateMockPicks(date: string) {
   const mockPicks = [
     {
@@ -143,11 +144,11 @@ function generateMockPicks(date: string) {
       confidenceScore: 76,
       edgeScore: "2.80",
       aiAnalysis:
-        "NFC East rivalry games historically trend under 58% of the time. Both defenses rank top-10 in DVOA. Cold weather forecast (28°F) historically suppresses scoring by 4-6 points.",
+        "NFC East rivalry games historically trend under 58% of the time. Both defenses rank top-10 in DVOA. Cold weather forecast (28\u00b0F) historically suppresses scoring by 4-6 points.",
       keyFactors: [
         "58% historical under rate",
         "Both defenses top-10 DVOA",
-        "28°F game-time temp",
+        "28\u00b0F game-time temp",
         "Rivalry game defensive intensity",
       ],
       isFeatured: false,
@@ -201,26 +202,24 @@ function generateMockPicks(date: string) {
 }
 
 export const picksRouter = router({
-  // Get today's picks
   list: publicProcedure
     .input(
       z.object({
         sportKey: z.string().optional(),
         tier: z.enum(["free", "premium", "all"]).optional().default("all"),
         date: z.string().optional(),
-        dateFrom: z.string().optional(), // YYYY-MM-DD
-        dateTo: z.string().optional(), // YYYY-MM-DD
+        dateFrom: z.string().optional(),
+        dateTo: z.string().optional(),
         page: z.number().optional().default(1),
         limit: z.number().optional().default(20),
       })
     )
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input }) => {
       const db = await getDb();
       const today = input.date ?? new Date().toISOString().split("T")[0];
       const offset = (input.page - 1) * input.limit;
 
       if (!db) {
-        // Return mock data if DB not available
         let mockData = generateMockPicks(today);
         if (input.sportKey)
           mockData = mockData.filter(p => p.sportKey === input.sportKey);
@@ -249,11 +248,9 @@ export const picksRouter = router({
       const conditions = [eq(picks.isActive, true)];
       if (input.sportKey) conditions.push(eq(picks.sportKey, input.sportKey));
       if (input.tier !== "all") conditions.push(eq(picks.tier, input.tier));
-      // Date range filtering
       if (input.dateFrom) {
         conditions.push(gte(picks.pickDate, input.dateFrom));
       } else {
-        // Default: show picks for today and last 7 days
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         conditions.push(
@@ -280,7 +277,6 @@ export const picksRouter = router({
           .where(and(...conditions)),
       ]);
 
-      // If no picks in DB, seed with mock data
       if (pickList.length === 0) {
         const mockData = generateMockPicks(today);
         const toInsert = mockData.map(p => ({
@@ -311,7 +307,6 @@ export const picksRouter = router({
       };
     }),
 
-  // Get single pick
   byId: publicProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
@@ -340,7 +335,6 @@ export const picksRouter = router({
       return result[0];
     }),
 
-  // Generate AI picks for a sport
   generateAI: protectedProcedure
     .input(
       z.object({
@@ -349,28 +343,11 @@ export const picksRouter = router({
         context: z.string().optional(),
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       const sport = SPORTS_LIST.find(s => s.key === input.sportKey);
       const today = new Date().toISOString().split("T")[0];
 
-      const prompt = `You are an expert sports betting analyst with 20+ years of experience. Analyze the following ${sport?.name ?? input.sportKey} matchup and provide a detailed betting recommendation.
-
-Matchup: ${input.matchup}
-Date: ${today}
-Additional Context: ${input.context ?? "None provided"}
-
-Provide your analysis in the following JSON format:
-{
-  "recommendation": "specific bet recommendation (e.g., 'Chiefs -7.5', 'Over 224.5', 'Lakers ML')",
-  "pickType": "moneyline|spread|over_under|player_prop",
-  "odds": -110,
-  "confidenceScore": 75,
-  "edgeScore": 3.5,
-  "aiAnalysis": "detailed 2-3 sentence analysis explaining the reasoning",
-  "keyFactors": ["factor 1", "factor 2", "factor 3", "factor 4"]
-}
-
-Be specific, data-driven, and concise. Confidence score should be 60-95 based on signal strength. Edge score represents the % edge over the market (1-10).`;
+      const prompt = `You are an expert sports betting analyst with 20+ years of experience. Analyze the following ${sport?.name ?? input.sportKey} matchup and provide a detailed betting recommendation.\n\nMatchup: ${input.matchup}\nDate: ${today}\nAdditional Context: ${input.context ?? "None provided"}\n\nProvide your analysis in the following JSON format:\n{\n  "recommendation": "specific bet recommendation (e.g., 'Chiefs -7.5', 'Over 224.5', 'Lakers ML')",\n  "pickType": "moneyline|spread|over_under|player_prop",\n  "odds": -110,\n  "confidenceScore": 75,\n  "edgeScore": 3.5,\n  "aiAnalysis": "detailed 2-3 sentence analysis explaining the reasoning",\n  "keyFactors": ["factor 1", "factor 2", "factor 3", "factor 4"]\n}\n\nBe specific, data-driven, and concise. Confidence score should be 60-95 based on signal strength. Edge score represents the % edge over the market (1-10).`;
 
       const response = await invokeLLM({
         messages: [
@@ -458,7 +435,23 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
           isActive: true,
           isFeatured: parsed.confidenceScore >= 80,
         });
-        // Fire n8n AI analysis webhook (non-blocking)
+
+        // Immutable Pick Ledger lock (parity with scheduler publish path)
+        await afterPickCreated(inserted, {
+          sportKey: input.sportKey,
+          homeTeam: homeTeam ?? input.matchup,
+          awayTeam: awayTeam ?? "",
+          recommendation: parsed.recommendation,
+          pickType: parsed.pickType,
+          odds: Math.round(parsed.odds),
+          confidenceScore: Math.min(
+            95,
+            Math.max(50, Math.round(parsed.confidenceScore))
+          ),
+          pickDate: today,
+          tier: "premium",
+        });
+
         const n8nPicksUrl = process.env.N8N_PICKS_WEBHOOK_URL;
         if (n8nPicksUrl) {
           fetch(n8nPicksUrl, {
@@ -473,7 +466,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
             signal: AbortSignal.timeout(5000),
           }).catch(e => console.warn("[n8n] picks webhook failed:", e));
         }
-        // Fire +EV push alert for high-confidence picks (≥80% confidence)
         const confidence = Math.min(
           95,
           Math.max(50, Math.round(parsed.confidenceScore))
@@ -497,7 +489,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       return { success: true, pick: parsed };
     }),
 
-  // Get performance stats — public, no auth required
   performance: publicProcedure.query(async () => {
     const db = await getDb();
     if (!db) {
@@ -534,8 +525,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
     const total = wins + losses;
     const winRate = total > 0 ? Math.round((wins / total) * 1000) / 10 : 0;
 
-    // ROI: assume $100 flat stake per pick, payout based on American odds
-    // American odds: +150 → profit $150 on $100; -110 → profit $90.91 on $100
     const totalStaked = total * 100;
     let totalProfit = 0;
     for (const p of settled) {
@@ -550,7 +539,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
         ? Math.round((totalProfit / totalStaked) * 10000) / 100
         : 0;
 
-    // By sport
     const sportMap: Record<
       string,
       {
@@ -593,7 +581,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       roi: s.staked > 0 ? Math.round((s.profit / s.staked) * 10000) / 100 : 0,
     }));
 
-    // By pick type
     const typeMap: Record<string, { wins: number; losses: number }> = {};
     for (const p of settled) {
       const t = p.pickType ?? "moneyline";
@@ -611,7 +598,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
           : 0,
     }));
 
-    // Monthly trend (last 12 months)
     const monthMap: Record<
       string,
       { wins: number; losses: number; profit: number; staked: number }
@@ -649,7 +635,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
         picks: m.wins + m.losses,
       }));
 
-    // Current & longest win streak
     const sorted = [...settled].sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -659,7 +644,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       if (p.result === "win") currentStreak++;
       else if (p.result === "loss") break;
     }
-    // Longest streak (scan forward)
     let longestStreak = 0;
     let runStreak = 0;
     for (const p of [...sorted].reverse()) {
@@ -686,7 +670,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
     };
   }),
 
-  // Recent settled picks for public performance page
   recentSettled: publicProcedure
     .input(
       z.object({ limit: z.number().min(1).max(20).default(10) }).optional()
@@ -738,10 +721,8 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       return { picks: recent };
     }),
 
-  // Sports list
   sports: publicProcedure.query(() => SPORTS_LIST),
 
-  // Archive of past picks grouped by date (public, powers /daily-picks SEO page)
   archive: publicProcedure
     .input(
       z.object({
@@ -824,7 +805,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       };
     }),
 
-  // Free daily pick — returns today's highest-confidence free pick with full analysis (public, no auth)
   freeDailyPick: publicProcedure.query(async () => {
     const db = await getDb();
     const today = new Date().toISOString().split("T")[0];
@@ -846,7 +826,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
         date: today,
       };
     }
-    // Get today's highest-confidence free pick
     const [freePick] = await db
       .select()
       .from(picks)
@@ -859,7 +838,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
       )
       .orderBy(desc(picks.confidenceScore))
       .limit(1);
-    // Fallback: get most recent free pick from last 7 days
     if (!freePick) {
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -880,11 +858,9 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
     return { pick: freePick, date: today };
   }),
 
-  // Get pick counts per sport key (for sport tab badges)
   sportCounts: publicProcedure.query(async () => {
     const db = await getDb();
     if (!db) {
-      // Return mock counts if DB not available
       return {
         nfl: 4,
         nba: 3,
@@ -916,7 +892,6 @@ Be specific, data-driven, and concise. Confidence score should be 60-95 based on
     return result;
   }),
 
-  /** Returns sport keys that have had new picks added in the last 24 hours */
   newPickSports: publicProcedure.query(async () => {
     const db = await getDb();
     if (!db) return [] as string[];

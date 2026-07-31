@@ -1,5 +1,9 @@
 import { useState, useMemo } from "react";
-import { HowToJsonLd, BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
+import {
+  HowToJsonLd,
+  BreadcrumbJsonLd,
+  FaqJsonLd,
+} from "@/components/seo/schema-jsonld";
 import Navbar from "@/components/Navbar";
 import NeonCard from "@/components/NeonCard";
 import { Link } from "wouter";
@@ -9,8 +13,15 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Calculator, TrendingUp, ArrowRight, Info, Shield,
-  BarChart3, Target, Zap, BookOpen
+  Calculator,
+  TrendingUp,
+  ArrowRight,
+  Info,
+  Shield,
+  BarChart3,
+  Target,
+  Zap,
+  BookOpen,
 } from "lucide-react";
 
 function americanToDecimal(american: number): number {
@@ -37,7 +48,12 @@ export default function KellyCalculator() {
     const bankrollNum = parseFloat(bankroll);
     const fractionNum = parseFloat(fraction);
 
-    if (isNaN(oddsNum) || isNaN(probNum) || isNaN(bankrollNum) || isNaN(fractionNum)) {
+    if (
+      isNaN(oddsNum) ||
+      isNaN(probNum) ||
+      isNaN(bankrollNum) ||
+      isNaN(fractionNum)
+    ) {
       return null;
     }
     if (probNum <= 0 || probNum >= 1) return null;
@@ -46,7 +62,10 @@ export default function KellyCalculator() {
     const fullKelly = kellyFraction(probNum, decimal);
     const adjustedKelly = fullKelly * fractionNum;
     const betAmount = bankrollNum * adjustedKelly;
-    const impliedProb = oddsNum > 0 ? 100 / (oddsNum + 100) : Math.abs(oddsNum) / (Math.abs(oddsNum) + 100);
+    const impliedProb =
+      oddsNum > 0
+        ? 100 / (oddsNum + 100)
+        : Math.abs(oddsNum) / (Math.abs(oddsNum) + 100);
     const edge = probNum - impliedProb;
     const ev = (probNum * (decimal - 1) - (1 - probNum)) * betAmount;
 
@@ -63,38 +82,95 @@ export default function KellyCalculator() {
   }, [odds, winProb, bankroll, fraction]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background page-top">
       <HowToJsonLd
         name="How to Use the Kelly Criterion Calculator"
         description="Calculate optimal bet sizing using the Kelly Criterion formula with the ChalkPicks free Kelly calculator."
         totalTime="PT2M"
         steps={[
-          { name: "Enter your win probability", text: "Input your estimated probability of winning the bet as a percentage (e.g., 55%)." },
-          { name: "Enter the odds", text: "Input the American odds offered by the sportsbook (e.g., -110 or +150)." },
-          { name: "Set your bankroll", text: "Enter your total bankroll amount in dollars." },
-          { name: "Choose a Kelly fraction", text: "Select Full Kelly (aggressive), Half Kelly (moderate), or Quarter Kelly (conservative) based on your risk tolerance." },
-          { name: "Read your recommended bet size", text: "The calculator shows the optimal bet amount and percentage of bankroll to wager." },
+          {
+            name: "Enter your win probability",
+            text: "Input your estimated probability of winning the bet as a percentage (e.g., 55%).",
+          },
+          {
+            name: "Enter the odds",
+            text: "Input the American odds offered by the sportsbook (e.g., -110 or +150).",
+          },
+          {
+            name: "Set your bankroll",
+            text: "Enter your total bankroll amount in dollars.",
+          },
+          {
+            name: "Choose a Kelly fraction",
+            text: "Select Full Kelly (aggressive), Half Kelly (moderate), or Quarter Kelly (conservative) based on your risk tolerance.",
+          },
+          {
+            name: "Read your recommended bet size",
+            text: "The calculator shows the optimal bet amount and percentage of bankroll to wager.",
+          },
         ]}
       />
-      <BreadcrumbJsonLd items={[
-        { name: "Home", url: "https://chalkpicks.live" },
-        { name: "Tools", url: "https://chalkpicks.live/tools" },
-        { name: "Kelly Calculator", url: "https://chalkpicks.live/tools/kelly-calculator" },
-      ]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://chalkpicks.live" },
+          { name: "Tools", url: "https://chalkpicks.live/tools" },
+          {
+            name: "Kelly Calculator",
+            url: "https://chalkpicks.live/tools/kelly-calculator",
+          },
+        ]}
+      />
+      <FaqJsonLd
+        faqs={[
+          {
+            question: "What is the Kelly Criterion?",
+            answer:
+              "The Kelly Criterion is a mathematical formula that calculates the optimal bet size as a percentage of your bankroll to maximize long-term growth while minimizing ruin risk. It balances aggressive betting with bankroll preservation.",
+          },
+          {
+            question: "How do I use the Kelly Calculator?",
+            answer:
+              "Enter your estimated win probability, the American odds, your total bankroll, and select a Kelly fraction (Full, Half, or Quarter). The calculator returns the optimal bet amount in dollars and percentage of bankroll.",
+          },
+          {
+            question:
+              "What's the difference between Full Kelly and Half Kelly?",
+            answer:
+              "Full Kelly is the mathematically optimal fraction but can be volatile. Half Kelly reduces volatility by betting 50% of the Full Kelly amount. Quarter Kelly is even more conservative, ideal for risk-averse bettors.",
+          },
+          {
+            question: "Can I use Kelly Criterion for parlays?",
+            answer:
+              "Kelly Criterion works best for single bets with independent outcomes. For parlays, use our Parlay Calculator instead, which accounts for correlation between legs.",
+          },
+          {
+            question: "What if my Kelly fraction is negative?",
+            answer:
+              "A negative Kelly means the bet has negative expected value (implied probability > your win probability). Avoid these bets entirely — they lose money long-term.",
+          },
+        ]}
+      />
       <Navbar />
 
       <section className="relative pt-24 pb-16 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse at 50% 0%, rgba(57, 255, 20, 0.04) 0%, transparent 60%)",
-        }} />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 0%, rgba(57, 255, 20, 0.04) 0%, transparent 60%)",
+          }}
+        />
         <div className="container max-w-5xl mx-auto px-4">
           <div className="text-center mb-10">
-            <Badge className="badge-free text-xs mb-4 px-3 py-1">FREE TOOL</Badge>
+            <Badge className="badge-free text-xs mb-4 px-3 py-1">
+              FREE TOOL
+            </Badge>
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">
               Kelly Criterion Calculator
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Calculate optimal bet sizing using the Kelly Criterion formula. Maximize long-term bankroll growth while managing risk.
+              Calculate optimal bet sizing using the Kelly Criterion formula.
+              Maximize long-term bankroll growth while managing risk.
             </p>
           </div>
 
@@ -107,40 +183,56 @@ export default function KellyCalculator() {
               </h2>
               <div className="space-y-4">
                 <div>
-                  <Label className="text-sm text-muted-foreground">American Odds</Label>
+                  <Label className="text-sm text-muted-foreground">
+                    American Odds
+                  </Label>
                   <Input
                     type="text"
                     value={odds}
-                    onChange={(e) => setOdds(e.target.value)}
+                    onChange={e => setOdds(e.target.value)}
                     placeholder="-110"
                     className="mt-1"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">e.g., -110, +150, +300</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    e.g., -110, +150, +300
+                  </p>
                 </div>
                 <div>
-                  <Label className="text-sm text-muted-foreground">Your Estimated Win Probability (%)</Label>
+                  <Label className="text-sm text-muted-foreground">
+                    Your Estimated Win Probability (%)
+                  </Label>
                   <Input
                     type="text"
                     value={winProb}
-                    onChange={(e) => setWinProb(e.target.value)}
+                    onChange={e => setWinProb(e.target.value)}
                     placeholder="55"
                     className="mt-1"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">Your true estimated probability of winning (1-99)</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Your true estimated probability of winning (1-99)
+                  </p>
                 </div>
                 <div>
-                  <Label className="text-sm text-muted-foreground">Bankroll ($)</Label>
+                  <Label className="text-sm text-muted-foreground">
+                    Bankroll ($)
+                  </Label>
                   <Input
                     type="text"
                     value={bankroll}
-                    onChange={(e) => setBankroll(e.target.value)}
+                    onChange={e => setBankroll(e.target.value)}
                     placeholder="1000"
                     className="mt-1"
                   />
                 </div>
                 <div>
-                  <Label className="text-sm text-muted-foreground">Kelly Fraction</Label>
-                  <Tabs value={fraction} onValueChange={setFraction} className="mt-1">
+                  <Label className="text-sm text-muted-foreground">
+                    Kelly Fraction
+                  </Label>
+                  <Tabs
+                    value={fraction}
+                    onValueChange={setFraction}
+                    className="mt-1"
+                  >
                     <TabsList className="grid grid-cols-4 w-full">
                       <TabsTrigger value="1">Full</TabsTrigger>
                       <TabsTrigger value="0.5">Half</TabsTrigger>
@@ -148,13 +240,18 @@ export default function KellyCalculator() {
                       <TabsTrigger value="0.1">Tenth</TabsTrigger>
                     </TabsList>
                   </Tabs>
-                  <p className="text-xs text-muted-foreground mt-1">Quarter Kelly is recommended for most bettors</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Quarter Kelly is recommended for most bettors
+                  </p>
                 </div>
               </div>
             </NeonCard>
 
             {/* Results */}
-            <NeonCard className="p-6" variant={result?.isPositiveEV ? "premium" : "default"}>
+            <NeonCard
+              className="p-6"
+              variant={result?.isPositiveEV ? "premium" : "default"}
+            >
               <h2 className="text-lg font-bold text-foreground mb-5 flex items-center gap-2">
                 <Target className="w-5 h-5 text-primary" />
                 Results
@@ -177,29 +274,52 @@ export default function KellyCalculator() {
                   {/* Stats grid */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 rounded-xl border border-border bg-card/50 text-center">
-                      <div className="text-xs text-muted-foreground mb-1">Full Kelly</div>
-                      <div className="text-lg font-mono font-bold text-foreground">{result.fullKelly.toFixed(2)}%</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Full Kelly
+                      </div>
+                      <div className="text-lg font-mono font-bold text-foreground">
+                        {result.fullKelly.toFixed(2)}%
+                      </div>
                     </div>
                     <div className="p-3 rounded-xl border border-border bg-card/50 text-center">
-                      <div className="text-xs text-muted-foreground mb-1">Decimal Odds</div>
-                      <div className="text-lg font-mono font-bold text-foreground">{result.decimalOdds.toFixed(3)}</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Decimal Odds
+                      </div>
+                      <div className="text-lg font-mono font-bold text-foreground">
+                        {result.decimalOdds.toFixed(3)}
+                      </div>
                     </div>
                     <div className="p-3 rounded-xl border border-border bg-card/50 text-center">
-                      <div className="text-xs text-muted-foreground mb-1">Implied Prob</div>
-                      <div className="text-lg font-mono font-bold text-foreground">{result.impliedProb.toFixed(1)}%</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Implied Prob
+                      </div>
+                      <div className="text-lg font-mono font-bold text-foreground">
+                        {result.impliedProb.toFixed(1)}%
+                      </div>
                     </div>
                     <div className="p-3 rounded-xl border border-border bg-card/50 text-center">
-                      <div className="text-xs text-muted-foreground mb-1">Your Edge</div>
-                      <div className={`text-lg font-mono font-bold ${result.edge > 0 ? "text-primary" : "text-red-400"}`}>
-                        {result.edge > 0 ? "+" : ""}{result.edge.toFixed(2)}%
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Your Edge
+                      </div>
+                      <div
+                        className={`text-lg font-mono font-bold ${result.edge > 0 ? "text-primary" : "text-red-400"}`}
+                      >
+                        {result.edge > 0 ? "+" : ""}
+                        {result.edge.toFixed(2)}%
                       </div>
                     </div>
                   </div>
 
                   {/* EV */}
-                  <div className={`p-3 rounded-xl text-center border ${result.isPositiveEV ? "bg-green-500/10 border-green-500/30" : "bg-red-500/10 border-red-500/30"}`}>
-                    <div className="text-xs text-muted-foreground mb-1">Expected Value</div>
-                    <div className={`text-xl font-bold ${result.isPositiveEV ? "text-green-400" : "text-red-400"}`}>
+                  <div
+                    className={`p-3 rounded-xl text-center border ${result.isPositiveEV ? "bg-green-500/10 border-green-500/30" : "bg-red-500/10 border-red-500/30"}`}
+                  >
+                    <div className="text-xs text-muted-foreground mb-1">
+                      Expected Value
+                    </div>
+                    <div
+                      className={`text-xl font-bold ${result.isPositiveEV ? "text-green-400" : "text-red-400"}`}
+                    >
                       {result.ev >= 0 ? "+" : ""}${result.ev.toFixed(2)}
                     </div>
                   </div>
@@ -209,7 +329,9 @@ export default function KellyCalculator() {
                     <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-2">
                       <Info className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
                       <span className="text-xs text-red-300">
-                        Negative edge detected. Kelly recommends $0 bet. Your estimated win probability is below the implied probability.
+                        Negative edge detected. Kelly recommends $0 bet. Your
+                        estimated win probability is below the implied
+                        probability.
                       </span>
                     </div>
                   )}
@@ -217,7 +339,8 @@ export default function KellyCalculator() {
                     <div className="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/30 flex items-start gap-2">
                       <Info className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
                       <span className="text-xs text-yellow-300">
-                        High Kelly percentage detected. Consider using Quarter Kelly to reduce variance and protect your bankroll.
+                        High Kelly percentage detected. Consider using Quarter
+                        Kelly to reduce variance and protect your bankroll.
                       </span>
                     </div>
                   )}
@@ -240,22 +363,39 @@ export default function KellyCalculator() {
               </h2>
               <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
                 <p>
-                  The Kelly Criterion is a mathematical formula developed by John L. Kelly Jr. at Bell Labs in 1956.
-                  It determines the optimal percentage of your bankroll to wager on a bet with a positive expected value,
-                  maximizing long-term growth while minimizing the risk of ruin.
+                  The Kelly Criterion is a mathematical formula developed by
+                  John L. Kelly Jr. at Bell Labs in 1956. It determines the
+                  optimal percentage of your bankroll to wager on a bet with a
+                  positive expected value, maximizing long-term growth while
+                  minimizing the risk of ruin.
                 </p>
                 <p>
-                  <strong className="text-foreground">The Formula:</strong> f* = (bp - q) / b
+                  <strong className="text-foreground">The Formula:</strong> f* =
+                  (bp - q) / b
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li><strong className="text-foreground">f*</strong> = fraction of bankroll to bet</li>
-                  <li><strong className="text-foreground">b</strong> = decimal odds - 1 (net profit per $1 wagered)</li>
-                  <li><strong className="text-foreground">p</strong> = probability of winning</li>
-                  <li><strong className="text-foreground">q</strong> = probability of losing (1 - p)</li>
+                  <li>
+                    <strong className="text-foreground">f*</strong> = fraction
+                    of bankroll to bet
+                  </li>
+                  <li>
+                    <strong className="text-foreground">b</strong> = decimal
+                    odds - 1 (net profit per $1 wagered)
+                  </li>
+                  <li>
+                    <strong className="text-foreground">p</strong> = probability
+                    of winning
+                  </li>
+                  <li>
+                    <strong className="text-foreground">q</strong> = probability
+                    of losing (1 - p)
+                  </li>
                 </ul>
                 <p>
-                  Most professional bettors use <strong className="text-foreground">Quarter Kelly</strong> (25% of the full Kelly recommendation)
-                  to reduce variance and account for estimation errors in win probability.
+                  Most professional bettors use{" "}
+                  <strong className="text-foreground">Quarter Kelly</strong>{" "}
+                  (25% of the full Kelly recommendation) to reduce variance and
+                  account for estimation errors in win probability.
                 </p>
               </div>
             </NeonCard>
@@ -263,11 +403,15 @@ export default function KellyCalculator() {
             {/* CTA */}
             <div className="text-center">
               <p className="text-sm text-muted-foreground mb-4">
-                Want AI-powered Kelly sizing on every pick? Our premium tools auto-calculate optimal bet sizes.
+                Want AI-powered Kelly sizing on every pick? Our premium tools
+                auto-calculate optimal bet sizes.
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 <Link href="/free-pick">
-                  <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
+                  <Button
+                    variant="outline"
+                    className="border-primary/30 text-primary hover:bg-primary/10"
+                  >
                     Today's Free Pick <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
                 </Link>
@@ -285,8 +429,9 @@ export default function KellyCalculator() {
       {/* Footer disclaimer */}
       <div className="py-6 border-t border-border/50 text-center">
         <p className="text-xs text-muted-foreground max-w-2xl mx-auto">
-          ChalkPicks is for informational and entertainment purposes only. We do not guarantee betting outcomes.
-          Bet responsibly. Must be 21+ where applicable.
+          ChalkPicks is for informational and entertainment purposes only. We do
+          not guarantee betting outcomes. Bet responsibly. Must be 21+ where
+          applicable.
         </p>
       </div>
     </div>

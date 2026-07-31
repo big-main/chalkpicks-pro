@@ -2042,6 +2042,14 @@
 
 ## Dynamic Navbar Height + IndexNow (Jul 31 2026)
 
-- [ ] Add --navbar-height CSS variable to Navbar that updates dynamically when AnnouncementBar is visible
-- [ ] Update page containers to use dynamic navbar height instead of hardcoded pt-24
-- [ ] Submit three tool URLs to IndexNow for fast re-indexing
+- [x] Add --navbar-height CSS variable to Navbar that updates dynamically when AnnouncementBar is visible
+- [x] Update page containers to use dynamic navbar height instead of hardcoded pt-24
+- [x] Submit three tool URLs to IndexNow for fast re-indexing (HTTP 200 OK)
+
+## Next 5 Features (Jul 31 2026)
+
+- [ ] Add FAQ JSON-LD to Kelly & EV calculators (complete tools SEO pass)
+- [ ] Create /verify index page showing 10 most recent locked picks with hash + result
+- [ ] Upgrade OddsApiCache quota with second SharpAPI key rotation
+- [ ] Set up daily Reddit/IH posting automation for directory kit + picks
+- [ ] Build public /stats dashboard with leaderboard, platform metrics, top pickers

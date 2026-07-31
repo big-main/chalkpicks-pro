@@ -1,5 +1,9 @@
 import { useState, useMemo } from "react";
-import { HowToJsonLd, BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
+import {
+  HowToJsonLd,
+  BreadcrumbJsonLd,
+  FaqJsonLd,
+} from "@/components/seo/schema-jsonld";
 import Navbar from "@/components/Navbar";
 import NeonCard from "@/components/NeonCard";
 import { Link } from "wouter";
@@ -8,8 +12,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
-  Calculator, TrendingUp, ArrowRight, Info, Zap,
-  BarChart3, Target, BookOpen, DollarSign
+  Calculator,
+  TrendingUp,
+  ArrowRight,
+  Info,
+  Zap,
+  BarChart3,
+  Target,
+  BookOpen,
+  DollarSign,
 } from "lucide-react";
 
 function americanToDecimal(american: number): number {
@@ -49,7 +60,7 @@ export default function EVCalculator() {
     }
 
     const payout = betNum * (decimal - 1);
-    const ev = (trueProb * payout) - ((1 - trueProb) * betNum);
+    const ev = trueProb * payout - (1 - trueProb) * betNum;
     const evPercent = (ev / betNum) * 100;
     const edge = (trueProb - impliedProb) * 100;
     const roi = evPercent;
@@ -72,37 +83,91 @@ export default function EVCalculator() {
   }, [odds, fairOdds, betAmount, mode, manualProb]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background page-top">
       <HowToJsonLd
         name="How to Calculate Expected Value (+EV) in Sports Betting"
         description="Calculate the expected value of any sports bet to find +EV opportunities using the ChalkPicks free EV calculator."
         totalTime="PT2M"
         steps={[
-          { name: "Enter the sportsbook odds", text: "Input the American odds offered by the sportsbook for the bet you want to evaluate." },
-          { name: "Enter the fair odds or win probability", text: "Input either the true fair odds (from a sharp market) or your estimated win probability." },
-          { name: "Enter your bet amount", text: "Input the dollar amount you plan to wager." },
-          { name: "Read the expected value", text: "A positive EV means the bet has long-term value. The calculator shows EV per bet and ROI percentage." },
+          {
+            name: "Enter the sportsbook odds",
+            text: "Input the American odds offered by the sportsbook for the bet you want to evaluate.",
+          },
+          {
+            name: "Enter the fair odds or win probability",
+            text: "Input either the true fair odds (from a sharp market) or your estimated win probability.",
+          },
+          {
+            name: "Enter your bet amount",
+            text: "Input the dollar amount you plan to wager.",
+          },
+          {
+            name: "Read the expected value",
+            text: "A positive EV means the bet has long-term value. The calculator shows EV per bet and ROI percentage.",
+          },
         ]}
       />
-      <BreadcrumbJsonLd items={[
-        { name: "Home", url: "https://chalkpicks.live" },
-        { name: "Tools", url: "https://chalkpicks.live/tools" },
-        { name: "EV Calculator", url: "https://chalkpicks.live/tools/ev-calculator" },
-      ]} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://chalkpicks.live" },
+          { name: "Tools", url: "https://chalkpicks.live/tools" },
+          {
+            name: "EV Calculator",
+            url: "https://chalkpicks.live/tools/ev-calculator",
+          },
+        ]}
+      />
+      <FaqJsonLd
+        faqs={[
+          {
+            question: "What is Expected Value (+EV) in sports betting?",
+            answer:
+              "+EV means the bet has positive expected value — you're getting better odds than the true probability warrants. Over time, +EV bets win money. -EV bets lose money. Zero-EV bets break even.",
+          },
+          {
+            question: "How do I calculate EV?",
+            answer:
+              "EV = (Win Probability × Payout) - (Loss Probability × Bet Amount). The calculator automates this. Positive EV means the bet is profitable long-term.",
+          },
+          {
+            question:
+              "What's the difference between fair odds and probability?",
+            answer:
+              "Fair odds are the true market odds from a sharp/efficient market. Probability is your personal estimate of win chance. Use whichever you have; the EV calculation works either way.",
+          },
+          {
+            question: "How much EV do I need to bet?",
+            answer:
+              "Any positive EV is theoretically profitable long-term. However, practical thresholds vary: 1-2% EV is marginal, 3-5% is good, 5%+ is excellent. Combine EV with Kelly Criterion for bet sizing.",
+          },
+          {
+            question: "Can I use EV for parlays?",
+            answer:
+              "EV applies to single bets best. For parlays, calculate EV for each leg independently, then use the Parlay Calculator to account for correlation and combined odds.",
+          },
+        ]}
+      />
       <Navbar />
 
       <section className="relative pt-24 pb-16 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse at 50% 0%, rgba(57, 255, 20, 0.04) 0%, transparent 60%)",
-        }} />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 0%, rgba(57, 255, 20, 0.04) 0%, transparent 60%)",
+          }}
+        />
         <div className="container max-w-5xl mx-auto px-4">
           <div className="text-center mb-10">
-            <Badge className="badge-free text-xs mb-4 px-3 py-1">FREE TOOL</Badge>
+            <Badge className="badge-free text-xs mb-4 px-3 py-1">
+              FREE TOOL
+            </Badge>
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">
               Expected Value Calculator
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Calculate the expected value (+EV) of any sports bet. Find profitable bets by comparing market odds to true probabilities.
+              Calculate the expected value (+EV) of any sports bet. Find
+              profitable bets by comparing market odds to true probabilities.
             </p>
           </div>
 
@@ -115,20 +180,26 @@ export default function EVCalculator() {
               </h2>
               <div className="space-y-4">
                 <div>
-                  <Label className="text-sm text-muted-foreground">Your Bet Odds (American)</Label>
+                  <Label className="text-sm text-muted-foreground">
+                    Your Bet Odds (American)
+                  </Label>
                   <Input
                     type="text"
                     value={odds}
-                    onChange={(e) => setOdds(e.target.value)}
+                    onChange={e => setOdds(e.target.value)}
                     placeholder="-110"
                     className="mt-1"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">The odds you're getting from your sportsbook</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    The odds you're getting from your sportsbook
+                  </p>
                 </div>
 
                 {/* Mode selector */}
                 <div>
-                  <Label className="text-sm text-muted-foreground mb-2 block">True Probability Method</Label>
+                  <Label className="text-sm text-muted-foreground mb-2 block">
+                    True Probability Method
+                  </Label>
                   <div className="flex gap-2">
                     <Button
                       variant={mode === "fair-odds" ? "default" : "outline"}
@@ -151,36 +222,47 @@ export default function EVCalculator() {
 
                 {mode === "fair-odds" ? (
                   <div>
-                    <Label className="text-sm text-muted-foreground">Fair/No-Vig Odds (American)</Label>
+                    <Label className="text-sm text-muted-foreground">
+                      Fair/No-Vig Odds (American)
+                    </Label>
                     <Input
                       type="text"
                       value={fairOdds}
-                      onChange={(e) => setFairOdds(e.target.value)}
+                      onChange={e => setFairOdds(e.target.value)}
                       placeholder="-105"
                       className="mt-1"
                     />
-                    <p className="text-xs text-muted-foreground mt-1">The "true" odds without vig (from Pinnacle, devigged lines, or your model)</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      The "true" odds without vig (from Pinnacle, devigged
+                      lines, or your model)
+                    </p>
                   </div>
                 ) : (
                   <div>
-                    <Label className="text-sm text-muted-foreground">Your Estimated Win Probability (%)</Label>
+                    <Label className="text-sm text-muted-foreground">
+                      Your Estimated Win Probability (%)
+                    </Label>
                     <Input
                       type="text"
                       value={manualProb}
-                      onChange={(e) => setManualProb(e.target.value)}
+                      onChange={e => setManualProb(e.target.value)}
                       placeholder="52"
                       className="mt-1"
                     />
-                    <p className="text-xs text-muted-foreground mt-1">Your true estimated probability (1-99)</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Your true estimated probability (1-99)
+                    </p>
                   </div>
                 )}
 
                 <div>
-                  <Label className="text-sm text-muted-foreground">Bet Amount ($)</Label>
+                  <Label className="text-sm text-muted-foreground">
+                    Bet Amount ($)
+                  </Label>
                   <Input
                     type="text"
                     value={betAmount}
-                    onChange={(e) => setBetAmount(e.target.value)}
+                    onChange={e => setBetAmount(e.target.value)}
                     placeholder="100"
                     className="mt-1"
                   />
@@ -189,7 +271,10 @@ export default function EVCalculator() {
             </NeonCard>
 
             {/* Results */}
-            <NeonCard className="p-6" variant={result?.isPositiveEV ? "premium" : "default"}>
+            <NeonCard
+              className="p-6"
+              variant={result?.isPositiveEV ? "premium" : "default"}
+            >
               <h2 className="text-lg font-bold text-foreground mb-5 flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-primary" />
                 Results
@@ -197,54 +282,87 @@ export default function EVCalculator() {
               {result ? (
                 <div className="space-y-4">
                   {/* Main EV result */}
-                  <div className={`p-4 rounded-xl text-center border ${result.isPositiveEV ? "bg-green-500/10 border-green-500/30" : "bg-red-500/10 border-red-500/30"}`}>
+                  <div
+                    className={`p-4 rounded-xl text-center border ${result.isPositiveEV ? "bg-green-500/10 border-green-500/30" : "bg-red-500/10 border-red-500/30"}`}
+                  >
                     <div className="text-xs uppercase tracking-wider font-medium mb-1 text-muted-foreground">
                       Expected Value Per Bet
                     </div>
-                    <div className={`text-3xl font-black ${result.isPositiveEV ? "text-green-400" : "text-red-400"}`}>
+                    <div
+                      className={`text-3xl font-black ${result.isPositiveEV ? "text-green-400" : "text-red-400"}`}
+                    >
                       {result.ev >= 0 ? "+" : ""}${result.ev.toFixed(2)}
                     </div>
-                    <div className={`text-sm mt-1 ${result.isPositiveEV ? "text-green-300/70" : "text-red-300/70"}`}>
-                      {result.evPercent >= 0 ? "+" : ""}{result.evPercent.toFixed(2)}% EV
+                    <div
+                      className={`text-sm mt-1 ${result.isPositiveEV ? "text-green-300/70" : "text-red-300/70"}`}
+                    >
+                      {result.evPercent >= 0 ? "+" : ""}
+                      {result.evPercent.toFixed(2)}% EV
                     </div>
                   </div>
 
                   {/* Stats grid */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 rounded-xl border border-border bg-card/50 text-center">
-                      <div className="text-xs text-muted-foreground mb-1">Your Edge</div>
-                      <div className={`text-lg font-mono font-bold ${result.edge > 0 ? "text-primary" : "text-red-400"}`}>
-                        {result.edge > 0 ? "+" : ""}{result.edge.toFixed(2)}%
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Your Edge
+                      </div>
+                      <div
+                        className={`text-lg font-mono font-bold ${result.edge > 0 ? "text-primary" : "text-red-400"}`}
+                      >
+                        {result.edge > 0 ? "+" : ""}
+                        {result.edge.toFixed(2)}%
                       </div>
                     </div>
                     <div className="p-3 rounded-xl border border-border bg-card/50 text-center">
-                      <div className="text-xs text-muted-foreground mb-1">True Prob</div>
-                      <div className="text-lg font-mono font-bold text-foreground">{result.trueProb.toFixed(1)}%</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        True Prob
+                      </div>
+                      <div className="text-lg font-mono font-bold text-foreground">
+                        {result.trueProb.toFixed(1)}%
+                      </div>
                     </div>
                     <div className="p-3 rounded-xl border border-border bg-card/50 text-center">
-                      <div className="text-xs text-muted-foreground mb-1">Implied Prob</div>
-                      <div className="text-lg font-mono font-bold text-foreground">{result.impliedProb.toFixed(1)}%</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Implied Prob
+                      </div>
+                      <div className="text-lg font-mono font-bold text-foreground">
+                        {result.impliedProb.toFixed(1)}%
+                      </div>
                     </div>
                     <div className="p-3 rounded-xl border border-border bg-card/50 text-center">
-                      <div className="text-xs text-muted-foreground mb-1">Breakeven</div>
-                      <div className="text-lg font-mono font-bold text-foreground">{result.breakeven.toFixed(1)}%</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Breakeven
+                      </div>
+                      <div className="text-lg font-mono font-bold text-foreground">
+                        {result.breakeven.toFixed(1)}%
+                      </div>
                     </div>
                   </div>
 
                   {/* Profit on win */}
                   <div className="p-3 rounded-xl border border-border bg-card/50 text-center">
-                    <div className="text-xs text-muted-foreground mb-1">Profit If Win</div>
-                    <div className="text-xl font-mono font-bold text-foreground">+${result.payout.toFixed(2)}</div>
+                    <div className="text-xs text-muted-foreground mb-1">
+                      Profit If Win
+                    </div>
+                    <div className="text-xl font-mono font-bold text-foreground">
+                      +${result.payout.toFixed(2)}
+                    </div>
                   </div>
 
                   {/* Verdict */}
-                  <div className={`p-3 rounded-xl flex items-start gap-2 ${result.isPositiveEV ? "bg-green-500/10 border border-green-500/30" : "bg-red-500/10 border border-red-500/30"}`}>
-                    <Info className={`w-4 h-4 mt-0.5 flex-shrink-0 ${result.isPositiveEV ? "text-green-400" : "text-red-400"}`} />
-                    <span className={`text-xs ${result.isPositiveEV ? "text-green-300" : "text-red-300"}`}>
+                  <div
+                    className={`p-3 rounded-xl flex items-start gap-2 ${result.isPositiveEV ? "bg-green-500/10 border border-green-500/30" : "bg-red-500/10 border border-red-500/30"}`}
+                  >
+                    <Info
+                      className={`w-4 h-4 mt-0.5 flex-shrink-0 ${result.isPositiveEV ? "text-green-400" : "text-red-400"}`}
+                    />
+                    <span
+                      className={`text-xs ${result.isPositiveEV ? "text-green-300" : "text-red-300"}`}
+                    >
                       {result.isPositiveEV
                         ? `This is a +EV bet. Over time, you'd expect to profit $${result.ev.toFixed(2)} per bet at this stake. The market is offering better odds than the true probability suggests.`
-                        : `This is a -EV bet. The implied probability from the odds is higher than your estimated true probability. Consider passing on this bet.`
-                      }
+                        : `This is a -EV bet. The implied probability from the odds is higher than your estimated true probability. Consider passing on this bet.`}
                     </span>
                   </div>
                 </div>
@@ -266,20 +384,27 @@ export default function EVCalculator() {
               </h2>
               <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
                 <p>
-                  Expected Value (EV) is the average amount you expect to win or lose per bet over the long run.
-                  A positive EV (+EV) bet means the odds offered are better than the true probability of the outcome,
-                  giving you a mathematical edge over the sportsbook.
+                  Expected Value (EV) is the average amount you expect to win or
+                  lose per bet over the long run. A positive EV (+EV) bet means
+                  the odds offered are better than the true probability of the
+                  outcome, giving you a mathematical edge over the sportsbook.
                 </p>
                 <p>
-                  <strong className="text-foreground">The Formula:</strong> EV = (Win Probability × Profit) - (Loss Probability × Stake)
+                  <strong className="text-foreground">The Formula:</strong> EV =
+                  (Win Probability × Profit) - (Loss Probability × Stake)
                 </p>
                 <p>
-                  Professional bettors focus exclusively on +EV bets because, over thousands of wagers,
-                  positive expected value guarantees long-term profit regardless of short-term variance.
+                  Professional bettors focus exclusively on +EV bets because,
+                  over thousands of wagers, positive expected value guarantees
+                  long-term profit regardless of short-term variance.
                 </p>
                 <p>
-                  <strong className="text-foreground">Finding True Probability:</strong> Use devigged lines from sharp books (Pinnacle, Circa),
-                  consensus models, or your own statistical models to estimate the true probability of an outcome.
+                  <strong className="text-foreground">
+                    Finding True Probability:
+                  </strong>{" "}
+                  Use devigged lines from sharp books (Pinnacle, Circa),
+                  consensus models, or your own statistical models to estimate
+                  the true probability of an outcome.
                 </p>
               </div>
             </NeonCard>
@@ -287,16 +412,23 @@ export default function EVCalculator() {
             {/* CTA */}
             <div className="text-center">
               <p className="text-sm text-muted-foreground mb-4">
-                Want automatic +EV detection across 15+ sportsbooks? Our premium EV Finder scans every line in real-time.
+                Want automatic +EV detection across 15+ sportsbooks? Our premium
+                EV Finder scans every line in real-time.
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 <Link href="/free-pick">
-                  <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
+                  <Button
+                    variant="outline"
+                    className="border-primary/30 text-primary hover:bg-primary/10"
+                  >
                     Today's Free Pick <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
                 </Link>
                 <Link href="/tools/kelly-calculator">
-                  <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
+                  <Button
+                    variant="outline"
+                    className="border-primary/30 text-primary hover:bg-primary/10"
+                  >
                     Kelly Calculator <Calculator className="w-4 h-4 ml-1" />
                   </Button>
                 </Link>
@@ -314,8 +446,9 @@ export default function EVCalculator() {
       {/* Footer disclaimer */}
       <div className="py-6 border-t border-border/50 text-center">
         <p className="text-xs text-muted-foreground max-w-2xl mx-auto">
-          ChalkPicks is for informational and entertainment purposes only. We do not guarantee betting outcomes.
-          Bet responsibly. Must be 21+ where applicable.
+          ChalkPicks is for informational and entertainment purposes only. We do
+          not guarantee betting outcomes. Bet responsibly. Must be 21+ where
+          applicable.
         </p>
       </div>
     </div>

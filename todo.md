@@ -2011,5 +2011,17 @@
 - [x] SharpAPI integration preserved through merge
 - [x] Fixed SEO test to match new homepage title
 - [x] 220/221 tests passing (1 skipped), 0 TypeScript errors
-- [ ] Save checkpoint to deploy unified codebase
-- [ ] Push merged result back to GitHub to sync both remotes
+- [x] Save checkpoint to deploy unified codebase
+- [x] Push merged result back to GitHub to sync both remotes
+
+## Dev Server Smoke Check + SharpAPI Key (Jul 31 2026)
+
+- [x] SharpAPI key set and validated (sk_live_YZp... → 200 OK with live MLB odds)
+- [x] Added scripts/dev-server-check.mjs (7 route checks, exit 0/1)
+- [x] Added docs/DEV_SERVER_CHECK.md
+- [x] Added package.json "dev:check" script
+- [x] Smoke test 1: /health → { status: "ok" } ✅
+- [x] Smoke test 2: pick_ledger has 9 rows (generateAI → afterPickCreated working)
+- [x] Smoke test 3: /verify/:hash returns found=true for real ledger hash
+- [x] Smoke test 4: Homepage clean — no "92%", "every time", "free trial", dead trial copy
+- [x] pnpm dev:check → all 7/7 green (health, robots, sitemap, /, /free-picks, /verify, /openapi.json)

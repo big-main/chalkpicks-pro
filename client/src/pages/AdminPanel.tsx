@@ -166,6 +166,22 @@ export default function AdminPanel() {
     onError: e => toast.error(e.message || "PageSpeed audit failed"),
   });
 
+  const sendTestPost = trpc.admin.sendTestPost.useMutation({
+    onSuccess: d => {
+      const results = d.results as Record<
+        string,
+        { success: boolean; error?: string }
+      >;
+      const lines = Object.entries(results)
+        .map(
+          ([k, v]) => `${k}: ${v.success ? "✓" : `✗ ${v.error ?? "failed"}`}`
+        )
+        .join(" | ");
+      toast.success(`Test post sent — ${lines}`, { duration: 6000 });
+    },
+    onError: e => toast.error(e.message || "Test post failed"),
+  });
+
   const tabs = [
     { id: "overview", label: "Overview", icon: BarChart3 },
     { id: "users", label: "User Management", icon: Users },
@@ -462,6 +478,50 @@ export default function AdminPanel() {
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* Test Post */}
+            <div style={cardStyle}>
+              <h3
+                style={{
+                  fontWeight: 700,
+                  color: "#a855f7",
+                  textTransform: "uppercase",
+                  fontSize: "0.85rem",
+                  letterSpacing: "0.05em",
+                  marginBottom: "1rem",
+                }}
+              >
+                <Activity className="w-4 h-4 inline mr-2" />
+                Test Discord &amp; Telegram
+              </h3>
+              <p
+                style={{
+                  color: "rgba(140,140,170,0.7)",
+                  fontSize: "0.8rem",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                Sends a test message to Discord (#free-daily-pick +
+                #steam-alerts) and Telegram to verify webhooks are live.
+              </p>
+              <button
+                onClick={() => sendTestPost.mutate()}
+                disabled={sendTestPost.isPending}
+                className="w-full px-4 py-2 text-sm font-bold"
+                style={{
+                  background: sendTestPost.isPending
+                    ? "rgba(168,85,247,0.3)"
+                    : "rgba(168,85,247,0.15)",
+                  border: "1px solid rgba(168,85,247,0.4)",
+                  borderRadius: "6px",
+                  color: "#a855f7",
+                  cursor: sendTestPost.isPending ? "not-allowed" : "pointer",
+                  transition: "all 0.2s",
+                }}
+              >
+                {sendTestPost.isPending ? "Sending..." : "🔔 Send Test Post"}
+              </button>
             </div>
 
             {/* Recent Picks */}

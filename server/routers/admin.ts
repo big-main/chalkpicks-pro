@@ -17,6 +17,11 @@ import {
   syncGameScores,
 } from "../services/gameResultsResolver";
 import { oddsApiCache } from "../services/oddsApiCache";
+import {
+  postMorningPickToDiscord,
+  postSteamAlertToDiscord,
+} from "../services/discordBot";
+import { ENV } from "../_core/env";
 
 export const adminRouter = router({
   /**
@@ -339,5 +344,74 @@ export const adminRouter = router({
   resetQuota: adminProcedure.mutation(async () => {
     oddsApiCache.resetQuota();
     return { success: true, message: "Quota counter reset" };
+  }),
+
+  // ─── Social Media Test Posts ──────────────────────────────────────────────
+
+  /** Send a test post to Discord (#free-daily-pick) and Telegram */
+  sendTestPost: adminProcedure.mutation(async () => {
+    const results: Record<string, { success: boolean; error?: string }> = {};
+
+    // Discord — morning pick channel
+    if (ENV.discordWebhookUrl) {
+      results.discord = await postMorningPickToDiscord();
+    } else {
+      results.discord = {
+        success: false,
+        error: "DISCORD_WEBHOOK_URL not set",
+      };
+    }
+
+    // Discord — steam alerts channel
+    if (ENV.discordSteamWebhookUrl) {
+      results.discordSteam = await postSteamAlertToDiscord({
+        homeTeam: "Test Home",
+        awayTeam: "Test Away",
+        sportKey: "americanfootball_nfl",
+        lineMove: "-3 → -4.5",
+        bookmaker: "DraftKings",
+        edgeScore: 4.2,
+      });
+    } else {
+      results.discordSteam = {
+        success: false,
+        error: "DISCORD_STEAM_WEBHOOK_URL not set",
+      };
+    }
+
+    // Telegram
+    if (ENV.telegramBotToken && ENV.telegramChatId) {
+      try {
+        const msg = `🧪 *ChalkPicks Test Post*\n\nBot is live and connected. Daily picks will be posted here at 8 AM PT.\n\n[View Picks →](https://chalkpicks.live/picks)`;
+        const tgRes = await fetch(
+          `https://api.telegram.org/bot${ENV.telegramBotToken}/sendMessage`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: ENV.telegramChatId,
+              text: msg,
+              parse_mode: "Markdown",
+            }),
+          }
+        );
+        const tgJson = (await tgRes.json()) as {
+          ok: boolean;
+          description?: string;
+        };
+        results.telegram = tgJson.ok
+          ? { success: true }
+          : { success: false, error: tgJson.description };
+      } catch (err: any) {
+        results.telegram = { success: false, error: err?.message };
+      }
+    } else {
+      results.telegram = {
+        success: false,
+        error: "TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not set",
+      };
+    }
+
+    return { results };
   }),
 });

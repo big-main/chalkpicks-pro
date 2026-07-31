@@ -59,9 +59,10 @@ function getPTDate(offsetDays = 0): string {
 
 // --- Discord Webhook Sender ---
 async function sendWebhook(
-  payload: object
+  payload: object,
+  overrideUrl?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const webhookUrl = ENV.discordWebhookUrl;
+  const webhookUrl = overrideUrl || ENV.discordWebhookUrl;
   if (!webhookUrl) {
     return { success: false, error: "DISCORD_WEBHOOK_URL not configured" };
   }
@@ -81,6 +82,15 @@ async function sendWebhook(
   } catch (err: any) {
     return { success: false, error: err?.message ?? String(err) };
   }
+}
+
+// --- Steam-specific webhook (routes to #steam-alerts channel) ---
+async function sendSteamWebhook(
+  payload: object
+): Promise<{ success: boolean; error?: string }> {
+  // Prefer dedicated steam webhook; fall back to main webhook
+  const steamUrl = ENV.discordSteamWebhookUrl || ENV.discordWebhookUrl;
+  return sendWebhook(payload, steamUrl);
 }
 
 // ─── Morning Pick Embed (8am PT) ─────────────────────────────────────────────
@@ -247,10 +257,57 @@ export async function postAfternoonAlertToDiscord(): Promise<{
     embeds: [embed],
   };
 
-  const result = await sendWebhook(payload);
+  const result = await sendSteamWebhook(payload);
   if (result.success)
-    console.warn("[DiscordBot] Afternoon alert posted successfully");
+    console.warn("[DiscordBot] Afternoon steam alert posted to #steam-alerts");
   else console.error("[DiscordBot] Afternoon alert failed:", result.error);
+  return result;
+}
+
+// ─── Real-time Steam Alert (called by liveDataStreamer on sharp line moves) ───
+
+export async function postSteamAlertToDiscord(alert: {
+  homeTeam: string;
+  awayTeam: string;
+  sportKey: string;
+  lineMove: string;
+  bookmaker: string;
+  edgeScore?: number;
+}): Promise<{ success: boolean; error?: string }> {
+  const emoji = getSportEmoji(alert.sportKey);
+  const embed = {
+    title: `⚡ STEAM MOVE DETECTED ${emoji}`,
+    description: `**${alert.homeTeam} vs ${alert.awayTeam}**\n\nSharp money detected at **${alert.bookmaker}**`,
+    color: 0xff6b00,
+    fields: [
+      { name: "📈 Line Move", value: `**${alert.lineMove}**`, inline: true },
+      {
+        name: "🎯 Edge",
+        value: alert.edgeScore ? `**+${alert.edgeScore.toFixed(1)}%**` : "N/A",
+        inline: true,
+      },
+      {
+        name: "🔥 Track Live",
+        value: "[Steam Move Tracker →](https://chalkpicks.live/sharp-money)",
+        inline: false,
+      },
+    ],
+    footer: {
+      text: "ChalkPicks Pro • Real-Time Steam Alerts • chalkpicks.live",
+    },
+    timestamp: new Date().toISOString(),
+  };
+
+  const payload = { username: "ChalkPicks Steam Bot", embeds: [embed] };
+  const result = await sendSteamWebhook(payload);
+  if (result.success)
+    console.warn(
+      "[DiscordBot] Steam alert posted to #steam-alerts:",
+      alert.homeTeam,
+      "vs",
+      alert.awayTeam
+    );
+  else console.error("[DiscordBot] Steam alert failed:", result.error);
   return result;
 }
 

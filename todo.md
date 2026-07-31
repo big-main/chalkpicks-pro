@@ -1972,3 +1972,18 @@
 - [x] Discord daily pick + steam alerts: already running (4 Heartbeat jobs active, firing daily)
 - [x] Telegram daily pick posting: new Heartbeat job at 8 AM PT via telegramPickHandler.ts
 - [x] DISCORD_WEBHOOK_URL, DISCORD_STEAM_WEBHOOK_URL, TELEGRAM_BOT_TOKEN all set and validated
+
+## Discord Steam Alerts + Admin Test Post (Jul 31 2026)
+
+- [ ] Wire steam alerts to DISCORD_STEAM_WEBHOOK_URL in discordBot.ts
+- [ ] Add ENV.discordSteamWebhookUrl to env.ts
+- [ ] Add Test Post button to admin panel Overview tab (triggers Discord + Telegram test)
+- [ ] Add tRPC procedure for manual test post
+
+## Instagram 4-Format Strategy + Admin Test Post (Jul 30 2026)
+
+- [x] Update chalkpicks-daily-top-pick skill: Post=breaking news, Story+Reel+Threads=pick
+- [x] Update chalkpicks-instagram-automation skill: 4-format order, news caption formula
+- [x] Update chalkpicks-social-automation skill: 4-format strategy, news caption formula
+- [x] Add sendTestPost mutation hook to AdminPanel.tsx
+- [x] Add Test Post button card to Admin Overview Quick Actions

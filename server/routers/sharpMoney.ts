@@ -14,7 +14,7 @@ import { z } from "zod/v4";
 import { getDb } from "../db";
 import { oddsSnapshots } from "../../drizzle/schema";
 import { desc, eq, gte, and, sql } from "drizzle-orm";
-const ODDS_API_BASE = "https://api.the-odds-api.com/v4";
+import { oddsApiCache } from "../services/oddsApiCache";
 
 interface OddsApiEvent {
   id: string;
@@ -34,15 +34,15 @@ interface OddsApiEvent {
   }>;
 }
 
-/** Fetch current odds for a sport from The Odds API */
+/** Fetch current odds for a sport from The Odds API (via centralized cache) */
 async function fetchCurrentOdds(sportKey: string): Promise<OddsApiEvent[]> {
   const apiKey = process.env.ODDS_API_KEY;
   if (!apiKey) return [];
-  const url = `${ODDS_API_BASE}/sports/${sportKey}/odds?apiKey=${apiKey}&regions=us&markets=h2h,spreads&oddsFormat=american&bookmakers=draftkings,fanduel,betmgm,caesars,pointsbet`;
   try {
-    const res = await fetch(url);
-    if (!res.ok) return [];
-    return await res.json();
+    return (await oddsApiCache.fetch(sportKey, {
+      markets: "h2h,spreads",
+      bookmakers: "draftkings,fanduel,betmgm,caesars,pointsbet",
+    })) as OddsApiEvent[];
   } catch {
     return [];
   }

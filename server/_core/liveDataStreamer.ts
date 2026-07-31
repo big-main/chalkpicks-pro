@@ -11,6 +11,7 @@ import { broadcastToChannel } from "../websocket";
  *
  * Uses AbortController timeouts and error throttling to prevent log spam.
  */
+import { oddsApiCache } from "../services/oddsApiCache";
 
 interface LiveScore {
   gameId: string;
@@ -239,12 +240,11 @@ async function fetchSteamMoves(): Promise<SteamMove[]> {
     const allMoves: SteamMove[] = [];
 
     for (const sport of sports) {
-      const response = await fetchWithTimeout(
-        `https://api.the-odds-api.com/v4/sports/${sport}/odds?apiKey=${apiKey}&regions=us&markets=spreads&oddsFormat=american&bookmakers=draftkings,fanduel,betmgm`,
-        8000
-      );
-      if (!response.ok) continue;
-      const events = await response.json();
+      const events = await oddsApiCache.fetch(sport, {
+        markets: "spreads",
+        bookmakers: "draftkings,fanduel,betmgm",
+      });
+      if (!events || events.length === 0) continue;
 
       for (const event of events) {
         if (!event.bookmakers || event.bookmakers.length < 2) continue;

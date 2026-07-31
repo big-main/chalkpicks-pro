@@ -11,6 +11,7 @@
  */
 
 import { z } from "zod";
+import { oddsApiCache } from "../services/oddsApiCache";
 import { router, protectedProcedure, publicProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { oddsSnapshots, userBets } from "../../drizzle/schema";
@@ -41,16 +42,27 @@ const proProcedure = protectedProcedure.use(({ ctx, next }) => {
 // ─── Sharp books (reference for devig) ────────────────────────────────────────
 const SHARP_BOOKS = ["pinnacle", "betfair_ex_eu", "matchbook", "lowvig"];
 const ALL_BOOKS = [
-  "draftkings", "fanduel", "betmgm", "caesars", "pointsbet",
-  "barstool", "bet365", "unibet", "betus", "mybookieag",
-  "pinnacle", "betfair_ex_eu", "matchbook", "lowvig",
+  "draftkings",
+  "fanduel",
+  "betmgm",
+  "caesars",
+  "pointsbet",
+  "barstool",
+  "bet365",
+  "unibet",
+  "betus",
+  "mybookieag",
+  "pinnacle",
+  "betfair_ex_eu",
+  "matchbook",
+  "lowvig",
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 interface Outcome {
   name: string;
-  price: number;  // American odds
+  price: number; // American odds
   point?: number;
 }
 
@@ -61,16 +73,16 @@ interface BookOdds {
 
 /**
  * Fetch live odds from The Odds API for a sport.
- * Returns raw bookmaker data.
+ * Routed through centralized cache to prevent quota exhaustion.
  */
 async function fetchLiveOdds(sport: string): Promise<any[]> {
   const apiKey = process.env.ODDS_API_KEY;
   if (!apiKey) return [];
-  const url = `https://api.the-odds-api.com/v4/sports/${sport}/odds/?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&bookmakers=${ALL_BOOKS.join(",")}`;
   try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-    if (!res.ok) return [];
-    return await res.json();
+    return await oddsApiCache.fetch(sport, {
+      markets: "h2h,spreads,totals",
+      bookmakers: ALL_BOOKS.join(","),
+    });
   } catch {
     return [];
   }
@@ -81,7 +93,7 @@ async function fetchLiveOdds(sport: string): Promise<any[]> {
  */
 function getSharpOdds(bookOdds: BookOdds[]): BookOdds | null {
   for (const sharp of SHARP_BOOKS) {
-    const found = bookOdds.find((b) => b.bookmaker === sharp);
+    const found = bookOdds.find(b => b.bookmaker === sharp);
     if (found) return found;
   }
   return null;
@@ -99,13 +111,14 @@ function calcOutcomeEV(
   if (sharpOdds.length < 2) return null;
 
   // Devig the sharp book to get fair probabilities
-  const rawImplied = sharpOdds.map((o) => americanToImplied(o.price));
+  const rawImplied = sharpOdds.map(o => americanToImplied(o.price));
   const fairProbs = devig(rawImplied);
 
   // Find the matching outcome index
-  const idx = sharpOdds.findIndex((o) =>
-    o.name.toLowerCase().includes(outcomeName.toLowerCase()) ||
-    outcomeName.toLowerCase().includes(o.name.toLowerCase())
+  const idx = sharpOdds.findIndex(
+    o =>
+      o.name.toLowerCase().includes(outcomeName.toLowerCase()) ||
+      outcomeName.toLowerCase().includes(o.name.toLowerCase())
   );
   if (idx === -1) return null;
 
@@ -114,9 +127,10 @@ function calcOutcomeEV(
 
   // Fair odds in American
   const fairDecimal = 1 / fairProb;
-  const fairAmerican = fairDecimal >= 2
-    ? Math.round((fairDecimal - 1) * 100)
-    : Math.round(-100 / (fairDecimal - 1));
+  const fairAmerican =
+    fairDecimal >= 2
+      ? Math.round((fairDecimal - 1) * 100)
+      : Math.round(-100 / (fairDecimal - 1));
 
   return {
     ev: Math.round(ev * 100) / 100,
@@ -157,13 +171,17 @@ export const evRouter = router({
       }> = [];
 
       for (const event of events) {
-        const bookOdds: BookOdds[] = (event.bookmakers || []).map((b: any) => {
-          const market = (b.markets || []).find((m: any) => m.key === input.marketKey);
-          return {
-            bookmaker: b.key,
-            outcomes: market ? market.outcomes : [],
-          };
-        }).filter((b: BookOdds) => b.outcomes.length > 0);
+        const bookOdds: BookOdds[] = (event.bookmakers || [])
+          .map((b: any) => {
+            const market = (b.markets || []).find(
+              (m: any) => m.key === input.marketKey
+            );
+            return {
+              bookmaker: b.key,
+              outcomes: market ? market.outcomes : [],
+            };
+          })
+          .filter((b: BookOdds) => b.outcomes.length > 0);
 
         const sharpBook = getSharpOdds(bookOdds);
         if (!sharpBook) continue;
@@ -171,7 +189,11 @@ export const evRouter = router({
         for (const book of bookOdds) {
           if (SHARP_BOOKS.includes(book.bookmaker)) continue; // skip sharp books themselves
           for (const outcome of book.outcomes) {
-            const calc = calcOutcomeEV(outcome.price, sharpBook.outcomes, outcome.name);
+            const calc = calcOutcomeEV(
+              outcome.price,
+              sharpBook.outcomes,
+              outcome.name
+            );
             if (!calc || calc.ev < input.minEV) continue;
 
             evRows.push({
@@ -212,23 +234,32 @@ export const evRouter = router({
     .input(
       z.object({
         serviceToken: z.string(),
-        sports: z.array(z.string()).default([
-          "americanfootball_nfl",
-          "basketball_nba",
-          "baseball_mlb",
-          "icehockey_nhl",
-        ]),
+        sports: z
+          .array(z.string())
+          .default([
+            "americanfootball_nfl",
+            "basketball_nba",
+            "baseball_mlb",
+            "icehockey_nhl",
+          ]),
       })
     )
     .mutation(async ({ input }) => {
       // Simple service token auth
       const expected = process.env.CRON_SERVICE_TOKEN || "chalkpicks_cron_2026";
       if (input.serviceToken !== expected) {
-        throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid service token" });
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid service token",
+        });
       }
 
       const db = await getDb();
-      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB unavailable" });
+      if (!db)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "DB unavailable",
+        });
 
       let totalInserted = 0;
 
@@ -236,8 +267,8 @@ export const evRouter = router({
         const events = await fetchLiveOdds(sport);
 
         for (const event of events) {
-          for (const bookmaker of (event.bookmakers || [])) {
-            for (const market of (bookmaker.markets || [])) {
+          for (const bookmaker of event.bookmakers || []) {
+            for (const market of bookmaker.markets || []) {
               try {
                 await db.insert(oddsSnapshots).values({
                   eventId: event.id,
@@ -279,11 +310,18 @@ export const evRouter = router({
     .mutation(async ({ input }) => {
       const expected = process.env.CRON_SERVICE_TOKEN || "chalkpicks_cron_2026";
       if (input.serviceToken !== expected) {
-        throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid service token" });
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid service token",
+        });
       }
 
       const db = await getDb();
-      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB unavailable" });
+      if (!db)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "DB unavailable",
+        });
 
       // Get all pending bets that don't have CLV yet
       const pendingBets = await db
@@ -313,7 +351,7 @@ export const evRouter = router({
               eq(oddsSnapshots.sportKey, bet.sportKey),
               eq(oddsSnapshots.marketKey, "h2h"),
               // Closing line = last snapshot before commence time
-              lt(oddsSnapshots.snapshotAt, oddsSnapshots.commenceTime),
+              lt(oddsSnapshots.snapshotAt, oddsSnapshots.commenceTime)
             )
           )
           .orderBy(desc(oddsSnapshots.snapshotAt))
@@ -332,7 +370,7 @@ export const evRouter = router({
           // CLV = (closing decimal / bet decimal - 1) * 100
           const betDecimal = americanToDecimal(betOdds);
           const closingDecimal = americanToDecimal(closingOdds);
-          const clv = ((closingDecimal / betDecimal) - 1) * 100;
+          const clv = (closingDecimal / betDecimal - 1) * 100;
           const lineMovement = closingOdds - betOdds;
 
           await db

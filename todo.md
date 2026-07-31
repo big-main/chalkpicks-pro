@@ -1954,3 +1954,13 @@
 - [x] Refresh sitemap lastmod dates to 2026-07-30
 - [x] Remove or back aggregateRating in ProductJsonLd with real reviews (already clean — no hardcoded rating)
 - [x] Remove deprecated @paypal/checkout-server-sdk and @types/bcryptjs
+
+## Odds API Caching Mechanism (Jul 30 2026)
+
+- [x] Create OddsCache service with in-memory + DB layers
+- [x] Implement TTL-based expiration with stale-while-revalidate
+- [x] Add request deduplication (coalesce concurrent identical requests)
+- [x] Add quota tracking and circuit breaker (stop calls when near limit)
+- [x] Integrate cache into all 6 Odds API call sites (dataService, ev, sharpMoney, consensus, n8nWebhook, liveDataStreamer, sportsbookOddsScraper)
+- [x] Add cache stats and manual purge to admin panel (API Cache tab)
+- [x] Write tests for cache hit/miss/stale scenarios (6 tests passing)

@@ -41,23 +41,13 @@ export async function fetchMultiBookmakerOdds(
   }
 
   try {
-    // The Odds API endpoint: /sports/{sport}/odds
-    // Supports: americanfootball_nfl, basketball_nba, baseball_mlb, icehockey_nhl, soccer_epl, etc.
-    const response = await fetch(
-      `https://api.the-odds-api.com/v4/sports/${sport}/odds?` +
-      `regions=${region}&` +
-      `markets=h2h,spreads,totals&` +
-      `oddsFormat=american&` +
-      `apiKey=${apiKey}`
-    );
-
-    if (!response.ok) {
-      console.error(`[OddsScraper] API error: ${response.status}`);
-      return [];
-    }
-
-    const data = await response.json();
-    const events = data.events || [];
+    // Routed through centralized cache to prevent quota exhaustion
+    const { oddsApiCache } = await import("./oddsApiCache");
+    const rawData = await oddsApiCache.fetch(sport, {
+      markets: "h2h,spreads,totals",
+      regions: region,
+    });
+    const events = rawData || [];
 
     // Transform API response into standardized format
     const bookmakerOdds: BookmakerOdds[] = [];
@@ -107,7 +97,8 @@ export function findBestLine(
   marketKey: string,
   teamName: string
 ): { bookmaker: string; odds: number; point?: number } | null {
-  let bestOdds: { bookmaker: string; odds: number; point?: number } | null = null;
+  let bestOdds: { bookmaker: string; odds: number; point?: number } | null =
+    null;
 
   for (const odds of bookmakerOdds) {
     for (const market of odds.markets) {
@@ -140,21 +131,26 @@ export function detectSteamMoves(
   current: BookmakerOdds[],
   baseline: BookmakerOdds[]
 ): Array<{ event: string; market: string; team: string; movement: number }> {
-  const steamMoves: Array<{ event: string; market: string; team: string; movement: number }> = [];
+  const steamMoves: Array<{
+    event: string;
+    market: string;
+    team: string;
+    movement: number;
+  }> = [];
 
   for (const curr of current) {
     const base = baseline.find(
-      (b) => b.eventId === curr.eventId && b.bookmaker === curr.bookmaker
+      b => b.eventId === curr.eventId && b.bookmaker === curr.bookmaker
     );
     if (!base) continue;
 
     for (const currMarket of curr.markets) {
-      const baseMarket = base.markets.find((m) => m.key === currMarket.key);
+      const baseMarket = base.markets.find(m => m.key === currMarket.key);
       if (!baseMarket) continue;
 
       for (const currOutcome of currMarket.outcomes) {
         const baseOutcome = baseMarket.outcomes.find(
-          (o) => o.name === currOutcome.name
+          o => o.name === currOutcome.name
         );
         if (!baseOutcome) continue;
 

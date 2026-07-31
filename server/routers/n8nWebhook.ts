@@ -18,6 +18,7 @@ import { eq, isNull, and, or } from "drizzle-orm";
 import { publicProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { picks } from "../../drizzle/schema";
+import { oddsApiCache } from "../services/oddsApiCache";
 
 /** Validate the shared n8n webhook secret */
 function validateSecret(secret: string | undefined) {
@@ -164,17 +165,15 @@ export const n8nWebhookRouter = router({
 
       if (!pick) throw new Error(`Pick ${input.id} not found`);
 
-      // Fetch live odds from The Odds API for context
+      // Fetch live odds from The Odds API for context (via centralized cache)
       let oddsContext = null;
       try {
         const oddsApiKey = process.env.ODDS_API_KEY;
         if (oddsApiKey && pick.sportKey) {
-          const oddsRes = await fetch(
-            `https://api.the-odds-api.com/v4/sports/${pick.sportKey}/odds/?apiKey=${oddsApiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american`,
-            { signal: AbortSignal.timeout(5000) }
-          );
-          if (oddsRes.ok) {
-            const oddsData = await oddsRes.json();
+          const oddsData = await oddsApiCache.fetch(pick.sportKey, {
+            markets: "h2h,spreads,totals",
+          });
+          if (oddsData && oddsData.length > 0) {
             // Find the matching game
             const game = oddsData.find(
               (g: any) =>

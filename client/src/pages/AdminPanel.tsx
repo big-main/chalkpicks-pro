@@ -23,6 +23,7 @@ import {
   Send,
   Megaphone,
   Gauge,
+  Database,
 } from "lucide-react";
 import { useState as useLocalState } from "react";
 import { toast } from "sonner";
@@ -56,6 +57,7 @@ export default function AdminPanel() {
     | "notifications"
     | "performance"
     | "directories"
+    | "cache"
   >("overview");
   const [psUrl, setPsUrl] = useState("https://www.chalkpicks.live");
   const [psResult, setPsResult] = useState<null | {
@@ -172,6 +174,7 @@ export default function AdminPanel() {
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "performance", label: "PageSpeed", icon: Gauge },
     { id: "directories", label: "Directories", icon: Eye },
+    { id: "cache", label: "API Cache", icon: Database },
   ] as const;
 
   return (
@@ -1691,6 +1694,9 @@ export default function AdminPanel() {
 
         {/* ─── Directories Tab ─── */}
         {activeTab === "directories" && <DirectoriesTab />}
+
+        {/* ─── API Cache Tab ─── */}
+        {activeTab === "cache" && <CacheTab />}
       </div>
     </div>
   );
@@ -2164,6 +2170,209 @@ function DirectoriesTab() {
           </table>
         </div>
       )}
+    </div>
+  );
+}
+
+/* ─── API Cache Tab Component ─── */
+function CacheTab() {
+  const { data: stats, refetch } = trpc.admin.getCacheStats.useQuery(
+    undefined,
+    {
+      refetchInterval: 10_000,
+    }
+  );
+  const purgeAll = trpc.admin.purgeAllCache.useMutation({
+    onSuccess: () => {
+      toast.success("All cache purged");
+      refetch();
+    },
+  });
+  const purgeSport = trpc.admin.purgeSportCache.useMutation({
+    onSuccess: d => {
+      toast.success(d.message);
+      refetch();
+    },
+  });
+  const resetQuota = trpc.admin.resetQuota.useMutation({
+    onSuccess: () => {
+      toast.success("Quota counter reset");
+      refetch();
+    },
+  });
+
+  if (!stats)
+    return <div className="text-muted-foreground">Loading cache stats...</div>;
+
+  const hitRate =
+    stats.hitRate.total > 0
+      ? Math.round(
+          ((stats.hitRate.l1Hits + stats.hitRate.l2Hits) /
+            stats.hitRate.total) *
+            100
+        )
+      : 0;
+
+  const quotaPct =
+    stats.quotaLimit > 0
+      ? Math.round((stats.quotaUsed / stats.quotaLimit) * 100)
+      : 0;
+
+  const sports = [
+    "americanfootball_nfl",
+    "basketball_nba",
+    "baseball_mlb",
+    "icehockey_nhl",
+    "soccer_epl",
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">Odds API Cache</h2>
+        <div className="flex gap-2">
+          <button
+            onClick={() => refetch()}
+            className="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-sm"
+          >
+            <RefreshCw className="w-4 h-4 inline mr-1" />
+            Refresh
+          </button>
+          <button
+            onClick={() => purgeAll.mutate()}
+            disabled={purgeAll.isPending}
+            className="px-3 py-1.5 rounded bg-red-900/50 hover:bg-red-900 text-sm text-red-300"
+          >
+            Purge All
+          </button>
+          <button
+            onClick={() => resetQuota.mutate()}
+            disabled={resetQuota.isPending}
+            className="px-3 py-1.5 rounded bg-amber-900/50 hover:bg-amber-900 text-sm text-amber-300"
+          >
+            Reset Quota
+          </button>
+        </div>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="text-sm text-muted-foreground">Cache Hit Rate</div>
+          <div className="text-2xl font-bold text-green-400">{hitRate}%</div>
+          <div className="text-xs text-muted-foreground mt-1">
+            L1: {stats.hitRate.l1Hits} | L2: {stats.hitRate.l2Hits} | Miss:{" "}
+            {stats.hitRate.misses}
+          </div>
+        </div>
+
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="text-sm text-muted-foreground">Quota Used</div>
+          <div
+            className={`text-2xl font-bold ${quotaPct > 80 ? "text-red-400" : quotaPct > 50 ? "text-amber-400" : "text-green-400"}`}
+          >
+            {stats.quotaUsed}/{stats.quotaLimit}
+          </div>
+          <div className="w-full bg-zinc-700 rounded-full h-2 mt-2">
+            <div
+              className={`h-2 rounded-full ${quotaPct > 80 ? "bg-red-500" : quotaPct > 50 ? "bg-amber-500" : "bg-green-500"}`}
+              style={{ width: `${Math.min(quotaPct, 100)}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="text-sm text-muted-foreground">Memory Entries</div>
+          <div className="text-2xl font-bold">{stats.memoryEntries}</div>
+          <div className="text-xs text-muted-foreground mt-1">
+            Max: {stats.maxMemoryEntries}
+          </div>
+        </div>
+
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="text-sm text-muted-foreground">Mode</div>
+          <div
+            className={`text-2xl font-bold ${stats.conservationMode ? "text-amber-400" : "text-green-400"}`}
+          >
+            {stats.conservationMode ? "Conservation" : "Normal"}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
+            TTL: {Math.round(stats.currentTtlMs / 1000 / 60)}min | Deduped:{" "}
+            {stats.deduplicatedRequests}
+          </div>
+        </div>
+      </div>
+
+      {/* Conservation Mode Alert */}
+      {stats.conservationMode && (
+        <div className="bg-amber-900/30 border border-amber-700 rounded-lg p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
+          <div>
+            <div className="font-semibold text-amber-300">
+              Conservation Mode Active
+            </div>
+            <div className="text-sm text-amber-200/70 mt-1">
+              Quota is below 20% remaining. Cache TTL has been extended to 30
+              minutes to preserve remaining API calls. Stale data will be served
+              when possible.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sport-level Purge */}
+      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+        <h3 className="font-semibold mb-3">Purge by Sport</h3>
+        <div className="flex flex-wrap gap-2">
+          {sports.map(sport => (
+            <button
+              key={sport}
+              onClick={() => purgeSport.mutate({ sport })}
+              disabled={purgeSport.isPending}
+              className="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-sm"
+            >
+              {sport.split("_").pop()?.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 text-sm text-muted-foreground space-y-2">
+        <h3 className="font-semibold text-foreground">How it works</h3>
+        <ul className="list-disc list-inside space-y-1">
+          <li>
+            <strong>L1 (Memory):</strong> In-process cache, fastest. Cleared on
+            restart.
+          </li>
+          <li>
+            <strong>L2 (Database):</strong> Persistent cache, survives restarts.
+            Shared across instances.
+          </li>
+          <li>
+            <strong>Stale-While-Revalidate:</strong> Serves stale data instantly
+            while refreshing in background (up to 60min stale).
+          </li>
+          <li>
+            <strong>Request Deduplication:</strong> Concurrent identical
+            requests coalesce into a single API call.
+          </li>
+          <li>
+            <strong>Conservation Mode:</strong> Activates at &lt;20% quota
+            remaining. Extends TTL from 5min to 30min.
+          </li>
+          <li>
+            <strong>Circuit Breaker:</strong> At 0 remaining quota, only stale
+            data is served (no new API calls).
+          </li>
+        </ul>
+        {stats.lastApiCall && (
+          <p className="mt-2">
+            Last API call: {new Date(stats.lastApiCall).toLocaleString()}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

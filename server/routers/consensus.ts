@@ -9,8 +9,7 @@ import { getDb } from "../db";
 import { picks } from "../../drizzle/schema";
 import { desc, eq, gte, and } from "drizzle-orm";
 import { invokeLLM } from "../_core/llm";
-
-const ODDS_API_BASE = "https://api.the-odds-api.com/v4";
+import { oddsApiCache } from "../services/oddsApiCache";
 
 const SPORTS = [
   { key: "americanfootball_nfl", label: "NFL" },
@@ -39,7 +38,7 @@ interface OddsApiEvent {
 function getConsensusOdds(event: OddsApiEvent, market: "h2h" | "spreads") {
   const allOutcomes: Record<string, number[]> = {};
   for (const bm of event.bookmakers ?? []) {
-    const mkt = bm.markets.find((m) => m.key === market);
+    const mkt = bm.markets.find(m => m.key === market);
     if (!mkt) continue;
     for (const o of mkt.outcomes) {
       if (!allOutcomes[o.name]) allOutcomes[o.name] = [];
@@ -91,28 +90,39 @@ export const consensusRouter = router({
     .query(async ({ input }) => {
       const apiKey = process.env.ODDS_API_KEY;
       if (!apiKey) {
-        return { games: [], sport: input.sport, error: "ODDS_API_KEY not configured" };
+        return {
+          games: [],
+          sport: input.sport,
+          error: "ODDS_API_KEY not configured",
+        };
       }
 
       try {
-        const url = `${ODDS_API_BASE}/sports/${input.sport}/odds?apiKey=${apiKey}&regions=us&markets=h2h,spreads&oddsFormat=american&bookmakers=draftkings,fanduel,betmgm,caesars`;
-        const res = await fetch(url);
-        if (!res.ok) {
-          return { games: [], sport: input.sport, error: `Odds API error: ${res.status}` };
-        }
-        const events: OddsApiEvent[] = await res.json();
+        const events: OddsApiEvent[] = (await oddsApiCache.fetch(input.sport, {
+          markets: "h2h,spreads",
+          bookmakers: "draftkings,fanduel,betmgm,caesars",
+        })) as OddsApiEvent[];
 
         // Get ChalkPicks picks for comparison
         const db = await getDb();
         const now = new Date();
-        const sportKey = input.sport.includes("nfl") ? "NFL" : input.sport.includes("nba") ? "NBA" : input.sport.includes("mlb") ? "MLB" : "NHL";
+        const sportKey = input.sport.includes("nfl")
+          ? "NFL"
+          : input.sport.includes("nba")
+            ? "NBA"
+            : input.sport.includes("mlb")
+              ? "MLB"
+              : "NHL";
         const recentPicks = db
           ? await db
               .select()
               .from(picks)
               .where(
                 and(
-                  gte(picks.createdAt, new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)),
+                  gte(
+                    picks.createdAt,
+                    new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+                  ),
                   eq(picks.sportKey, input.sport)
                 )
               )
@@ -120,7 +130,7 @@ export const consensusRouter = router({
               .limit(50)
           : [];
 
-        const games = events.slice(0, 15).map((event) => {
+        const games = events.slice(0, 15).map(event => {
           const h2hOdds = getConsensusOdds(event, "h2h");
           const spreadOdds = getConsensusOdds(event, "spreads");
 
@@ -128,13 +138,28 @@ export const consensusRouter = router({
           const awayOdds = h2hOdds[event.away_team]?.avgOdds ?? -110;
           const bookCount = h2hOdds[event.home_team]?.bookCount ?? 0;
 
-          const publicPct = simulatePublicPct(event.home_team, event.away_team, homeOdds, awayOdds);
+          const publicPct = simulatePublicPct(
+            event.home_team,
+            event.away_team,
+            homeOdds,
+            awayOdds
+          );
 
           // Find matching ChalkPicks pick
           const matchingPick = recentPicks.find(
-            (p) =>
-              (p.homeTeam?.toLowerCase().includes(event.home_team.toLowerCase().split(" ").pop() ?? "") ?? false) ||
-              (p.awayTeam?.toLowerCase().includes(event.away_team.toLowerCase().split(" ").pop() ?? "") ?? false)
+            p =>
+              (p.homeTeam
+                ?.toLowerCase()
+                .includes(
+                  event.home_team.toLowerCase().split(" ").pop() ?? ""
+                ) ??
+                false) ||
+              (p.awayTeam
+                ?.toLowerCase()
+                .includes(
+                  event.away_team.toLowerCase().split(" ").pop() ?? ""
+                ) ??
+                false)
           );
 
           const cpPick = matchingPick?.recommendation ?? null;
@@ -144,7 +169,9 @@ export const consensusRouter = router({
           // Contrarian = CP picks the team getting LESS public action
           let contrarianSignal: "strong" | "moderate" | "none" = "none";
           if (cpPick) {
-            const cpIsHome = cpPick.toLowerCase().includes(event.home_team.toLowerCase().split(" ").pop() ?? "");
+            const cpIsHome = cpPick
+              .toLowerCase()
+              .includes(event.home_team.toLowerCase().split(" ").pop() ?? "");
             const cpTeamPublicPct = cpIsHome ? publicPct.home : publicPct.away;
             if (cpTeamPublicPct < 40) contrarianSignal = "strong";
             else if (cpTeamPublicPct < 48) contrarianSignal = "moderate";
@@ -173,7 +200,11 @@ export const consensusRouter = router({
         return { games, sport: input.sport, error: null };
       } catch (err) {
         console.error("[consensus] error:", err);
-        return { games: [], sport: input.sport, error: "Failed to fetch consensus data" };
+        return {
+          games: [],
+          sport: input.sport,
+          error: "Failed to fetch consensus data",
+        };
       }
     }),
 
@@ -204,12 +235,17 @@ Provide a 2-sentence sharp money insight. Focus on: is the public overweighting 
 
         const response = await invokeLLM({
           messages: [
-            { role: "system", content: "You are a concise sports betting analyst. Respond in 2 sentences maximum." },
+            {
+              role: "system",
+              content:
+                "You are a concise sports betting analyst. Respond in 2 sentences maximum.",
+            },
             { role: "user", content: prompt },
           ],
         });
 
-        const insight = response.choices?.[0]?.message?.content ?? "No insight available.";
+        const insight =
+          response.choices?.[0]?.message?.content ?? "No insight available.";
         return { insight };
       } catch {
         return { insight: "Analysis temporarily unavailable." };

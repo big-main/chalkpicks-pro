@@ -176,6 +176,13 @@
       "when": 1785455159614,
       "tag": "0024_brainy_miracleman",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1785459778683,
+      "tag": "0025_chubby_epoch",
+      "breakpoints": true
     }
   ]
 }

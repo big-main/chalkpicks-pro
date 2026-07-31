@@ -1054,3 +1054,29 @@ export const directorySubmissions = mysqlTable(
 export type DirectorySubmission = typeof directorySubmissions.$inferSelect;
 export type InsertDirectorySubmission =
   typeof directorySubmissions.$inferInsert;
+
+// ─── Odds API Cache (L2 persistent cache) ────────────────────────────────────
+export const oddsApiCacheEntries = mysqlTable("odds_api_cache_entries", {
+  id: int("id").autoincrement().primaryKey(),
+  cacheKey: varchar("cacheKey", { length: 512 }).notNull().unique(),
+  data: json("data").notNull(),
+  fetchedAt: timestamp("fetchedAt").notNull(),
+  ttlMs: int("ttlMs").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type OddsApiCacheEntry = typeof oddsApiCacheEntries.$inferSelect;
+
+// ─── Odds API Quota Log ──────────────────────────────────────────────────────
+export const oddsApiQuotaLog = mysqlTable(
+  "odds_api_quota_log",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    usedCount: int("usedCount").notNull(),
+    remainingCount: int("remainingCount").notNull(),
+    recordedAt: timestamp("recordedAt").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [index("idx_quota_recorded_at").on(table.recordedAt)]
+);
+export type OddsApiQuotaLog = typeof oddsApiQuotaLog.$inferSelect;

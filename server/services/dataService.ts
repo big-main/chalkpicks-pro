@@ -9,6 +9,8 @@
  * - Open-Meteo (free) — weather for outdoor games
  */
 
+import { oddsApiCache } from "./oddsApiCache";
+
 // ─── In-Memory Cache ────────────────────────────────────────────────────────
 
 interface CacheEntry<T> {
@@ -372,24 +374,21 @@ export async function fetchOdds(
     );
   }
 
-  // Fallback: The Odds API (500 req/month)
+  // Fallback: The Odds API (500 req/month) — routed through centralized cache
   const sportKey = SPORT_KEYS[sport.toLowerCase()] || sport;
   if (!ODDS_API_KEY) {
     return generateRealisticOdds(sport);
   }
 
   try {
-    const url = `${ODDS_API_BASE}/sports/${sportKey}/odds?apiKey=${ODDS_API_KEY}&regions=us&markets=${markets}&oddsFormat=american`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-
-    if (!res.ok) {
-      console.warn(`[OddsAPI] ${res.status} for ${sport}`);
-      return generateRealisticOdds(sport);
+    const data = (await oddsApiCache.fetch(sportKey, {
+      markets,
+    })) as OddsEvent[];
+    if (data.length > 0) {
+      cache.set(cacheKey, data, TTL.ODDS);
+      return data;
     }
-
-    const data = (await res.json()) as OddsEvent[];
-    cache.set(cacheKey, data, TTL.ODDS);
-    return data;
+    return generateRealisticOdds(sport);
   } catch (err) {
     console.warn(
       `[OddsAPI] Fetch failed for ${sport}:`,
@@ -407,15 +406,16 @@ export async function fetchPlayerProps(
   const cached = cache.get<PlayerProp[]>(cacheKey);
   if (cached) return cached;
 
-  // The Odds API player props endpoint (uses more credits)
+  // The Odds API player props endpoint (uses more credits) — routed through centralized cache
   if (ODDS_API_KEY && eventId) {
     try {
       const sportKey = SPORT_KEYS[sport.toLowerCase()] || sport;
-      const url = `${ODDS_API_BASE}/sports/${sportKey}/events/${eventId}/odds?apiKey=${ODDS_API_KEY}&regions=us&markets=player_points,player_rebounds,player_assists,player_threes,player_strikeouts&oddsFormat=american`;
-      const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-
-      if (res.ok) {
-        const data = await res.json();
+      const data = await oddsApiCache.fetch(sportKey, {
+        markets:
+          "player_points,player_rebounds,player_assists,player_threes,player_strikeouts",
+        eventId,
+      });
+      if (data) {
         const props = parsePlayerProps(data, sport);
         cache.set(cacheKey, props, TTL.PROPS);
         return props;

@@ -130,9 +130,9 @@ export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
       "Expert sports betting analysis, AI-powered strategies, and data-driven insights. Learn how to beat the books with ChalkPicks Pro.",
   },
   "/signup": {
-    title: "Sign Up | ChalkPicks Free Trial",
+    title: "Sign Up | ChalkPicks",
     description:
-      "Create a ChalkPicks account and start your 3-day free trial. Access AI picks, +EV finder, prop builder, and more.",
+      "Create a ChalkPicks account to access AI picks, +EV finder, prop builder, and premium analytics tools.",
   },
   "/login": {
     title: "Login | ChalkPicks Account",

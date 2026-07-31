@@ -33,7 +33,8 @@ export default function PicksLanding() {
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-8">
             Data-driven sports betting picks powered by advanced AI analysis.
-            Updated daily with confidence scores, edge calculations, and detailed reasoning.
+            Updated daily with confidence scores, edge calculations, and
+            detailed reasoning.
           </p>
           <div className="flex items-center justify-center gap-6 text-sm text-gray-500">
             <span className="flex items-center gap-1">
@@ -49,7 +50,7 @@ export default function PicksLanding() {
       {/* Sport Filter Tabs */}
       <section className="max-w-6xl mx-auto px-4 mb-8">
         <div className="flex flex-wrap gap-2 justify-center">
-          {sports.map((sport) => (
+          {sports.map(sport => (
             <button
               key={sport.id}
               onClick={() => setSportFilter(sport.id)}
@@ -69,8 +70,11 @@ export default function PicksLanding() {
       <section className="max-w-6xl mx-auto px-4 pb-20">
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-6 animate-pulse">
+            {[1, 2, 3, 4].map(i => (
+              <div
+                key={i}
+                className="bg-white/5 border border-white/10 rounded-xl p-6 animate-pulse"
+              >
                 <div className="h-4 bg-white/10 rounded w-1/3 mb-3" />
                 <div className="h-6 bg-white/10 rounded w-2/3 mb-4" />
                 <div className="h-3 bg-white/10 rounded w-full mb-2" />
@@ -115,7 +119,9 @@ export default function PicksLanding() {
                           AI analysis locked for premium subscribers...
                         </p>
                         <div className="flex gap-4">
-                          <span className="text-emerald-400">85% Confidence</span>
+                          <span className="text-emerald-400">
+                            85% Confidence
+                          </span>
                           <span className="text-gray-400">+150 Odds</span>
                         </div>
                       </div>
@@ -152,7 +158,9 @@ export default function PicksLanding() {
           </div>
         ) : (
           <div className="text-center py-16">
-            <p className="text-gray-500 text-lg">No picks available for today yet.</p>
+            <p className="text-gray-500 text-lg">
+              No picks available for today yet.
+            </p>
             <p className="text-gray-600 text-sm mt-2">
               Picks are generated daily at 6:00 AM PT. Check back soon!
             </p>
@@ -166,14 +174,14 @@ export default function PicksLanding() {
               Get All Premium Picks Daily
             </h2>
             <p className="text-gray-400 mb-6 max-w-lg mx-auto">
-              Unlock every AI-generated pick with confidence scores, edge analysis,
-              and detailed reasoning. Start your free trial today.
+              Unlock every AI-generated pick with confidence scores, edge
+              analysis, and detailed reasoning. Subscribe today.
             </p>
             <Link
               href="/pricing"
               className="inline-block bg-emerald-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-emerald-600 transition-colors"
             >
-              Start Free Trial →
+              View Plans →
             </Link>
           </div>
         </div>
@@ -187,33 +195,34 @@ export default function PicksLanding() {
           </h2>
           <div className="prose prose-invert prose-sm max-w-none text-gray-400">
             <p>
-              ChalkPicks Pro uses advanced artificial intelligence to analyze thousands
-              of data points across multiple sports. Our AI engine processes real-time
-              odds from 18+ sportsbooks, historical performance data, weather conditions,
-              injury reports, and market sentiment to generate high-confidence betting picks.
+              ChalkPicks Pro uses advanced artificial intelligence to analyze
+              thousands of data points across multiple sports. Our AI engine
+              processes real-time odds from 18+ sportsbooks, historical
+              performance data, weather conditions, injury reports, and market
+              sentiment to generate high-confidence betting picks.
             </p>
             <p>
-              Each pick includes a confidence score (0-100%), edge calculation showing
-              expected value vs the market, and detailed AI reasoning explaining the
-              recommendation. Our system has maintained a 92% historical win rate
-              across all sports since launch.
+              Each pick includes a confidence score (0-100%), edge calculation
+              showing expected value vs the market, and detailed AI reasoning
+              explaining the recommendation. Our system has maintained a 92%
+              historical win rate across all sports since launch.
             </p>
             <h3 className="text-white text-lg font-semibold mt-6 mb-2">
               Sports We Cover
             </h3>
             <p>
-              NBA basketball, NFL football, MLB baseball, NHL hockey, soccer (EPL, MLS,
-              Champions League), and more. New sports added regularly based on data
-              availability and model performance.
+              NBA basketball, NFL football, MLB baseball, NHL hockey, soccer
+              (EPL, MLS, Champions League), and more. New sports added regularly
+              based on data availability and model performance.
             </p>
             <h3 className="text-white text-lg font-semibold mt-6 mb-2">
               Why AI-Powered Picks?
             </h3>
             <p>
-              Human bettors are limited by cognitive biases, emotional decisions, and
-              information processing speed. Our AI analyzes data 24/7, identifies
-              patterns invisible to humans, and generates picks based purely on
-              statistical edge — no emotion, no bias, just data.
+              Human bettors are limited by cognitive biases, emotional
+              decisions, and information processing speed. Our AI analyzes data
+              24/7, identifies patterns invisible to humans, and generates picks
+              based purely on statistical edge — no emotion, no bias, just data.
             </p>
           </div>
         </div>

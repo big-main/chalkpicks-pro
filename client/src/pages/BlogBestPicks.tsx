@@ -57,7 +57,7 @@ export default function BlogBestPicks() {
               variant="outline"
               className="border-slate-700 hover:bg-slate-800"
             >
-              {hasFullAccess ? "View Today's Picks" : "Start Free Trial"}
+              {hasFullAccess ? "View Today's Picks" : "Subscribe Now"}
             </Button>
           </div>
         </div>
@@ -258,8 +258,8 @@ export default function BlogBestPicks() {
                   Ready to Get Better Picks?
                 </h3>
                 <p className="text-slate-300 mb-6">
-                  Start your free 7-day trial today. No credit card required.
-                  Access all premium features.
+                  Subscribe today and access all premium features. Plans start
+                  at $9.99/mo.
                 </p>
                 <div className="flex gap-4 justify-center">
                   <Button
@@ -268,7 +268,7 @@ export default function BlogBestPicks() {
                     }
                     className="bg-emerald-500 hover:bg-emerald-600"
                   >
-                    {hasFullAccess ? "View Today's Picks" : "Start Free Trial"}{" "}
+                    {hasFullAccess ? "View Today's Picks" : "Subscribe Now"}{" "}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                   <Button
@@ -302,8 +302,8 @@ export default function BlogBestPicks() {
                   a: "Yes! Our picks work on any sportsbook. We compare odds across 18+ books to help you find the best line.",
                 },
                 {
-                  q: "Is there a free trial?",
-                  a: "Yes! Get 7 days free access to all premium features. No credit card required. Cancel anytime.",
+                  q: "What plans are available?",
+                  a: "Basic ($9.99/mo), Pro ($19.99/mo), and Elite ($59.99/yr). All plans include premium AI picks and analytics. Cancel anytime.",
                 },
                 {
                   q: "How often are picks updated?",

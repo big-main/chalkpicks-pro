@@ -257,7 +257,7 @@ export default function BlogAISportsBetting() {
                     }
                     className="bg-blue-500 hover:bg-blue-600"
                   >
-                    {hasFullAccess ? "View Today's Picks" : "Start Free Trial"}{" "}
+                    {hasFullAccess ? "View Today's Picks" : "Subscribe Now"}{" "}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                   <Button

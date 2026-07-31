@@ -292,7 +292,7 @@ export default function BlogStrategy() {
                     }
                     className="bg-amber-500 hover:bg-amber-600"
                   >
-                    {hasFullAccess ? "View Today's Picks" : "Start Free Trial"}{" "}
+                    {hasFullAccess ? "View Today's Picks" : "Subscribe Now"}{" "}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                   <Button

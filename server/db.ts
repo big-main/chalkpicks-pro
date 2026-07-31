@@ -26,13 +26,18 @@ async function findUser(condition: SQL) {
 }
 
 export const getUserById = (id: number) => findUser(eq(users.id, id));
-export const getUserByEmail = (email: string) => findUser(eq(users.email, email));
+export const getUserByEmail = (email: string) =>
+  findUser(eq(users.email, email));
 
-export async function createUser(data: { name: string; email: string; passwordHash: string }) {
+export async function createUser(data: {
+  name: string;
+  email: string;
+  passwordHash: string;
+}) {
   const db = await getDb();
   if (!db) throw new Error("Database unavailable");
-  
-  // Start with free tier — trial activates AFTER payment method insertion
+
+  // Start with free tier — upgrade via /pricing
   await db.insert(users).values({
     name: data.name,
     email: data.email,
@@ -47,23 +52,12 @@ export async function createUser(data: { name: string; email: string; passwordHa
   return user;
 }
 
-// Grant 3-day trial after payment method is added
-export async function grantTrialAfterPaymentMethod(userId: number) {
-  const db = await getDb();
-  if (!db) throw new Error("Database unavailable");
-  
-  const now = new Date();
-  const trialExpiresAt = new Date(now);
-  trialExpiresAt.setDate(trialExpiresAt.getDate() + 3);
-  
-  await db.update(users)
-    .set({
-      subscriptionTier: "trial",
-      subscriptionExpiresAt: trialExpiresAt,
-    })
-    .where(eq(users.id, userId));
+// DEPRECATED: Trial has been removed. Subscriptions bill immediately.
+// Kept for backward compatibility with any callers; does nothing now.
+export async function grantTrialAfterPaymentMethod(_userId: number) {
+  // No-op: trial removed Jul 2026
+  return;
 }
-
 
 // ─── Promo Code Helpers ───────────────────────────────────────────────────────
 
@@ -143,14 +137,23 @@ export async function logPromoCodeUsage(data: InsertPromoCodeUsage) {
 
 export async function getPromoCodeStats(codeId: number) {
   const db = await getDb();
-  if (!db) return { totalUses: 0, totalDiscount: 0, totalRevenue: 0, averageDiscount: 0 };
+  if (!db)
+    return {
+      totalUses: 0,
+      totalDiscount: 0,
+      totalRevenue: 0,
+      averageDiscount: 0,
+    };
 
   const usage = await db
     .select()
     .from(promoCodeUsage)
     .where(eq(promoCodeUsage.codeId, codeId));
 
-  const totalDiscount = usage.reduce((sum, u) => sum + Number(u.discountAmount), 0);
+  const totalDiscount = usage.reduce(
+    (sum, u) => sum + Number(u.discountAmount),
+    0
+  );
   const totalRevenue = usage.reduce((sum, u) => sum + Number(u.finalPrice), 0);
 
   return {
@@ -170,12 +173,19 @@ export async function getAllPromoCodes() {
 export async function getPromoCodeById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db.select().from(promoCodes).where(eq(promoCodes.id, id)).limit(1);
+  const result = await db
+    .select()
+    .from(promoCodes)
+    .where(eq(promoCodes.id, id))
+    .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
 export async function deactivatePromoCode(id: number) {
   const db = await getDb();
   if (!db) return;
-  await db.update(promoCodes).set({ isActive: false }).where(eq(promoCodes.id, id));
+  await db
+    .update(promoCodes)
+    .set({ isActive: false })
+    .where(eq(promoCodes.id, id));
 }

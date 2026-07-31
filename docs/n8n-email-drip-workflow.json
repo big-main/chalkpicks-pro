@@ -123,7 +123,7 @@
       "parameters": {
         "fromEmail": "picks@chalkpicks.live",
         "toEmail": "={{ $('Webhook Trigger').item.json.body.email }}",
-        "subject": "🏆 Last chance: 7-day free trial ending soon",
+        "subject": "🏆 Upgrade today: unlock premium AI picks",
         "emailType": "html",
         "message": "<!DOCTYPE html><html><body style='font-family:Inter,sans-serif;background:#0a0a0a;color:#e5e5e5;margin:0;padding:0'><div style='max-width:600px;margin:0 auto;padding:40px 24px'><div style='background:#22c55e11;border:1px solid #22c55e33;border-radius:12px;padding:20px;text-align:center;margin-bottom:32px'><div style='color:#22c55e;font-size:32px;font-weight:800'>7 Days In</div><div style='color:#a3a3a3;font-size:14px'>You've been with ChalkPicks for a week</div></div><h2 style='color:#fff'>One last thing, {{ $('Webhook Trigger').item.json.body.name }}</h2><p style='color:#a3a3a3;line-height:1.6'>You've been using ChalkPicks for 7 days. If you haven't upgraded yet, here's the honest truth:</p><div style='background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:24px;margin:24px 0'><p style='color:#d4d4d4;margin:0 0 16px'>The free tier gives you 1 pick per day. Pro gives you <strong style='color:#22c55e'>5-10 picks per day</strong> across all sports — that's 35-70 picks per week with edge scores, Kelly sizing, and sharp money context.</p><p style='color:#d4d4d4;margin:0'>At $29/month, you need to win <strong style='color:#22c55e'>one extra bet per week</strong> to break even. Most Pro members report 3-5x ROI improvement in their first month.</p></div><div style='text-align:center;margin:32px 0'><a href='https://chalkpicks.live/pricing' style='background:#22c55e;color:#000;padding:16px 40px;border-radius:8px;text-decoration:none;font-weight:700;font-size:18px'>Start Pro — $29/mo →</a><div style='color:#666;font-size:12px;margin-top:12px'>Cancel anytime. No contracts.</div></div><p style='color:#666;font-size:13px;text-align:center'><a href='#' style='color:#666'>Unsubscribe</a></p></div></body></html>"
       },
@@ -159,13 +159,23 @@
       "main": [[{ "node": "Wait 2 More Days", "type": "main", "index": 0 }]]
     },
     "Wait 2 More Days": {
-      "main": [[{ "node": "Day 3 — Pro Features Showcase", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Day 3 — Pro Features Showcase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Day 3 — Pro Features Showcase": {
       "main": [[{ "node": "Wait 4 More Days", "type": "main", "index": 0 }]]
     },
     "Wait 4 More Days": {
-      "main": [[{ "node": "Day 7 — Conversion Push", "type": "main", "index": 0 }]]
+      "main": [
+        [{ "node": "Day 7 — Conversion Push", "type": "main", "index": 0 }]
+      ]
     }
   },
   "settings": {

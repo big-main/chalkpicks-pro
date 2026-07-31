@@ -1945,3 +1945,12 @@
 - [x] Create admin page with directory tracker UI (tiers, status, links)
 - [x] Pre-populate with all directories from the Claude artifact
 - [x] Add corrected positioning copy as reference in the admin page
+
+## Maintenance Fixes (Jul 30 2026 — from Cloud Computer audit)
+
+- [x] Remove all free trial copy from OG/Twitter meta, routeMeta, TrialPrompt, AiChatWidget, CTAs, FAQs, blog pages
+- [x] Ensure Stripe checkout has no trial_period_days (bill immediately)
+- [x] Fix odds-api.io sport slugs: soccer→football, mma→mixed-martial-arts
+- [x] Refresh sitemap lastmod dates to 2026-07-30
+- [x] Remove or back aggregateRating in ProductJsonLd with real reviews (already clean — no hardcoded rating)
+- [x] Remove deprecated @paypal/checkout-server-sdk and @types/bcryptjs

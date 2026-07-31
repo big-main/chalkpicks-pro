@@ -1,7 +1,7 @@
 /**
  * Unified Data Service Layer
  * Handles all external sports data API integrations with in-memory caching.
- * 
+ *
  * APIs:
  * - The Odds API (free tier: 500 requests/month) — live odds from 40+ books
  * - ESPN (unofficial, unlimited) — scores, schedules
@@ -35,9 +35,16 @@ class DataCache {
     // Evict oldest entries if at capacity
     if (this.store.size >= this.maxSize) {
       const oldest = Array.from(this.store.entries())
-        .sort((a: [string, CacheEntry<unknown>], b: [string, CacheEntry<unknown>]) => a[1].timestamp - b[1].timestamp)
+        .sort(
+          (
+            a: [string, CacheEntry<unknown>],
+            b: [string, CacheEntry<unknown>]
+          ) => a[1].timestamp - b[1].timestamp
+        )
         .slice(0, 50);
-      oldest.forEach(([k]: [string, CacheEntry<unknown>]) => this.store.delete(k));
+      oldest.forEach(([k]: [string, CacheEntry<unknown>]) =>
+        this.store.delete(k)
+      );
     }
     this.store.set(key, { data, timestamp: Date.now(), ttl: ttlMs });
   }
@@ -65,12 +72,12 @@ export const cache = new DataCache();
 // ─── TTL Constants ──────────────────────────────────────────────────────────
 
 const TTL = {
-  ODDS: 5 * 60 * 1000,        // 5 minutes (odds change frequently)
-  SCORES: 60 * 1000,           // 1 minute (live scores)
-  SCHEDULES: 30 * 60 * 1000,   // 30 minutes
+  ODDS: 5 * 60 * 1000, // 5 minutes (odds change frequently)
+  SCORES: 60 * 1000, // 1 minute (live scores)
+  SCHEDULES: 30 * 60 * 1000, // 30 minutes
   PLAYER_STATS: 15 * 60 * 1000, // 15 minutes
-  WEATHER: 60 * 60 * 1000,     // 1 hour
-  PROPS: 5 * 60 * 1000,        // 5 minutes (player props)
+  WEATHER: 60 * 60 * 1000, // 1 hour
+  PROPS: 5 * 60 * 1000, // 5 minutes (player props)
 } as const;
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -168,14 +175,14 @@ const ODDS_API_IO_BASE = "https://api.odds-api.io/v3";
 
 // Map ChalkPicks sport keys → odds-api.io sport slugs and league name filters
 const SPORT_IO_MAP: Record<string, { sport: string; leagueFilter?: string }> = {
-  nfl:   { sport: "american-football", leagueFilter: "NFL" },
-  nba:   { sport: "basketball",        leagueFilter: "NBA" },
-  mlb:   { sport: "baseball",          leagueFilter: "MLB" },
-  nhl:   { sport: "ice-hockey",        leagueFilter: "NHL" },
+  nfl: { sport: "american-football", leagueFilter: "NFL" },
+  nba: { sport: "basketball", leagueFilter: "NBA" },
+  mlb: { sport: "baseball", leagueFilter: "MLB" },
+  nhl: { sport: "ice-hockey", leagueFilter: "NHL" },
   ncaaf: { sport: "american-football", leagueFilter: "NCAAF" },
-  ncaab: { sport: "basketball",        leagueFilter: "NCAAB" },
-  soccer:{ sport: "soccer",            leagueFilter: "MLS" },
-  mma:   { sport: "mma" },
+  ncaab: { sport: "basketball", leagueFilter: "NCAAB" },
+  soccer: { sport: "football", leagueFilter: "MLS" },
+  mma: { sport: "mixed-martial-arts" },
 };
 
 /** Fetch upcoming events + odds from odds-api.io and normalize to OddsEvent[]. */
@@ -192,7 +199,7 @@ async function fetchOddsFromIo(sport: string): Promise<OddsEvent[]> {
       console.warn(`[OddsApiIo] Events ${evRes.status} for ${sport}`);
       return [];
     }
-    const allEvents = await evRes.json() as any[];
+    const allEvents = (await evRes.json()) as any[];
 
     // Filter to upcoming events within 36h matching the target league
     const now = Date.now();
@@ -215,55 +222,95 @@ async function fetchOddsFromIo(sport: string): Promise<OddsEvent[]> {
     for (const ev of upcoming.slice(0, 6)) {
       try {
         const oddsUrl = `${ODDS_API_IO_BASE}/odds?apiKey=${ODDS_API_IO_KEY}&eventId=${ev.id}&bookmakers=FanDuel,DraftKings`;
-        const oddsRes = await fetch(oddsUrl, { signal: AbortSignal.timeout(8000) });
+        const oddsRes = await fetch(oddsUrl, {
+          signal: AbortSignal.timeout(8000),
+        });
         if (!oddsRes.ok) continue;
-        const oddsData = await oddsRes.json() as any;
+        const oddsData = (await oddsRes.json()) as any;
         if (oddsData.error) continue;
 
         // Normalize to OddsEvent shape
         const bookmakers: OddsEvent["bookmakers"] = [];
-        for (const [bookName, markets] of Object.entries(oddsData.bookmakers ?? {})) {
+        for (const [bookName, markets] of Object.entries(
+          oddsData.bookmakers ?? {}
+        )) {
           const mktList = markets as any[];
           const normalizedMarkets: any[] = [];
           for (const mkt of mktList) {
             if (mkt.name === "ML" && mkt.odds?.[0]) {
               const o = mkt.odds[0];
               // odds-api.io returns decimal odds; convert to american
-              const toAmerican = (dec: number) => dec >= 2 ? Math.round((dec - 1) * 100) : Math.round(-100 / (dec - 1));
+              const toAmerican = (dec: number) =>
+                dec >= 2
+                  ? Math.round((dec - 1) * 100)
+                  : Math.round(-100 / (dec - 1));
               normalizedMarkets.push({
                 key: "h2h",
                 lastUpdate: mkt.updatedAt,
                 outcomes: [
-                  { name: oddsData.home, price: toAmerican(parseFloat(o.home)) },
-                  { name: oddsData.away, price: toAmerican(parseFloat(o.away)) },
+                  {
+                    name: oddsData.home,
+                    price: toAmerican(parseFloat(o.home)),
+                  },
+                  {
+                    name: oddsData.away,
+                    price: toAmerican(parseFloat(o.away)),
+                  },
                 ],
               });
             } else if (mkt.name === "Spread" && mkt.odds?.[0]) {
               const o = mkt.odds[0];
-              const toAmerican = (dec: number) => dec >= 2 ? Math.round((dec - 1) * 100) : Math.round(-100 / (dec - 1));
+              const toAmerican = (dec: number) =>
+                dec >= 2
+                  ? Math.round((dec - 1) * 100)
+                  : Math.round(-100 / (dec - 1));
               normalizedMarkets.push({
                 key: "spreads",
                 lastUpdate: mkt.updatedAt,
                 outcomes: [
-                  { name: oddsData.home, price: toAmerican(parseFloat(o.home)), point: -(o.hdp ?? 0) },
-                  { name: oddsData.away, price: toAmerican(parseFloat(o.away)), point: o.hdp ?? 0 },
+                  {
+                    name: oddsData.home,
+                    price: toAmerican(parseFloat(o.home)),
+                    point: -(o.hdp ?? 0),
+                  },
+                  {
+                    name: oddsData.away,
+                    price: toAmerican(parseFloat(o.away)),
+                    point: o.hdp ?? 0,
+                  },
                 ],
               });
             } else if (mkt.name === "Totals" && mkt.odds?.[0]) {
               const o = mkt.odds[0];
-              const toAmerican = (dec: number) => dec >= 2 ? Math.round((dec - 1) * 100) : Math.round(-100 / (dec - 1));
+              const toAmerican = (dec: number) =>
+                dec >= 2
+                  ? Math.round((dec - 1) * 100)
+                  : Math.round(-100 / (dec - 1));
               normalizedMarkets.push({
                 key: "totals",
                 lastUpdate: mkt.updatedAt,
                 outcomes: [
-                  { name: "Over",  price: toAmerican(parseFloat(o.over)),  point: o.hdp ?? 0 },
-                  { name: "Under", price: toAmerican(parseFloat(o.under)), point: o.hdp ?? 0 },
+                  {
+                    name: "Over",
+                    price: toAmerican(parseFloat(o.over)),
+                    point: o.hdp ?? 0,
+                  },
+                  {
+                    name: "Under",
+                    price: toAmerican(parseFloat(o.under)),
+                    point: o.hdp ?? 0,
+                  },
                 ],
               });
             }
           }
           if (normalizedMarkets.length > 0) {
-            bookmakers.push({ key: bookName.toLowerCase().replace(/\s/g, ""), title: bookName, lastUpdate: new Date().toISOString(), markets: normalizedMarkets });
+            bookmakers.push({
+              key: bookName.toLowerCase().replace(/\s/g, ""),
+              title: bookName,
+              lastUpdate: new Date().toISOString(),
+              markets: normalizedMarkets,
+            });
           }
         }
 
@@ -278,12 +325,18 @@ async function fetchOddsFromIo(sport: string): Promise<OddsEvent[]> {
           bookmakers,
         });
       } catch (err) {
-        console.warn(`[OddsApiIo] Odds fetch failed for event ${ev.id}:`, (err as Error).message);
+        console.warn(
+          `[OddsApiIo] Odds fetch failed for event ${ev.id}:`,
+          (err as Error).message
+        );
       }
     }
     return results;
   } catch (err) {
-    console.warn(`[OddsApiIo] Fetch failed for ${sport}:`, (err as Error).message);
+    console.warn(
+      `[OddsApiIo] Fetch failed for ${sport}:`,
+      (err as Error).message
+    );
     return [];
   }
 }
@@ -299,7 +352,10 @@ const SPORT_KEYS: Record<string, string> = {
   soccer: "soccer_usa_mls",
 };
 
-export async function fetchOdds(sport: string, markets: string = "h2h,spreads,totals"): Promise<OddsEvent[]> {
+export async function fetchOdds(
+  sport: string,
+  markets: string = "h2h,spreads,totals"
+): Promise<OddsEvent[]> {
   const cacheKey = `odds:${sport}:${markets}`;
   const cached = cache.get<OddsEvent[]>(cacheKey);
   if (cached) return cached;
@@ -311,7 +367,9 @@ export async function fetchOdds(sport: string, markets: string = "h2h,spreads,to
       cache.set(cacheKey, ioResults, TTL.ODDS);
       return ioResults;
     }
-    console.warn(`[OddsApiIo] No results for ${sport}, falling back to The Odds API`);
+    console.warn(
+      `[OddsApiIo] No results for ${sport}, falling back to The Odds API`
+    );
   }
 
   // Fallback: The Odds API (500 req/month)
@@ -323,22 +381,28 @@ export async function fetchOdds(sport: string, markets: string = "h2h,spreads,to
   try {
     const url = `${ODDS_API_BASE}/sports/${sportKey}/odds?apiKey=${ODDS_API_KEY}&regions=us&markets=${markets}&oddsFormat=american`;
     const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-    
+
     if (!res.ok) {
       console.warn(`[OddsAPI] ${res.status} for ${sport}`);
       return generateRealisticOdds(sport);
     }
 
-    const data = await res.json() as OddsEvent[];
+    const data = (await res.json()) as OddsEvent[];
     cache.set(cacheKey, data, TTL.ODDS);
     return data;
   } catch (err) {
-    console.warn(`[OddsAPI] Fetch failed for ${sport}:`, (err as Error).message);
+    console.warn(
+      `[OddsAPI] Fetch failed for ${sport}:`,
+      (err as Error).message
+    );
     return generateRealisticOdds(sport);
   }
 }
 
-export async function fetchPlayerProps(sport: string, eventId?: string): Promise<PlayerProp[]> {
+export async function fetchPlayerProps(
+  sport: string,
+  eventId?: string
+): Promise<PlayerProp[]> {
   const cacheKey = `props:${sport}:${eventId || "all"}`;
   const cached = cache.get<PlayerProp[]>(cacheKey);
   if (cached) return cached;
@@ -349,7 +413,7 @@ export async function fetchPlayerProps(sport: string, eventId?: string): Promise
       const sportKey = SPORT_KEYS[sport.toLowerCase()] || sport;
       const url = `${ODDS_API_BASE}/sports/${sportKey}/events/${eventId}/odds?apiKey=${ODDS_API_KEY}&regions=us&markets=player_points,player_rebounds,player_assists,player_threes,player_strikeouts&oddsFormat=american`;
       const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-      
+
       if (res.ok) {
         const data = await res.json();
         const props = parsePlayerProps(data, sport);
@@ -391,12 +455,14 @@ export async function fetchLiveScores(sport: string): Promise<LiveScore[]> {
   try {
     const url = `${ESPN_BASE}/${espnPath}/scoreboard`;
     const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-    
+
     if (!res.ok) {
       return generateRealisticScores(sport);
     }
 
-    const data = await res.json() as { events?: Array<Record<string, unknown>> };
+    const data = (await res.json()) as {
+      events?: Array<Record<string, unknown>>;
+    };
     const scores = parseESPNScores(data, sport);
     cache.set(cacheKey, scores, TTL.SCORES);
     return scores;
@@ -417,10 +483,12 @@ export async function fetchSchedule(sport: string): Promise<LiveScore[]> {
   try {
     const url = `${ESPN_BASE}/${espnPath}/scoreboard?dates=${getDateRange()}`;
     const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-    
+
     if (!res.ok) return [];
 
-    const data = await res.json() as { events?: Array<Record<string, unknown>> };
+    const data = (await res.json()) as {
+      events?: Array<Record<string, unknown>>;
+    };
     const schedule = parseESPNScores(data, sport);
     cache.set(cacheKey, schedule, TTL.SCHEDULES);
     return schedule;
@@ -434,7 +502,9 @@ export async function fetchSchedule(sport: string): Promise<LiveScore[]> {
 
 const BDL_BASE = "https://api.balldontlie.io/v1";
 
-export async function fetchNBAPlayerStats(playerName: string): Promise<Record<string, unknown> | null> {
+export async function fetchNBAPlayerStats(
+  playerName: string
+): Promise<Record<string, unknown> | null> {
   const cacheKey = `nba_stats:${playerName}`;
   const cached = cache.get<Record<string, unknown>>(cacheKey);
   if (cached) return cached;
@@ -442,30 +512,41 @@ export async function fetchNBAPlayerStats(playerName: string): Promise<Record<st
   try {
     // Search for player
     const searchUrl = `${BDL_BASE}/players?search=${encodeURIComponent(playerName)}`;
-    const searchRes = await fetch(searchUrl, { signal: AbortSignal.timeout(8000) });
-    
+    const searchRes = await fetch(searchUrl, {
+      signal: AbortSignal.timeout(8000),
+    });
+
     if (!searchRes.ok) return null;
-    
-    const searchData = await searchRes.json() as { data?: Array<{ id: number }> };
+
+    const searchData = (await searchRes.json()) as {
+      data?: Array<{ id: number }>;
+    };
     if (!searchData.data?.length) return null;
 
     const playerId = searchData.data[0].id;
 
     // Get season averages
     const statsUrl = `${BDL_BASE}/season_averages?season=2025&player_ids[]=${playerId}`;
-    const statsRes = await fetch(statsUrl, { signal: AbortSignal.timeout(8000) });
-    
+    const statsRes = await fetch(statsUrl, {
+      signal: AbortSignal.timeout(8000),
+    });
+
     if (!statsRes.ok) return null;
 
-    const statsData = await statsRes.json() as { data?: Array<Record<string, unknown>> };
+    const statsData = (await statsRes.json()) as {
+      data?: Array<Record<string, unknown>>;
+    };
     const stats = statsData.data?.[0] || null;
-    
+
     if (stats) {
       cache.set(cacheKey, stats, TTL.PLAYER_STATS);
     }
     return stats;
   } catch (err) {
-    console.warn(`[BDL] Fetch failed for ${playerName}:`, (err as Error).message);
+    console.warn(
+      `[BDL] Fetch failed for ${playerName}:`,
+      (err as Error).message
+    );
     return null;
   }
 }
@@ -473,7 +554,10 @@ export async function fetchNBAPlayerStats(playerName: string): Promise<Record<st
 // ─── Line Movement Tracking ─────────────────────────────────────────────────
 
 // Store historical lines for movement detection
-const lineHistory = new Map<string, Array<{ line: number; timestamp: number; bookmaker: string }>>();
+const lineHistory = new Map<
+  string,
+  Array<{ line: number; timestamp: number; bookmaker: string }>
+>();
 
 export function trackLineMovement(events: OddsEvent[]): LineMovement[] {
   const movements: LineMovement[] = [];
@@ -493,8 +577,10 @@ export function trackLineMovement(events: OddsEvent[]): LineMovement[] {
             const movement = currentLine - openLine;
 
             if (Math.abs(movement) >= 0.5) {
-              const isSharp = Math.abs(movement) >= 1.5 && 
-                (Date.now() - history[history.length - 1].timestamp) < 30 * 60 * 1000;
+              const isSharp =
+                Math.abs(movement) >= 1.5 &&
+                Date.now() - history[history.length - 1].timestamp <
+                  30 * 60 * 1000;
 
               movements.push({
                 eventId: event.id,
@@ -505,7 +591,8 @@ export function trackLineMovement(events: OddsEvent[]): LineMovement[] {
                 openLine,
                 currentLine,
                 movement,
-                direction: movement > 0 ? "up" : movement < 0 ? "down" : "stable",
+                direction:
+                  movement > 0 ? "up" : movement < 0 ? "down" : "stable",
                 isSharpMove: isSharp,
                 timestamp: new Date().toISOString(),
                 bookmaker: bookmaker.title,
@@ -513,7 +600,11 @@ export function trackLineMovement(events: OddsEvent[]): LineMovement[] {
             }
           }
 
-          history.push({ line: currentLine, timestamp: Date.now(), bookmaker: bookmaker.key });
+          history.push({
+            line: currentLine,
+            timestamp: Date.now(),
+            bookmaker: bookmaker.key,
+          });
           if (history.length > 50) history.shift(); // Keep last 50 entries
           lineHistory.set(key, history);
         }
@@ -550,7 +641,10 @@ export function calculateEV(events: OddsEvent[]): Array<{
   for (const event of events) {
     for (const marketType of ["h2h", "spreads", "totals"]) {
       // Collect all odds for this market across books
-      const outcomeOdds = new Map<string, Array<{ odds: number; book: string }>>();
+      const outcomeOdds = new Map<
+        string,
+        Array<{ odds: number; book: string }>
+      >();
 
       for (const bookmaker of event.bookmakers) {
         const market = bookmaker.markets.find(m => m.key === marketType);
@@ -559,7 +653,9 @@ export function calculateEV(events: OddsEvent[]): Array<{
         for (const outcome of market.outcomes) {
           const key = `${outcome.name}${outcome.point ? `:${outcome.point}` : ""}`;
           if (!outcomeOdds.has(key)) outcomeOdds.set(key, []);
-          outcomeOdds.get(key)!.push({ odds: outcome.price, book: bookmaker.title });
+          outcomeOdds
+            .get(key)!
+            .push({ odds: outcome.price, book: bookmaker.title });
         }
       }
 
@@ -568,19 +664,29 @@ export function calculateEV(events: OddsEvent[]): Array<{
         if (odds.length < 3) continue; // Need 3+ books for fair line
 
         // Calculate fair probability from average odds (vig-removed)
-        const impliedProbs = odds.map((o: { odds: number; book: string }) => americanToImplied(o.odds));
-        const avgProb = impliedProbs.reduce((a: number, b: number) => a + b, 0) / impliedProbs.length;
+        const impliedProbs = odds.map((o: { odds: number; book: string }) =>
+          americanToImplied(o.odds)
+        );
+        const avgProb =
+          impliedProbs.reduce((a: number, b: number) => a + b, 0) /
+          impliedProbs.length;
         const fairProb = avgProb * 0.95; // Remove ~5% vig
 
         // Find best odds
-        const best = odds.reduce((a: { odds: number; book: string }, b: { odds: number; book: string }) => a.odds > b.odds ? a : b);
+        const best = odds.reduce(
+          (
+            a: { odds: number; book: string },
+            b: { odds: number; book: string }
+          ) => (a.odds > b.odds ? a : b)
+        );
         const bestImplied = americanToImplied(best.odds);
 
         // EV = (fairProb * payout) - 1
         const payout = americanToPayout(best.odds);
-        const ev = (fairProb * payout) - 1;
+        const ev = fairProb * payout - 1;
 
-        if (ev > 0.02) { // Only show 2%+ EV
+        if (ev > 0.02) {
+          // Only show 2%+ EV
           const kelly = (fairProb * payout - 1) / (payout - 1);
           evBets.push({
             event,
@@ -621,11 +727,15 @@ const CORRELATION_DATA: Record<string, number> = {
   "mlb:hits_over:team_total_over": 0.48,
 };
 
-export function findCorrelations(sport: string, events: OddsEvent[]): CorrelationPair[] {
+export function findCorrelations(
+  sport: string,
+  events: OddsEvent[]
+): CorrelationPair[] {
   const pairs: CorrelationPair[] = [];
   const sportLower = sport.toLowerCase();
 
-  for (const event of events.slice(0, 5)) { // Limit to 5 events for performance
+  for (const event of events.slice(0, 5)) {
+    // Limit to 5 events for performance
     const spreads = event.bookmakers[0]?.markets.find(m => m.key === "spreads");
     const totals = event.bookmakers[0]?.markets.find(m => m.key === "totals");
     const h2h = event.bookmakers[0]?.markets.find(m => m.key === "h2h");
@@ -654,10 +764,15 @@ export function findCorrelations(sport: string, events: OddsEvent[]): Correlatio
           odds: totalOver.price,
         },
         correlation,
-        historicalHitRate: 0.5 + (correlation * 0.2),
+        historicalHitRate: 0.5 + correlation * 0.2,
         sport,
         event: `${event.awayTeam} @ ${event.homeTeam}`,
-        recommendation: correlation > 0.6 ? "strong_corr" : correlation > 0.3 ? "moderate_corr" : "neutral",
+        recommendation:
+          correlation > 0.6
+            ? "strong_corr"
+            : correlation > 0.3
+              ? "moderate_corr"
+              : "neutral",
       });
     }
 
@@ -681,15 +796,22 @@ export function findCorrelations(sport: string, events: OddsEvent[]): Correlatio
           odds: totalOver.price,
         },
         correlation: mlCorr,
-        historicalHitRate: 0.5 + (mlCorr * 0.2),
+        historicalHitRate: 0.5 + mlCorr * 0.2,
         sport,
         event: `${event.awayTeam} @ ${event.homeTeam}`,
-        recommendation: mlCorr > 0.6 ? "strong_corr" : mlCorr > 0.3 ? "moderate_corr" : "neutral",
+        recommendation:
+          mlCorr > 0.6
+            ? "strong_corr"
+            : mlCorr > 0.3
+              ? "moderate_corr"
+              : "neutral",
       });
     }
   }
 
-  return pairs.sort((a, b) => Math.abs(b.correlation) - Math.abs(a.correlation));
+  return pairs.sort(
+    (a, b) => Math.abs(b.correlation) - Math.abs(a.correlation)
+  );
 }
 
 // ─── Helper Functions ───────────────────────────────────────────────────────
@@ -700,13 +822,13 @@ function americanToImplied(odds: number): number {
 }
 
 function americanToPayout(odds: number): number {
-  if (odds > 0) return (odds / 100) + 1;
-  return (100 / Math.abs(odds)) + 1;
+  if (odds > 0) return odds / 100 + 1;
+  return 100 / Math.abs(odds) + 1;
 }
 
 function impliedToAmerican(prob: number): number {
-  if (prob >= 0.5) return Math.round(-100 * prob / (1 - prob));
-  return Math.round(100 * (1 - prob) / prob);
+  if (prob >= 0.5) return Math.round((-100 * prob) / (1 - prob));
+  return Math.round((100 * (1 - prob)) / prob);
 }
 
 function getDateRange(): string {
@@ -714,27 +836,42 @@ function getDateRange(): string {
   return today.toISOString().split("T")[0].replace(/-/g, "");
 }
 
-function parseESPNScores(data: { events?: Array<Record<string, unknown>> }, sport: string): LiveScore[] {
+function parseESPNScores(
+  data: { events?: Array<Record<string, unknown>> },
+  sport: string
+): LiveScore[] {
   if (!data.events) return [];
-  
+
   return data.events.map((event: Record<string, unknown>) => {
-    const competitions = (event.competitions as Array<Record<string, unknown>>) || [];
+    const competitions =
+      (event.competitions as Array<Record<string, unknown>>) || [];
     const comp = competitions[0] || {};
-    const competitors = (comp.competitors as Array<Record<string, unknown>>) || [];
+    const competitors =
+      (comp.competitors as Array<Record<string, unknown>>) || [];
     const status = (comp.status as Record<string, unknown>) || {};
     const statusType = (status.type as Record<string, unknown>) || {};
-    
-    const home: Record<string, unknown> = competitors.find((c: Record<string, unknown>) => (c.homeAway as string) === "home") || {};
-    const away: Record<string, unknown> = competitors.find((c: Record<string, unknown>) => (c.homeAway as string) === "away") || {};
+
+    const home: Record<string, unknown> =
+      competitors.find(
+        (c: Record<string, unknown>) => (c.homeAway as string) === "home"
+      ) || {};
+    const away: Record<string, unknown> =
+      competitors.find(
+        (c: Record<string, unknown>) => (c.homeAway as string) === "away"
+      ) || {};
 
     return {
-      id: event.id as string || "",
+      id: (event.id as string) || "",
       sport,
-      homeTeam: ((home.team as Record<string, unknown>)?.displayName as string) || "Home",
-      awayTeam: ((away.team as Record<string, unknown>)?.displayName as string) || "Away",
-      homeScore: parseInt(home.score as string || "0"),
-      awayScore: parseInt(away.score as string || "0"),
-      status: mapESPNStatus(statusType.name as string || ""),
+      homeTeam:
+        ((home.team as Record<string, unknown>)?.displayName as string) ||
+        "Home",
+      awayTeam:
+        ((away.team as Record<string, unknown>)?.displayName as string) ||
+        "Away",
+      homeScore: parseInt((home.score as string) || "0"),
+      awayScore: parseInt((away.score as string) || "0"),
+      status: mapESPNStatus((statusType.name as string) || ""),
       period: (status.period as string) || "",
       clock: (status.displayClock as string) || "",
       startTime: (event.date as string) || "",
@@ -744,10 +881,14 @@ function parseESPNScores(data: { events?: Array<Record<string, unknown>> }, spor
 
 function mapESPNStatus(status: string): LiveScore["status"] {
   switch (status) {
-    case "STATUS_IN_PROGRESS": return "in_progress";
-    case "STATUS_FINAL": return "final";
-    case "STATUS_POSTPONED": return "postponed";
-    default: return "scheduled";
+    case "STATUS_IN_PROGRESS":
+      return "in_progress";
+    case "STATUS_FINAL":
+      return "final";
+    case "STATUS_POSTPONED":
+      return "postponed";
+    default:
+      return "scheduled";
   }
 }
 
@@ -760,14 +901,28 @@ function parsePlayerProps(data: unknown, sport: string): PlayerProp[] {
 
 function generateRealisticOdds(sport: string): OddsEvent[] {
   const teams = getTeamsForSport(sport);
-  const books = ["DraftKings", "FanDuel", "BetMGM", "Caesars", "PointsBet", "BetRivers"];
+  const books = [
+    "DraftKings",
+    "FanDuel",
+    "BetMGM",
+    "Caesars",
+    "PointsBet",
+    "BetRivers",
+  ];
   const events: OddsEvent[] = [];
 
   for (let i = 0; i < Math.min(teams.length, 8); i += 2) {
     const homeTeam = teams[i];
     const awayTeam = teams[i + 1] || teams[0];
-    const homeSpread = -(Math.floor(Math.random() * 10) + 1) + 0.5 * (Math.random() > 0.5 ? 1 : -1);
-    const total = sport === "mlb" ? 8 + Math.random() * 3 : sport === "nhl" ? 5.5 + Math.random() * 2 : 42 + Math.random() * 15;
+    const homeSpread =
+      -(Math.floor(Math.random() * 10) + 1) +
+      0.5 * (Math.random() > 0.5 ? 1 : -1);
+    const total =
+      sport === "mlb"
+        ? 8 + Math.random() * 3
+        : sport === "nhl"
+          ? 5.5 + Math.random() * 2
+          : 42 + Math.random() * 15;
 
     const bookmakers: Bookmaker[] = books.map(book => ({
       key: book.toLowerCase().replace(/\s/g, ""),
@@ -786,16 +941,32 @@ function generateRealisticOdds(sport: string): OddsEvent[] {
           key: "spreads",
           lastUpdate: new Date().toISOString(),
           outcomes: [
-            { name: homeTeam, price: randomOdds(-115, -105), point: Math.round(homeSpread * 2) / 2 },
-            { name: awayTeam, price: randomOdds(-115, -105), point: -Math.round(homeSpread * 2) / 2 },
+            {
+              name: homeTeam,
+              price: randomOdds(-115, -105),
+              point: Math.round(homeSpread * 2) / 2,
+            },
+            {
+              name: awayTeam,
+              price: randomOdds(-115, -105),
+              point: -Math.round(homeSpread * 2) / 2,
+            },
           ],
         },
         {
           key: "totals",
           lastUpdate: new Date().toISOString(),
           outcomes: [
-            { name: "Over", price: randomOdds(-115, -105), point: Math.round(total * 2) / 2 },
-            { name: "Under", price: randomOdds(-115, -105), point: Math.round(total * 2) / 2 },
+            {
+              name: "Over",
+              price: randomOdds(-115, -105),
+              point: Math.round(total * 2) / 2,
+            },
+            {
+              name: "Under",
+              price: randomOdds(-115, -105),
+              point: Math.round(total * 2) / 2,
+            },
           ],
         },
       ],
@@ -807,7 +978,9 @@ function generateRealisticOdds(sport: string): OddsEvent[] {
       sportKey: SPORT_KEYS[sport.toLowerCase()] || sport,
       homeTeam,
       awayTeam,
-      commenceTime: new Date(Date.now() + Math.random() * 86400000).toISOString(),
+      commenceTime: new Date(
+        Date.now() + Math.random() * 86400000
+      ).toISOString(),
       bookmakers,
     });
   }
@@ -820,19 +993,37 @@ function generateRealisticScores(sport: string): LiveScore[] {
   const scores: LiveScore[] = [];
 
   for (let i = 0; i < Math.min(teams.length, 6); i += 2) {
-    const statuses: LiveScore["status"][] = ["in_progress", "final", "scheduled"];
+    const statuses: LiveScore["status"][] = [
+      "in_progress",
+      "final",
+      "scheduled",
+    ];
     const status = statuses[Math.floor(Math.random() * statuses.length)];
-    
+
     scores.push({
       id: `${sport}_score_${i}`,
       sport,
       homeTeam: teams[i],
       awayTeam: teams[i + 1] || teams[0],
-      homeScore: status === "scheduled" ? 0 : Math.floor(Math.random() * (sport === "mlb" ? 8 : sport === "nhl" ? 5 : 30)),
-      awayScore: status === "scheduled" ? 0 : Math.floor(Math.random() * (sport === "mlb" ? 8 : sport === "nhl" ? 5 : 30)),
+      homeScore:
+        status === "scheduled"
+          ? 0
+          : Math.floor(
+              Math.random() * (sport === "mlb" ? 8 : sport === "nhl" ? 5 : 30)
+            ),
+      awayScore:
+        status === "scheduled"
+          ? 0
+          : Math.floor(
+              Math.random() * (sport === "mlb" ? 8 : sport === "nhl" ? 5 : 30)
+            ),
       status,
-      period: status === "in_progress" ? `${Math.floor(Math.random() * 4) + 1}` : "",
-      clock: status === "in_progress" ? `${Math.floor(Math.random() * 12)}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")}` : "",
+      period:
+        status === "in_progress" ? `${Math.floor(Math.random() * 4) + 1}` : "",
+      clock:
+        status === "in_progress"
+          ? `${Math.floor(Math.random() * 12)}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")}`
+          : "",
       startTime: new Date(Date.now() + Math.random() * 86400000).toISOString(),
     });
   }
@@ -845,16 +1036,25 @@ function generateRealisticProps(sport: string): PlayerProp[] {
   const props: PlayerProp[] = [];
 
   for (const player of players.slice(0, 10)) {
-    const markets = sport === "nba" ? ["points", "rebounds", "assists", "threes"] :
-                    sport === "mlb" ? ["strikeouts", "hits", "total_bases"] :
-                    sport === "nfl" ? ["passing_yards", "rushing_yards", "receiving_yards", "touchdowns"] :
-                    ["shots_on_goal", "points"];
+    const markets =
+      sport === "nba"
+        ? ["points", "rebounds", "assists", "threes"]
+        : sport === "mlb"
+          ? ["strikeouts", "hits", "total_bases"]
+          : sport === "nfl"
+            ? [
+                "passing_yards",
+                "rushing_yards",
+                "receiving_yards",
+                "touchdowns",
+              ]
+            : ["shots_on_goal", "points"];
 
     for (const market of markets.slice(0, 2)) {
       const line = getRealisticLine(market);
       const overOdds = randomOdds(-130, -100);
       const underOdds = randomOdds(-130, -100);
-      const ev = (Math.random() * 8 - 2); // -2% to +6% EV
+      const ev = Math.random() * 8 - 2; // -2% to +6% EV
 
       props.push({
         playerId: player.id,
@@ -865,7 +1065,9 @@ function generateRealisticProps(sport: string): PlayerProp[] {
         line,
         overOdds,
         underOdds,
-        bookmaker: ["DraftKings", "FanDuel", "BetMGM"][Math.floor(Math.random() * 3)],
+        bookmaker: ["DraftKings", "FanDuel", "BetMGM"][
+          Math.floor(Math.random() * 3)
+        ],
         ev,
         recommendation: ev > 3 ? "over" : ev < -2 ? "under" : "skip",
         confidence: Math.min(95, Math.max(55, 70 + ev * 3)),
@@ -903,16 +1105,65 @@ function getRealisticLine(market: string): number {
 
 function getTeamsForSport(sport: string): string[] {
   const teams: Record<string, string[]> = {
-    nba: ["Celtics", "Knicks", "Lakers", "Warriors", "Bucks", "Heat", "Nuggets", "76ers", "Suns", "Mavericks"],
-    nfl: ["Chiefs", "Bills", "Eagles", "49ers", "Cowboys", "Ravens", "Lions", "Dolphins", "Bengals", "Jets"],
-    mlb: ["Dodgers", "Yankees", "Braves", "Astros", "Phillies", "Padres", "Rangers", "Orioles", "Twins", "Red Sox"],
-    nhl: ["Oilers", "Panthers", "Rangers", "Bruins", "Avalanche", "Stars", "Hurricanes", "Maple Leafs", "Lightning", "Devils"],
+    nba: [
+      "Celtics",
+      "Knicks",
+      "Lakers",
+      "Warriors",
+      "Bucks",
+      "Heat",
+      "Nuggets",
+      "76ers",
+      "Suns",
+      "Mavericks",
+    ],
+    nfl: [
+      "Chiefs",
+      "Bills",
+      "Eagles",
+      "49ers",
+      "Cowboys",
+      "Ravens",
+      "Lions",
+      "Dolphins",
+      "Bengals",
+      "Jets",
+    ],
+    mlb: [
+      "Dodgers",
+      "Yankees",
+      "Braves",
+      "Astros",
+      "Phillies",
+      "Padres",
+      "Rangers",
+      "Orioles",
+      "Twins",
+      "Red Sox",
+    ],
+    nhl: [
+      "Oilers",
+      "Panthers",
+      "Rangers",
+      "Bruins",
+      "Avalanche",
+      "Stars",
+      "Hurricanes",
+      "Maple Leafs",
+      "Lightning",
+      "Devils",
+    ],
   };
   return teams[sport.toLowerCase()] || teams.nba;
 }
 
-function getPlayersForSport(sport: string): Array<{ id: string; name: string; team: string }> {
-  const players: Record<string, Array<{ id: string; name: string; team: string }>> = {
+function getPlayersForSport(
+  sport: string
+): Array<{ id: string; name: string; team: string }> {
+  const players: Record<
+    string,
+    Array<{ id: string; name: string; team: string }>
+  > = {
     nba: [
       { id: "1", name: "Jayson Tatum", team: "Celtics" },
       { id: "2", name: "Luka Doncic", team: "Mavericks" },

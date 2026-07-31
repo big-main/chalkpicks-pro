@@ -5,6 +5,7 @@
  * always see the same titles/descriptions.
  *
  * Titles should be 50-60 characters; descriptions 150-160 characters.
+ * Trust rule: no fixed win-rate %, no “every time,” no free-trial claims unless live.
  */
 import { LEARN_PAGES_META } from "./learnPagesMeta";
 
@@ -15,9 +16,9 @@ export interface PageMetaConfig {
 
 export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
   "/": {
-    title: "ChalkPicks | AI Sports Betting Picks & +EV Finder Tool",
+    title: "ChalkPicks | AI Sports Betting Analytics & +EV Tools",
     description:
-      "AI-powered sports betting picks with a data-driven edge. +EV finder, prop builder, line movement tracker, and arbitrage alerts across NFL, NBA, MLB & NHL.",
+      "AI sports betting analytics: picks with confidence scores, +EV scanning, CLV tracking, and a public Pick Ledger. Free tools available — not a sportsbook.",
   },
   "/picks": {
     title: "AI Sports Betting Picks | ChalkPicks",
@@ -37,102 +38,102 @@ export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
   "/pricing": {
     title: "ChalkPicks Pricing | Monthly & Yearly Plans",
     description:
-      "Affordable sports betting analytics plans. Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr. Full access to all premium tools.",
+      "Affordable sports betting analytics plans. Basic $9.99/mo, Pro $19.99/mo, Elite $59.99/yr. Full access to premium tools.",
   },
   "/performance": {
-    title: "Pick Performance & Win Rate | ChalkPicks Analytics",
+    title: "Pick Performance & Results | ChalkPicks Analytics",
     description:
-      "Track AI pick performance, win rates by sport, confidence score accuracy, and historical ROI. Transparent analytics for every pick.",
+      "Transparent AI pick results by sport: settled wins, losses, ROI context, and confidence breakdowns from graded data.",
   },
   "/prop-builder": {
-    title: "Prop Builder | Custom Player Prop Picks",
+    title: "Prop Builder | Custom Player Prop Analysis",
     description:
-      "Build custom player prop combinations and get AI-generated picks with edge scores. Combine props across NFL, NBA, MLB, NHL.",
+      "Build custom player prop combinations with AI-assisted analysis and edge scores across NFL, NBA, MLB, NHL.",
   },
   "/line-movement": {
     title: "Line Movement Tracker | Steam Moves & Sharp Money",
     description:
-      "Real-time line movement tracking across 15+ sportsbooks. Detect steam moves and sharp money action before lines adjust.",
+      "Real-time line movement tracking across major sportsbooks. Detect steam moves and sharp money action as lines adjust.",
   },
   "/correlation-finder": {
     title: "Correlation Finder | Prop Correlation Analysis",
     description:
-      "Analyze player prop correlations and identify uncorrelated prop combinations for optimal parlay construction.",
+      "Analyze player prop correlations and identify combinations for more informed parlay construction.",
   },
   "/kalshi": {
     title: "Kalshi Prediction Markets | ChalkPicks",
     description:
-      "Explore Kalshi prediction market contracts with real-time odds and AI-generated probability analysis.",
+      "Explore Kalshi prediction market contracts with real-time odds and AI-assisted probability context.",
   },
   "/clv-tracker": {
     title: "CLV Tracker | Closing Line Value Analysis",
     description:
-      "Track closing line value (CLV) on every bet. Measure whether you consistently beat the closing line—the strongest predictor of long-term profitability.",
+      "Track closing line value (CLV) on your process. CLV is one of the strongest long-term skill signals for bettors.",
   },
   "/arbitrage": {
-    title: "Arbitrage Finder | Guaranteed Profit Opportunities",
+    title: "Arbitrage Scanner | Cross-Book Odds Discrepancies",
     description:
-      "Find arbitrage opportunities across 15+ sportsbooks. Lock in guaranteed profit by betting both sides at different books.",
+      "Scan major sportsbooks for cross-book price disagreements. When true arbs appear, see stake splits — execution risk still applies.",
   },
   "/arbitrage-opportunities": {
     title: "Real-Time Arbitrage Opportunities | ChalkPicks",
     description:
-      "Detect guaranteed profit arbitrage opportunities across multiple sportsbooks. Real-time odds comparison, optimal bet sizing, and risk analysis.",
+      "Monitor multi-book odds for arbitrage-style discrepancies with stake suggestions and risk notes.",
   },
   "/ev-finder": {
     title: "+EV Finder | Positive Expected Value Bets",
     description:
-      "Scan odds from 15+ sportsbooks and find +EV (positive expected value) bets where the market is mispriced in your favor.",
+      "Scan odds from major sportsbooks and surface +EV candidates where model fair price differs from the market.",
   },
   "/parlay-builder": {
     title: "Parlay Builder | Multi-Leg Parlay Constructor",
     description:
-      "Build multi-leg parlays with AI-generated picks, correlation analysis, and payout calculations across all sports.",
+      "Build multi-leg parlays with AI-assisted picks, correlation context, and payout calculations across sports.",
   },
   "/leaderboard": {
     title: "Community Leaderboard | Top Bettors & Rankings",
     description:
-      "View top-performing community members, their pick records, ROI, and CLV rankings. Compete and learn from the best.",
+      "View community rankings by ROI, results, and CLV-oriented metrics where available.",
   },
   "/backtesting": {
-    title: "Backtesting Tool | Historical Pick Performance",
+    title: "Backtesting Tool | Historical Strategy Checks",
     description:
-      "Backtest AI picks against historical data. Analyze win rates, ROI, and confidence score accuracy over past seasons.",
+      "Backtest strategies against historical data before risking bankroll. Past results are not future performance.",
   },
   "/sportsbooks": {
-    title: "Sportsbooks | Best Betting Apps & Promos",
+    title: "Sportsbooks | Compare Books & Promos",
     description:
-      "Compare sportsbooks, view current promotions, and find the best lines. Integrated with ChalkPicks for seamless betting.",
+      "Compare sportsbooks, promotions, and line quality context for research — ChalkPicks is analytics, not a book.",
   },
   "/tools": {
     title: "Sports Betting Tools | Calculators & Analyzers",
     description:
-      "Free and premium tools: bet calculator, line movement tracker, prop builder, arbitrage finder, CLV tracker, and more.",
+      "Free and premium tools: odds calculator, ROI, bankroll, line movement, prop builder, CLV tracker, and more.",
   },
   "/tools/odds-calculator": {
     title: "Free Odds Converter | American Decimal Fractional",
     description:
-      "Convert betting odds between American, decimal, and fractional formats instantly. Free odds calculator with implied probability and payout breakdown.",
+      "Convert betting odds between American, decimal, and fractional formats instantly. Free calculator with implied probability.",
   },
   "/tools/roi-calculator": {
-    title: "Free Betting ROI Calculator | Track Your Profits",
+    title: "Free Betting ROI Calculator | Track Your Results",
     description:
-      "Calculate your sports betting return on investment. Track total profit, ROI percentage, and break-even win rate with our free calculator.",
+      "Calculate sports betting ROI, profit/loss, and break-even win rate with a free calculator.",
   },
   "/tools/parlay-calculator": {
     title: "Free Parlay Calculator | Multi-Leg Payout Tool",
     description:
-      "Calculate parlay payouts for 2-15 leg bets instantly. Enter American or decimal odds and see total payout, profit, and implied probability.",
+      "Calculate parlay payouts for multi-leg bets. Enter odds and see combined payout and implied probability.",
   },
   "/blog": {
-    title: "Sports Betting Blog | Expert Analysis & AI Insights | ChalkPicks",
+    title: "Sports Betting Blog | Strategy & AI Insights | ChalkPicks",
     description:
-      "Expert sports betting analysis, AI-powered strategies, and data-driven insights. Learn how to beat the books with ChalkPicks Pro.",
+      "Sports betting strategy, +EV concepts, bankroll management, and AI analytics insights from ChalkPicks.",
   },
   "/signup": {
     title: "Sign Up | ChalkPicks",
     description:
-      "Create a ChalkPicks account and get instant access to AI picks, +EV finder, prop builder, and more. Plans from $9.99/mo.",
+      "Create a ChalkPicks account for AI-assisted picks, +EV tools, and analytics. Plans from $9.99/mo.",
   },
   "/login": {
     title: "Login | ChalkPicks Account",
@@ -142,152 +143,146 @@ export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
   "/dashboard": {
     title: "Dashboard | Your ChalkPicks Account",
     description:
-      "View your account overview, subscription status, recent picks, performance stats, and account settings.",
+      "View your account overview, subscription status, recent picks, performance stats, and settings.",
   },
   "/bankroll-tracker": {
     title: "Bankroll Tracker | Betting Budget Manager",
     description:
-      "Track your betting bankroll, manage unit sizing, monitor ROI, and analyze long-term profitability.",
+      "Track betting bankroll, unit sizing, and ROI over time.",
   },
   "/free-picks": {
     title: "Free Sports Betting Picks Today | ChalkPicks",
     description:
-      "Get free AI-generated sports betting picks every day. NFL, NBA, MLB, NHL picks with confidence scores.",
+      "Free AI-assisted sports picks with confidence scores for major leagues. Analytics only — gamble responsibly.",
   },
   "/strategy-builder": {
     title: "AI Betting Strategy Builder | ChalkPicks",
     description:
-      "Build, configure, and backtest custom sports betting strategies with AI. Define your edge and simulate performance.",
+      "Build and backtest custom sports betting strategy filters with AI-assisted configuration.",
   },
   "/tools/free-bet-converter": {
-    title: "Free Bet Converter | Convert Promos to Cash | ChalkPicks",
+    title: "Free Bet Converter | Promo Hedge Helper | ChalkPicks",
     description:
-      "Convert sportsbook free bets into guaranteed cash profit using hedging. Calculate the exact hedge bet needed.",
+      "Estimate hedge stakes to convert free-bet promos into a more predictable cash outcome when books allow.",
   },
   "/tools/middles-finder": {
-    title: "Middles Finder | Find Middle Opportunities | ChalkPicks",
+    title: "Middles Finder | Middle Windows | ChalkPicks",
     description:
-      "Find middle opportunities where you can win both sides of a bet. Calculate the middle window and expected value.",
+      "Explore middle windows across lines and estimate opportunity size — not a promise of dual wins.",
   },
   "/guides": {
     title: "Sports Betting Guides | Free Strategy Guides | ChalkPicks",
     description:
-      "Free sports betting strategy guides covering +EV betting, bankroll management, arbitrage, Kelly Criterion, and more.",
+      "Free guides on +EV, bankroll, arbitrage concepts, Kelly Criterion, and more.",
   },
   "/public-betting": {
     title:
       "Public Betting Percentages | Where Is the Money Going? | ChalkPicks",
     description:
-      "Track public betting percentages across all sports. See bet % vs money %, identify sharp vs public splits.",
+      "Track public betting percentages and sharp-vs-public splits where data is available.",
   },
   "/odds-comparison": {
     title: "Live Odds Comparison | Best Lines Across Books | ChalkPicks",
     description:
-      "Compare live odds from 10+ sportsbooks side by side. Detect steam moves, find best lines, and sort by Kelly %, edge %, or steam score.",
+      "Compare live odds from major sportsbooks. Spot line differences and steam context.",
   },
   "/methodology": {
     title: "AI Picks Methodology | How ChalkPicks Works",
     description:
-      "See exactly how ChalkPicks AI generates picks: data ingestion, Elo ratings, Poisson modeling, Kelly Criterion sizing, and edge scoring.",
+      "How ChalkPicks builds picks: odds ingestion, modeling context, confidence scoring, and CLV-oriented process.",
   },
   "/how-it-works": {
-    title: "How ChalkPicks Works | AI Sports Betting Platform",
+    title: "How ChalkPicks Works | AI Sports Betting Analytics",
     description:
-      "Step-by-step walkthrough of the ChalkPicks platform: real-time odds, AI analysis, confidence scores, and bankroll management tools.",
+      "From real-time odds to AI-assisted picks, confidence scores, ledger locks, and tools — platform walkthrough.",
   },
   "/ai-leaderboard": {
-    title: "AI Picks Leaderboard | Top Performing Models | ChalkPicks",
+    title: "AI Picks Leaderboard | Performance by Sport | ChalkPicks",
     description:
-      "Track AI model performance across sports. Compare win rates, ROI, CLV, and confidence accuracy for each ChalkPicks model.",
+      "Track model performance by sport from graded results. Past performance is not a guarantee of future results.",
   },
   "/nfl-picks": {
-    title: "NFL Picks Today | AI Football Betting Picks | ChalkPicks",
+    title: "NFL Picks Today | AI Football Analysis | ChalkPicks",
     description:
-      "AI-generated NFL picks with confidence scores, spread analysis, and edge ratings. Updated daily for every NFL game.",
+      "AI-assisted NFL picks with confidence scores and edge context. Updated for the current slate.",
   },
   "/nba-picks": {
-    title: "NBA Picks Today | AI Basketball Betting Picks | ChalkPicks",
+    title: "NBA Picks Today | AI Basketball Analysis | ChalkPicks",
     description:
-      "AI-powered NBA picks with moneyline, spread, and over/under analysis. Daily picks with confidence scores and edge ratings.",
+      "AI-assisted NBA picks with spread, total, and moneyline context plus confidence scores.",
   },
   "/mlb-picks": {
-    title: "MLB Picks Today | AI Baseball Betting Picks | ChalkPicks",
+    title: "MLB Picks Today | AI Baseball Analysis | ChalkPicks",
     description:
-      "Daily AI-generated MLB picks with pitcher matchup analysis, run line, and over/under recommendations with edge scores.",
+      "Daily AI-assisted MLB picks with pitcher matchup context and edge scores.",
   },
   "/nhl-picks": {
-    title: "NHL Picks Today | AI Hockey Betting Picks | ChalkPicks",
+    title: "NHL Picks Today | AI Hockey Analysis | ChalkPicks",
     description:
-      "AI-powered NHL picks with puck line, moneyline, and over/under analysis. Daily picks with confidence scores and edge ratings.",
+      "AI-assisted NHL picks with puck line, moneyline, and totals context.",
   },
   "/ncaaf-picks": {
-    title: "NCAAF Picks Today | College Football AI Picks",
+    title: "NCAAF Picks Today | College Football AI Analysis",
     description:
-      "AI-powered NCAAF picks using SP+ ratings, recruiting data, and tempo metrics. Daily college football predictions with confidence scores.",
+      "AI-assisted NCAAF picks with confidence scores and edge context for the college slate.",
   },
   "/ncaab-picks": {
-    title: "NCAAB Picks Today | College Basketball AI Picks",
+    title: "NCAAB Picks Today | College Basketball AI Analysis",
     description:
-      "AI-powered NCAAB picks using KenPom ratings, tempo analysis, and ATS trends. Daily college basketball predictions and March Madness picks.",
+      "AI-assisted NCAAB picks with tempo and matchup context for college basketball.",
   },
   "/mma-picks": {
-    title: "MMA Picks Today | UFC & Bellator AI Predictions",
+    title: "MMA Picks Today | UFC & Bellator Analysis",
     description:
-      "AI-powered MMA picks analyzing fighter stats, striking accuracy, grappling metrics, and historical matchup data for UFC and Bellator events.",
+      "AI-assisted MMA analysis using fighter metrics and matchup context for major cards.",
   },
   "/soccer-picks": {
-    title: "Soccer Picks Today | EPL, MLS & Champions League AI",
+    title: "Soccer Picks Today | EPL, MLS & More",
     description:
-      "AI-powered soccer picks for EPL, MLS, Champions League, and more. Daily predictions with expected goals, form analysis, and edge scores.",
+      "AI-assisted soccer picks for major leagues with form and edge context.",
   },
-  // These routes are live in App.tsx and listed in shared/seo-routes.ts's
-  // sitemap, but had no entry here — resolvePageMeta() was silently falling
-  // them all back to the homepage title/description. Copy matches the
-  // existing sitemap entries in shared/seo-routes.ts for consistency.
   "/daily-picks": {
     title: "Daily AI Picks Archive — Past Results by Date | ChalkPicks",
     description:
-      "Browse the complete archive of ChalkPicks AI sports betting picks by date. Full transparency on wins, losses, and performance for NFL, NBA, MLB & NHL.",
+      "Browse ChalkPicks AI picks by date. Transparency on graded outcomes where available.",
   },
   "/free-pick": {
     title: "Free Daily AI Sports Pick with Full Analysis | ChalkPicks",
     description:
-      "Get one free AI sports pick every day with confidence score, edge rating, and full analysis. No account needed.",
+      "One free AI-assisted pick with confidence score and analysis. No account required. Gamble responsibly.",
   },
   "/responsible-gambling": {
     title: "Responsible Gambling — Resources & Self-Exclusion | ChalkPicks",
     description:
-      "ChalkPicks is committed to responsible gambling. Access self-exclusion tools, problem gambling resources, and bankroll management guidelines.",
+      "ChalkPicks supports responsible gambling. Self-exclusion links, problem gambling resources, and bankroll guidelines.",
   },
   "/results": {
-    title: "AI Pick Results & Track Record — Verified Win Rate | ChalkPicks",
+    title: "AI Pick Results & Track Record | ChalkPicks",
     description:
-      "Full transparency on ChalkPicks AI pick results. View every graded pick with win/loss outcomes, confidence scores, and 30-day performance calendar.",
+      "Graded pick results with outcomes and confidence context. Full transparency — not a promise of future returns.",
   },
   "/tools/bankroll-manager": {
     title: "Sports Betting Bankroll Manager — Track & Protect | ChalkPicks",
     description:
-      "Free bankroll management tool for sports bettors. Set unit sizes, track deposits and withdrawals, and visualize bankroll growth over time.",
+      "Free bankroll tool: unit sizes, deposits/withdrawals, and growth visualization.",
   },
   "/tools/ev-calculator": {
     title: "Expected Value (EV) Calculator for Sports Betting | ChalkPicks",
     description:
-      "Free EV calculator. Find +EV bets by comparing market odds to true probabilities and calculate expected profit.",
+      "Free EV calculator. Compare odds to estimated probabilities and compute expected value.",
   },
   "/tools/kelly-calculator": {
     title: "Kelly Criterion Calculator for Sports Betting | ChalkPicks",
     description:
-      "Free Kelly Criterion calculator. Calculate optimal bet sizing to maximize bankroll growth while managing risk.",
+      "Free Kelly Criterion calculator for educational bet sizing — not financial advice.",
   },
   "/verify": {
     title: "Pick Verification Ledger — Cryptographic Proof | ChalkPicks",
     description:
-      "Verify every ChalkPicks AI pick was locked before game start with SHA-256 hash proof. Full transparency, zero manipulation.",
+      "Verify picks locked before game start via SHA-256 content hash. Transparency over screenshots.",
   },
 };
 
-// /learn/* pages: title/description come from the shared LEARN_PAGES_META
-// array (shared/learnPagesMeta.ts) rather than being repeated here.
 for (const page of LEARN_PAGES_META) {
   PAGE_META_MAP[page.path] = {
     title: page.title,
@@ -295,10 +290,6 @@ for (const page of LEARN_PAGES_META) {
   };
 }
 
-/**
- * Resolve the meta config for a pathname, with the same fallback rules the
- * client uses: exact match → /picks/* falls back to /picks → homepage.
- */
 export function resolvePageMeta(pathname: string): PageMetaConfig {
   const cleanPath = pathname.split("?")[0].replace(/\/$/, "") || "/";
   if (PAGE_META_MAP[cleanPath]) return PAGE_META_MAP[cleanPath];

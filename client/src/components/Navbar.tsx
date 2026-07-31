@@ -42,6 +42,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { AnnouncementBar } from "@/components/AnnouncementBar";
 
 // Logo URLs — gold crown + red splatter
 const LOGO_FULL =
@@ -475,6 +476,7 @@ export default function Navbar() {
           : "none",
       }}
     >
+      <AnnouncementBar />
       <div className="max-w-[1400px] mx-auto px-4 lg:px-6">
         <div className="flex items-center justify-between h-[76px] gap-2 min-w-0">
           {/* ── LOGO ── */}

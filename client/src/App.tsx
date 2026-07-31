@@ -25,8 +25,6 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { AiChatWidget } from "@/components/AiChatWidget";
 import { SwipeNavProvider } from "@/components/SwipeNavProvider";
 import { BackButton } from "@/components/BackButton";
-import { AnnouncementBar } from "@/components/AnnouncementBar";
-import PushNotificationBanner from "@/components/PushNotificationBanner";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
 
 const Picks = lazy(() => import("./pages/Picks"));
@@ -333,8 +331,6 @@ function App() {
         <TooltipProvider>
           <Toaster richColors position="top-right" />
           <SwipeNavProvider>
-            <AnnouncementBar />
-            <PushNotificationBanner />
             <BackButton />
             <Router />
             <SocialProofTicker />

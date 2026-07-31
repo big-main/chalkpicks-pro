@@ -175,13 +175,13 @@ export default function PicksLanding() {
             </h2>
             <p className="text-gray-400 mb-6 max-w-lg mx-auto">
               Unlock every AI-generated pick with confidence scores, edge
-              analysis, and detailed reasoning. Subscribe today.
+              analysis, and detailed reasoning. Get started today.
             </p>
             <Link
               href="/pricing"
               className="inline-block bg-emerald-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-emerald-600 transition-colors"
             >
-              View Plans →
+              Get Premium Access →
             </Link>
           </div>
         </div>

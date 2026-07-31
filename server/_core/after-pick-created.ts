@@ -31,7 +31,7 @@ export async function afterPickCreated(
     (insertResult as { insertId?: number })?.insertId ??
     null;
 
-  if (id == null || !Number.isFinite(Number(id))) {
+  if (id === null || id === undefined || !Number.isFinite(Number(id))) {
     console.warn("[afterPickCreated] no insertId — ledger skipped");
     return null;
   }
@@ -48,7 +48,7 @@ export async function afterPickCreated(
     confidenceScore: fields.confidenceScore,
     pickDate: fields.pickDate,
     tier: fields.tier,
-  }).catch((e) => console.warn("[afterPickCreated] ledger failed:", e));
+  }).catch(e => console.warn("[afterPickCreated] ledger failed:", e));
 
   return pickId;
 }

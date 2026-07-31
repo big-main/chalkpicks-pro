@@ -26,16 +26,22 @@ const SHELL = `<!doctype html>
 describe("injectSeo", () => {
   it("injects the route-specific title/description/canonical for a mapped route", async () => {
     const result = await injectSeo(SHELL, "/ev-finder");
-    expect(result.html).toContain("<title>+EV Finder | Positive Expected Value Bets</title>");
-    expect(result.html).toContain('rel="canonical" href="https://chalkpicks.live/ev-finder"');
-    expect(result.html).toContain('og:url" content="https://chalkpicks.live/ev-finder"');
+    expect(result.html).toContain(
+      "<title>+EV Finder | Positive Expected Value Bets</title>"
+    );
+    expect(result.html).toContain(
+      'rel="canonical" href="https://chalkpicks.live/ev-finder"'
+    );
+    expect(result.html).toContain(
+      'og:url" content="https://chalkpicks.live/ev-finder"'
+    );
     expect(result.html).not.toContain("homepage description");
     expect(result.status).toBeUndefined(); // normal 200
   });
 
   it("keeps the homepage meta for the root route", async () => {
     const result = await injectSeo(SHELL, "/");
-    expect(result.html).toContain("ChalkPicks | AI Sports Betting Picks");
+    expect(result.html).toContain("ChalkPicks | AI Sports Betting Analytics");
     expect(result.html).toContain('href="https://chalkpicks.live/"');
   });
 
@@ -49,7 +55,9 @@ describe("injectSeo", () => {
 
   it("strips query strings from the canonical", async () => {
     const result = await injectSeo(SHELL, "/pricing?utm_source=x");
-    expect(result.html).toContain('rel="canonical" href="https://chalkpicks.live/pricing"');
+    expect(result.html).toContain(
+      'rel="canonical" href="https://chalkpicks.live/pricing"'
+    );
     expect(result.html).toContain("ChalkPicks Pricing");
   });
 
@@ -63,7 +71,9 @@ describe("injectSeo", () => {
     // The +EV finder title includes characters that must survive escaping;
     // ensure no raw double quotes break out of the content attribute.
     const result = await injectSeo(SHELL, "/ev-finder");
-    const descMatch = result.html.match(/<meta name="description" content="([^"]*)"/);
+    const descMatch = result.html.match(
+      /<meta name="description" content="([^"]*)"/
+    );
     expect(descMatch).not.toBeNull();
     expect(descMatch![1].length).toBeGreaterThan(50);
   });

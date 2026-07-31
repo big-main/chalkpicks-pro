@@ -24,7 +24,8 @@ function requireStripe(): Stripe {
   return _stripe;
 }
 
-// Trial has been removed — subscriptions bill immediately.
+// Free trial removed (Jul 30, 2026) — subscriptions bill immediately at checkout.
+// Kept as a constant so a trial can be re-enabled easily if marketing changes.
 export const TRIAL_DAYS = 0;
 
 export const PLANS = {
@@ -100,11 +101,7 @@ export const subscriptionRouter = router({
 
       if (input.promoCode) {
         // Validate against our DB first
-        const {
-          validatePromoCode,
-          getPromoCodeByCode,
-          incrementPromoCodeUsage,
-        } = await import("../db");
+        const { validatePromoCode, getPromoCodeByCode } = await import("../db");
         const validation = await validatePromoCode(input.promoCode, input.tier);
 
         if (!validation.valid) {
@@ -148,7 +145,8 @@ export const subscriptionRouter = router({
               quantity: 1,
             },
           ],
-          // No trial — subscriptions bill immediately.
+          // No free trial — subscriptions are charged immediately at checkout.
+          // (Setting TRIAL_DAYS > 0 re-enables a Stripe trial if ever needed.)
           ...(isSubscription && TRIAL_DAYS > 0
             ? { subscription_data: { trial_period_days: TRIAL_DAYS } }
             : {}),

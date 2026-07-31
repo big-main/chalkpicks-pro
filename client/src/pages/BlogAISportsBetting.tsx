@@ -248,7 +248,7 @@ export default function BlogAISportsBetting() {
                 </h3>
                 <p className="text-slate-300 mb-6">
                   Join thousands of bettors using machine learning to find
-                  profitable opportunities. Free 7-day trial.
+                  profitable opportunities. Plans from $9.99/mo.
                 </p>
                 <div className="flex gap-4 justify-center">
                   <Button
@@ -257,7 +257,9 @@ export default function BlogAISportsBetting() {
                     }
                     className="bg-blue-500 hover:bg-blue-600"
                   >
-                    {hasFullAccess ? "View Today's Picks" : "Subscribe Now"}{" "}
+                    {hasFullAccess
+                      ? "View Today's Picks"
+                      : "Get Premium Access"}{" "}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                   <Button

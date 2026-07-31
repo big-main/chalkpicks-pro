@@ -166,12 +166,128 @@ export interface CorrelationPair {
   recommendation: "strong_corr" | "moderate_corr" | "negative_corr" | "neutral";
 }
 
+// ─── SharpAPI (primary free provider: 12 req/min = 17,280/day, no credit card) ─
+const SHARPAPI_KEY = process.env.SHARPAPI_KEY || "";
+const SHARPAPI_BASE = "https://api.sharpapi.io/api/v1";
+
+// Map ChalkPicks sport keys → SharpAPI league slugs
+const SPORT_SHARPAPI_MAP: Record<string, string> = {
+  nfl: "nfl",
+  nba: "nba",
+  mlb: "mlb",
+  nhl: "nhl",
+  ncaaf: "ncaaf",
+  ncaab: "ncaab",
+  soccer: "mls",
+  mma: "mma",
+};
+
+/** Fetch odds from SharpAPI free tier and normalize to OddsEvent[]. */
+async function fetchOddsFromSharpApi(sport: string): Promise<OddsEvent[]> {
+  if (!SHARPAPI_KEY) return [];
+  const league = SPORT_SHARPAPI_MAP[sport.toLowerCase()];
+  if (!league) return [];
+
+  try {
+    const url = `${SHARPAPI_BASE}/odds?league=${league}&market=main&limit=200`;
+    const res = await fetch(url, {
+      headers: { "X-API-Key": SHARPAPI_KEY },
+      signal: AbortSignal.timeout(10_000),
+    });
+
+    if (!res.ok) {
+      if (res.status === 429) {
+        console.warn(`[SharpAPI] Rate limited for ${sport}`);
+      } else {
+        console.warn(`[SharpAPI] ${res.status} for ${sport}`);
+      }
+      return [];
+    }
+
+    const json = await res.json();
+    const rows = json.data || [];
+    if (rows.length === 0) return [];
+
+    // Group rows by event_id to build OddsEvent objects
+    const eventMap = new Map<string, OddsEvent>();
+    for (const row of rows) {
+      const eventId = row.event_id;
+      if (!eventMap.has(eventId)) {
+        eventMap.set(eventId, {
+          id: eventId,
+          sport: sport.toLowerCase(),
+          sportKey: league,
+          homeTeam: row.home_team || "Home",
+          awayTeam: row.away_team || "Away",
+          commenceTime: row.event_start_time || new Date().toISOString(),
+          bookmakers: [],
+        });
+      }
+      const event = eventMap.get(eventId)!;
+
+      // Find or create bookmaker entry
+      const bookKey = row.sportsbook || "unknown";
+      let bookmaker = event.bookmakers.find(b => b.key === bookKey);
+      if (!bookmaker) {
+        bookmaker = {
+          key: bookKey,
+          title: bookKey.charAt(0).toUpperCase() + bookKey.slice(1),
+          lastUpdate: row.timestamp || new Date().toISOString(),
+          markets: [],
+        };
+        event.bookmakers.push(bookmaker);
+      }
+
+      // Map SharpAPI market_type to our market keys
+      let marketKey = "h2h";
+      if (
+        row.market_type === "point_spread" ||
+        row.market_type === "run_line" ||
+        row.market_type === "puck_line"
+      ) {
+        marketKey = "spreads";
+      } else if (row.market_type?.includes("total")) {
+        marketKey = "totals";
+      }
+
+      // Find or create market entry
+      let market = bookmaker.markets.find(m => m.key === marketKey);
+      if (!market) {
+        market = {
+          key: marketKey,
+          lastUpdate: row.timestamp || new Date().toISOString(),
+          outcomes: [],
+        };
+        bookmaker.markets.push(market);
+      }
+
+      // Add outcome
+      const outcome: Outcome = {
+        name: row.selection || "Unknown",
+        price: row.odds_american ?? 0,
+      };
+      if (row.line !== null && row.line !== undefined) {
+        outcome.point = row.line;
+      }
+      market.outcomes.push(outcome);
+    }
+
+    return Array.from(eventMap.values());
+  } catch (err) {
+    console.warn(
+      `[SharpAPI] Fetch failed for ${sport}:`,
+      (err as Error).message
+    );
+    return [];
+  }
+}
+
 // ─── The Odds API ───────────────────────────────────────────────────────────
 
 const ODDS_API_KEY = process.env.ODDS_API_KEY || "";
-const ODDS_API_BASE = "https://api.the-odds-api.com/v4";
+const _ODDS_API_BASE = "https://api.the-odds-api.com/v4"; // Used by oddsApiCache internally
 
-// ─── odds-api.io (primary free provider: 100 req/hour, free forever) ────────
+// ─── odds-api.io (secondary free provider: 100 req/hour, free forever) ──────
 const ODDS_API_IO_KEY = process.env.ODDS_API_IO_KEY || "";
 const ODDS_API_IO_BASE = "https://api.odds-api.io/v3";
 
@@ -362,7 +478,19 @@ export async function fetchOdds(
   const cached = cache.get<OddsEvent[]>(cacheKey);
   if (cached) return cached;
 
-  // Primary: odds-api.io (100 req/hour free forever)
+  // Priority 1: SharpAPI (17,280 req/day free tier — most generous)
+  if (SHARPAPI_KEY) {
+    const sharpResults = await fetchOddsFromSharpApi(sport);
+    if (sharpResults.length > 0) {
+      cache.set(cacheKey, sharpResults, TTL.ODDS);
+      return sharpResults;
+    }
+    console.warn(
+      `[SharpAPI] No results for ${sport}, falling back to odds-api.io`
+    );
+  }
+
+  // Priority 2: odds-api.io (100 req/hour free forever)
   if (ODDS_API_IO_KEY) {
     const ioResults = await fetchOddsFromIo(sport);
     if (ioResults.length > 0) {
@@ -374,7 +502,7 @@ export async function fetchOdds(
     );
   }
 
-  // Fallback: The Odds API (500 req/month) — routed through centralized cache
+  // Priority 3: The Odds API (500 req/month) — routed through centralized cache
   const sportKey = SPORT_KEYS[sport.toLowerCase()] || sport;
   if (!ODDS_API_KEY) {
     return generateRealisticOdds(sport);
@@ -679,7 +807,7 @@ export function calculateEV(events: OddsEvent[]): Array<{
             b: { odds: number; book: string }
           ) => (a.odds > b.odds ? a : b)
         );
-        const bestImplied = americanToImplied(best.odds);
+        const _bestImplied = americanToImplied(best.odds);
 
         // EV = (fairProb * payout) - 1
         const payout = americanToPayout(best.odds);

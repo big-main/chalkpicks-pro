@@ -283,7 +283,7 @@ export default function BlogStrategy() {
                 </h3>
                 <p className="text-slate-300 mb-6">
                   ChalkPicks Pro includes Kelly Calculator, ROI Tracker, Odds
-                  Comparison, and EV Finder. Free 7-day trial.
+                  Comparison, and EV Finder. Plans from $9.99/mo.
                 </p>
                 <div className="flex gap-4 justify-center flex-wrap">
                   <Button
@@ -292,7 +292,9 @@ export default function BlogStrategy() {
                     }
                     className="bg-amber-500 hover:bg-amber-600"
                   >
-                    {hasFullAccess ? "View Today's Picks" : "Subscribe Now"}{" "}
+                    {hasFullAccess
+                      ? "View Today's Picks"
+                      : "Get Premium Access"}{" "}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                   <Button

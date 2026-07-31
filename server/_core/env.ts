@@ -33,8 +33,11 @@ export const ENV = {
   n8nPicksWebhookUrl: process.env.N8N_PICKS_WEBHOOK_URL ?? "",
   n8nWebhookSecret: process.env.N8N_WEBHOOK_SECRET ?? "",
   railwayApiToken: process.env.RAILWAY_API_TOKEN ?? "",
+  sharpApiKey: process.env.SHARPAPI_KEY ?? "",
   hasOddsApiKey: Boolean(
-    process.env.ODDS_API_KEY || process.env.ODDS_API_IO_KEY
+    process.env.SHARPAPI_KEY ||
+      process.env.ODDS_API_KEY ||
+      process.env.ODDS_API_IO_KEY
   ),
   pageSpeedApiKey: process.env.PAGESPEED_API_KEY ?? "",
 };

@@ -11,11 +11,11 @@
  */
 
 import { z } from "zod";
-import { oddsApiCache } from "../services/oddsApiCache";
 import { router, protectedProcedure, publicProcedure } from "../_core/trpc";
+import { verifyServiceSecret } from "../_core/serviceAuth";
 import { getDb } from "../db";
 import { oddsSnapshots, userBets } from "../../drizzle/schema";
-import { eq, and, lt, desc, gte, sql } from "drizzle-orm";
+import { eq, and, lt, desc, sql } from "drizzle-orm";
 import {
   americanToImplied,
   devig,
@@ -73,16 +73,16 @@ interface BookOdds {
 
 /**
  * Fetch live odds from The Odds API for a sport.
- * Routed through centralized cache to prevent quota exhaustion.
+ * Returns raw bookmaker data.
  */
 async function fetchLiveOdds(sport: string): Promise<any[]> {
   const apiKey = process.env.ODDS_API_KEY;
   if (!apiKey) return [];
+  const url = `https://api.the-odds-api.com/v4/sports/${sport}/odds/?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&bookmakers=${ALL_BOOKS.join(",")}`;
   try {
-    return await oddsApiCache.fetch(sport, {
-      markets: "h2h,spreads,totals",
-      bookmakers: ALL_BOOKS.join(","),
-    });
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return [];
+    return await res.json();
   } catch {
     return [];
   }
@@ -97,6 +97,57 @@ function getSharpOdds(bookOdds: BookOdds[]): BookOdds | null {
     if (found) return found;
   }
   return null;
+}
+
+/**
+ * Archives one sport's live odds into oddsSnapshots, one row per
+ * event/bookmaker/market. Returns the number of rows actually inserted
+ * (duplicate/constraint errors are swallowed and don't count).
+ */
+async function stampSportSnapshots(
+  db: NonNullable<Awaited<ReturnType<typeof getDb>>>,
+  sport: string,
+  events: any[]
+): Promise<number> {
+  let inserted = 0;
+  for (const event of events) {
+    for (const bookmaker of event.bookmakers || []) {
+      for (const market of bookmaker.markets || []) {
+        try {
+          await db.insert(oddsSnapshots).values({
+            eventId: event.id,
+            sportKey: sport,
+            homeTeam: event.home_team,
+            awayTeam: event.away_team,
+            commenceTime: new Date(event.commence_time),
+            bookmaker: bookmaker.key,
+            marketKey: market.key,
+            outcomesJson: JSON.stringify(market.outcomes),
+          });
+          inserted++;
+        } catch {
+          // Ignore duplicate/constraint errors
+        }
+      }
+    }
+  }
+  return inserted;
+}
+
+/** Shared auth guard for the n8n cron endpoints below. */
+function assertCronAuth(serviceToken: string): void {
+  if (
+    !verifyServiceSecret(
+      serviceToken,
+      process.env.CRON_SERVICE_TOKEN,
+      "CRON_SERVICE_TOKEN"
+    )
+  ) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Invalid service token",
+    });
+  }
 }
 
 /**
@@ -245,14 +296,7 @@ export const evRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      // Simple service token auth
-      const expected = process.env.CRON_SERVICE_TOKEN || "chalkpicks_cron_2026";
-      if (input.serviceToken !== expected) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Invalid service token",
-        });
-      }
+      assertCronAuth(input.serviceToken);
 
       const db = await getDb();
       if (!db)
@@ -265,28 +309,7 @@ export const evRouter = router({
 
       for (const sport of input.sports) {
         const events = await fetchLiveOdds(sport);
-
-        for (const event of events) {
-          for (const bookmaker of event.bookmakers || []) {
-            for (const market of bookmaker.markets || []) {
-              try {
-                await db.insert(oddsSnapshots).values({
-                  eventId: event.id,
-                  sportKey: sport,
-                  homeTeam: event.home_team,
-                  awayTeam: event.away_team,
-                  commenceTime: new Date(event.commence_time),
-                  bookmaker: bookmaker.key,
-                  marketKey: market.key,
-                  outcomesJson: JSON.stringify(market.outcomes),
-                });
-                totalInserted++;
-              } catch {
-                // Ignore duplicate/constraint errors
-              }
-            }
-          }
-        }
+        totalInserted += await stampSportSnapshots(db, sport, events);
       }
 
       return {
@@ -308,13 +331,7 @@ export const evRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      const expected = process.env.CRON_SERVICE_TOKEN || "chalkpicks_cron_2026";
-      if (input.serviceToken !== expected) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Invalid service token",
-        });
-      }
+      assertCronAuth(input.serviceToken);
 
       const db = await getDb();
       if (!db)

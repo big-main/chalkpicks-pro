@@ -15,7 +15,7 @@ const GREETING: ChatMsg = {
 
 const SUGGESTIONS = [
   "What is a +EV bet?",
-  "What plans are available?",
+  "What plans do you offer?",
   "Explain closing line value",
 ];
 

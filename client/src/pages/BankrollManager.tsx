@@ -399,7 +399,7 @@ export default function BankrollManager() {
                 href="/pricing"
                 className="inline-block bg-emerald-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-emerald-600 transition-colors"
               >
-                Subscribe Now →
+                Get Premium Access →
               </Link>
             </div>
           </div>

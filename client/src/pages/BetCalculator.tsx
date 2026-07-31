@@ -1,6 +1,14 @@
 import { useState, useCallback } from "react";
 import { Link } from "wouter";
-import { Calculator, TrendingUp, DollarSign, RefreshCw, ChevronRight, Plus, Trash2 } from "lucide-react";
+import {
+  Calculator,
+  TrendingUp,
+  DollarSign,
+  RefreshCw,
+  ChevronRight,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,8 +34,8 @@ function americanToImplied(american: number): number {
 }
 function impliedToAmerican(implied: number): number {
   const p = implied / 100;
-  if (p >= 0.5) return Math.round(-p / (1 - p) * 100);
-  return Math.round((1 - p) / p * 100);
+  if (p >= 0.5) return Math.round((-p / (1 - p)) * 100);
+  return Math.round(((1 - p) / p) * 100);
 }
 
 // ─── Odds Converter ──────────────────────────────────────────────────────────
@@ -45,10 +53,11 @@ function OddsConverter() {
     setDecimal(dec.toFixed(3));
     setImplied(americanToImplied(n).toFixed(2));
     const num = dec - 1;
-    const gcd = (a: number, b: number): number => b < 0.001 ? a : gcd(b, a % b);
+    const gcd = (a: number, b: number): number =>
+      b < 0.001 ? a : gcd(b, a % b);
     const d = 100;
     const g = gcd(Math.round(num * d), d);
-    setFractional(`${Math.round(num * d / g)}/${d / g}`);
+    setFractional(`${Math.round((num * d) / g)}/${d / g}`);
   };
 
   const fromDecimal = (val: string) => {
@@ -58,10 +67,11 @@ function OddsConverter() {
     setAmerican(decimalToAmerican(n).toString());
     setImplied(decimalToImplied(n).toFixed(2));
     const num = n - 1;
-    const gcd = (a: number, b: number): number => b < 0.001 ? a : gcd(b, a % b);
+    const gcd = (a: number, b: number): number =>
+      b < 0.001 ? a : gcd(b, a % b);
     const d = 100;
     const g = gcd(Math.round(num * d), d);
-    setFractional(`${Math.round(num * d / g)}/${d / g}`);
+    setFractional(`${Math.round((num * d) / g)}/${d / g}`);
   };
 
   const fromImplied = (val: string) => {
@@ -73,19 +83,27 @@ function OddsConverter() {
     const dec = americanToDecimal(am);
     setDecimal(dec.toFixed(3));
     const num = dec - 1;
-    const gcd = (a: number, b: number): number => b < 0.001 ? a : gcd(b, a % b);
+    const gcd = (a: number, b: number): number =>
+      b < 0.001 ? a : gcd(b, a % b);
     const d = 100;
     const g = gcd(Math.round(num * d), d);
-    setFractional(`${Math.round(num * d / g)}/${d / g}`);
+    setFractional(`${Math.round((num * d) / g)}/${d / g}`);
   };
 
-  const clear = () => { setAmerican(""); setDecimal(""); setImplied(""); setFractional(""); };
+  const clear = () => {
+    setAmerican("");
+    setDecimal("");
+    setImplied("");
+    setFractional("");
+  };
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label className="text-[#00ff87] font-semibold text-sm">American Odds</Label>
+          <Label className="text-[#00ff87] font-semibold text-sm">
+            American Odds
+          </Label>
           <Input
             placeholder="-110 or +150"
             value={american}
@@ -95,7 +113,9 @@ function OddsConverter() {
           <p className="text-xs text-gray-500">e.g. -110, +150, -200</p>
         </div>
         <div className="space-y-2">
-          <Label className="text-[#00ff87] font-semibold text-sm">Decimal Odds</Label>
+          <Label className="text-[#00ff87] font-semibold text-sm">
+            Decimal Odds
+          </Label>
           <Input
             placeholder="1.909"
             value={decimal}
@@ -105,7 +125,9 @@ function OddsConverter() {
           <p className="text-xs text-gray-500">Used in Europe/Australia</p>
         </div>
         <div className="space-y-2">
-          <Label className="text-[#00ff87] font-semibold text-sm">Implied Probability (%)</Label>
+          <Label className="text-[#00ff87] font-semibold text-sm">
+            Implied Probability (%)
+          </Label>
           <Input
             placeholder="52.38"
             value={implied}
@@ -115,7 +137,9 @@ function OddsConverter() {
           <p className="text-xs text-gray-500">True win probability</p>
         </div>
         <div className="space-y-2">
-          <Label className="text-gray-400 font-semibold text-sm">Fractional Odds</Label>
+          <Label className="text-gray-400 font-semibold text-sm">
+            Fractional Odds
+          </Label>
           <Input
             placeholder="10/11"
             value={fractional}
@@ -125,7 +149,12 @@ function OddsConverter() {
           <p className="text-xs text-gray-500">UK format (read-only)</p>
         </div>
       </div>
-      <Button onClick={clear} variant="outline" size="sm" className="border-[#2a2a3a] text-gray-400 hover:text-white">
+      <Button
+        onClick={clear}
+        variant="outline"
+        size="sm"
+        className="border-[#2a2a3a] text-gray-400 hover:text-white"
+      >
         <RefreshCw className="w-3 h-3 mr-2" /> Clear
       </Button>
     </div>
@@ -139,13 +168,18 @@ interface ParlayLeg {
 }
 
 function ParlayCalculator() {
-  const [legs, setLegs] = useState<ParlayLeg[]>([{ id: 1, odds: "" }, { id: 2, odds: "" }]);
+  const [legs, setLegs] = useState<ParlayLeg[]>([
+    { id: 1, odds: "" },
+    { id: 2, odds: "" },
+  ]);
   const [stake, setStake] = useState("100");
   const nextId = legs.length + 1;
 
   const addLeg = () => setLegs(prev => [...prev, { id: nextId, odds: "" }]);
-  const removeLeg = (id: number) => setLegs(prev => prev.filter(l => l.id !== id));
-  const updateLeg = (id: number, odds: string) => setLegs(prev => prev.map(l => l.id === id ? { ...l, odds } : l));
+  const removeLeg = (id: number) =>
+    setLegs(prev => prev.filter(l => l.id !== id));
+  const updateLeg = (id: number, odds: string) =>
+    setLegs(prev => prev.map(l => (l.id === id ? { ...l, odds } : l)));
 
   const validLegs = legs.filter(l => {
     const n = parseFloat(l.odds);
@@ -159,15 +193,19 @@ function ParlayCalculator() {
   const stakeNum = parseFloat(stake) || 0;
   const payout = stakeNum * combinedDecimal;
   const profit = payout - stakeNum;
-  const combinedAmerican = validLegs.length >= 2 ? decimalToAmerican(combinedDecimal) : null;
-  const impliedProb = validLegs.length >= 2 ? decimalToImplied(combinedDecimal) : null;
+  const combinedAmerican =
+    validLegs.length >= 2 ? decimalToAmerican(combinedDecimal) : null;
+  const impliedProb =
+    validLegs.length >= 2 ? decimalToImplied(combinedDecimal) : null;
 
   return (
     <div className="space-y-4">
       <div className="space-y-3">
         {legs.map((leg, i) => (
           <div key={leg.id} className="flex items-center gap-3">
-            <span className="text-gray-500 text-sm w-16 shrink-0">Leg {i + 1}</span>
+            <span className="text-gray-500 text-sm w-16 shrink-0">
+              Leg {i + 1}
+            </span>
             <Input
               placeholder="American odds (e.g. -110)"
               value={leg.odds}
@@ -175,19 +213,31 @@ function ParlayCalculator() {
               className="bg-[#111118] border-[#2a2a3a] text-white font-mono focus:border-[#00ff87]"
             />
             {legs.length > 2 && (
-              <Button onClick={() => removeLeg(leg.id)} variant="ghost" size="sm" className="text-brand-red hover:text-red-300 shrink-0">
+              <Button
+                onClick={() => removeLeg(leg.id)}
+                variant="ghost"
+                size="sm"
+                className="text-brand-red hover:text-red-300 shrink-0"
+              >
                 <Trash2 className="w-4 h-4" />
               </Button>
             )}
           </div>
         ))}
       </div>
-      <Button onClick={addLeg} variant="outline" size="sm" className="border-[#2a2a3a] text-[#00ff87] hover:bg-[#00ff87]/10">
+      <Button
+        onClick={addLeg}
+        variant="outline"
+        size="sm"
+        className="border-[#2a2a3a] text-[#00ff87] hover:bg-[#00ff87]/10"
+      >
         <Plus className="w-3 h-3 mr-2" /> Add Leg
       </Button>
 
       <div className="space-y-2">
-        <Label className="text-[#00ff87] font-semibold text-sm">Stake ($)</Label>
+        <Label className="text-[#00ff87] font-semibold text-sm">
+          Stake ($)
+        </Label>
         <Input
           placeholder="100"
           value={stake}
@@ -201,20 +251,30 @@ function ParlayCalculator() {
           <div className="bg-[#111118] border border-[#2a2a3a] rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">Parlay Odds</p>
             <p className="text-lg font-bold font-mono text-white">
-              {combinedAmerican !== null ? (combinedAmerican > 0 ? `+${combinedAmerican}` : combinedAmerican) : "—"}
+              {combinedAmerican !== null
+                ? combinedAmerican > 0
+                  ? `+${combinedAmerican}`
+                  : combinedAmerican
+                : "—"}
             </p>
           </div>
           <div className="bg-[#111118] border border-[#2a2a3a] rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">Total Payout</p>
-            <p className="text-lg font-bold font-mono text-[#00ff87]">${payout.toFixed(2)}</p>
+            <p className="text-lg font-bold font-mono text-[#00ff87]">
+              ${payout.toFixed(2)}
+            </p>
           </div>
           <div className="bg-[#111118] border border-[#2a2a3a] rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">Profit</p>
-            <p className="text-lg font-bold font-mono text-[#ff6b35]">${profit.toFixed(2)}</p>
+            <p className="text-lg font-bold font-mono text-[#ff6b35]">
+              ${profit.toFixed(2)}
+            </p>
           </div>
           <div className="bg-[#111118] border border-[#2a2a3a] rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">Win Probability</p>
-            <p className="text-lg font-bold font-mono text-brand-gold">{impliedProb?.toFixed(1)}%</p>
+            <p className="text-lg font-bold font-mono text-brand-gold">
+              {impliedProb?.toFixed(1)}%
+            </p>
           </div>
         </div>
       )}
@@ -238,32 +298,43 @@ function KellyCalculator() {
   let betAmount = 0;
   let ev = 0;
 
-  if (!isNaN(oddsNum) && !isNaN(winProbNum) && winProbNum > 0 && winProbNum < 1 && (oddsNum >= 100 || oddsNum <= -100)) {
+  if (
+    !isNaN(oddsNum) &&
+    !isNaN(winProbNum) &&
+    winProbNum > 0 &&
+    winProbNum < 1 &&
+    (oddsNum >= 100 || oddsNum <= -100)
+  ) {
     const b = americanToDecimal(oddsNum) - 1; // net odds
     const p = winProbNum;
     const q = 1 - p;
     kellyFraction = (b * p - q) / b;
     ev = (b * p - q) * 100; // EV per $100
 
-    const multiplier = fraction === "full" ? 1 : fraction === "half" ? 0.5 : 0.25;
+    const multiplier =
+      fraction === "full" ? 1 : fraction === "half" ? 0.5 : 0.25;
     betAmount = Math.max(0, kellyFraction * multiplier * bankrollNum);
-    recommendation = kellyFraction <= 0
-      ? "No edge — skip this bet"
-      : kellyFraction < 0.05
-      ? "Small edge — minimal bet"
-      : kellyFraction < 0.15
-      ? "Moderate edge — solid bet"
-      : "Strong edge — high-confidence bet";
+    recommendation =
+      kellyFraction <= 0
+        ? "No edge — skip this bet"
+        : kellyFraction < 0.05
+          ? "Small edge — minimal bet"
+          : kellyFraction < 0.15
+            ? "Moderate edge — solid bet"
+            : "Strong edge — high-confidence bet";
   }
 
-  const fractionMultiplier = fraction === "full" ? 1 : fraction === "half" ? 0.5 : 0.25;
+  const fractionMultiplier =
+    fraction === "full" ? 1 : fraction === "half" ? 0.5 : 0.25;
   const adjustedKelly = kellyFraction * fractionMultiplier * 100;
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label className="text-[#00ff87] font-semibold text-sm">Bankroll ($)</Label>
+          <Label className="text-[#00ff87] font-semibold text-sm">
+            Bankroll ($)
+          </Label>
           <Input
             placeholder="1000"
             value={bankroll}
@@ -272,7 +343,9 @@ function KellyCalculator() {
           />
         </div>
         <div className="space-y-2">
-          <Label className="text-[#00ff87] font-semibold text-sm">American Odds</Label>
+          <Label className="text-[#00ff87] font-semibold text-sm">
+            American Odds
+          </Label>
           <Input
             placeholder="-110 or +200"
             value={odds}
@@ -281,7 +354,9 @@ function KellyCalculator() {
           />
         </div>
         <div className="space-y-2">
-          <Label className="text-[#00ff87] font-semibold text-sm">Your Win Probability (%)</Label>
+          <Label className="text-[#00ff87] font-semibold text-sm">
+            Your Win Probability (%)
+          </Label>
           <Input
             placeholder="55"
             value={winProb}
@@ -292,7 +367,9 @@ function KellyCalculator() {
       </div>
 
       <div className="space-y-2">
-        <Label className="text-gray-400 font-semibold text-sm">Kelly Fraction</Label>
+        <Label className="text-gray-400 font-semibold text-sm">
+          Kelly Fraction
+        </Label>
         <div className="flex gap-2">
           {(["full", "half", "quarter"] as const).map(f => (
             <button
@@ -304,32 +381,47 @@ function KellyCalculator() {
                   : "bg-[#111118] border-[#2a2a3a] text-gray-400 hover:border-[#00ff87]/50"
               }`}
             >
-              {f === "full" ? "Full Kelly" : f === "half" ? "Half Kelly" : "Quarter Kelly"}
+              {f === "full"
+                ? "Full Kelly"
+                : f === "half"
+                  ? "Half Kelly"
+                  : "Quarter Kelly"}
             </button>
           ))}
         </div>
-        <p className="text-xs text-gray-500">Half Kelly is recommended for most bettors to reduce variance</p>
+        <p className="text-xs text-gray-500">
+          Half Kelly is recommended for most bettors to reduce variance
+        </p>
       </div>
 
       {betAmount > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
           <div className="bg-[#111118] border border-[#00ff87]/30 rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">Recommended Bet</p>
-            <p className="text-xl font-bold font-mono text-[#00ff87]">${betAmount.toFixed(2)}</p>
+            <p className="text-xl font-bold font-mono text-[#00ff87]">
+              ${betAmount.toFixed(2)}
+            </p>
           </div>
           <div className="bg-[#111118] border border-[#2a2a3a] rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">Kelly %</p>
-            <p className="text-xl font-bold font-mono text-white">{adjustedKelly.toFixed(1)}%</p>
+            <p className="text-xl font-bold font-mono text-white">
+              {adjustedKelly.toFixed(1)}%
+            </p>
           </div>
           <div className="bg-[#111118] border border-[#2a2a3a] rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">Expected Value</p>
-            <p className={`text-xl font-bold font-mono ${ev > 0 ? "text-[#ff6b35]" : "text-brand-red"}`}>
-              {ev > 0 ? "+" : ""}{ev.toFixed(1)}%
+            <p
+              className={`text-xl font-bold font-mono ${ev > 0 ? "text-[#ff6b35]" : "text-brand-red"}`}
+            >
+              {ev > 0 ? "+" : ""}
+              {ev.toFixed(1)}%
             </p>
           </div>
           <div className="bg-[#111118] border border-[#2a2a3a] rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">Edge</p>
-            <p className={`text-sm font-semibold ${kellyFraction > 0 ? "text-[#00ff87]" : "text-brand-red"}`}>
+            <p
+              className={`text-sm font-semibold ${kellyFraction > 0 ? "text-[#00ff87]" : "text-brand-red"}`}
+            >
               {recommendation}
             </p>
           </div>
@@ -338,7 +430,10 @@ function KellyCalculator() {
 
       {kellyFraction <= 0 && odds && winProb && (
         <div className="bg-red-900/20 border border-brand-red/30 rounded-lg p-3 text-center">
-          <p className="text-brand-red font-semibold">No edge detected — the implied probability exceeds your win estimate. Skip this bet.</p>
+          <p className="text-brand-red font-semibold">
+            No edge detected — the implied probability exceeds your win
+            estimate. Skip this bet.
+          </p>
         </div>
       )}
     </div>
@@ -359,12 +454,20 @@ export default function BetCalculator() {
             Sports Betting <span className="text-[#00ff87]">Calculator</span>
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-6">
-            Free odds converter, parlay calculator, and Kelly Criterion bankroll tool. No account needed.
+            Free odds converter, parlay calculator, and Kelly Criterion bankroll
+            tool. No account needed.
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-500">
-            <span className="flex items-center gap-1"><Calculator className="w-4 h-4 text-[#00ff87]" /> Odds Converter</span>
-            <span className="flex items-center gap-1"><TrendingUp className="w-4 h-4 text-[#00ff87]" /> Parlay Calculator</span>
-            <span className="flex items-center gap-1"><DollarSign className="w-4 h-4 text-[#00ff87]" /> Kelly Criterion</span>
+            <span className="flex items-center gap-1">
+              <Calculator className="w-4 h-4 text-[#00ff87]" /> Odds Converter
+            </span>
+            <span className="flex items-center gap-1">
+              <TrendingUp className="w-4 h-4 text-[#00ff87]" /> Parlay
+              Calculator
+            </span>
+            <span className="flex items-center gap-1">
+              <DollarSign className="w-4 h-4 text-[#00ff87]" /> Kelly Criterion
+            </span>
           </div>
         </div>
       </div>
@@ -373,13 +476,22 @@ export default function BetCalculator() {
       <div className="max-w-4xl mx-auto px-4 py-10">
         <Tabs defaultValue="odds" className="w-full">
           <TabsList className="bg-[#111118] border border-[#2a2a3a] mb-8 w-full sm:w-auto">
-            <TabsTrigger value="odds" className="data-[state=active]:bg-[#00ff87]/20 data-[state=active]:text-[#00ff87] flex-1 sm:flex-none">
+            <TabsTrigger
+              value="odds"
+              className="data-[state=active]:bg-[#00ff87]/20 data-[state=active]:text-[#00ff87] flex-1 sm:flex-none"
+            >
               <Calculator className="w-4 h-4 mr-2" /> Odds Converter
             </TabsTrigger>
-            <TabsTrigger value="parlay" className="data-[state=active]:bg-[#00ff87]/20 data-[state=active]:text-[#00ff87] flex-1 sm:flex-none">
+            <TabsTrigger
+              value="parlay"
+              className="data-[state=active]:bg-[#00ff87]/20 data-[state=active]:text-[#00ff87] flex-1 sm:flex-none"
+            >
               <TrendingUp className="w-4 h-4 mr-2" /> Parlay Builder
             </TabsTrigger>
-            <TabsTrigger value="kelly" className="data-[state=active]:bg-[#00ff87]/20 data-[state=active]:text-[#00ff87] flex-1 sm:flex-none">
+            <TabsTrigger
+              value="kelly"
+              className="data-[state=active]:bg-[#00ff87]/20 data-[state=active]:text-[#00ff87] flex-1 sm:flex-none"
+            >
               <DollarSign className="w-4 h-4 mr-2" /> Kelly Criterion
             </TabsTrigger>
           </TabsList>
@@ -391,7 +503,10 @@ export default function BetCalculator() {
                   <Calculator className="w-5 h-5 text-[#00ff87]" />
                   Odds Converter
                 </CardTitle>
-                <p className="text-gray-400 text-sm">Convert between American, Decimal, and Implied Probability formats instantly.</p>
+                <p className="text-gray-400 text-sm">
+                  Convert between American, Decimal, and Implied Probability
+                  formats instantly.
+                </p>
               </CardHeader>
               <CardContent>
                 <OddsConverter />
@@ -406,7 +521,10 @@ export default function BetCalculator() {
                   <TrendingUp className="w-5 h-5 text-[#00ff87]" />
                   Parlay Calculator
                 </CardTitle>
-                <p className="text-gray-400 text-sm">Calculate combined parlay odds, total payout, and win probability for up to 12 legs.</p>
+                <p className="text-gray-400 text-sm">
+                  Calculate combined parlay odds, total payout, and win
+                  probability for up to 12 legs.
+                </p>
               </CardHeader>
               <CardContent>
                 <ParlayCalculator />
@@ -421,7 +539,10 @@ export default function BetCalculator() {
                   <DollarSign className="w-5 h-5 text-[#00ff87]" />
                   Kelly Criterion Bankroll Calculator
                 </CardTitle>
-                <p className="text-gray-400 text-sm">Calculate the mathematically optimal bet size based on your edge and bankroll.</p>
+                <p className="text-gray-400 text-sm">
+                  Calculate the mathematically optimal bet size based on your
+                  edge and bankroll.
+                </p>
               </CardHeader>
               <CardContent>
                 <KellyCalculator />
@@ -433,16 +554,36 @@ export default function BetCalculator() {
         {/* SEO Content */}
         <div className="mt-12 grid sm:grid-cols-3 gap-6 text-sm text-gray-400">
           <div>
-            <h2 className="text-white font-semibold mb-2">What is +EV Betting?</h2>
-            <p>Positive expected value (+EV) betting means placing wagers where your true win probability exceeds the implied probability in the odds. Over time, +EV bets are profitable even if you lose individual bets.</p>
+            <h2 className="text-white font-semibold mb-2">
+              What is +EV Betting?
+            </h2>
+            <p>
+              Positive expected value (+EV) betting means placing wagers where
+              your true win probability exceeds the implied probability in the
+              odds. Over time, +EV bets are profitable even if you lose
+              individual bets.
+            </p>
           </div>
           <div>
-            <h2 className="text-white font-semibold mb-2">How Does Kelly Criterion Work?</h2>
-            <p>The Kelly Criterion calculates the optimal fraction of your bankroll to bet based on your edge. Half Kelly is recommended to reduce variance while still growing your bankroll efficiently.</p>
+            <h2 className="text-white font-semibold mb-2">
+              How Does Kelly Criterion Work?
+            </h2>
+            <p>
+              The Kelly Criterion calculates the optimal fraction of your
+              bankroll to bet based on your edge. Half Kelly is recommended to
+              reduce variance while still growing your bankroll efficiently.
+            </p>
           </div>
           <div>
-            <h2 className="text-white font-semibold mb-2">How to Read Parlay Odds</h2>
-            <p>Parlay odds multiply each leg's decimal odds together. A 3-leg parlay at -110 each gives combined odds of +596 — meaning a $100 bet pays $696 total. The more legs, the higher the payout but lower the win probability.</p>
+            <h2 className="text-white font-semibold mb-2">
+              How to Read Parlay Odds
+            </h2>
+            <p>
+              Parlay odds multiply each leg's decimal odds together. A 3-leg
+              parlay at -110 each gives combined odds of +596 — meaning a $100
+              bet pays $696 total. The more legs, the higher the payout but
+              lower the win probability.
+            </p>
           </div>
         </div>
 
@@ -451,20 +592,29 @@ export default function BetCalculator() {
           <h2 className="text-2xl font-bold mb-2">
             Want AI to find the +EV bets for you?
           </h2>
-          <p className="text-gray-400 mb-6">ChalkPicks scans 15+ sportsbooks in real time to surface the highest-edge picks with confidence scores, edge analysis, and line movement alerts.</p>
+          <p className="text-gray-400 mb-6">
+            ChalkPicks scans 15+ sportsbooks in real time to surface the
+            highest-edge picks with confidence scores, edge analysis, and line
+            movement alerts.
+          </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/pricing">
               <Button className="bg-[#ff6b35] hover:bg-[#ff8555] text-white font-bold px-8 py-3 text-base">
-                Start Free 3-Day Trial <ChevronRight className="w-4 h-4 ml-1" />
+                Get Premium Access <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>
             <Link href="/ev-finder">
-              <Button variant="outline" className="border-[#00ff87] text-[#00ff87] hover:bg-[#00ff87]/10 px-8 py-3 text-base">
+              <Button
+                variant="outline"
+                className="border-[#00ff87] text-[#00ff87] hover:bg-[#00ff87]/10 px-8 py-3 text-base"
+              >
                 Try Free +EV Finder
               </Button>
             </Link>
           </div>
-          <p className="text-xs text-gray-500 mt-3">$9.99/mo after trial · Cancel anytime · No commitment</p>
+          <p className="text-xs text-gray-500 mt-3">
+            $9.99/mo after trial · Cancel anytime · No commitment
+          </p>
         </div>
       </div>
     </div>

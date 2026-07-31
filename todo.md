@@ -1975,10 +1975,10 @@
 
 ## Discord Steam Alerts + Admin Test Post (Jul 31 2026)
 
-- [ ] Wire steam alerts to DISCORD_STEAM_WEBHOOK_URL in discordBot.ts
-- [ ] Add ENV.discordSteamWebhookUrl to env.ts
-- [ ] Add Test Post button to admin panel Overview tab (triggers Discord + Telegram test)
-- [ ] Add tRPC procedure for manual test post
+- [x] Wire steam alerts to DISCORD_STEAM_WEBHOOK_URL in discordBot.ts
+- [x] Add ENV.discordSteamWebhookUrl to env.ts
+- [x] Add Test Post button to admin panel Overview tab (triggers Discord + Telegram test)
+- [x] Add tRPC procedure for manual test post
 
 ## Instagram 4-Format Strategy + Admin Test Post (Jul 30 2026)
 
@@ -1987,3 +1987,29 @@
 - [x] Update chalkpicks-social-automation skill: 4-format strategy, news caption formula
 - [x] Add sendTestPost mutation hook to AdminPanel.tsx
 - [x] Add Test Post button card to Admin Overview Quick Actions
+
+## SharpAPI Integration + Directory Kit Optimization (Jul 31 2026)
+
+- [x] Research alternative odds APIs (SharpAPI, odds-api.io, SportsGameOdds, Pinnacle, OddsBlaze)
+- [x] Optimize docs/directory-submissions.md (rewrote Grok-generated content with professional quality)
+- [x] Add SharpAPI as primary odds source in dataService.ts (17,280 req/day free tier)
+- [x] Add SHARPAPI_KEY to env.ts
+- [x] Implement 3-tier cascade: SharpAPI → odds-api.io → The Odds API
+- [x] Normalize SharpAPI flat response to OddsEvent[] format
+- [x] Fix flaky Discord webhook test timeout (increased to 15s)
+- [ ] Add SHARPAPI_KEY secret via webdev_request_secrets
+- [ ] Verify SharpAPI integration end-to-end with live API key
+
+## Git Remote Reconciliation (Jul 31 2026)
+
+- [x] Audit remotes: origin=Manus S3, github=github.com/big-main/chalkpicks-pro
+- [x] Identified divergence: 10 Manus-only commits + 15 GitHub-only commits since common ancestor ddee7b7
+- [x] Merged GitHub/main into Manus/main — resolved 19 file conflicts
+- [x] Kept Manus versions: oddsApiCache (superior caching), db.ts (clean trial no-op), package.json (newer deps)
+- [x] Accepted GitHub versions: assertCronAuth security fix, routeMeta trust softening, trial removal copy, AEO/JSON-LD
+- [x] Pick Ledger (afterPickCreated), /verify/:hash, CLV skill — all now in unified codebase
+- [x] SharpAPI integration preserved through merge
+- [x] Fixed SEO test to match new homepage title
+- [x] 220/221 tests passing (1 skipped), 0 TypeScript errors
+- [ ] Save checkpoint to deploy unified codebase
+- [ ] Push merged result back to GitHub to sync both remotes

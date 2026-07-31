@@ -25,7 +25,7 @@ export default function BlogBestPicks() {
     if (meta) {
       meta.setAttribute(
         "content",
-        "Get AI-powered sports betting picks with 92% win rate. Daily predictions for NFL, NBA, MLB with confidence scores and ROI tracking. Free 7-day trial."
+        "Get AI-powered sports betting picks with 92% win rate. Daily predictions for NFL, NBA, MLB with confidence scores and ROI tracking. Plans from $9.99/mo."
       );
     }
   }, []);
@@ -57,7 +57,7 @@ export default function BlogBestPicks() {
               variant="outline"
               className="border-slate-700 hover:bg-slate-800"
             >
-              {hasFullAccess ? "View Today's Picks" : "Subscribe Now"}
+              {hasFullAccess ? "View Today's Picks" : "Get Premium Access"}
             </Button>
           </div>
         </div>
@@ -258,8 +258,8 @@ export default function BlogBestPicks() {
                   Ready to Get Better Picks?
                 </h3>
                 <p className="text-slate-300 mb-6">
-                  Subscribe today and access all premium features. Plans start
-                  at $9.99/mo.
+                  Plans start at just $9.99/month with full access to all
+                  premium features. Cancel anytime.
                 </p>
                 <div className="flex gap-4 justify-center">
                   <Button
@@ -268,7 +268,9 @@ export default function BlogBestPicks() {
                     }
                     className="bg-emerald-500 hover:bg-emerald-600"
                   >
-                    {hasFullAccess ? "View Today's Picks" : "Subscribe Now"}{" "}
+                    {hasFullAccess
+                      ? "View Today's Picks"
+                      : "Get Premium Access"}{" "}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                   <Button
@@ -302,8 +304,8 @@ export default function BlogBestPicks() {
                   a: "Yes! Our picks work on any sportsbook. We compare odds across 18+ books to help you find the best line.",
                 },
                 {
-                  q: "What plans are available?",
-                  a: "Basic ($9.99/mo), Pro ($19.99/mo), and Elite ($59.99/yr). All plans include premium AI picks and analytics. Cancel anytime.",
+                  q: "Is there a free trial?",
+                  a: "We don't offer a free trial, but you can check out our free daily picks at /free-picks to evaluate our accuracy first. Paid plans start at $9.99/month with full access to every premium tool, and you can cancel anytime.",
                 },
                 {
                   q: "How often are picks updated?",

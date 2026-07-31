@@ -1,8 +1,16 @@
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
 import { adminProcedure } from "../_core/trpc";
+import { verifyServiceSecret } from "../_core/serviceAuth";
 import { getDb } from "../db";
-import { notificationPreferences, notifications, notificationLogs, announcements, userAlerts, users, newsletterSubscribers } from "../../drizzle/schema";
+import {
+  notificationPreferences,
+  notifications,
+  announcements,
+  userAlerts,
+  users,
+  newsletterSubscribers,
+} from "../../drizzle/schema";
 import { eq, and, desc, isNull, or, gte, sql } from "drizzle-orm";
 import {
   ensureUserPreferences,
@@ -14,7 +22,9 @@ import {
 export const notificationsRouter = router({
   // ─── Get user's in-app notifications ────────────────────────────────────────
   getInApp: protectedProcedure
-    .input(z.object({ limit: z.number().min(1).max(50).default(20) }).optional())
+    .input(
+      z.object({ limit: z.number().min(1).max(50).default(20) }).optional()
+    )
     .query(async ({ ctx, input }) => {
       return getUserInAppNotifications(ctx.user.id, input?.limit ?? 20);
     }),
@@ -26,7 +36,12 @@ export const notificationsRouter = router({
     const rows = await db
       .select()
       .from(notifications)
-      .where(and(eq(notifications.userId, ctx.user.id), eq(notifications.isRead, false)));
+      .where(
+        and(
+          eq(notifications.userId, ctx.user.id),
+          eq(notifications.isRead, false)
+        )
+      );
     return { count: rows.length };
   }),
 
@@ -51,7 +66,9 @@ export const notificationsRouter = router({
 
   // ─── Get notification history (logs) ────────────────────────────────────────
   getHistory: protectedProcedure
-    .input(z.object({ limit: z.number().min(1).max(100).default(20) }).optional())
+    .input(
+      z.object({ limit: z.number().min(1).max(100).default(20) }).optional()
+    )
     .query(async ({ ctx, input }) => {
       return getUserNotificationHistory(ctx.user.id, input?.limit ?? 20);
     }),
@@ -79,7 +96,10 @@ export const notificationsRouter = router({
         emailSubscriptionConfirm: z.boolean().optional(),
         emailLoginAlert: z.boolean().optional(),
         emailPerformanceSummary: z.boolean().optional(),
-        emailDigestTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+        emailDigestTime: z
+          .string()
+          .regex(/^\d{2}:\d{2}$/)
+          .optional(),
         smsEnabled: z.boolean().optional(),
         smsPhone: z.string().max(32).optional(),
         smsDailyPicks: z.boolean().optional(),
@@ -123,12 +143,16 @@ export const notificationsRouter = router({
           userId: ctx.user.id,
           type: "system",
           title: "Test Notification 🎯",
-          message: "This is a test in-app notification from ChalkPicks Pro. Your notification system is working!",
+          message:
+            "This is a test in-app notification from ChalkPicks Pro. Your notification system is working!",
         });
         return { success: true, message: "In-app test notification sent!" };
       }
 
-      return { success: false, message: `${input.type} requires API credentials (SendGrid/Twilio). Configure them in Settings.` };
+      return {
+        success: false,
+        message: `${input.type} requires API credentials (SendGrid/Twilio). Configure them in Settings.`,
+      };
     }),
 
   // ─── Public: Get active announcements ────────────────────────────────────────
@@ -139,14 +163,24 @@ export const notificationsRouter = router({
     return db
       .select()
       .from(announcements)
-      .where(and(eq(announcements.isActive, true), or(isNull(announcements.endsAt), gte(announcements.endsAt, now))))
+      .where(
+        and(
+          eq(announcements.isActive, true),
+          or(isNull(announcements.endsAt), gte(announcements.endsAt, now))
+        )
+      )
       .orderBy(desc(announcements.createdAt))
       .limit(5);
   }),
 
   // ─── User: Get my alerts ──────────────────────────────────────────────────────
   getMyAlerts: protectedProcedure
-    .input(z.object({ limit: z.number().min(1).max(50).default(20), offset: z.number().default(0) }))
+    .input(
+      z.object({
+        limit: z.number().min(1).max(50).default(20),
+        offset: z.number().default(0),
+      })
+    )
     .query(async ({ ctx, input }) => {
       const db = await getDb();
       if (!db) return { alerts: [], unreadCount: 0 };
@@ -160,7 +194,9 @@ export const notificationsRouter = router({
       const unreadRows = await db
         .select({ count: sql<number>`count(*)` })
         .from(userAlerts)
-        .where(and(eq(userAlerts.userId, ctx.user.id), eq(userAlerts.isRead, false)));
+        .where(
+          and(eq(userAlerts.userId, ctx.user.id), eq(userAlerts.isRead, false))
+        );
       return { alerts, unreadCount: Number(unreadRows[0]?.count ?? 0) };
     }),
 
@@ -170,7 +206,15 @@ export const notificationsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
       if (!db) return { ok: false };
-      await db.update(userAlerts).set({ isRead: true }).where(and(eq(userAlerts.id, input.alertId), eq(userAlerts.userId, ctx.user.id)));
+      await db
+        .update(userAlerts)
+        .set({ isRead: true })
+        .where(
+          and(
+            eq(userAlerts.id, input.alertId),
+            eq(userAlerts.userId, ctx.user.id)
+          )
+        );
       return { ok: true };
     }),
 
@@ -178,27 +222,38 @@ export const notificationsRouter = router({
   markAllAlerts: protectedProcedure.mutation(async ({ ctx }) => {
     const db = await getDb();
     if (!db) return { ok: false };
-    await db.update(userAlerts).set({ isRead: true }).where(and(eq(userAlerts.userId, ctx.user.id), eq(userAlerts.isRead, false)));
+    await db
+      .update(userAlerts)
+      .set({ isRead: true })
+      .where(
+        and(eq(userAlerts.userId, ctx.user.id), eq(userAlerts.isRead, false))
+      );
     return { ok: true };
   }),
 
   // ─── Admin: Create announcement ───────────────────────────────────────────────
   createAnnouncement: adminProcedure
-    .input(z.object({
-      title: z.string().min(1).max(256),
-      body: z.string().min(1),
-      type: z.enum(["info", "warning", "success", "promo"]).default("info"),
-      ctaText: z.string().max(64).optional(),
-      ctaUrl: z.string().max(512).optional(),
-      endsAt: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        title: z.string().min(1).max(256),
+        body: z.string().min(1),
+        type: z.enum(["info", "warning", "success", "promo"]).default("info"),
+        ctaText: z.string().max(64).optional(),
+        ctaUrl: z.string().max(512).optional(),
+        endsAt: z.string().optional(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
       if (!db) return { ok: false };
       await db.insert(announcements).values({
-        title: input.title, body: input.body, type: input.type,
-        ctaText: input.ctaText ?? null, ctaUrl: input.ctaUrl ?? null,
-        isActive: true, endsAt: input.endsAt ? new Date(input.endsAt) : null,
+        title: input.title,
+        body: input.body,
+        type: input.type,
+        ctaText: input.ctaText ?? null,
+        ctaUrl: input.ctaUrl ?? null,
+        isActive: true,
+        endsAt: input.endsAt ? new Date(input.endsAt) : null,
         createdBy: ctx.user.id,
       });
       return { ok: true };
@@ -206,19 +261,36 @@ export const notificationsRouter = router({
 
   // ─── Admin: Update announcement ───────────────────────────────────────────────
   updateAnnouncement: adminProcedure
-    .input(z.object({
-      id: z.number(), title: z.string().optional(), body: z.string().optional(),
-      type: z.enum(["info", "warning", "success", "promo"]).optional(),
-      ctaText: z.string().nullable().optional(), ctaUrl: z.string().nullable().optional(),
-      isActive: z.boolean().optional(), endsAt: z.string().nullable().optional(),
-    }))
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().optional(),
+        body: z.string().optional(),
+        type: z.enum(["info", "warning", "success", "promo"]).optional(),
+        ctaText: z.string().nullable().optional(),
+        ctaUrl: z.string().nullable().optional(),
+        isActive: z.boolean().optional(),
+        endsAt: z.string().nullable().optional(),
+      })
+    )
     .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) return { ok: false };
       const { id, ...rest } = input;
       const updates: Record<string, unknown> = {};
-      for (const [k, v] of Object.entries(rest)) if (v !== undefined) updates[k] = k === "endsAt" ? (v ? new Date(v as string) : null) : v;
-      if (Object.keys(updates).length) await db.update(announcements).set(updates).where(eq(announcements.id, id));
+      for (const [k, v] of Object.entries(rest)) {
+        if (v === undefined) continue;
+        if (k === "endsAt") {
+          updates[k] = v ? new Date(v as string) : null;
+        } else {
+          updates[k] = v;
+        }
+      }
+      if (Object.keys(updates).length)
+        await db
+          .update(announcements)
+          .set(updates)
+          .where(eq(announcements.id, id));
       return { ok: true };
     }),
 
@@ -236,38 +308,60 @@ export const notificationsRouter = router({
   listAnnouncements: adminProcedure.query(async () => {
     const db = await getDb();
     if (!db) return [];
-    return db.select().from(announcements).orderBy(desc(announcements.createdAt)).limit(50);
+    return db
+      .select()
+      .from(announcements)
+      .orderBy(desc(announcements.createdAt))
+      .limit(50);
   }),
 
   // ─── Admin: Broadcast push + save as in-app alert for all users ───────────────
   broadcastPush: adminProcedure
-    .input(z.object({
-      title: z.string().min(1).max(128),
-      body: z.string().min(1).max(512),
-      url: z.string().optional(),
-      saveAsAlert: z.boolean().default(true),
-    }))
-    .mutation(async ({ ctx, input }) => {
+    .input(
+      z.object({
+        title: z.string().min(1).max(128),
+        body: z.string().min(1).max(512),
+        url: z.string().optional(),
+        saveAsAlert: z.boolean().default(true),
+      })
+    )
+    .mutation(async ({ ctx: _ctx, input }) => {
       const db = await getDb();
       if (!db) return { ok: false, pushCount: 0 };
       // Send web push
       let pushCount = 0;
       try {
-        const { sendPushToAllSubscribers } = await import("../services/pushNotifications");
-        const pushResult = await sendPushToAllSubscribers({ title: input.title, body: input.body, url: input.url ?? "/picks" });
+        const { sendPushToAllSubscribers } = await import(
+          "../services/pushNotifications"
+        );
+        const pushResult = await sendPushToAllSubscribers({
+          title: input.title,
+          body: input.body,
+          url: input.url ?? "/picks",
+        });
         pushCount = pushResult.sent;
-      } catch (e) { console.error("[Broadcast] Push error:", e); }
+      } catch (e) {
+        console.error("[Broadcast] Push error:", e);
+      }
       // Save in-app alert for all users
       if (input.saveAsAlert) {
-        const allUsers = await db.select({ id: users.id }).from(users).limit(5000);
+        const allUsers = await db
+          .select({ id: users.id })
+          .from(users)
+          .limit(5000);
         const batchSize = 100;
         for (let i = 0; i < allUsers.length; i += batchSize) {
           const batch = allUsers.slice(i, i + batchSize);
-          await db.insert(userAlerts).values(batch.map((u: { id: number }) => ({
-            userId: u.id, type: "broadcast" as const,
-            title: input.title, body: input.body,
-            actionUrl: input.url ?? null, isRead: false,
-          })));
+          await db.insert(userAlerts).values(
+            batch.map((u: { id: number }) => ({
+              userId: u.id,
+              type: "broadcast" as const,
+              title: input.title,
+              body: input.body,
+              actionUrl: input.url ?? null,
+              isRead: false,
+            }))
+          );
         }
       }
       return { ok: true, pushCount };
@@ -275,11 +369,13 @@ export const notificationsRouter = router({
 
   // ─── Admin: Email blast to all newsletter subscribers ─────────────────────────
   emailBlast: adminProcedure
-    .input(z.object({
-      subject: z.string().min(1).max(256),
-      htmlBody: z.string().min(1),
-      testOnly: z.boolean().default(false),
-    }))
+    .input(
+      z.object({
+        subject: z.string().min(1).max(256),
+        htmlBody: z.string().min(1),
+        testOnly: z.boolean().default(false),
+      })
+    )
     .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) return { ok: false, sent: 0, errors: 0 };
@@ -295,8 +391,11 @@ export const notificationsRouter = router({
         try {
           await sendEmailRaw(sub.email, input.subject, input.htmlBody);
           sent++;
-          if (sent % 10 === 0) await new Promise((r) => setTimeout(r, 500));
-        } catch (e) { errors.push(sub.email); }
+          if (sent % 10 === 0) await new Promise(r => setTimeout(r, 500));
+        } catch (e) {
+          console.error(`[EmailBlast] Failed to send to ${sub.email}:`, e);
+          errors.push(sub.email);
+        }
       }
       return { ok: true, sent, errors: errors.length };
     }),
@@ -305,10 +404,17 @@ export const notificationsRouter = router({
   scheduledDailyPicks: publicProcedure
     .input(z.object({ secret: z.string() }))
     .mutation(async ({ input }) => {
-      if (input.secret !== (process.env.SCHEDULER_SECRET || "chalkpicks-scheduler-2024")) {
+      if (
+        !verifyServiceSecret(
+          input.secret,
+          process.env.SCHEDULER_SECRET,
+          "SCHEDULER_SECRET"
+        )
+      ) {
         return { success: false, message: "Unauthorized" };
       }
-      const { sendDailyPicksToAllUsers, sendDailyDigestToAllUsers } = await import("../notificationService");
+      const { sendDailyPicksToAllUsers, sendDailyDigestToAllUsers } =
+        await import("../notificationService");
       await sendDailyPicksToAllUsers();
       await sendDailyDigestToAllUsers();
       return { success: true, message: "Daily notifications dispatched" };

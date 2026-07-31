@@ -211,10 +211,10 @@ export default function ElitePlusTier() {
           className="text-center"
         >
           <Button className="btn-premium px-8 py-3 text-lg">
-            Subscribe to Elite+
+            Upgrade to Elite+
           </Button>
           <p className="text-muted-foreground text-sm mt-4">
-            $59.99/yr — cancel anytime.
+            Full access to every Elite+ feature. Cancel anytime.
           </p>
         </motion.div>
       </div>

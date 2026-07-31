@@ -2033,3 +2033,9 @@
 - [x] Write docs/X_LAUNCH_THREAD.md (6-tweet trust-first thread)
 - [x] Write docs/INDIE_HACKERS_POST.md (builder story, trust angle)
 - [x] Create webdev-remote-sync skill (7-phase reconciliation + smoke test workflow)
+
+## Tool Page SEO Pass (Jul 31, 2026)
+
+- [x] OddsCalculator: FaqJsonLd (5 Q&A), H1 → "Free Sports Betting Odds Calculator", on-page FAQ, internal links, removed 92% CTA
+- [x] ROICalculator: FaqJsonLd (5 Q&A), H1 → "Free Sports Betting ROI Calculator", on-page FAQ, projection disclaimer, internal links, removed 92% CTA
+- [x] ParlayCalculator: PageMeta added, FaqJsonLd (5 Q&A), on-page FAQ, internal links, CTA → Parlay Builder (no win-rate claim)

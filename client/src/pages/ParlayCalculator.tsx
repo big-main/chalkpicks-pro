@@ -1,9 +1,22 @@
 import { useState, useMemo } from "react";
-import { HowToJsonLd, BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
+import {
+  HowToJsonLd,
+  BreadcrumbJsonLd,
+  FaqJsonLd,
+} from "@/components/seo/schema-jsonld";
+import { PageMeta } from "@/components/PageMeta";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, Calculator, TrendingUp, DollarSign, Percent, ArrowRight } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Calculator,
+  TrendingUp,
+  DollarSign,
+  Percent,
+  ArrowRight,
+} from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Link } from "wouter";
 
@@ -36,19 +49,21 @@ export default function ParlayCalculator() {
 
   const removeLeg = (id: number) => {
     if (legs.length <= 2) return;
-    setLegs(legs.filter((l) => l.id !== id));
+    setLegs(legs.filter(l => l.id !== id));
   };
 
   const updateLeg = (id: number, odds: string) => {
-    setLegs(legs.map((l) => (l.id === id ? { ...l, odds } : l)));
+    setLegs(legs.map(l => (l.id === id ? { ...l, odds } : l)));
   };
 
   const results = useMemo(() => {
-    const validLegs = legs.filter((l) => l.odds && !isNaN(parseFloat(l.odds)) && parseFloat(l.odds) !== 0);
+    const validLegs = legs.filter(
+      l => l.odds && !isNaN(parseFloat(l.odds)) && parseFloat(l.odds) !== 0
+    );
     if (validLegs.length < 2) return null;
 
     let combinedDecimal = 1;
-    const legDetails = validLegs.map((l) => {
+    const legDetails = validLegs.map(l => {
       const american = parseFloat(l.odds);
       const decimal = americanToDecimal(american);
       const impliedProb = decimalToImpliedProb(decimal);
@@ -60,9 +75,10 @@ export default function ParlayCalculator() {
     const totalPayout = stakeNum * combinedDecimal;
     const profit = totalPayout - stakeNum;
     const combinedImpliedProb = (1 / combinedDecimal) * 100;
-    const combinedAmerican = combinedDecimal >= 2
-      ? Math.round((combinedDecimal - 1) * 100)
-      : Math.round(-100 / (combinedDecimal - 1));
+    const combinedAmerican =
+      combinedDecimal >= 2
+        ? Math.round((combinedDecimal - 1) * 100)
+        : Math.round(-100 / (combinedDecimal - 1));
 
     return {
       legDetails,
@@ -77,22 +93,69 @@ export default function ParlayCalculator() {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageMeta pathname="/tools/parlay-calculator" />
       <HowToJsonLd
         name="How to Calculate Parlay Payouts"
         description="Calculate multi-leg parlay payouts instantly using the ChalkPicks free parlay calculator."
         totalTime="PT2M"
         steps={[
-          { name: "Add parlay legs", text: "Click 'Add Leg' to add each game to your parlay. Enter American odds (e.g., -110, +150) for each leg." },
-          { name: "Enter your stake", text: "Input the amount you want to wager on the full parlay." },
-          { name: "Review combined odds", text: "See the combined American odds, decimal odds, and implied probability for your full parlay." },
-          { name: "Check your payout", text: "View the total payout, profit, and ROI for your parlay bet instantly." },
+          {
+            name: "Add parlay legs",
+            text: "Click 'Add Leg' to add each game to your parlay. Enter American odds (e.g., -110, +150) for each leg.",
+          },
+          {
+            name: "Enter your stake",
+            text: "Input the amount you want to wager on the full parlay.",
+          },
+          {
+            name: "Review combined odds",
+            text: "See the combined American odds, decimal odds, and implied probability for your full parlay.",
+          },
+          {
+            name: "Check your payout",
+            text: "View the total payout, profit, and ROI for your parlay bet instantly.",
+          },
         ]}
       />
-      <BreadcrumbJsonLd items={[
-        { name: "Home", url: "https://chalkpicks.live" },
-        { name: "Tools", url: "https://chalkpicks.live/tools" },
-        { name: "Parlay Calculator", url: "https://chalkpicks.live/tools/parlay-calculator" },
-      ]} />
+      <FaqJsonLd
+        faqs={[
+          {
+            question: "What is a parlay bet?",
+            answer:
+              "A parlay combines two or more individual bets into a single wager. All legs must win for the parlay to pay out. The combined odds multiply together, creating significantly higher potential returns than individual bets.",
+          },
+          {
+            question: "How is parlay payout calculated?",
+            answer:
+              "Convert each leg's American odds to decimal, multiply all decimal odds together, then multiply by your stake. Example: -110 (1.909) × +150 (2.50) × -105 (1.952) × $100 stake = $931 total payout.",
+          },
+          {
+            question: "What is the implied probability of a parlay?",
+            answer:
+              "The implied probability is 1 divided by the combined decimal odds. A 3-leg parlay with combined decimal odds of 8.0 has a 12.5% implied win probability (1 / 8.0 × 100).",
+          },
+          {
+            question: "Are parlays good bets?",
+            answer:
+              "Parlays have negative expected value in most cases because the sportsbook's vig compounds across each leg. Correlated parlays (where one outcome influences another) can offer better value. Use parlays selectively, not as a primary strategy.",
+          },
+          {
+            question: "How many legs should a parlay have?",
+            answer:
+              "2–4 legs is the practical range for realistic win probability. A 2-leg parlay at -110 each has a 27% win chance; a 4-leg parlay drops to 7%. Each added leg exponentially reduces your probability of winning.",
+          },
+        ]}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://chalkpicks.live" },
+          { name: "Tools", url: "https://chalkpicks.live/tools" },
+          {
+            name: "Parlay Calculator",
+            url: "https://chalkpicks.live/tools/parlay-calculator",
+          },
+        ]}
+      />
       <Navbar />
       <div className="container pt-24 pb-16 max-w-4xl mx-auto">
         {/* Hero */}
@@ -104,7 +167,9 @@ export default function ParlayCalculator() {
             Parlay <span className="text-emerald-400">Calculator</span>
           </h1>
           <p className="text-white/50 max-w-xl mx-auto">
-            Calculate multi-leg parlay payouts instantly. Enter American odds for each leg and see your total payout, profit, and combined implied probability.
+            Calculate multi-leg parlay payouts instantly. Enter American odds
+            for each leg and see your total payout, profit, and combined implied
+            probability.
           </p>
         </div>
 
@@ -128,7 +193,7 @@ export default function ParlayCalculator() {
                       type="text"
                       placeholder="e.g. -110 or +150"
                       value={leg.odds}
-                      onChange={(e) => updateLeg(leg.id, e.target.value)}
+                      onChange={e => updateLeg(leg.id, e.target.value)}
                       className="bg-slate-800/50 border-slate-600 text-white"
                     />
                     <button
@@ -156,7 +221,7 @@ export default function ParlayCalculator() {
                   <Input
                     type="number"
                     value={stake}
-                    onChange={(e) => setStake(e.target.value)}
+                    onChange={e => setStake(e.target.value)}
                     className="bg-slate-800/50 border-slate-600 text-white max-w-[200px]"
                   />
                 </div>
@@ -177,20 +242,26 @@ export default function ParlayCalculator() {
                 {results ? (
                   <div className="space-y-4">
                     <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/20 p-4 text-center">
-                      <div className="text-xs text-emerald-400/70 uppercase font-bold mb-1">Total Payout</div>
+                      <div className="text-xs text-emerald-400/70 uppercase font-bold mb-1">
+                        Total Payout
+                      </div>
                       <div className="text-3xl font-bold text-emerald-400">
                         ${results.totalPayout.toFixed(2)}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="rounded-lg bg-slate-800/50 p-3 text-center">
-                        <div className="text-[10px] text-slate-400 uppercase font-bold">Profit</div>
+                        <div className="text-[10px] text-slate-400 uppercase font-bold">
+                          Profit
+                        </div>
                         <div className="text-lg font-bold text-white mt-0.5">
                           ${results.profit.toFixed(2)}
                         </div>
                       </div>
                       <div className="rounded-lg bg-slate-800/50 p-3 text-center">
-                        <div className="text-[10px] text-slate-400 uppercase font-bold">ROI</div>
+                        <div className="text-[10px] text-slate-400 uppercase font-bold">
+                          ROI
+                        </div>
                         <div className="text-lg font-bold text-amber-400 mt-0.5">
                           {results.roi.toFixed(1)}%
                         </div>
@@ -198,13 +269,18 @@ export default function ParlayCalculator() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="rounded-lg bg-slate-800/50 p-3 text-center">
-                        <div className="text-[10px] text-slate-400 uppercase font-bold">Combined Odds</div>
+                        <div className="text-[10px] text-slate-400 uppercase font-bold">
+                          Combined Odds
+                        </div>
                         <div className="text-lg font-bold text-white mt-0.5">
-                          {results.combinedAmerican > 0 ? "+" : ""}{results.combinedAmerican}
+                          {results.combinedAmerican > 0 ? "+" : ""}
+                          {results.combinedAmerican}
                         </div>
                       </div>
                       <div className="rounded-lg bg-slate-800/50 p-3 text-center">
-                        <div className="text-[10px] text-slate-400 uppercase font-bold">Win Prob</div>
+                        <div className="text-[10px] text-slate-400 uppercase font-bold">
+                          Win Prob
+                        </div>
                         <div className="text-lg font-bold text-blue-400 mt-0.5">
                           {results.combinedImpliedProb.toFixed(1)}%
                         </div>
@@ -213,12 +289,18 @@ export default function ParlayCalculator() {
 
                     {/* Leg breakdown */}
                     <div className="pt-3 border-t border-slate-700/50">
-                      <div className="text-xs text-slate-400 uppercase font-bold mb-2">Leg Breakdown</div>
+                      <div className="text-xs text-slate-400 uppercase font-bold mb-2">
+                        Leg Breakdown
+                      </div>
                       {results.legDetails.map((ld, i) => (
-                        <div key={i} className="flex items-center justify-between text-xs py-1.5 border-b border-slate-800 last:border-0">
+                        <div
+                          key={i}
+                          className="flex items-center justify-between text-xs py-1.5 border-b border-slate-800 last:border-0"
+                        >
                           <span className="text-slate-300">Leg {i + 1}</span>
                           <span className="text-white font-mono">
-                            {ld.american > 0 ? "+" : ""}{ld.american} ({ld.impliedProb.toFixed(1)}%)
+                            {ld.american > 0 ? "+" : ""}
+                            {ld.american} ({ld.impliedProb.toFixed(1)}%)
                           </span>
                         </div>
                       ))}
@@ -238,48 +320,183 @@ export default function ParlayCalculator() {
         {/* SEO Content Section */}
         <div className="mt-16 space-y-8">
           <div className="rounded-xl bg-slate-900/40 border border-slate-700/30 p-8">
-            <h2 className="text-xl font-bold text-white mb-4">How to Use the Parlay Calculator</h2>
+            <h2 className="text-xl font-bold text-white mb-4">
+              How to Use the Parlay Calculator
+            </h2>
             <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
               <p>
-                A parlay (or accumulator) combines multiple individual bets into one wager. All legs must win for the parlay to pay out, but the combined odds create significantly higher potential returns than individual bets.
+                A parlay (or accumulator) combines multiple individual bets into
+                one wager. All legs must win for the parlay to pay out, but the
+                combined odds create significantly higher potential returns than
+                individual bets.
               </p>
               <p>
-                Enter American odds for each leg (e.g., -110 for favorites, +150 for underdogs). The calculator multiplies the decimal equivalents together to determine your combined odds, total payout, and implied win probability.
+                Enter American odds for each leg (e.g., -110 for favorites, +150
+                for underdogs). The calculator multiplies the decimal
+                equivalents together to determine your combined odds, total
+                payout, and implied win probability.
               </p>
             </div>
           </div>
 
           <div className="rounded-xl bg-slate-900/40 border border-slate-700/30 p-8">
-            <h2 className="text-xl font-bold text-white mb-4">Parlay Payout Formula</h2>
+            <h2 className="text-xl font-bold text-white mb-4">
+              Parlay Payout Formula
+            </h2>
             <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
               <p>
-                <strong className="text-white">Total Payout = Stake x (Decimal Odds Leg 1 x Decimal Odds Leg 2 x ... x Decimal Odds Leg N)</strong>
+                <strong className="text-white">
+                  Total Payout = Stake x (Decimal Odds Leg 1 x Decimal Odds Leg
+                  2 x ... x Decimal Odds Leg N)
+                </strong>
               </p>
               <p>
-                For example, a 3-leg parlay with -110, +120, and -105 odds on a $100 stake: Convert each to decimal (1.909, 2.200, 1.952), multiply together (8.20), then multiply by stake = $820 total payout ($720 profit).
+                For example, a 3-leg parlay with -110, +120, and -105 odds on a
+                $100 stake: Convert each to decimal (1.909, 2.200, 1.952),
+                multiply together (8.20), then multiply by stake = $820 total
+                payout ($720 profit).
               </p>
             </div>
           </div>
 
           <div className="rounded-xl bg-slate-900/40 border border-slate-700/30 p-8">
-            <h2 className="text-xl font-bold text-white mb-4">Parlay Betting Tips</h2>
+            <h2 className="text-xl font-bold text-white mb-4">
+              Parlay Betting Tips
+            </h2>
             <ul className="space-y-2 text-sm text-slate-300">
-              <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">•</span> Correlated parlays (legs that influence each other) offer better expected value than random combinations.</li>
-              <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">•</span> Keep parlays to 2-4 legs for realistic win probability. Each added leg exponentially reduces your chance of winning.</li>
-              <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">•</span> Compare parlay payouts across sportsbooks — some offer parlay boosts or better odds on specific combinations.</li>
-              <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">•</span> Use our AI-powered <Link href="/parlay-builder" className="text-emerald-400 underline">Parlay Builder</Link> to find optimal leg combinations with correlation analysis.</li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-400 mt-0.5">•</span> Correlated
+                parlays (legs that influence each other) offer better expected
+                value than random combinations.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-400 mt-0.5">•</span> Keep parlays
+                to 2-4 legs for realistic win probability. Each added leg
+                exponentially reduces your chance of winning.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-400 mt-0.5">•</span> Compare
+                parlay payouts across sportsbooks — some offer parlay boosts or
+                better odds on specific combinations.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-400 mt-0.5">•</span> Use our
+                AI-powered{" "}
+                <Link
+                  href="/parlay-builder"
+                  className="text-emerald-400 underline"
+                >
+                  Parlay Builder
+                </Link>{" "}
+                to find optimal leg combinations with correlation analysis.
+              </li>
             </ul>
+          </div>
+
+          {/* FAQ Section */}
+          <div className="rounded-xl bg-slate-900/40 border border-slate-700/30 p-8">
+            <h2 className="text-xl font-bold text-white mb-5">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-5 text-sm text-slate-300">
+              <div>
+                <div className="font-semibold text-emerald-400 mb-1">
+                  What is a parlay bet?
+                </div>
+                <p>
+                  A parlay combines two or more individual bets into a single
+                  wager. All legs must win for the parlay to pay out. The
+                  combined odds multiply together, creating significantly higher
+                  potential returns than individual bets.
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-blue-400 mb-1">
+                  How is parlay payout calculated?
+                </div>
+                <p>
+                  Convert each leg's American odds to decimal, multiply all
+                  decimal odds together, then multiply by your stake. Example:
+                  -110 (1.909) × +150 (2.50) × -105 (1.952) × $100 stake = $931
+                  total payout.
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-amber-400 mb-1">
+                  What is the implied probability of a parlay?
+                </div>
+                <p>
+                  The implied probability is 1 divided by the combined decimal
+                  odds. A 3-leg parlay with combined decimal odds of 8.0 has a
+                  12.5% implied win probability (1 / 8.0 × 100).
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-purple-400 mb-1">
+                  Are parlays good bets?
+                </div>
+                <p>
+                  Parlays have negative expected value in most cases because the
+                  sportsbook's vig compounds across each leg. Correlated parlays
+                  can offer better value. Use parlays selectively, not as a
+                  primary strategy.
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-cyan-400 mb-1">
+                  How many legs should a parlay have?
+                </div>
+                <p>
+                  2–4 legs is the practical range for realistic win probability.
+                  A 2-leg parlay at -110 each has a 27% win chance; a 4-leg
+                  parlay drops to 7%. Each added leg exponentially reduces your
+                  probability of winning.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Internal links */}
+          <div className="rounded-xl bg-slate-900/40 border border-slate-700/30 p-6">
+            <p className="text-sm text-slate-400 mb-3 font-semibold">
+              Related Tools
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/tools/odds-calculator">
+                <span className="text-sm text-emerald-400 hover:underline cursor-pointer">
+                  Odds Calculator →
+                </span>
+              </Link>
+              <Link href="/tools/roi-calculator">
+                <span className="text-sm text-emerald-400 hover:underline cursor-pointer">
+                  ROI Calculator →
+                </span>
+              </Link>
+              <Link href="/tools/kelly-calculator">
+                <span className="text-sm text-emerald-400 hover:underline cursor-pointer">
+                  Kelly Criterion Calculator →
+                </span>
+              </Link>
+              <Link href="/tools/ev-calculator">
+                <span className="text-sm text-emerald-400 hover:underline cursor-pointer">
+                  EV Calculator →
+                </span>
+              </Link>
+            </div>
           </div>
 
           {/* CTA */}
           <div className="text-center rounded-xl bg-gradient-to-r from-emerald-500/5 to-blue-500/5 border border-emerald-500/20 p-8">
-            <h3 className="text-lg font-bold text-white mb-2">Want AI-Optimized Parlays?</h3>
+            <h3 className="text-lg font-bold text-white mb-2">
+              Find Correlated Parlays with AI
+            </h3>
             <p className="text-sm text-slate-400 mb-4">
-              ChalkPicks Pro uses AI to find correlated parlays with the highest expected value across all sports.
+              ChalkPicks Pro's Parlay Builder analyzes correlation between legs
+              to surface combinations with better expected value.
             </p>
-            <Link href="/pricing">
+            <Link href="/parlay-builder">
               <Button className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold">
-                Try ChalkPicks Pro <ArrowRight className="w-4 h-4 ml-2" />
+                Try Parlay Builder <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
           </div>

@@ -1,7 +1,17 @@
 import { useState } from "react";
-import { HowToJsonLd, BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
+import {
+  HowToJsonLd,
+  BreadcrumbJsonLd,
+  FaqJsonLd,
+} from "@/components/seo/schema-jsonld";
 import { Link } from "wouter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -111,185 +121,371 @@ export default function OddsCalculator() {
         description="Convert American, Decimal, and Fractional odds instantly using the ChalkPicks free odds calculator."
         totalTime="PT1M"
         steps={[
-          { name: "Enter your odds", text: "Type your odds value into the American, Decimal, or Fractional input field." },
-          { name: "Select odds format", text: "The calculator automatically detects your format and converts to all other formats in real time." },
-          { name: "Enter your stake", text: "Input your bet amount to see potential profit and total return." },
-          { name: "Read your results", text: "View the converted odds, potential profit, and total payout instantly — no signup required." },
+          {
+            name: "Enter your odds",
+            text: "Type your odds value into the American, Decimal, or Fractional input field.",
+          },
+          {
+            name: "Select odds format",
+            text: "The calculator automatically detects your format and converts to all other formats in real time.",
+          },
+          {
+            name: "Enter your stake",
+            text: "Input your bet amount to see potential profit and total return.",
+          },
+          {
+            name: "Read your results",
+            text: "View the converted odds, potential profit, and total payout instantly — no signup required.",
+          },
         ]}
       />
-      <BreadcrumbJsonLd items={[
-        { name: "Home", url: "https://chalkpicks.live" },
-        { name: "Tools", url: "https://chalkpicks.live/tools" },
-        { name: "Odds Calculator", url: "https://chalkpicks.live/tools/odds-calculator" },
-      ]} />
+      <FaqJsonLd
+        faqs={[
+          {
+            question: "What is an odds calculator?",
+            answer:
+              "An odds calculator converts sports betting odds between American (moneyline), decimal, and fractional formats instantly. It also calculates potential profit and total return for a given stake.",
+          },
+          {
+            question: "How do I convert American odds to decimal?",
+            answer:
+              "For positive American odds (+150): divide by 100 and add 1 (1.50 + 1 = 2.50). For negative odds (-110): divide 100 by the absolute value and add 1 (100/110 + 1 = 1.909).",
+          },
+          {
+            question: "What does -110 mean in sports betting?",
+            answer:
+              "-110 means you must bet $110 to win $100 profit. It is the standard vig (juice) applied by most sportsbooks on spread and totals bets.",
+          },
+          {
+            question: "What is implied probability?",
+            answer:
+              "Implied probability is the likelihood of an outcome as implied by the odds. For -110 American odds, the implied probability is 52.4% (100 / (110 + 100) × 100).",
+          },
+          {
+            question: "How do I calculate payout from decimal odds?",
+            answer:
+              "Multiply your stake by the decimal odds. A $100 bet at 1.91 returns $191 total ($91 profit). The formula is: Total Return = Stake × Decimal Odds.",
+          },
+        ]}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://chalkpicks.live" },
+          { name: "Tools", url: "https://chalkpicks.live/tools" },
+          {
+            name: "Odds Calculator",
+            url: "https://chalkpicks.live/tools/odds-calculator",
+          },
+        ]}
+      />
       <Navbar />
       <div className="pt-20 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-2xl">
-        {/* Back + Header */}
-        <Link href="/tools">
-          <Button variant="ghost" size="sm" className="mb-6 text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="w-4 h-4 mr-1.5" /> All Tools
-          </Button>
-        </Link>
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-foreground">Free Odds Calculator</h1>
-          <p className="mt-2 text-muted-foreground">Convert between American, Decimal, and Fractional odds instantly. No signup required.</p>
-        </div>
+        <div className="mx-auto max-w-2xl">
+          {/* Back + Header */}
+          <Link href="/tools">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mb-6 text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1.5" /> All Tools
+            </Button>
+          </Link>
+          <div className="mb-8 text-center">
+            <h1 className="text-4xl font-bold text-foreground">
+              Free Sports Betting Odds Calculator
+            </h1>
+            <p className="mt-2 text-muted-foreground">
+              Convert American, decimal, and fractional odds instantly.
+              Calculate implied probability and payout. No signup required.
+            </p>
+          </div>
 
-        {/* Main Calculator */}
-        <Card className="border-slate-700 bg-slate-800/50 mb-6">
-          <CardHeader>
-            <CardTitle className="text-emerald-400">Odds Converter</CardTitle>
-            <CardDescription>Enter odds in any format to convert</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* American Odds */}
-            <div>
-              <Label htmlFor="american" className="text-slate-300">
-                American Odds
-              </Label>
-              <Input
-                id="american"
-                type="number"
-                placeholder="-110, +150, etc."
-                value={americanOdds}
-                onChange={(e) => handleAmericanChange(e.target.value)}
-                className="mt-2 bg-slate-700/50 border-slate-600 text-white placeholder-slate-500"
-              />
-              <p className="mt-1 text-xs text-slate-400">e.g., -110 (favorite) or +150 (underdog)</p>
-            </div>
-
-            {/* Conversion Arrow */}
-            <div className="flex justify-center">
-              <ArrowRightLeft className="w-5 h-5 text-emerald-400" />
-            </div>
-
-            {/* Decimal Odds */}
-            <div>
-              <Label htmlFor="decimal" className="text-slate-300">
-                Decimal Odds
-              </Label>
-              <Input
-                id="decimal"
-                type="number"
-                placeholder="1.91, 2.50, etc."
-                value={decimalOdds}
-                onChange={(e) => handleDecimalChange(e.target.value)}
-                className="mt-2 bg-slate-700/50 border-slate-600 text-white placeholder-slate-500"
-                step="0.01"
-              />
-              <p className="mt-1 text-xs text-slate-400">Most common format worldwide</p>
-            </div>
-
-            {/* Conversion Arrow */}
-            <div className="flex justify-center">
-              <ArrowRightLeft className="w-5 h-5 text-emerald-400" />
-            </div>
-
-            {/* Fractional Odds */}
-            <div>
-              <Label htmlFor="fractional" className="text-slate-300">
-                Fractional Odds
-              </Label>
-              <Input
-                id="fractional"
-                type="text"
-                placeholder="10/11, 3/1, etc."
-                value={fractionalOdds}
-                onChange={(e) => handleFractionalChange(e.target.value)}
-                className="mt-2 bg-slate-700/50 border-slate-600 text-white placeholder-slate-500"
-              />
-              <p className="mt-1 text-xs text-slate-400">UK format (numerator/denominator)</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Payout Calculator */}
-        {decimalOdds && (
-          <Card className="border-slate-700 bg-slate-800/50">
+          {/* Main Calculator */}
+          <Card className="border-slate-700 bg-slate-800/50 mb-6">
             <CardHeader>
-              <CardTitle className="text-blue-400">Payout Calculator</CardTitle>
-              <CardDescription>Calculate your potential winnings</CardDescription>
+              <CardTitle className="text-emerald-400">Odds Converter</CardTitle>
+              <CardDescription>
+                Enter odds in any format to convert
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* American Odds */}
               <div>
-                <Label htmlFor="stake" className="text-slate-300">
-                  Stake ($)
+                <Label htmlFor="american" className="text-slate-300">
+                  American Odds
                 </Label>
                 <Input
-                  id="stake"
+                  id="american"
                   type="number"
-                  placeholder="100"
-                  value={stake}
-                  onChange={(e) => setStake(e.target.value)}
+                  placeholder="-110, +150, etc."
+                  value={americanOdds}
+                  onChange={e => handleAmericanChange(e.target.value)}
                   className="mt-2 bg-slate-700/50 border-slate-600 text-white placeholder-slate-500"
-                  step="1"
                 />
+                <p className="mt-1 text-xs text-slate-400">
+                  e.g., -110 (favorite) or +150 (underdog)
+                </p>
               </div>
 
-              {/* Results Grid */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="rounded-lg bg-slate-700/50 p-4 text-center">
-                  <div className="text-xs text-slate-400">Profit</div>
-                  <div className="mt-2 text-2xl font-bold text-emerald-400">
-                    ${profit.toFixed(2)}
-                  </div>
-                </div>
-                <div className="rounded-lg bg-slate-700/50 p-4 text-center">
-                  <div className="text-xs text-slate-400">Stake</div>
-                  <div className="mt-2 text-2xl font-bold text-blue-400">
-                    ${parseFloat(stake).toFixed(2)}
-                  </div>
-                </div>
-                <div className="rounded-lg bg-slate-700/50 p-4 text-center">
-                  <div className="text-xs text-slate-400">Total Return</div>
-                  <div className="mt-2 text-2xl font-bold text-amber-400">
-                    ${totalReturn.toFixed(2)}
-                  </div>
-                </div>
+              {/* Conversion Arrow */}
+              <div className="flex justify-center">
+                <ArrowRightLeft className="w-5 h-5 text-emerald-400" />
               </div>
 
-              {/* ROI */}
-              <div className="rounded-lg bg-emerald-900/20 border border-emerald-700/50 p-4">
-                <div className="text-sm text-emerald-400">Return on Investment (ROI)</div>
-                <div className="mt-2 text-3xl font-bold text-emerald-400">
-                  {((profit / parseFloat(stake)) * 100).toFixed(1)}%
-                </div>
+              {/* Decimal Odds */}
+              <div>
+                <Label htmlFor="decimal" className="text-slate-300">
+                  Decimal Odds
+                </Label>
+                <Input
+                  id="decimal"
+                  type="number"
+                  placeholder="1.91, 2.50, etc."
+                  value={decimalOdds}
+                  onChange={e => handleDecimalChange(e.target.value)}
+                  className="mt-2 bg-slate-700/50 border-slate-600 text-white placeholder-slate-500"
+                  step="0.01"
+                />
+                <p className="mt-1 text-xs text-slate-400">
+                  Most common format worldwide
+                </p>
+              </div>
+
+              {/* Conversion Arrow */}
+              <div className="flex justify-center">
+                <ArrowRightLeft className="w-5 h-5 text-emerald-400" />
+              </div>
+
+              {/* Fractional Odds */}
+              <div>
+                <Label htmlFor="fractional" className="text-slate-300">
+                  Fractional Odds
+                </Label>
+                <Input
+                  id="fractional"
+                  type="text"
+                  placeholder="10/11, 3/1, etc."
+                  value={fractionalOdds}
+                  onChange={e => handleFractionalChange(e.target.value)}
+                  className="mt-2 bg-slate-700/50 border-slate-600 text-white placeholder-slate-500"
+                />
+                <p className="mt-1 text-xs text-slate-400">
+                  UK format (numerator/denominator)
+                </p>
               </div>
             </CardContent>
           </Card>
-        )}
 
-        {/* Info Section */}
-        <div className="mt-8 rounded-lg bg-slate-800/50 border border-slate-700 p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Odds Format Guide</h3>
-          <div className="space-y-4 text-sm text-slate-300">
-            <div>
-              <div className="font-semibold text-emerald-400">American Odds</div>
-              <p>Negative numbers (-110) indicate favorites. Positive numbers (+150) indicate underdogs. Example: -110 means you need to bet $110 to win $100.</p>
-            </div>
-            <div>
-              <div className="font-semibold text-blue-400">Decimal Odds</div>
-              <p>The most common format worldwide. Represents total return per $1 bet. Example: 1.91 means you get $1.91 back for every $1 bet (including your stake).</p>
-            </div>
-            <div>
-              <div className="font-semibold text-amber-400">Fractional Odds</div>
-              <p>Common in UK and Ireland. Represents profit per stake unit. Example: 10/11 means you win $10 for every $11 bet.</p>
+          {/* Payout Calculator */}
+          {decimalOdds && (
+            <Card className="border-slate-700 bg-slate-800/50">
+              <CardHeader>
+                <CardTitle className="text-blue-400">
+                  Payout Calculator
+                </CardTitle>
+                <CardDescription>
+                  Calculate your potential winnings
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <Label htmlFor="stake" className="text-slate-300">
+                    Stake ($)
+                  </Label>
+                  <Input
+                    id="stake"
+                    type="number"
+                    placeholder="100"
+                    value={stake}
+                    onChange={e => setStake(e.target.value)}
+                    className="mt-2 bg-slate-700/50 border-slate-600 text-white placeholder-slate-500"
+                    step="1"
+                  />
+                </div>
+
+                {/* Results Grid */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="rounded-lg bg-slate-700/50 p-4 text-center">
+                    <div className="text-xs text-slate-400">Profit</div>
+                    <div className="mt-2 text-2xl font-bold text-emerald-400">
+                      ${profit.toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-slate-700/50 p-4 text-center">
+                    <div className="text-xs text-slate-400">Stake</div>
+                    <div className="mt-2 text-2xl font-bold text-blue-400">
+                      ${parseFloat(stake).toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-slate-700/50 p-4 text-center">
+                    <div className="text-xs text-slate-400">Total Return</div>
+                    <div className="mt-2 text-2xl font-bold text-amber-400">
+                      ${totalReturn.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* ROI */}
+                <div className="rounded-lg bg-emerald-900/20 border border-emerald-700/50 p-4">
+                  <div className="text-sm text-emerald-400">
+                    Return on Investment (ROI)
+                  </div>
+                  <div className="mt-2 text-3xl font-bold text-emerald-400">
+                    {((profit / parseFloat(stake)) * 100).toFixed(1)}%
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Info Section */}
+          <div className="mt-8 rounded-lg bg-slate-800/50 border border-slate-700 p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Odds Format Guide
+            </h3>
+            <div className="space-y-4 text-sm text-slate-300">
+              <div>
+                <div className="font-semibold text-emerald-400">
+                  American Odds
+                </div>
+                <p>
+                  Negative numbers (-110) indicate favorites. Positive numbers
+                  (+150) indicate underdogs. Example: -110 means you need to bet
+                  $110 to win $100.
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-blue-400">Decimal Odds</div>
+                <p>
+                  The most common format worldwide. Represents total return per
+                  $1 bet. Example: 1.91 means you get $1.91 back for every $1
+                  bet (including your stake).
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-amber-400">
+                  Fractional Odds
+                </div>
+                <p>
+                  Common in UK and Ireland. Represents profit per stake unit.
+                  Example: 10/11 means you win $10 for every $11 bet.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* CTA */}
-        <div className="mt-8 p-6 rounded-xl text-center" style={{ background: "rgba(57,255,20,0.05)", border: "1px solid rgba(57,255,20,0.15)" }}>
-          <p className="text-foreground font-semibold mb-1">Get AI-powered picks with 92% win rate</p>
-          <p className="text-muted-foreground text-sm mb-4">Free tier available · Pro from $9.99/mo · No credit card required</p>
-          <Link href="/signup">
-            <Button className="bg-[#39ff14] hover:bg-[#32e012] text-black font-bold px-8">
-              Try ChalkPicks Pro Free →
-            </Button>
-          </Link>
+          {/* FAQ Section */}
+          <div className="mt-8 rounded-lg bg-slate-800/50 border border-slate-700 p-6">
+            <h2 className="text-lg font-semibold text-white mb-4">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-5 text-sm text-slate-300">
+              <div>
+                <div className="font-semibold text-emerald-400 mb-1">
+                  What is an odds calculator?
+                </div>
+                <p>
+                  An odds calculator converts sports betting odds between
+                  American (moneyline), decimal, and fractional formats
+                  instantly. It also calculates potential profit and total
+                  return for a given stake.
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-blue-400 mb-1">
+                  How do I convert American odds to decimal?
+                </div>
+                <p>
+                  For positive American odds (+150): divide by 100 and add 1
+                  (1.50 + 1 = 2.50). For negative odds (-110): divide 100 by the
+                  absolute value and add 1 (100/110 + 1 = 1.909).
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-amber-400 mb-1">
+                  What does -110 mean in sports betting?
+                </div>
+                <p>
+                  -110 means you must bet $110 to win $100 profit. It is the
+                  standard vig (juice) applied by most sportsbooks on spread and
+                  totals bets.
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-purple-400 mb-1">
+                  What is implied probability?
+                </div>
+                <p>
+                  Implied probability is the likelihood of an outcome as implied
+                  by the odds. For -110 American odds, the implied probability
+                  is 52.4% (100 / (110 + 100) × 100).
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-cyan-400 mb-1">
+                  How do I calculate payout from decimal odds?
+                </div>
+                <p>
+                  Multiply your stake by the decimal odds. A $100 bet at 1.91
+                  returns $191 total ($91 profit). The formula is: Total Return
+                  = Stake × Decimal Odds.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Internal links */}
+          <div className="mt-6 rounded-lg bg-slate-800/30 border border-slate-700/50 p-5">
+            <p className="text-sm text-slate-400 mb-3 font-semibold">
+              Related Tools
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/tools/roi-calculator">
+                <span className="text-sm text-emerald-400 hover:underline cursor-pointer">
+                  ROI Calculator →
+                </span>
+              </Link>
+              <Link href="/tools/kelly-calculator">
+                <span className="text-sm text-emerald-400 hover:underline cursor-pointer">
+                  Kelly Criterion Calculator →
+                </span>
+              </Link>
+              <Link href="/tools/ev-calculator">
+                <span className="text-sm text-emerald-400 hover:underline cursor-pointer">
+                  EV Calculator →
+                </span>
+              </Link>
+              <Link href="/tools/parlay-calculator">
+                <span className="text-sm text-emerald-400 hover:underline cursor-pointer">
+                  Parlay Calculator →
+                </span>
+              </Link>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div
+            className="mt-8 p-6 rounded-xl text-center"
+            style={{
+              background: "rgba(57,255,20,0.05)",
+              border: "1px solid rgba(57,255,20,0.15)",
+            }}
+          >
+            <p className="text-foreground font-semibold mb-1">
+              Track your edge with AI-powered analytics
+            </p>
+            <p className="text-muted-foreground text-sm mb-4">
+              CLV tracking · +EV finder · Pick Ledger · Free tools · Pro from
+              $9.99/mo
+            </p>
+            <Link href="/pricing">
+              <Button className="bg-[#39ff14] hover:bg-[#32e012] text-black font-bold px-8">
+                View Plans →
+              </Button>
+            </Link>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

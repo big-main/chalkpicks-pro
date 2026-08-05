@@ -88,7 +88,7 @@ export default function BlogPost() {
   const pageUrl =
     typeof window !== "undefined"
       ? window.location.href
-      : `https://chalkpicks.live/blog/${slug}`;
+      : `https://chalkpicks.pro/blog/${slug}`;
 
   // Related articles (tag-aware, exclude current slug)
   const { data: relatedPosts } = trpc.blog.getRelated.useQuery(
@@ -100,7 +100,7 @@ export default function BlogPost() {
   useEffect(() => {
     if (!post) return;
 
-    const canonicalUrl = `https://chalkpicks.live/blog/${post.slug}`;
+    const canonicalUrl = `https://chalkpicks.pro/blog/${post.slug}`;
     const ogTitle =
       post.title.length > 60 ? post.title.slice(0, 57) + "..." : post.title;
     const ogDesc = (
@@ -108,7 +108,7 @@ export default function BlogPost() {
       post.excerpt ||
       "Expert sports betting analysis and AI-powered picks from ChalkPicks Pro."
     ).slice(0, 160);
-    const ogImage = post.heroImage || "https://chalkpicks.live/og-default.png";
+    const ogImage = post.heroImage || "https://chalkpicks.pro/og-default.png";
 
     const setMeta = (property: string, content: string, attr = "property") => {
       let el = document.querySelector(

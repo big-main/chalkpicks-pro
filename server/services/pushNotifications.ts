@@ -15,7 +15,7 @@ function initWebPush() {
     return;
   }
   webpush.setVapidDetails(
-    "mailto:support@chalkpicks.live",
+    "mailto:support@chalkpicks.pro",
     ENV.vapidPublicKey,
     ENV.vapidPrivateKey
   );

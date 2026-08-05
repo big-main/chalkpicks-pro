@@ -55,14 +55,14 @@ The dev server starts at `http://localhost:3000`.
 
 ### Key Commands
 
-| Command | Description |
-|---|---|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Production build |
-| `pnpm test` | Run Vitest test suite |
-| `pnpm test --run` | Run tests once (CI mode) |
+| Command                     | Description               |
+| --------------------------- | ------------------------- |
+| `pnpm dev`                  | Start development server  |
+| `pnpm build`                | Production build          |
+| `pnpm test`                 | Run Vitest test suite     |
+| `pnpm test --run`           | Run tests once (CI mode)  |
 | `pnpm drizzle-kit generate` | Generate DB migration SQL |
-| `pnpm drizzle-kit studio` | Open Drizzle Studio |
+| `pnpm drizzle-kit studio`   | Open Drizzle Studio       |
 
 ---
 
@@ -92,6 +92,7 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/):
 **Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`
 
 **Examples:**
+
 ```
 feat(picks): add AI confidence score to pick cards
 fix(sitemap): remove paywall-gated pick pages from sitemap
@@ -128,7 +129,7 @@ Coverage targets: aim for >80% on new code paths.
 
 **Do not open a public issue for security vulnerabilities.**
 
-Please report security issues privately by emailing: **security@chalkpicks.live**
+Please report security issues privately by emailing: **security@chalkpicks.pro**
 
 Include a description of the vulnerability, reproduction steps, and potential impact. We aim to respond within 48 hours and patch critical issues within 7 days.
 
@@ -136,4 +137,4 @@ Include a description of the vulnerability, reproduction steps, and potential im
 
 ## Questions?
 
-Open a [GitHub Discussion](https://github.com/big-main/chalkpicks-pro/discussions) or reach out via the community Discord linked on [chalkpicks.live](https://chalkpicks.live).
+Open a [GitHub Discussion](https://github.com/big-main/chalkpicks-pro/discussions) or reach out via the community Discord linked on [chalkpicks.pro](https://chalkpicks.pro).

@@ -3,7 +3,9 @@ import { useLocation } from "wouter";
 import { getRouteSEO, SITE_URL } from "@shared/seo-routes";
 
 function upsertMeta(attr: "name" | "property", key: string, content: string) {
-  let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+  let el = document.head.querySelector<HTMLMetaElement>(
+    `meta[${attr}="${key}"]`
+  );
   if (!el) {
     el = document.createElement("meta");
     el.setAttribute(attr, key);
@@ -13,7 +15,9 @@ function upsertMeta(attr: "name" | "property", key: string, content: string) {
 }
 
 function upsertCanonical(href: string) {
-  let el = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  let el = document.head.querySelector<HTMLLinkElement>(
+    'link[rel="canonical"]'
+  );
   if (!el) {
     el = document.createElement("link");
     el.setAttribute("rel", "canonical");
@@ -29,7 +33,7 @@ function upsertCanonical(href: string) {
  * which runs after this hook in the render cycle.
  *
  * Fixes the duplicate-content signal caused by every page having
- * canonical="https://chalkpicks.live/".
+ * canonical="https://chalkpicks.pro/".
  */
 export function useRouteSEO() {
   const [location] = useLocation();

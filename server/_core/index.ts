@@ -107,13 +107,13 @@ async function startServer() {
           "AI-powered sports betting analytics API. Access picks, odds, arbitrage, analytics, and subscription data. All protected endpoints require a valid session cookie obtained by registering or logging in via the auth.register / auth.login tRPC mutations.",
         contact: {
           name: "ChalkPicks Support",
-          email: "admin@chalkpicks.live",
-          url: "https://chalkpicks.live",
+          email: "admin@chalkpicks.pro",
+          url: "https://chalkpicks.pro",
         },
-        license: { name: "Proprietary", url: "https://chalkpicks.live/terms" },
+        license: { name: "Proprietary", url: "https://chalkpicks.pro/terms" },
       },
       servers: [
-        { url: "https://chalkpicks.live/api", description: "Production" },
+        { url: "https://chalkpicks.pro/api", description: "Production" },
         { url: "https://chalkpicks.manus.space/api", description: "Staging" },
       ],
       security: [{ cookieAuth: [] }],
@@ -840,12 +840,12 @@ async function startServer() {
                           successUrl: {
                             type: "string",
                             format: "uri",
-                            example: "https://chalkpicks.live/payment-success",
+                            example: "https://chalkpicks.pro/payment-success",
                           },
                           cancelUrl: {
                             type: "string",
                             format: "uri",
-                            example: "https://chalkpicks.live/pricing",
+                            example: "https://chalkpicks.pro/pricing",
                           },
                         },
                         required: ["planId", "successUrl", "cancelUrl"],
@@ -1002,7 +1002,7 @@ async function startServer() {
           const lastmod = p.updatedAt
             ? new Date(p.updatedAt).toISOString().split("T")[0]
             : new Date().toISOString().split("T")[0];
-          return `  <url>\n    <loc>https://chalkpicks.live/blog/${p.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
+          return `  <url>\n    <loc>https://chalkpicks.pro/blog/${p.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
         })
         .join("\n");
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;

@@ -10,12 +10,12 @@ const SHELL = `<!doctype html>
   <head>
     <title>ChalkPicks | AI Sports Betting Picks & +EV Finder Tool</title>
     <meta name="description" content="homepage description" />
-    <link rel="canonical" href="https://chalkpicks.live/" />
+    <link rel="canonical" href="https://chalkpicks.pro/" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://chalkpicks.live/" />
+    <meta property="og:url" content="https://chalkpicks.pro/" />
     <meta property="og:title" content="old og title" />
     <meta property="og:description" content="old og description" />
-    <meta name="twitter:url" content="https://chalkpicks.live/" />
+    <meta name="twitter:url" content="https://chalkpicks.pro/" />
     <meta name="twitter:title" content="old tw title" />
     <meta name="twitter:description" content="old tw description" />
     <meta name="robots" content="index, follow" />
@@ -30,10 +30,10 @@ describe("injectSeo", () => {
       "<title>+EV Finder | Positive Expected Value Bets</title>"
     );
     expect(result.html).toContain(
-      'rel="canonical" href="https://chalkpicks.live/ev-finder"'
+      'rel="canonical" href="https://chalkpicks.pro/ev-finder"'
     );
     expect(result.html).toContain(
-      'og:url" content="https://chalkpicks.live/ev-finder"'
+      'og:url" content="https://chalkpicks.pro/ev-finder"'
     );
     expect(result.html).not.toContain("homepage description");
     expect(result.status).toBeUndefined(); // normal 200
@@ -42,7 +42,7 @@ describe("injectSeo", () => {
   it("keeps the homepage meta for the root route", async () => {
     const result = await injectSeo(SHELL, "/");
     expect(result.html).toContain("ChalkPicks | AI Sports Betting Analytics");
-    expect(result.html).toContain('href="https://chalkpicks.live/"');
+    expect(result.html).toContain('href="https://chalkpicks.pro/"');
   });
 
   it("returns 404 status for non-existent pick ids (no DB in tests)", async () => {
@@ -56,7 +56,7 @@ describe("injectSeo", () => {
   it("strips query strings from the canonical", async () => {
     const result = await injectSeo(SHELL, "/pricing?utm_source=x");
     expect(result.html).toContain(
-      'rel="canonical" href="https://chalkpicks.live/pricing"'
+      'rel="canonical" href="https://chalkpicks.pro/pricing"'
     );
     expect(result.html).toContain("ChalkPicks Pricing");
   });

@@ -53,9 +53,9 @@ SUBSCRIPTION OPTIONS:
 
 Sports Covered: NFL, NBA, MLB, NHL, NCAAF, NCAAB, MMA, Soccer
 
-Terms: https://chalkpicks.live/terms
-Privacy: https://chalkpicks.live/privacy
-Support: support@chalkpicks.live
+Terms: https://chalkpicks.pro/terms
+Privacy: https://chalkpicks.pro/privacy
+Support: support@chalkpicks.pro
 ```
 
 ## Promotional Text (170 chars max, can be updated without review)
@@ -73,19 +73,19 @@ sports betting,AI picks,odds,NFL,NBA,MLB,analytics,expected value,kelly,ROI
 ## Support URL
 
 ```
-https://chalkpicks.live/support
+https://chalkpicks.pro/support
 ```
 
 ## Marketing URL
 
 ```
-https://chalkpicks.live
+https://chalkpicks.pro
 ```
 
 ## Privacy Policy URL
 
 ```
-https://chalkpicks.live/privacy
+https://chalkpicks.pro/privacy
 ```
 
 ## App Review Information
@@ -94,7 +94,7 @@ https://chalkpicks.live/privacy
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Contact First Name** | Cody                                                                                                                                                                                                                                                                       |
 | **Contact Last Name**  | Mzander                                                                                                                                                                                                                                                                    |
-| **Contact Email**      | support@chalkpicks.live                                                                                                                                                                                                                                                    |
+| **Contact Email**      | support@chalkpicks.pro                                                                                                                                                                                                                                                     |
 | **Contact Phone**      | (update with your number)                                                                                                                                                                                                                                                  |
 | **Demo Account**       | Not required — free tier accessible without login                                                                                                                                                                                                                          |
 | **Notes for Reviewer** | This app provides sports betting analytics and pick recommendations. It does not facilitate actual wagering or process real-money bets. Users are directed to licensed third-party sportsbooks. The app complies with Apple's guidelines for informational sports content. |

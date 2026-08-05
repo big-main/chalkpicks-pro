@@ -7,73 +7,76 @@ const structuredData = {
   "@graph": [
     {
       "@type": "Organization",
-      "@id": "https://chalkpicks.live/#organization",
-      "name": "ChalkPicks Pro",
-      "url": "https://chalkpicks.live",
-      "logo": "https://chalkpicks.live/favicon.ico",
-      "description": "AI-powered sports betting analytics platform with a data-driven edge. Daily picks, odds comparison, and ROI tracking.",
-      "sameAs": [
+      "@id": "https://chalkpicks.pro/#organization",
+      name: "ChalkPicks Pro",
+      url: "https://chalkpicks.pro",
+      logo: "https://chalkpicks.pro/favicon.ico",
+      description:
+        "AI-powered sports betting analytics platform with a data-driven edge. Daily picks, odds comparison, and ROI tracking.",
+      sameAs: [
         "https://twitter.com/chalkpicks",
-        "https://instagram.com/chalkpicks"
+        "https://instagram.com/chalkpicks",
       ],
-      "foundingDate": "2025",
-      "contactPoint": {
+      foundingDate: "2025",
+      contactPoint: {
         "@type": "ContactPoint",
-        "contactType": "customer support",
-        "url": "https://chalkpicks.live"
-      }
+        contactType: "customer support",
+        url: "https://chalkpicks.pro",
+      },
     },
     {
       "@type": "WebSite",
-      "@id": "https://chalkpicks.live/#website",
-      "url": "https://chalkpicks.live",
-      "name": "ChalkPicks Pro",
-      "publisher": { "@id": "https://chalkpicks.live/#organization" },
-      "potentialAction": {
+      "@id": "https://chalkpicks.pro/#website",
+      url: "https://chalkpicks.pro",
+      name: "ChalkPicks Pro",
+      publisher: { "@id": "https://chalkpicks.pro/#organization" },
+      potentialAction: {
         "@type": "SearchAction",
-        "target": "https://chalkpicks.live/picks?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
+        target: "https://chalkpicks.pro/picks?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
     },
     {
       "@type": "SoftwareApplication",
-      "@id": "https://chalkpicks.live/#app",
-      "name": "ChalkPicks Pro",
-      "applicationCategory": "SportsApplication",
-      "operatingSystem": "Web",
-      "url": "https://chalkpicks.live",
-      "description": "AI-powered sports betting picks with a data-driven edge. Real-time odds comparison, confidence scores, and ROI tracking for NFL, NBA, MLB, NHL.",
-      "offers": {
+      "@id": "https://chalkpicks.pro/#app",
+      name: "ChalkPicks Pro",
+      applicationCategory: "SportsApplication",
+      operatingSystem: "Web",
+      url: "https://chalkpicks.pro",
+      description:
+        "AI-powered sports betting picks with a data-driven edge. Real-time odds comparison, confidence scores, and ROI tracking for NFL, NBA, MLB, NHL.",
+      offers: {
         "@type": "AggregateOffer",
-        "lowPrice": "9.99",
-        "highPrice": "59.99",
-        "priceCurrency": "USD",
-        "offerCount": "3",
-        "offers": [
+        lowPrice: "9.99",
+        highPrice: "59.99",
+        priceCurrency: "USD",
+        offerCount: "3",
+        offers: [
           {
             "@type": "Offer",
-            "name": "Basic Monthly",
-            "price": "9.99",
-            "priceCurrency": "USD",
-            "description": "Premium daily picks, AI analysis, player props & live odds"
+            name: "Basic Monthly",
+            price: "9.99",
+            priceCurrency: "USD",
+            description:
+              "Premium daily picks, AI analysis, player props & live odds",
           },
           {
             "@type": "Offer",
-            "name": "Pro Monthly",
-            "price": "19.99",
-            "priceCurrency": "USD",
-            "description": "Full AI picks, odds comparison, performance tracking"
+            name: "Pro Monthly",
+            price: "19.99",
+            priceCurrency: "USD",
+            description: "Full AI picks, odds comparison, performance tracking",
           },
           {
             "@type": "Offer",
-            "name": "Elite Annual",
-            "price": "59.99",
-            "priceCurrency": "USD",
-            "description": "All Pro features, priority support, annual billing"
-          }
-        ]
+            name: "Elite Annual",
+            price: "59.99",
+            priceCurrency: "USD",
+            description: "All Pro features, priority support, annual billing",
+          },
+        ],
       },
-      "featureList": [
+      featureList: [
         "AI-powered daily picks",
         "Transparent, tracked pick history",
         "Real-time odds comparison across 18+ sportsbooks",
@@ -83,10 +86,10 @@ const structuredData = {
         "Kelly Criterion bankroll management",
         "Parlay builder",
         "EV finder",
-        "Arbitrage detection"
-      ]
-    }
-  ]
+        "Arbitrage detection",
+      ],
+    },
+  ],
 };
 
 export function StructuredData() {

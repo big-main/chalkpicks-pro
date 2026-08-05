@@ -14,7 +14,7 @@ else
   echo "Ollama already installed: $(ollama --version)"
 fi
 
-# Make Ollama listen on all interfaces so chalkpicks.live's server can call it
+# Make Ollama listen on all interfaces so chalkpicks.pro's server can call it
 # (the site's OLLAMA_API_URL points at this box). Skip if already configured.
 if [ -d /etc/systemd/system ] && ! grep -rqs "OLLAMA_HOST" /etc/systemd/system/ollama.service.d 2>/dev/null; then
   echo "Configuring Ollama to listen on 0.0.0.0:11434..."
@@ -41,10 +41,10 @@ fi
 WORKER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ ! -f "$WORKER_DIR/.env" ]; then
   cat > "$WORKER_DIR/.env" <<'EOF'
-# Shared secret — must equal WORKER_API_TOKEN on the chalkpicks.live server.
+# Shared secret — must equal WORKER_API_TOKEN on the chalkpicks.pro server.
 # Generate one with:  openssl rand -hex 32
 WORKER_API_TOKEN=
-CHALKPICKS_URL=https://chalkpicks.live
+CHALKPICKS_URL=https://chalkpicks.pro
 OLLAMA_URL=http://127.0.0.1:11434
 OLLAMA_MODEL=qwen3:8b
 MAX_ARTICLES=5

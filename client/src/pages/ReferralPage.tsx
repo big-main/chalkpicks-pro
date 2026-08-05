@@ -2,9 +2,23 @@ import { useEffect, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { Copy, Share2, TrendingUp, Users, DollarSign, Gift, CheckCircle2 } from "lucide-react";
+import {
+  Copy,
+  Share2,
+  TrendingUp,
+  Users,
+  DollarSign,
+  Gift,
+  CheckCircle2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 
@@ -27,9 +41,12 @@ export function ReferralPage() {
   });
 
   // Fetch referrals list
-  const { data: myReferrals } = trpc.referral.getMyReferrals.useQuery(undefined, {
-    refetchInterval: 60000, // Refresh every minute
-  });
+  const { data: myReferrals } = trpc.referral.getMyReferrals.useQuery(
+    undefined,
+    {
+      refetchInterval: 60000, // Refresh every minute
+    }
+  );
 
   // Fetch rewards
   const { data: myRewards } = trpc.referral.getMyRewards.useQuery(undefined, {
@@ -44,7 +61,7 @@ export function ReferralPage() {
     return null;
   }
 
-  const referralLink = `https://chalkpicks.live?ref=${user.id}`;
+  const referralLink = `https://chalkpicks.pro?ref=${user.id}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -66,7 +83,9 @@ export function ReferralPage() {
           className="mb-12"
         >
           <h1 className="text-4xl font-bold mb-3">Earn with ChalkPicks</h1>
-          <p className="text-lg text-muted-foreground">Share your referral link and earn rewards when friends subscribe</p>
+          <p className="text-lg text-muted-foreground">
+            Share your referral link and earn rewards when friends subscribe
+          </p>
         </motion.div>
 
         {/* Referral Link Card */}
@@ -82,7 +101,10 @@ export function ReferralPage() {
                 <Share2 className="w-5 h-5 text-[#39ff14]" />
                 Your Referral Link
               </CardTitle>
-              <CardDescription>Share this link to earn 1 month free for each referral that subscribes</CardDescription>
+              <CardDescription>
+                Share this link to earn 1 month free for each referral that
+                subscribes
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex gap-2 mb-4">
@@ -123,8 +145,12 @@ export function ReferralPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-[#39ff14]">{refStats?.totalReferrals || 0}</div>
-              <p className="text-xs text-muted-foreground mt-1">{refStats?.activeReferrals || 0} active</p>
+              <div className="text-3xl font-bold text-[#39ff14]">
+                {refStats?.totalReferrals || 0}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {refStats?.activeReferrals || 0} active
+              </p>
             </CardContent>
           </Card>
 
@@ -136,8 +162,12 @@ export function ReferralPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-[#f0b800]">${(refStats?.totalCommission || 0).toFixed(2)}</div>
-              <p className="text-xs text-muted-foreground mt-1">${(refStats?.earnedCommission || 0).toFixed(2)} claimed</p>
+              <div className="text-3xl font-bold text-[#f0b800]">
+                ${(refStats?.totalCommission || 0).toFixed(2)}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                ${(refStats?.earnedCommission || 0).toFixed(2)} claimed
+              </p>
             </CardContent>
           </Card>
 
@@ -149,8 +179,12 @@ export function ReferralPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-[#60a5fa]">${(refStats?.pendingCommission || 0).toFixed(2)}</div>
-              <p className="text-xs text-muted-foreground mt-1">Awaiting claim</p>
+              <div className="text-3xl font-bold text-[#60a5fa]">
+                ${(refStats?.pendingCommission || 0).toFixed(2)}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Awaiting claim
+              </p>
             </CardContent>
           </Card>
         </motion.div>
@@ -171,7 +205,10 @@ export function ReferralPage() {
               <CardContent>
                 <div className="space-y-3">
                   {myRewards.map((reward: any) => (
-                    <div key={reward.id} className="flex items-center justify-between p-3 rounded-lg border border-white/10 hover:border-[#39ff14]/30 transition-colors">
+                    <div
+                      key={reward.id}
+                      className="flex items-center justify-between p-3 rounded-lg border border-white/10 hover:border-[#39ff14]/30 transition-colors"
+                    >
                       <div className="flex items-center gap-3">
                         {reward.status === "claimed" ? (
                           <CheckCircle2 className="w-5 h-5 text-green-500" />
@@ -179,16 +216,28 @@ export function ReferralPage() {
                           <Gift className="w-5 h-5 text-[#39ff14]" />
                         )}
                         <div>
-                          <p className="font-medium text-sm">{reward.rewardType === "free_month" ? "1 Month Free" : "Reward"}</p>
+                          <p className="font-medium text-sm">
+                            {reward.rewardType === "free_month"
+                              ? "1 Month Free"
+                              : "Reward"}
+                          </p>
                           <p className="text-xs text-muted-foreground">
-                            {reward.status === "claimed" ? "Claimed" : "Ready to claim"}
+                            {reward.status === "claimed"
+                              ? "Claimed"
+                              : "Ready to claim"}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-[#39ff14]">${reward.rewardAmount}</p>
+                        <p className="font-semibold text-[#39ff14]">
+                          ${reward.rewardAmount}
+                        </p>
                         {reward.status !== "claimed" && (
-                          <Button size="sm" variant="outline" className="mt-1 text-xs">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="mt-1 text-xs"
+                          >
                             Claim
                           </Button>
                         )}
@@ -211,16 +260,24 @@ export function ReferralPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Your Referrals</CardTitle>
-                <CardDescription>People who joined through your link</CardDescription>
+                <CardDescription>
+                  People who joined through your link
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="border-b">
                       <tr>
-                        <th className="text-left py-2 px-2 font-medium">Email</th>
-                        <th className="text-left py-2 px-2 font-medium">Status</th>
-                        <th className="text-left py-2 px-2 font-medium">Joined</th>
+                        <th className="text-left py-2 px-2 font-medium">
+                          Email
+                        </th>
+                        <th className="text-left py-2 px-2 font-medium">
+                          Status
+                        </th>
+                        <th className="text-left py-2 px-2 font-medium">
+                          Joined
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -228,7 +285,9 @@ export function ReferralPage() {
                         <tr key={ref.id} className="border-b hover:bg-muted/50">
                           <td className="py-2 px-2">{ref.referredUserEmail}</td>
                           <td className="py-2 px-2">
-                            <span className={`px-2 py-1 rounded text-xs font-medium ${ref.status === "active" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
+                            <span
+                              className={`px-2 py-1 rounded text-xs font-medium ${ref.status === "active" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
+                            >
                               {ref.status}
                             </span>
                           </td>
@@ -254,7 +313,9 @@ export function ReferralPage() {
             className="text-center py-12"
           >
             <TrendingUp className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-            <p className="text-muted-foreground mb-4">No referrals yet. Share your link to get started!</p>
+            <p className="text-muted-foreground mb-4">
+              No referrals yet. Share your link to get started!
+            </p>
             <Button onClick={handleCopyLink} className="gap-2">
               <Copy className="w-4 h-4" />
               Copy Link

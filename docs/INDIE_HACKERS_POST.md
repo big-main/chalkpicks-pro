@@ -28,7 +28,7 @@ I built ChalkPicks Pro to fix that.
 When a pick is published, we compute a SHA-256 hash of the pick content (team, line, sport, timestamp) and write it to an immutable ledger. The hash is locked — if anyone edits the pick after the fact, the hash breaks and the verify URL shows "invalid."
 
 Every pick has a public verify URL:
-https://chalkpicks.live/verify/173a20e7629e0617d78b75279a69fceec7cb99b9dd26616b3bb39bd897382937
+https://chalkpicks.pro/verify/173a20e7629e0617d78b75279a69fceec7cb99b9dd26616b3bb39bd897382937
 
 That's a real ledger entry: Tampa Bay Rays +1.5, locked 19 hours before game time, CLV +21.02%, WIN.
 

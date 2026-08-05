@@ -43,7 +43,11 @@ export default function ResellerProgram() {
       revenue: "30%",
       minCustomers: "0",
       setup: "Free",
-      features: ["White-label platform", "Up to 100 customers", "Email support"],
+      features: [
+        "White-label platform",
+        "Up to 100 customers",
+        "Email support",
+      ],
     },
     {
       name: "Professional",
@@ -85,7 +89,8 @@ export default function ResellerProgram() {
             White-Label Reseller Program
           </h1>
           <p className="text-muted-foreground text-lg">
-            Build your own sports betting analytics brand and earn recurring revenue
+            Build your own sports betting analytics brand and earn recurring
+            revenue
           </p>
         </motion.div>
 
@@ -105,8 +110,12 @@ export default function ResellerProgram() {
             >
               <Card className="glass-card border-purple-400/20 p-6 h-full">
                 <div className="text-purple-400 mb-4">{benefit.icon}</div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{benefit.title}</h3>
-                <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {benefit.title}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {benefit.description}
+                </p>
               </Card>
             </motion.div>
           ))}
@@ -119,7 +128,9 @@ export default function ResellerProgram() {
           transition={{ delay: 0.2 }}
           className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-foreground mb-6 text-center">Revenue Tiers</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6 text-center">
+            Revenue Tiers
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {tiers.map((tier, idx) => (
               <motion.div
@@ -130,27 +141,41 @@ export default function ResellerProgram() {
               >
                 <Card
                   className={`glass-card p-8 h-full flex flex-col ${
-                    idx === 1 ? "border-purple-400/40 ring-1 ring-purple-400/30" : "border-purple-400/20"
+                    idx === 1
+                      ? "border-purple-400/40 ring-1 ring-purple-400/30"
+                      : "border-purple-400/20"
                   }`}
                 >
-                  <h3 className="text-2xl font-bold text-foreground mb-2">{tier.name}</h3>
+                  <h3 className="text-2xl font-bold text-foreground mb-2">
+                    {tier.name}
+                  </h3>
                   <p className="text-sm text-muted-foreground mb-6">
-                    {tier.minCustomers} {tier.minCustomers === "0" ? "customers" : "+ customers"}
+                    {tier.minCustomers}{" "}
+                    {tier.minCustomers === "0" ? "customers" : "+ customers"}
                   </p>
 
                   <div className="mb-6">
-                    <p className="text-4xl font-bold text-purple-400 mb-1">{tier.revenue}</p>
-                    <p className="text-sm text-muted-foreground">Revenue share</p>
+                    <p className="text-4xl font-bold text-purple-400 mb-1">
+                      {tier.revenue}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Revenue share
+                    </p>
                   </div>
 
                   <div className="mb-6">
                     <p className="text-sm text-muted-foreground">Setup Fee</p>
-                    <p className="text-xl font-semibold text-foreground">{tier.setup}</p>
+                    <p className="text-xl font-semibold text-foreground">
+                      {tier.setup}
+                    </p>
                   </div>
 
                   <ul className="space-y-2 mb-6 flex-1">
                     {tier.features.map((feature, i) => (
-                      <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                      <li
+                        key={i}
+                        className="text-sm text-muted-foreground flex items-start gap-2"
+                      >
                         <span className="text-purple-400 mt-1">✓</span>
                         {feature}
                       </li>
@@ -171,13 +196,23 @@ export default function ResellerProgram() {
           transition={{ delay: 0.3 }}
           className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-foreground mb-6 text-center">How It Works</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6 text-center">
+            How It Works
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
               { step: 1, title: "Apply", desc: "Submit your application" },
-              { step: 2, title: "Setup", desc: "Configure your white-label brand" },
+              {
+                step: 2,
+                title: "Setup",
+                desc: "Configure your white-label brand",
+              },
               { step: 3, title: "Launch", desc: "Go live with your platform" },
-              { step: 4, title: "Earn", desc: "Collect 30-40% recurring revenue" },
+              {
+                step: 4,
+                title: "Earn",
+                desc: "Collect 30-40% recurring revenue",
+              },
             ].map((item, idx) => (
               <motion.div
                 key={idx}
@@ -187,9 +222,13 @@ export default function ResellerProgram() {
               >
                 <Card className="glass-card border-purple-400/20 p-4 text-center">
                   <div className="w-10 h-10 bg-purple-400/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-purple-400 font-bold">{item.step}</span>
+                    <span className="text-purple-400 font-bold">
+                      {item.step}
+                    </span>
                   </div>
-                  <p className="font-semibold text-foreground mb-1">{item.title}</p>
+                  <p className="font-semibold text-foreground mb-1">
+                    {item.title}
+                  </p>
                   <p className="text-xs text-muted-foreground">{item.desc}</p>
                 </Card>
               </motion.div>
@@ -208,7 +247,7 @@ export default function ResellerProgram() {
             Start Your Reseller Journey
           </Button>
           <p className="text-muted-foreground text-sm mt-4">
-            Questions? Email us at partners@chalkpicks.live
+            Questions? Email us at partners@chalkpicks.pro
           </p>
         </motion.div>
       </div>

@@ -1,6 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, ExternalLink, CheckCircle2, AlertCircle, Loader2, Server, RotateCcw } from "lucide-react";
+import {
+  RefreshCw,
+  ExternalLink,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Server,
+  RotateCcw,
+} from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -15,9 +23,27 @@ function timeAgo(isoString: string): string {
 }
 
 const statusConfig = {
-  ACTIVE: { color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", dot: "bg-emerald-400", label: "Active" },
-  FAILED: { color: "text-red-400", bg: "bg-red-400/10", border: "border-red-400/20", dot: "bg-red-400", label: "Failed" },
-  DEPLOYING: { color: "text-amber-400", bg: "bg-amber-400/10", border: "border-amber-400/20", dot: "bg-amber-400", label: "Deploying" },
+  ACTIVE: {
+    color: "text-emerald-400",
+    bg: "bg-emerald-400/10",
+    border: "border-emerald-400/20",
+    dot: "bg-emerald-400",
+    label: "Active",
+  },
+  FAILED: {
+    color: "text-red-400",
+    bg: "bg-red-400/10",
+    border: "border-red-400/20",
+    dot: "bg-red-400",
+    label: "Failed",
+  },
+  DEPLOYING: {
+    color: "text-amber-400",
+    bg: "bg-amber-400/10",
+    border: "border-amber-400/20",
+    dot: "bg-amber-400",
+    label: "Deploying",
+  },
 };
 
 const healthConfig = {
@@ -49,14 +75,16 @@ export default function RailwayStatusWidget() {
       toast.success("Railway redeploy triggered");
       setTimeout(() => utils.railway.status.invalidate(), 3000);
     },
-    onError: (e) => toast.error(`Redeploy failed: ${e.message}`),
+    onError: e => toast.error(`Redeploy failed: ${e.message}`),
   });
 
   if (isLoading) {
     return (
       <div className="rounded-xl border border-slate-700 bg-slate-800/50 p-4 flex items-center gap-2">
         <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
-        <span className="text-sm text-slate-400">Loading Railway status...</span>
+        <span className="text-sm text-slate-400">
+          Loading Railway status...
+        </span>
       </div>
     );
   }
@@ -73,14 +101,19 @@ export default function RailwayStatusWidget() {
   const sc = statusConfig[data.status];
   const hc = healthConfig[data.healthCheck];
   const HealthIcon = hc.icon;
-  const rawBadge = rawStatusBadge[data.latestStatus] ?? { label: data.latestStatus, color: "text-slate-400" };
+  const rawBadge = rawStatusBadge[data.latestStatus] ?? {
+    label: data.latestStatus,
+    color: "text-slate-400",
+  };
 
   return (
     <div className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Server className="w-4 h-4 text-slate-400" />
-          <span className="text-sm font-semibold text-foreground">Railway Backup</span>
+          <span className="text-sm font-semibold text-foreground">
+            Railway Backup
+          </span>
         </div>
         <div className="flex items-center gap-1">
           <Button
@@ -121,8 +154,12 @@ export default function RailwayStatusWidget() {
         {/* Status */}
         <div className="flex items-center justify-between">
           <span className="text-xs text-slate-500">Status</span>
-          <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold ${sc.bg} ${sc.border} border ${sc.color}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${sc.dot} ${data.status === "DEPLOYING" ? "animate-pulse" : ""}`} />
+          <div
+            className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold ${sc.bg} ${sc.border} border ${sc.color}`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${sc.dot} ${data.status === "DEPLOYING" ? "animate-pulse" : ""}`}
+            />
             {sc.label}
           </div>
         </div>
@@ -130,7 +167,9 @@ export default function RailwayStatusWidget() {
         {/* Raw Railway status */}
         <div className="flex items-center justify-between">
           <span className="text-xs text-slate-500">Deploy State</span>
-          <span className={`text-xs font-medium ${rawBadge.color}`}>{rawBadge.label}</span>
+          <span className={`text-xs font-medium ${rawBadge.color}`}>
+            {rawBadge.label}
+          </span>
         </div>
 
         {/* Health */}
@@ -145,7 +184,9 @@ export default function RailwayStatusWidget() {
         {/* Last Deploy */}
         <div className="flex items-center justify-between">
           <span className="text-xs text-slate-500">Last Deploy</span>
-          <span className="text-xs text-foreground">{timeAgo(data.lastDeployment)}</span>
+          <span className="text-xs text-foreground">
+            {timeAgo(data.lastDeployment)}
+          </span>
         </div>
 
         {/* URL */}
@@ -166,24 +207,47 @@ export default function RailwayStatusWidget() {
       {/* Recent deployments */}
       {data.deployments.length > 1 && (
         <div className="mt-3 pt-3 border-t border-slate-700">
-          <p className="text-[10px] text-slate-500 mb-1.5">Recent deployments</p>
+          <p className="text-[10px] text-slate-500 mb-1.5">
+            Recent deployments
+          </p>
           <div className="space-y-1">
-            {data.deployments.slice(0, 3).map((d: { id: string; status: string; createdAt: string; updatedAt: string; url: string | null }) => {
-              const rb = rawStatusBadge[d.status] ?? { label: d.status, color: "text-slate-400" };
-              return (
-                <div key={d.id} className="flex items-center justify-between">
-                  <span className={`text-[10px] ${rb.color}`}>{rb.label}</span>
-                  <span className="text-[10px] text-slate-600">{timeAgo(d.createdAt)}</span>
-                </div>
-              );
-            })}
+            {data.deployments
+              .slice(0, 3)
+              .map(
+                (d: {
+                  id: string;
+                  status: string;
+                  createdAt: string;
+                  updatedAt: string;
+                  url: string | null;
+                }) => {
+                  const rb = rawStatusBadge[d.status] ?? {
+                    label: d.status,
+                    color: "text-slate-400",
+                  };
+                  return (
+                    <div
+                      key={d.id}
+                      className="flex items-center justify-between"
+                    >
+                      <span className={`text-[10px] ${rb.color}`}>
+                        {rb.label}
+                      </span>
+                      <span className="text-[10px] text-slate-600">
+                        {timeAgo(d.createdAt)}
+                      </span>
+                    </div>
+                  );
+                }
+              )}
           </div>
         </div>
       )}
 
       <div className="mt-2 pt-2 border-t border-slate-700">
         <p className="text-[10px] text-slate-600">
-          Primary: Manus (chalkpicks.live) · Backup: Railway · Auto-refreshes every 30s
+          Primary: Manus (chalkpicks.pro) · Backup: Railway · Auto-refreshes
+          every 30s
         </p>
       </div>
     </div>

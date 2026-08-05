@@ -1,4 +1,3 @@
-
 import { Request, Response } from "express";
 import { createCanvas, registerFont } from "canvas";
 import path from "path";
@@ -32,7 +31,11 @@ export async function generateOgImage(req: Request, res: Response) {
     // Subtitle
     ctx.fillStyle = "#94a3b8"; // slate-400
     ctx.font = "40px sans-serif";
-    ctx.fillText((subtitle as string) || "AI-Powered Sports Analytics", 60, 280);
+    ctx.fillText(
+      (subtitle as string) || "AI-Powered Sports Analytics",
+      60,
+      280
+    );
 
     // Odds Badge
     if (odds) {
@@ -40,7 +43,7 @@ export async function generateOgImage(req: Request, res: Response) {
       ctx.beginPath();
       ctx.roundRect(60, 350, 250, 80, 10);
       ctx.fill();
-      
+
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 40px sans-serif";
       ctx.fillText(`Odds: ${odds}`, 85, 405);
@@ -56,7 +59,7 @@ export async function generateOgImage(req: Request, res: Response) {
     // Footer Branding
     ctx.fillStyle = "#64748b"; // slate-500
     ctx.font = "30px sans-serif";
-    ctx.fillText("chalkpicks.live", 60, 570);
+    ctx.fillText("chalkpicks.pro", 60, 570);
 
     // Convert to buffer and send
     const buffer = canvas.toBuffer("image/png");

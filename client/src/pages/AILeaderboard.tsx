@@ -3,11 +3,28 @@ import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { PageMeta } from "@/components/PageMeta";
 import { FaqJsonLd, BreadcrumbJsonLd } from "@/components/seo/schema-jsonld";
-import { Trophy, TrendingUp, Flame, Target, Medal, ArrowRight, ChevronUp, ChevronDown, Minus } from "lucide-react";
+import {
+  Trophy,
+  TrendingUp,
+  Flame,
+  Target,
+  Medal,
+  ArrowRight,
+  ChevronUp,
+  ChevronDown,
+  Minus,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const SPORT_EMOJI: Record<string, string> = {
-  NFL: "🏈", NBA: "🏀", MLB: "⚾", NHL: "🏒", NCAAF: "🏈", NCAAB: "🏀", MMA: "🥊", SOCCER: "⚽",
+  NFL: "🏈",
+  NBA: "🏀",
+  MLB: "⚾",
+  NHL: "🏒",
+  NCAAF: "🏈",
+  NCAAB: "🏀",
+  MMA: "🥊",
+  SOCCER: "⚽",
 };
 
 const TIME_RANGES = [
@@ -19,21 +36,43 @@ const TIME_RANGES = [
 
 function ResultIcon({ result }: { result: string }) {
   if (result === "win") return <ChevronUp className="w-4 h-4 text-[#39ff14]" />;
-  if (result === "loss") return <ChevronDown className="w-4 h-4 text-red-400" />;
+  if (result === "loss")
+    return <ChevronDown className="w-4 h-4 text-red-400" />;
   return <Minus className="w-4 h-4 text-slate-500" />;
 }
 
 function RankBadge({ rank }: { rank: number }) {
-  if (rank === 1) return <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/50 flex items-center justify-center"><Trophy className="w-4 h-4 text-amber-400" /></div>;
-  if (rank === 2) return <div className="w-8 h-8 rounded-full bg-slate-300/10 border border-slate-400/50 flex items-center justify-center"><Medal className="w-4 h-4 text-slate-300" /></div>;
-  if (rank === 3) return <div className="w-8 h-8 rounded-full bg-orange-500/10 border border-orange-600/50 flex items-center justify-center"><Medal className="w-4 h-4 text-orange-400" /></div>;
-  return <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-slate-400">{rank}</div>;
+  if (rank === 1)
+    return (
+      <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/50 flex items-center justify-center">
+        <Trophy className="w-4 h-4 text-amber-400" />
+      </div>
+    );
+  if (rank === 2)
+    return (
+      <div className="w-8 h-8 rounded-full bg-slate-300/10 border border-slate-400/50 flex items-center justify-center">
+        <Medal className="w-4 h-4 text-slate-300" />
+      </div>
+    );
+  if (rank === 3)
+    return (
+      <div className="w-8 h-8 rounded-full bg-orange-500/10 border border-orange-600/50 flex items-center justify-center">
+        <Medal className="w-4 h-4 text-orange-400" />
+      </div>
+    );
+  return (
+    <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-slate-400">
+      {rank}
+    </div>
+  );
 }
 
 export default function AILeaderboard() {
   const [timeRange, setTimeRange] = React.useState<string>("30d");
   const { data: performance, isLoading } = trpc.picks.performance.useQuery();
-  const { data: recentSettled } = trpc.picks.recentSettled.useQuery({ limit: 20 });
+  const { data: recentSettled } = trpc.picks.recentSettled.useQuery({
+    limit: 20,
+  });
 
   // Build leaderboard from bySport data
   const sportLeaderboard = React.useMemo(() => {
@@ -57,16 +96,31 @@ export default function AILeaderboard() {
       <PageMeta />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.live" },
-          { name: "Performance", url: "https://chalkpicks.live/performance" },
-          { name: "AI Leaderboard", url: "https://chalkpicks.live/ai-leaderboard" },
+          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Performance", url: "https://chalkpicks.pro/performance" },
+          {
+            name: "AI Leaderboard",
+            url: "https://chalkpicks.pro/ai-leaderboard",
+          },
         ]}
       />
       <FaqJsonLd
         faqs={[
-          { question: "What is the ChalkPicks AI leaderboard?", answer: "The ChalkPicks leaderboard shows real-time AI pick performance broken down by sport, including win rates, ROI, current streaks, and total picks. It updates automatically as picks are graded." },
-          { question: "Which sport does ChalkPicks AI perform best on?", answer: "Performance varies by season and sample size. Check the leaderboard for the latest rankings — historically, NBA and NHL have shown the highest win rates." },
-          { question: "How often is the leaderboard updated?", answer: "The leaderboard updates in real-time as games are completed and picks are graded. Results are typically posted within 30 minutes of game completion." },
+          {
+            question: "What is the ChalkPicks AI leaderboard?",
+            answer:
+              "The ChalkPicks leaderboard shows real-time AI pick performance broken down by sport, including win rates, ROI, current streaks, and total picks. It updates automatically as picks are graded.",
+          },
+          {
+            question: "Which sport does ChalkPicks AI perform best on?",
+            answer:
+              "Performance varies by season and sample size. Check the leaderboard for the latest rankings — historically, NBA and NHL have shown the highest win rates.",
+          },
+          {
+            question: "How often is the leaderboard updated?",
+            answer:
+              "The leaderboard updates in real-time as games are completed and picks are graded. Results are typically posted within 30 minutes of game completion.",
+          },
         ]}
       />
 
@@ -83,7 +137,8 @@ export default function AILeaderboard() {
                 AI Picks <span className="text-[#39ff14]">Leaderboard</span>
               </h1>
               <p className="text-slate-400 max-w-xl mx-auto">
-                Real-time performance rankings by sport. See where our AI model dominates and track live streaks.
+                Real-time performance rankings by sport. See where our AI model
+                dominates and track live streaks.
               </p>
             </div>
 
@@ -91,21 +146,31 @@ export default function AILeaderboard() {
             {overallStats && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
                 <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-[#39ff14]">{overallStats.winRate}%</div>
-                  <div className="text-xs text-slate-500 mt-1">Overall Win Rate</div>
+                  <div className="text-2xl font-bold text-[#39ff14]">
+                    {overallStats.winRate}%
+                  </div>
+                  <div className="text-xs text-slate-500 mt-1">
+                    Overall Win Rate
+                  </div>
                 </div>
                 <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-white">{overallStats.totalPicks.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-white">
+                    {overallStats.totalPicks.toLocaleString()}
+                  </div>
                   <div className="text-xs text-slate-500 mt-1">Total Picks</div>
                 </div>
                 <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 text-center">
                   <div className="text-2xl font-bold text-amber-400 flex items-center justify-center gap-1">
                     <Flame className="w-5 h-5" /> {overallStats.currentStreak}
                   </div>
-                  <div className="text-xs text-slate-500 mt-1">Current Streak</div>
+                  <div className="text-xs text-slate-500 mt-1">
+                    Current Streak
+                  </div>
                 </div>
                 <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-emerald-400">+{overallStats.roi}%</div>
+                  <div className="text-2xl font-bold text-emerald-400">
+                    +{overallStats.roi}%
+                  </div>
                   <div className="text-xs text-slate-500 mt-1">ROI</div>
                 </div>
               </div>
@@ -113,7 +178,7 @@ export default function AILeaderboard() {
 
             {/* Time Range Tabs */}
             <div className="flex items-center justify-center gap-2 mb-8">
-              {TIME_RANGES.map((t) => (
+              {TIME_RANGES.map(t => (
                 <button
                   key={t.key}
                   onClick={() => setTimeRange(t.key)}
@@ -141,7 +206,9 @@ export default function AILeaderboard() {
             </div>
 
             {isLoading ? (
-              <div className="p-10 text-center text-slate-500">Loading leaderboard...</div>
+              <div className="p-10 text-center text-slate-500">
+                Loading leaderboard...
+              </div>
             ) : (
               <div className="divide-y divide-slate-800/50">
                 {/* Header */}
@@ -154,7 +221,7 @@ export default function AILeaderboard() {
                   <div className="col-span-2 text-center">Picks</div>
                 </div>
 
-                {sportLeaderboard.map((sport) => (
+                {sportLeaderboard.map(sport => (
                   <div
                     key={sport.sport}
                     className={`grid grid-cols-12 items-center px-5 py-4 hover:bg-slate-800/20 transition-colors ${
@@ -165,14 +232,22 @@ export default function AILeaderboard() {
                       <RankBadge rank={sport.rank} />
                     </div>
                     <div className="col-span-3 flex items-center gap-3">
-                      <span className="text-xl">{SPORT_EMOJI[sport.sport] || "🎯"}</span>
+                      <span className="text-xl">
+                        {SPORT_EMOJI[sport.sport] || "🎯"}
+                      </span>
                       <div>
-                        <div className="font-semibold text-white">{sport.sport}</div>
-                        <div className="text-xs text-slate-500">{sport.wins + sport.losses + sport.pushes} total picks</div>
+                        <div className="font-semibold text-white">
+                          {sport.sport}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          {sport.wins + sport.losses + sport.pushes} total picks
+                        </div>
                       </div>
                     </div>
                     <div className="col-span-2 text-center">
-                      <span className={`text-lg font-bold ${sport.winRate >= 90 ? "text-[#39ff14]" : sport.winRate >= 80 ? "text-emerald-400" : "text-amber-400"}`}>
+                      <span
+                        className={`text-lg font-bold ${sport.winRate >= 90 ? "text-[#39ff14]" : sport.winRate >= 80 ? "text-emerald-400" : "text-amber-400"}`}
+                      >
                         {sport.winRate}%
                       </span>
                     </div>
@@ -180,7 +255,9 @@ export default function AILeaderboard() {
                       {sport.wins}W - {sport.losses}L - {sport.pushes}P
                     </div>
                     <div className="col-span-2 text-center">
-                      <span className="text-emerald-400 font-medium">+{sport.roi}%</span>
+                      <span className="text-emerald-400 font-medium">
+                        +{sport.roi}%
+                      </span>
                     </div>
                     <div className="col-span-2 text-center text-slate-400">
                       {sport.wins + sport.losses + sport.pushes}
@@ -200,21 +277,35 @@ export default function AILeaderboard() {
             </div>
             <div className="divide-y divide-slate-800/50">
               {recentResults.length === 0 ? (
-                <div className="p-8 text-center text-slate-500">Loading recent results...</div>
+                <div className="p-8 text-center text-slate-500">
+                  Loading recent results...
+                </div>
               ) : (
                 recentResults.map((pick: any) => (
-                  <div key={pick.id} className="flex items-center gap-4 px-5 py-3 hover:bg-slate-800/20 transition-colors">
+                  <div
+                    key={pick.id}
+                    className="flex items-center gap-4 px-5 py-3 hover:bg-slate-800/20 transition-colors"
+                  >
                     <ResultIcon result={pick.result} />
-                    <span className="text-xs font-medium text-slate-500 w-12">{SPORT_EMOJI[pick.sportKey?.toUpperCase()] || "🎯"} {pick.sportKey?.toUpperCase()}</span>
+                    <span className="text-xs font-medium text-slate-500 w-12">
+                      {SPORT_EMOJI[pick.sportKey?.toUpperCase()] || "🎯"}{" "}
+                      {pick.sportKey?.toUpperCase()}
+                    </span>
                     <span className="text-sm text-white flex-1 truncate">
                       {pick.awayTeam} @ {pick.homeTeam}
                     </span>
-                    <span className="text-xs text-slate-500">{pick.recommendation}</span>
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                      pick.result === "win" ? "bg-[#39ff14]/10 text-[#39ff14]" :
-                      pick.result === "loss" ? "bg-red-500/10 text-red-400" :
-                      "bg-slate-700/50 text-slate-400"
-                    }`}>
+                    <span className="text-xs text-slate-500">
+                      {pick.recommendation}
+                    </span>
+                    <span
+                      className={`text-xs font-bold px-2 py-0.5 rounded ${
+                        pick.result === "win"
+                          ? "bg-[#39ff14]/10 text-[#39ff14]"
+                          : pick.result === "loss"
+                            ? "bg-red-500/10 text-red-400"
+                            : "bg-slate-700/50 text-slate-400"
+                      }`}
+                    >
                       {pick.result?.toUpperCase()}
                     </span>
                   </div>
@@ -229,7 +320,8 @@ export default function AILeaderboard() {
               Get These Picks Before the Game Starts
             </h2>
             <p className="text-slate-400 mb-6 max-w-lg mx-auto">
-              Pro members receive 5-10 AI picks daily with full analysis, confidence scores, and edge percentages — before the lines move.
+              Pro members receive 5-10 AI picks daily with full analysis,
+              confidence scores, and edge percentages — before the lines move.
             </p>
             <Link href="/pricing">
               <Button
@@ -247,27 +339,32 @@ export default function AILeaderboard() {
 
           {/* FAQ Section */}
           <div className="mt-16 max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold text-white text-center mb-8">Frequently Asked Questions</h2>
+            <h2 className="text-2xl font-bold text-white text-center mb-8">
+              Frequently Asked Questions
+            </h2>
             <div className="space-y-4">
               {[
                 {
                   q: "What is the ChalkPicks AI leaderboard?",
-                  a: "The ChalkPicks AI leaderboard shows real-time AI pick performance broken down by sport, including win rates, ROI, current streaks, and total picks. It updates automatically as picks are graded."
+                  a: "The ChalkPicks AI leaderboard shows real-time AI pick performance broken down by sport, including win rates, ROI, current streaks, and total picks. It updates automatically as picks are graded.",
                 },
                 {
                   q: "Which sport does ChalkPicks AI perform best on?",
-                  a: "Performance varies by season and sample size. Check the leaderboard for the latest rankings — historically, NBA and NHL have shown the highest win rates due to the volume of data and statistical predictability."
+                  a: "Performance varies by season and sample size. Check the leaderboard for the latest rankings — historically, NBA and NHL have shown the highest win rates due to the volume of data and statistical predictability.",
                 },
                 {
                   q: "How often is the leaderboard updated?",
-                  a: "The leaderboard updates in real-time as games are completed and picks are graded. Results are typically posted within 30 minutes of game completion."
+                  a: "The leaderboard updates in real-time as games are completed and picks are graded. Results are typically posted within 30 minutes of game completion.",
                 },
                 {
                   q: "Can I filter by time range?",
-                  a: "Yes. Use the time range tabs (7 Days, 30 Days, 90 Days, All Time) to see performance over different periods. This helps identify seasonal trends and hot streaks."
+                  a: "Yes. Use the time range tabs (7 Days, 30 Days, 90 Days, All Time) to see performance over different periods. This helps identify seasonal trends and hot streaks.",
                 },
               ].map(({ q, a }) => (
-                <details key={q} className="group bg-slate-900/30 border border-slate-800 rounded-xl overflow-hidden">
+                <details
+                  key={q}
+                  className="group bg-slate-900/30 border border-slate-800 rounded-xl overflow-hidden"
+                >
                   <summary className="px-5 py-4 cursor-pointer text-white font-medium hover:bg-slate-800/20 transition-colors list-none flex items-center justify-between">
                     {q}
                     <ChevronDown className="w-4 h-4 text-slate-500 group-open:rotate-180 transition-transform" />

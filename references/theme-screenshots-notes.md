@@ -1,8 +1,9 @@
 # ChalkPicks Live Theme Screenshots (Jul 3, 2026)
 
-## Current State (deployed at chalkpicks.live)
+## Current State (deployed at chalkpicks.pro)
 
 Screenshots taken at:
+
 - /home/ubuntu/screenshots/chalkpicks_live_2026-07-03_20-14-26_4748.webp (hero)
 - /home/ubuntu/screenshots/chalkpicks_live_2026-07-03_20-14-35_2404.webp (stats + EV ticker)
 - /home/ubuntu/screenshots/chalkpicks_live_2026-07-03_20-14-42_5775.webp (features grid)
@@ -22,5 +23,6 @@ Screenshots taken at:
 10. **Sponsors bar** — ESPN, Action Network, The Athletic, Covers.com, OddsShark, BetMGM
 
 ## Missing from brand images
+
 - Blue accent color not yet visible in the UI
 - Could use blue for: chart lines, info badges, secondary data elements, live score backgrounds

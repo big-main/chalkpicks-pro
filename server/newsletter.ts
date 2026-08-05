@@ -28,7 +28,7 @@ export const newsletterRouter = router({
           throw new Error("Email service not configured");
         }
         const result = await resend.emails.send({
-          from: "ChalkPicks <noreply@chalkpicks.live>",
+          from: "ChalkPicks <noreply@chalkpicks.pro>",
           to: email,
           subject: "Welcome to ChalkPicks Daily Picks! 🎯",
           html: `
@@ -48,7 +48,7 @@ export const newsletterRouter = router({
                 </ul>
               </div>
               <p style="color: #666; font-size: 14px;">
-                Get started at <a href="https://chalkpicks.live" style="color: #d4af37;">chalkpicks.live</a>
+                Get started at <a href="https://chalkpicks.pro" style="color: #d4af37;">chalkpicks.pro</a>
               </p>
               <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
               <p style="color: #999; font-size: 12px;">

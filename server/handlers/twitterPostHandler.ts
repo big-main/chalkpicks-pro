@@ -175,7 +175,7 @@ async function buildMorningContent(
     return {
       isThread: false,
       tweets: [
-        `🏆 ChalkPicks AI is scanning today's slate for the sharpest edge.\n\nFull picks + analysis → chalkpicks.live\n#SportsBetting #Picks #AI`,
+        `🏆 ChalkPicks AI is scanning today's slate for the sharpest edge.\n\nFull picks + analysis → chalkpicks.pro\n#SportsBetting #Picks #AI`,
       ],
     };
   }
@@ -204,7 +204,7 @@ async function buildMorningContent(
         ? `📈 KEY FACTORS:\n\n${keyFactors.map((f: string) => `• ${f}`).join("\n")}\n\nConfidence: ${confidenceBar(conf)} ${conf}%\n\n[2/3]`
         : `📈 AI ANALYSIS:\n\n${((p.aiAnalysis as string) ?? "").substring(0, 180)}...\n\nConfidence: ${confidenceBar(conf)} ${conf}%\n\n[2/3]`;
 
-    const tweet3 = `🔗 Full AI analysis, edge %, and best odds:\nchalkpicks.live/picks/${p.id}\n\nJoin 2,000+ sharp bettors using ChalkPicks Pro 🎯\n\n[3/3] ${sport} #SportsBetting`;
+    const tweet3 = `🔗 Full AI analysis, edge %, and best odds:\nchalkpicks.pro/picks/${p.id}\n\nJoin 2,000+ sharp bettors using ChalkPicks Pro 🎯\n\n[3/3] ${sport} #SportsBetting`;
 
     return { isThread: true, tweets: [tweet1, tweet2, tweet3] };
   }
@@ -213,7 +213,7 @@ async function buildMorningContent(
   return {
     isThread: false,
     tweets: [
-      `${emoji} TODAY'S TOP PICK\n\n${p.homeTeam} vs ${p.awayTeam}\n📊 ${p.recommendation} ${odds}\n💯 Confidence: ${conf}%\n\nFull AI analysis → chalkpicks.live\n${sport} #Picks`,
+      `${emoji} TODAY'S TOP PICK\n\n${p.homeTeam} vs ${p.awayTeam}\n📊 ${p.recommendation} ${odds}\n💯 Confidence: ${conf}%\n\nFull AI analysis → chalkpicks.pro\n${sport} #Picks`,
     ],
   };
 }
@@ -230,7 +230,7 @@ async function buildAfternoonTweet(db: any): Promise<string> {
     .limit(3);
 
   if (!sharpPicks.length) {
-    return `📡 Sharp money scanner active — monitoring 40+ sportsbooks for line movement.\n\nCatch steam moves before they close → chalkpicks.live/sharp-money\n#SharpMoney #LineMoves #SportsBetting`;
+    return `📡 Sharp money scanner active — monitoring 40+ sportsbooks for line movement.\n\nCatch steam moves before they close → chalkpicks.pro/sharp-money\n#SharpMoney #LineMoves #SportsBetting`;
   }
 
   const lines = sharpPicks
@@ -240,7 +240,7 @@ async function buildAfternoonTweet(db: any): Promise<string> {
     )
     .join("\n");
 
-  return `📡 SHARP MONEY ALERT\n\nAI flagged ${sharpPicks.length} high-confidence plays today:\n${lines}\n\nFull analysis → chalkpicks.live\n#SharpMoney #SportsBetting #Picks`;
+  return `📡 SHARP MONEY ALERT\n\nAI flagged ${sharpPicks.length} high-confidence plays today:\n${lines}\n\nFull analysis → chalkpicks.pro\n#SharpMoney #SportsBetting #Picks`;
 }
 
 async function buildEveningTweet(db: any): Promise<string> {
@@ -260,17 +260,17 @@ async function buildEveningTweet(db: any): Promise<string> {
   const total = wins + losses;
 
   if (total === 0) {
-    return `📊 Results pending for today's picks. Check back tonight for the full recap.\n\nTrack every pick → chalkpicks.live\n#SportsBetting #Results`;
+    return `📊 Results pending for today's picks. Check back tonight for the full recap.\n\nTrack every pick → chalkpicks.pro\n#SportsBetting #Results`;
   }
 
   const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
   const emoji = winRate >= 60 ? "🔥" : winRate >= 50 ? "✅" : "📊";
 
-  return `${emoji} YESTERDAY'S RESULTS\n\n${wins}W - ${losses}L (${winRate}% win rate)\n\nAll picks tracked with full transparency → chalkpicks.live\n#SportsBetting #Results #Picks`;
+  return `${emoji} YESTERDAY'S RESULTS\n\n${wins}W - ${losses}L (${winRate}% win rate)\n\nAll picks tracked with full transparency → chalkpicks.pro\n#SportsBetting #Results #Picks`;
 }
 
 async function buildNightTweet(_db: any): Promise<string> {
-  return `🌙 TOMORROW'S PREVIEW\n\nOur AI is analyzing tomorrow's full slate across NFL, NBA, MLB, and more.\n\nEarly picks drop at 8am PT → chalkpicks.live\n\nSet your lineup now 🎯\n#SportsBetting #Picks #AI`;
+  return `🌙 TOMORROW'S PREVIEW\n\nOur AI is analyzing tomorrow's full slate across NFL, NBA, MLB, and more.\n\nEarly picks drop at 8am PT → chalkpicks.pro\n\nSet your lineup now 🎯\n#SportsBetting #Picks #AI`;
 }
 
 // ─── Main handler ─────────────────────────────────────────────────────────────

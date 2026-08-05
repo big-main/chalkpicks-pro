@@ -34,7 +34,7 @@
       "position": [-800, -200],
       "parameters": {
         "method": "GET",
-        "url": "https://chalkpicks.live/api/trpc/n8nWebhook.picksSchema",
+        "url": "https://chalkpicks.pro/api/trpc/n8nWebhook.picksSchema",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -69,7 +69,7 @@
       "position": [-400, -400],
       "parameters": {
         "method": "GET",
-        "url": "https://chalkpicks.live/api/trpc/n8nWebhook.getPickData",
+        "url": "https://chalkpicks.pro/api/trpc/n8nWebhook.getPickData",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -91,7 +91,7 @@
       "position": [-400, 0],
       "parameters": {
         "method": "GET",
-        "url": "https://chalkpicks.live/api/trpc/n8nWebhook.getUnanalyzedPicks",
+        "url": "https://chalkpicks.pro/api/trpc/n8nWebhook.getUnanalyzedPicks",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -167,7 +167,7 @@
       "position": [200, 0],
       "parameters": {
         "method": "GET",
-        "url": "https://chalkpicks.live/api/trpc/n8nWebhook.getPickData",
+        "url": "https://chalkpicks.pro/api/trpc/n8nWebhook.getPickData",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -287,7 +287,7 @@
       "position": [600, -400],
       "parameters": {
         "method": "POST",
-        "url": "https://chalkpicks.live/api/trpc/n8nWebhook.updatePickAnalysis",
+        "url": "https://chalkpicks.pro/api/trpc/n8nWebhook.updatePickAnalysis",
         "sendBody": true,
         "contentType": "json",
         "body": {
@@ -305,7 +305,7 @@
       "position": [800, 0],
       "parameters": {
         "method": "POST",
-        "url": "https://chalkpicks.live/api/trpc/n8nWebhook.updatePickAnalysis",
+        "url": "https://chalkpicks.pro/api/trpc/n8nWebhook.updatePickAnalysis",
         "sendBody": true,
         "contentType": "json",
         "body": {
@@ -375,9 +375,7 @@
       ]
     },
     "Get Pick Fields Schema": {
-      "main": [
-        [{ "node": "Event Router", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Event Router", "type": "main", "index": 0 }]]
     },
     "Event Router": {
       "main": [
@@ -386,9 +384,7 @@
       ]
     },
     "Get Single Pick Data": {
-      "main": [
-        [{ "node": "Process Single Pick", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Process Single Pick", "type": "main", "index": 0 }]]
     },
     "Get Unanalyzed Picks": {
       "main": [
@@ -396,9 +392,7 @@
       ]
     },
     "Filter Picks With Valid Data": {
-      "main": [
-        [{ "node": "Process Batch Picks", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Process Batch Picks", "type": "main", "index": 0 }]]
     },
     "Process Single Pick": {
       "main": [
@@ -428,23 +422,31 @@
     },
     "Parse Single AI Response": {
       "main": [
-        [{ "node": "Update Single Pick in ChalkPicks", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Update Single Pick in ChalkPicks",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Parse Batch AI Response": {
       "main": [
-        [{ "node": "Update Batch Pick in ChalkPicks", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Update Batch Pick in ChalkPicks",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Update Batch Pick in ChalkPicks": {
-      "main": [
-        [{ "node": "Continue Batch Loop", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Continue Batch Loop", "type": "main", "index": 0 }]]
     },
     "Continue Batch Loop": {
-      "main": [
-        [{ "node": "Process Batch Picks", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Process Batch Picks", "type": "main", "index": 0 }]]
     }
   },
   "pinData": {},

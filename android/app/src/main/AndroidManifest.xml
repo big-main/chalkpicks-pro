@@ -30,13 +30,13 @@
                 <data android:scheme="chalkpicks" />
             </intent-filter>
 
-            <!-- App Links: https://chalkpicks.live -->
+            <!-- App Links: https://chalkpicks.pro -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="chalkpicks.live" />
-                <data android:scheme="https" android:host="www.chalkpicks.live" />
+                <data android:scheme="https" android:host="chalkpicks.pro" />
+                <data android:scheme="https" android:host="www.chalkpicks.pro" />
             </intent-filter>
 
         </activity>

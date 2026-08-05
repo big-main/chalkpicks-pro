@@ -41,9 +41,9 @@ export function OrganizationJsonLd() {
   const data = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "@id": "https://chalkpicks.live/#organization",
+    "@id": "https://chalkpicks.pro/#organization",
     name: "ChalkPicks",
-    url: "https://chalkpicks.live",
+    url: "https://chalkpicks.pro",
     logo: {
       "@type": "ImageObject",
       url: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png",
@@ -61,7 +61,7 @@ export function OrganizationJsonLd() {
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "Customer Support",
-      email: "support@chalkpicks.live",
+      email: "support@chalkpicks.pro",
     },
     address: {
       "@type": "PostalAddress",
@@ -78,17 +78,17 @@ export function WebSiteJsonLd() {
   const data = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "@id": "https://chalkpicks.live/#website",
+    "@id": "https://chalkpicks.pro/#website",
     name: "ChalkPicks",
-    url: "https://chalkpicks.live",
+    url: "https://chalkpicks.pro",
     description:
       "AI-powered sports betting analytics: daily picks, +EV finder, arbitrage, CLV tracking, and steam move alerts.",
-    publisher: { "@id": "https://chalkpicks.live/#organization" },
+    publisher: { "@id": "https://chalkpicks.pro/#organization" },
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: "https://chalkpicks.live/picks?q={search_term_string}",
+        urlTemplate: "https://chalkpicks.pro/picks?q={search_term_string}",
       },
       "query-input": "required name=search_term_string",
     },
@@ -152,7 +152,7 @@ export function SportsEventJsonLd({
       "@type": "SportsTeam",
       name: awayTeam,
     },
-    organizer: { "@id": "https://chalkpicks.live/#organization" },
+    organizer: { "@id": "https://chalkpicks.pro/#organization" },
   };
 
   if (url) data.url = url;
@@ -203,15 +203,15 @@ export function ProductJsonLd({
     "@type": "Product",
     name,
     description,
-    brand: { "@id": "https://chalkpicks.live/#organization" },
-    url: url ?? "https://chalkpicks.live/pricing",
+    brand: { "@id": "https://chalkpicks.pro/#organization" },
+    url: url ?? "https://chalkpicks.pro/pricing",
     offers: {
       "@type": "Offer",
       price,
       priceCurrency,
       availability: "https://schema.org/InStock",
       priceValidUntil: "2027-12-31",
-      seller: { "@id": "https://chalkpicks.live/#organization" },
+      seller: { "@id": "https://chalkpicks.pro/#organization" },
     },
     // No aggregateRating: there's no reviews table backing one, and
     // Google's structured-data policy treats fabricated review/rating
@@ -269,14 +269,14 @@ export function SoftwareApplicationJsonLd() {
     operatingSystem: "Web",
     description:
       "AI-powered sports betting picks analyzer with real-time stats, +EV finder, steam move detector, CLV tracker, parlay builder, and community leaderboard.",
-    url: "https://chalkpicks.live",
+    url: "https://chalkpicks.pro",
     offers: {
       "@type": "Offer",
       price: "19.99",
       priceCurrency: "USD",
       priceValidUntil: "2027-12-31",
     },
-    publisher: { "@id": "https://chalkpicks.live/#organization" },
+    publisher: { "@id": "https://chalkpicks.pro/#organization" },
   };
 
   return <JsonLdScript data={data} />;

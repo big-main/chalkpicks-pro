@@ -36,7 +36,7 @@ describe.skipIf(!hasAnyVapidKey)("VAPID Keys Validation", () => {
     const webpush = await import("web-push");
     expect(() => {
       webpush.setVapidDetails(
-        "mailto:admin@chalkpicks.live",
+        "mailto:admin@chalkpicks.pro",
         process.env.VAPID_PUBLIC_KEY!,
         process.env.VAPID_PRIVATE_KEY!
       );

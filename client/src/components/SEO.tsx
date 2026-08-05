@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 
-const SITE_URL = "https://chalkpicks.live";
-const DEFAULT_TITLE = "AI Betting Analytics & +EV Finder | ChalkPicks Sports Picks";
+const SITE_URL = "https://chalkpicks.pro";
+const DEFAULT_TITLE =
+  "AI Betting Analytics & +EV Finder | ChalkPicks Sports Picks";
 const DEFAULT_DESCRIPTION =
   "AI betting analytics platform with +EV finder, steam move detection, CLV tracker, and arbitrage finder. Get data-driven sports picks with confidence scores for NFL, NBA, MLB & NHL.";
 
@@ -16,7 +17,9 @@ interface SEOProps {
 }
 
 function upsertMeta(attr: "name" | "property", key: string, content: string) {
-  let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+  let el = document.head.querySelector<HTMLMetaElement>(
+    `meta[${attr}="${key}"]`
+  );
   if (!el) {
     el = document.createElement("meta");
     el.setAttribute(attr, key);
@@ -26,7 +29,9 @@ function upsertMeta(attr: "name" | "property", key: string, content: string) {
 }
 
 function upsertCanonical(href: string) {
-  let el = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  let el = document.head.querySelector<HTMLLinkElement>(
+    'link[rel="canonical"]'
+  );
   if (!el) {
     el = document.createElement("link");
     el.setAttribute("rel", "canonical");
@@ -42,7 +47,12 @@ function upsertCanonical(href: string) {
  *
  *   <SEO title="AI Sports Picks" description="..." />
  */
-export default function SEO({ title, description, canonicalPath, noindex }: SEOProps) {
+export default function SEO({
+  title,
+  description,
+  canonicalPath,
+  noindex,
+}: SEOProps) {
   const [location] = useLocation();
 
   useEffect(() => {
@@ -54,7 +64,11 @@ export default function SEO({ title, description, canonicalPath, noindex }: SEOP
 
     document.title = finalTitle;
     upsertMeta("name", "description", finalDescription);
-    upsertMeta("name", "robots", noindex ? "noindex, nofollow" : "index, follow");
+    upsertMeta(
+      "name",
+      "robots",
+      noindex ? "noindex, nofollow" : "index, follow"
+    );
     upsertCanonical(canonicalUrl);
 
     // Open Graph

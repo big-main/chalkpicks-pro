@@ -6,7 +6,18 @@ import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/schema-jsonld";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
-import { CheckCircle2, XCircle, MinusCircle, Clock, TrendingUp, Target, Calendar, ChevronDown, ChevronUp, Filter } from "lucide-react";
+import {
+  CheckCircle2,
+  XCircle,
+  MinusCircle,
+  Clock,
+  TrendingUp,
+  Target,
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  Filter,
+} from "lucide-react";
 import { Link } from "wouter";
 
 const SPORT_LABELS: Record<string, string> = {
@@ -24,26 +35,32 @@ const SPORT_LABELS: Record<string, string> = {
 const FAQS = [
   {
     question: "How are ChalkPicks results graded?",
-    answer: "Results are graded automatically when final game scores are confirmed. A win means the AI pick covered the spread/total/moneyline. A push means the result was exactly on the line — no win or loss.",
+    answer:
+      "Results are graded automatically when final game scores are confirmed. A win means the AI pick covered the spread/total/moneyline. A push means the result was exactly on the line — no win or loss.",
   },
   {
     question: "What is the overall win rate?",
-    answer: "ChalkPicks AI maintains a verified 62%+ win rate across all sports since launch. Premium picks (confidence ≥75%) have historically outperformed free picks.",
+    answer:
+      "ChalkPicks AI maintains a verified 62%+ win rate across all sports since launch. Premium picks (confidence ≥75%) have historically outperformed free picks.",
   },
   {
     question: "How far back do results go?",
-    answer: "This page shows the last 30 days of graded picks. Historical performance data going back further is available to Pro subscribers on the Analytics page.",
+    answer:
+      "This page shows the last 30 days of graded picks. Historical performance data going back further is available to Pro subscribers on the Analytics page.",
   },
   {
     question: "Why are some picks still pending?",
-    answer: "Picks show as pending until the game has been played and the final score confirmed. Pending picks are typically resolved within 24 hours of game completion.",
+    answer:
+      "Picks show as pending until the game has been played and the final score confirmed. Pending picks are typically resolved within 24 hours of game completion.",
   },
 ];
 
 function ResultIcon({ result }: { result: string }) {
-  if (result === "win") return <CheckCircle2 className="w-5 h-5 text-[#39ff14]" />;
+  if (result === "win")
+    return <CheckCircle2 className="w-5 h-5 text-[#39ff14]" />;
   if (result === "loss") return <XCircle className="w-5 h-5 text-red-400" />;
-  if (result === "push") return <MinusCircle className="w-5 h-5 text-yellow-400" />;
+  if (result === "push")
+    return <MinusCircle className="w-5 h-5 text-yellow-400" />;
   return <Clock className="w-5 h-5 text-slate-400" />;
 }
 
@@ -55,7 +72,9 @@ function ResultBadge({ result }: { result: string }) {
     pending: "bg-slate-700/50 text-slate-400 border-slate-600",
   };
   return (
-    <Badge className={`text-xs font-bold uppercase ${styles[result] ?? styles.pending}`}>
+    <Badge
+      className={`text-xs font-bold uppercase ${styles[result] ?? styles.pending}`}
+    >
       {result}
     </Badge>
   );
@@ -68,17 +87,33 @@ function formatOdds(odds: number | null | undefined): string {
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr + "T12:00:00");
-  return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  return d.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
 }
 
-function DaySummary({ wins, losses, pushes, pending }: { wins: number; losses: number; pushes: number; pending: number }) {
+function DaySummary({
+  wins,
+  losses,
+  pushes,
+  pending,
+}: {
+  wins: number;
+  losses: number;
+  pushes: number;
+  pending: number;
+}) {
   const total = wins + losses + pushes;
   const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
   return (
     <div className="flex items-center gap-3 text-xs flex-wrap">
       <span className="text-[#39ff14] font-bold">{wins}W</span>
       <span className="text-red-400 font-bold">{losses}L</span>
-      {pushes > 0 && <span className="text-yellow-400 font-bold">{pushes}P</span>}
+      {pushes > 0 && (
+        <span className="text-yellow-400 font-bold">{pushes}P</span>
+      )}
       {pending > 0 && <span className="text-slate-400">{pending} pending</span>}
       {total > 0 && <span className="text-slate-400">({winRate}% today)</span>}
     </div>
@@ -87,7 +122,9 @@ function DaySummary({ wins, losses, pushes, pending }: { wins: number; losses: n
 
 export default function Results() {
   const [sportFilter, setSportFilter] = useState("all");
-  const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set([new Date().toISOString().split("T")[0]]));
+  const [expandedDays, setExpandedDays] = useState<Set<string>>(
+    new Set([new Date().toISOString().split("T")[0]])
+  );
   const [showFilters, setShowFilters] = useState(false);
 
   const { data, isLoading } = trpc.picks.archive.useQuery(
@@ -99,7 +136,10 @@ export default function Results() {
 
   // Overall stats across all loaded days
   const overallStats = useMemo(() => {
-    let wins = 0, losses = 0, pushes = 0, pending = 0;
+    let wins = 0,
+      losses = 0,
+      pushes = 0,
+      pending = 0;
     for (const day of days) {
       for (const p of day.picks) {
         if (p.result === "win") wins++;
@@ -109,7 +149,14 @@ export default function Results() {
       }
     }
     const total = wins + losses + pushes;
-    return { wins, losses, pushes, pending, total, winRate: total > 0 ? Math.round((wins / total) * 100) : 0 };
+    return {
+      wins,
+      losses,
+      pushes,
+      pending,
+      total,
+      winRate: total > 0 ? Math.round((wins / total) * 100) : 0,
+    };
   }, [days]);
 
   const toggleDay = (date: string) => {
@@ -122,15 +169,19 @@ export default function Results() {
   };
 
   // data.sports is an array of { key, name, icon } objects
-  const sports = (data?.sports ?? []) as Array<{ key: string; name: string; icon: string }>;
+  const sports = (data?.sports ?? []) as Array<{
+    key: string;
+    name: string;
+    icon: string;
+  }>;
 
   return (
     <div className="min-h-screen bg-background">
       <PageMeta pathname="/results" />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.live" },
-          { name: "Pick Results", url: "https://chalkpicks.live/results" },
+          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Pick Results", url: "https://chalkpicks.pro/results" },
         ]}
       />
       <FaqJsonLd faqs={FAQS} />
@@ -144,27 +195,52 @@ export default function Results() {
         {/* Hero */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-5 rounded-full bg-[#39ff14]/10 border border-[#39ff14]/20 text-[#39ff14] text-xs font-bold">
-            <Calendar className="w-3.5 h-3.5" /> VERIFIED PICK RESULTS — LAST 30 DAYS
+            <Calendar className="w-3.5 h-3.5" /> VERIFIED PICK RESULTS — LAST 30
+            DAYS
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            AI Pick Results &amp; <span className="text-[#39ff14]">Track Record</span>
+            AI Pick Results &amp;{" "}
+            <span className="text-[#39ff14]">Track Record</span>
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto text-lg">
-            Every pick graded. Every result verified. No cherry-picking — full transparency on ChalkPicks AI performance.
+            Every pick graded. Every result verified. No cherry-picking — full
+            transparency on ChalkPicks AI performance.
           </p>
         </div>
 
         {/* Overall Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Win Rate", value: `${overallStats.winRate}%`, color: "#39ff14", icon: TrendingUp },
-            { label: "Wins", value: overallStats.wins.toString(), color: "#39ff14", icon: CheckCircle2 },
-            { label: "Losses", value: overallStats.losses.toString(), color: "#f87171", icon: XCircle },
-            { label: "Total Graded", value: overallStats.total.toString(), color: "#94a3b8", icon: Target },
+            {
+              label: "Win Rate",
+              value: `${overallStats.winRate}%`,
+              color: "#39ff14",
+              icon: TrendingUp,
+            },
+            {
+              label: "Wins",
+              value: overallStats.wins.toString(),
+              color: "#39ff14",
+              icon: CheckCircle2,
+            },
+            {
+              label: "Losses",
+              value: overallStats.losses.toString(),
+              color: "#f87171",
+              icon: XCircle,
+            },
+            {
+              label: "Total Graded",
+              value: overallStats.total.toString(),
+              color: "#94a3b8",
+              icon: Target,
+            },
           ].map(({ label, value, color, icon: Icon }) => (
             <NeonCard key={label} className="p-4 text-center">
               <Icon className="w-5 h-5 mx-auto mb-2" style={{ color }} />
-              <p className="text-2xl font-bold" style={{ color }}>{value}</p>
+              <p className="text-2xl font-bold" style={{ color }}>
+                {value}
+              </p>
               <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
             </NeonCard>
           ))}
@@ -180,7 +256,11 @@ export default function Results() {
           >
             <Filter className="w-3.5 h-3.5 mr-1.5" />
             Filter by Sport
-            {showFilters ? <ChevronUp className="w-3.5 h-3.5 ml-1.5" /> : <ChevronDown className="w-3.5 h-3.5 ml-1.5" />}
+            {showFilters ? (
+              <ChevronUp className="w-3.5 h-3.5 ml-1.5" />
+            ) : (
+              <ChevronDown className="w-3.5 h-3.5 ml-1.5" />
+            )}
           </Button>
           {showFilters && (
             <div className="flex flex-wrap gap-2">
@@ -217,13 +297,18 @@ export default function Results() {
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-16 rounded-xl bg-slate-800/40 animate-pulse" />
+              <div
+                key={i}
+                className="h-16 rounded-xl bg-slate-800/40 animate-pulse"
+              />
             ))}
           </div>
         ) : days.length === 0 ? (
           <NeonCard className="p-10 text-center">
             <Calendar className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-            <p className="text-muted-foreground">No graded picks found for the selected filter.</p>
+            <p className="text-muted-foreground">
+              No graded picks found for the selected filter.
+            </p>
             <Button
               variant="outline"
               size="sm"
@@ -239,7 +324,9 @@ export default function Results() {
               const wins = dayPicks.filter(p => p.result === "win").length;
               const losses = dayPicks.filter(p => p.result === "loss").length;
               const pushes = dayPicks.filter(p => p.result === "push").length;
-              const pending = dayPicks.filter(p => p.result === "pending").length;
+              const pending = dayPicks.filter(
+                p => p.result === "pending"
+              ).length;
               const isExpanded = expandedDays.has(date);
 
               return (
@@ -251,12 +338,21 @@ export default function Results() {
                   >
                     <div className="flex items-center gap-3">
                       <div className="text-left">
-                        <p className="text-sm font-bold text-foreground">{formatDate(date)}</p>
-                        <DaySummary wins={wins} losses={losses} pushes={pushes} pending={pending} />
+                        <p className="text-sm font-bold text-foreground">
+                          {formatDate(date)}
+                        </p>
+                        <DaySummary
+                          wins={wins}
+                          losses={losses}
+                          pushes={pushes}
+                          pending={pending}
+                        />
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">{dayPicks.length} picks</span>
+                      <span className="text-xs text-muted-foreground">
+                        {dayPicks.length} picks
+                      </span>
                       {isExpanded ? (
                         <ChevronUp className="w-4 h-4 text-slate-400" />
                       ) : (
@@ -269,16 +365,22 @@ export default function Results() {
                   {isExpanded && (
                     <div className="border-t border-slate-700/50 divide-y divide-slate-700/30">
                       {dayPicks.map(pick => (
-                        <div key={pick.id} className="flex items-center justify-between px-4 py-3 hover:bg-slate-800/20 transition-colors">
+                        <div
+                          key={pick.id}
+                          className="flex items-center justify-between px-4 py-3 hover:bg-slate-800/20 transition-colors"
+                        >
                           <div className="flex items-center gap-3 min-w-0">
                             <ResultIcon result={pick.result} />
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                                 <Badge className="text-xs bg-slate-700/50 text-slate-300 border-slate-600 shrink-0">
-                                  {SPORT_LABELS[pick.sportKey] ?? pick.sportKey.toUpperCase()}
+                                  {SPORT_LABELS[pick.sportKey] ??
+                                    pick.sportKey.toUpperCase()}
                                 </Badge>
                                 {pick.tier === "premium" && (
-                                  <Badge className="text-xs bg-yellow-500/10 text-yellow-400 border-yellow-500/20 shrink-0">PRO</Badge>
+                                  <Badge className="text-xs bg-yellow-500/10 text-yellow-400 border-yellow-500/20 shrink-0">
+                                    PRO
+                                  </Badge>
                                 )}
                               </div>
                               <p className="text-sm text-foreground font-medium truncate">
@@ -292,8 +394,12 @@ export default function Results() {
                           </div>
                           <div className="flex items-center gap-3 shrink-0 ml-2">
                             <div className="text-right hidden sm:block">
-                              <p className="text-xs text-muted-foreground">Confidence</p>
-                              <p className="text-sm font-bold text-foreground">{pick.confidenceScore}%</p>
+                              <p className="text-xs text-muted-foreground">
+                                Confidence
+                              </p>
+                              <p className="text-sm font-bold text-foreground">
+                                {pick.confidenceScore}%
+                              </p>
                             </div>
                             <ResultBadge result={pick.result} />
                           </div>
@@ -310,9 +416,13 @@ export default function Results() {
         {/* CTA */}
         <NeonCard className="mt-10 p-8 text-center">
           <TrendingUp className="w-8 h-8 text-[#39ff14] mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-foreground mb-2">Want Full Analysis on Every Pick?</h2>
+          <h2 className="text-xl font-bold text-foreground mb-2">
+            Want Full Analysis on Every Pick?
+          </h2>
           <p className="text-muted-foreground text-sm mb-5 max-w-md mx-auto">
-            Pro members see confidence scores, edge percentages, sharp money indicators, and full AI analysis — plus unlimited picks across all sports.
+            Pro members see confidence scores, edge percentages, sharp money
+            indicators, and full AI analysis — plus unlimited picks across all
+            sports.
           </p>
           <div className="flex gap-3 justify-center flex-wrap">
             <Link href="/pricing">
@@ -321,7 +431,10 @@ export default function Results() {
               </Button>
             </Link>
             <Link href="/free-picks">
-              <Button variant="outline" className="border-[#39ff14]/30 text-[#39ff14] hover:bg-[#39ff14]/10">
+              <Button
+                variant="outline"
+                className="border-[#39ff14]/30 text-[#39ff14] hover:bg-[#39ff14]/10"
+              >
                 View Free Picks
               </Button>
             </Link>
@@ -330,11 +443,15 @@ export default function Results() {
 
         {/* FAQ */}
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6">
+            Frequently Asked Questions
+          </h2>
           <div className="space-y-4">
             {FAQS.map(({ question, answer }) => (
               <NeonCard key={question} className="p-5">
-                <h3 className="text-sm font-bold text-foreground mb-2">{question}</h3>
+                <h3 className="text-sm font-bold text-foreground mb-2">
+                  {question}
+                </h3>
                 <p className="text-sm text-muted-foreground">{answer}</p>
               </NeonCard>
             ))}

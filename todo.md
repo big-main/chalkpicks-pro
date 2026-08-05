@@ -124,7 +124,7 @@
 ## Deployment
 
 - [x] Deploy to Manus Autoscale (production environment)
-- [x] Configure custom domains (chalkpicks.live, www.chalkpicks.live)
+- [x] Configure custom domains (chalkpicks.pro, www.chalkpicks.pro)
 - [x] Set up SSL/TLS certificates
 - [x] Configure Stripe webhooks for production
 
@@ -331,7 +331,7 @@
 
 - [x] Remove 5-day free trial from Stripe checkout and backend
 - [x] Ensure signup/login flow works perfectly (test end-to-end)
-- [x] Create admin account for Big-Main (owner) — admin@chalkpicks.live
+- [x] Create admin account for Big-Main (owner) — admin@chalkpicks.pro
 - [x] Verify Stripe subscription tiers linked correctly (Daily $9.99, Monthly $29.99, Yearly $199.99)
 - [x] Add sportsbook affiliate links (DraftKings, FanDuel, BetMGM, Caesars, PointsBet, BetRivers, etc.)
 - [x] Build sponsor/advertising system for monetization (/sponsors page with 3 tiers + ad placements)
@@ -482,7 +482,7 @@
 - [x] Verify free trial setup: 3-day trial auto-granted on signup (subscriptionTier="trial", expiresAt=now+3days)
 - [x] Test end-to-end subscription flow: signup page live, form displays "no credit card required" messaging
 - [x] Verify webhook handling: /api/stripe/webhook endpoint registered and configured with webhook secret
-- [x] Verify production payment flow: Stripe test keys active, webhook endpoint at https://chalkpicks.live/api/stripe/webhook
+- [x] Verify production payment flow: Stripe test keys active, webhook endpoint at https://chalkpicks.pro/api/stripe/webhook
 - [x] Subscription tiers live: Daily Pass $9.99 (1 day), Monthly Pro $29.99 (1 month), Annual Elite $199.99 (1 year)
 - [x] Credit bonus system active: $100 credit granted for payments >= $5
 
@@ -890,7 +890,7 @@
 
 ## BabyLoveGrowth Integration (Jul 10, 2026)
 
-- [x] Configure Gmail SMTP credentials (admin@chalkpicks.live with password 992352Cmz!)
+- [x] Configure Gmail SMTP credentials (admin@chalkpicks.pro with password 992352Cmz!)
 - [x] Add BabyLoveGrowth API service (babyloveGrowth.ts with fetch, generate, transform functions)
 - [x] Create blog_posts database table with schema (title, slug, content, SEO fields, status)
 - [x] Add blog router with CRUD procedures (list, getBySlug, generateArticles, importArticle, publish, delete)
@@ -1077,9 +1077,9 @@
 ## Phase 12 — SEO / Traffic / @xyflow/react (Jul 17, 2026)
 
 - [x] Install @xyflow/react in the Manus webdev project (client dependency)
-- [x] Verify chalkpicks.live sitemap.xml is accessible and valid (51 URLs, 200 OK)
+- [x] Verify chalkpicks.pro sitemap.xml is accessible and valid (51 URLs, 200 OK)
 - [x] Verify bot pre-rendering snapshots are being served to Googlebot (X-Prerendered: 1 header confirmed)
-- [x] Submit chalkpicks.live to Google Search Console and request indexing (auto-verified via DNS, IndexNow 202)
+- [x] Submit chalkpicks.pro to Google Search Console and request indexing (auto-verified via DNS, IndexNow 202)
 - [x] Audit robots.txt to ensure Googlebot is not blocked (44 Allow rules, AI crawlers welcomed)
 - [x] Verify blog content is server-side rendered or snapshot-served (prerender middleware serves HTML shell to bots)
 - [x] Save connectors and cloud computer state (PM2 saved, AGENTS.md updated)
@@ -1238,7 +1238,7 @@
 ## Phase 40 — AI Model Recommendations (SEO + Revenue Protection)
 
 - [x] Fix 9 remaining TS errors: SportPicks.tsx accepts any props (wouter RouteComponentProps compatible), canvas package installed
-- [x] Audit sitemap.xml: accessible at chalkpicks.live/sitemap.xml (51 URLs) + /sitemap-blog.xml (12 blog posts)
+- [x] Audit sitemap.xml: accessible at chalkpicks.pro/sitemap.xml (51 URLs) + /sitemap-blog.xml (12 blog posts)
 - [x] Verify bot pre-rendering: X-Prerendered:1 header present, full static HTML with JSON-LD, OG tags, canonical URLs served to Googlebot
 - [x] Audit robots.txt: all public pages allowed, private routes disallowed, AI crawlers welcomed, both sitemaps referenced
 - [x] Stripe webhooks already hardened: checkout.session.completed, invoice.paid, invoice.payment_succeeded, customer.subscription.deleted, invoice.payment_failed (with email), customer.subscription.updated — all with signature verification
@@ -1390,7 +1390,7 @@
 - [x] Create member /profile page with avatar, stats, tier badge, customization
 - [x] Add profile tRPC procedures (getProfile, updateProfile)
 - [x] Audit and wire all dead CTA buttons site-wide (no orphaned coming-soon CTAs found)
-- [x] Fix canonical URLs to use chalkpicks.live domain (SITE_URL = https://chalkpicks.live in SEO.tsx + seo-routes.ts)
+- [x] Fix canonical URLs to use chalkpicks.pro domain (SITE_URL = https://chalkpicks.pro in SEO.tsx + seo-routes.ts)
 - [x] Register all new routes in App.tsx (/terms, /privacy, /responsible-gambling, /profile)
 
 ## Phase 58 — Stripe Live Fix, Logo Headers, Streak Badges, Blog Fix
@@ -1664,7 +1664,7 @@
 - [x] n8n: Enable Public API at bigmain.app.n8n.cloud/settings/api (owner action — toggle in n8n Settings > API)
 - [x] n8n: Set CHALKPICKS_N8N_SECRET env var — N8N_WEBHOOK_SECRET=chalkpicks_n8n_2026_secret set in webdev secrets + Cloud Computer .env.production
 - [x] n8n: Set N8N_PICKS_WEBHOOK_URL + N8N_DRIP_WEBHOOK_URL secrets in webdev + Cloud Computer .env.production
-- [x] GSC: Verify chalkpicks.live in Google Search Console + submit /sitemap.xml (completed Jul 29)
+- [x] GSC: Verify chalkpicks.pro in Google Search Console + submit /sitemap.xml (completed Jul 29)
 
 ## PageSpeed Optimization (Jul 28, 2026) — Mobile Score: 41 → 80+
 
@@ -1766,7 +1766,7 @@
 
 ## GSC Verification (Jul 29, 2026)
 
-- [x] Google Search Console verified for www.chalkpicks.live
+- [x] Google Search Console verified for www.chalkpicks.pro
 - [x] Sitemap submitted — 88 pages discovered
 
 ## UI Feature Enhancements (Jul 29, 2026)

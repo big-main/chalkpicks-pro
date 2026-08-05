@@ -18,7 +18,7 @@ async function sendViaResend(
       },
       body: JSON.stringify({
         from:
-          process.env.SMTP_FROM || "ChalkPicks Pro <noreply@chalkpicks.live>",
+          process.env.SMTP_FROM || "ChalkPicks Pro <noreply@chalkpicks.pro>",
         to: [to],
         subject,
         html,
@@ -405,7 +405,7 @@ function generateWelcomeEmail(data: Record<string, any>): string {
             <p style="color: #e5e7eb;">Your subscription will automatically renew. You can manage or cancel anytime from account settings.</p>
             
             <div style="text-align: center;">
-              <a href="https://chalkpicks.live/account-settings" class="cta-button">Go to Dashboard</a>
+              <a href="https://chalkpicks.pro/account-settings" class="cta-button">Go to Dashboard</a>
             </div>
             
             <h3 style="margin-top: 30px; color: #39ff14;">Quick start tips:</h3>
@@ -417,13 +417,13 @@ function generateWelcomeEmail(data: Record<string, any>): string {
             </ul>
             
             <p style="margin-top: 30px; color: #888; font-size: 14px;">
-              Questions? Reply to this email or visit <a href="https://chalkpicks.live/support" style="color: #39ff14; text-decoration: none;">chalkpicks.live/support</a>
+              Questions? Reply to this email or visit <a href="https://chalkpicks.pro/support" style="color: #39ff14; text-decoration: none;">chalkpicks.pro/support</a>
             </p>
           </div>
           
           <div class="footer">
             <p>© 2026 ChalkPicks. All rights reserved.</p>
-            <p><a href="https://chalkpicks.live" style="color: #39ff14; text-decoration: none;">chalkpicks.live</a></p>
+            <p><a href="https://chalkpicks.pro" style="color: #39ff14; text-decoration: none;">chalkpicks.pro</a></p>
           </div>
         </div>
       </body>
@@ -577,7 +577,7 @@ function generateDay2Email(name: string): string {
         </div>
       </div>
       <div style="text-align: center; margin-top: 32px;">
-        <a href="https://chalkpicks.live/picks" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 14px;">View Today's Picks</a>
+        <a href="https://chalkpicks.pro/picks" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 14px;">View Today's Picks</a>
       </div>
       <p style="font-size: 13px; color: #64748b; text-align: center; margin-top: 32px;">
         Questions? Reply to this email — we read every message.
@@ -593,7 +593,7 @@ function generateDay3Email(name: string, tier: string): string {
     <div style="background: linear-gradient(135deg, #1a2e1a, #0a1a0a); border: 1px solid rgba(57,255,20,0.3); border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;">
       <h3 style="color: #39ff14; font-size: 18px; margin: 0 0 8px;">Save 44% with Annual</h3>
       <p style="color: #94a3b8; font-size: 14px; margin: 0 0 16px;">Switch to yearly and save $159.89/year vs monthly billing.</p>
-      <a href="https://chalkpicks.live/pricing" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-size: 14px;">Upgrade to Annual</a>
+      <a href="https://chalkpicks.pro/pricing" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-size: 14px;">Upgrade to Annual</a>
     </div>
   `
     : "";
@@ -618,7 +618,7 @@ function generateDay3Email(name: string, tier: string): string {
         </div>
       </div>
       <div style="text-align: center; margin-top: 16px;">
-        <a href="https://chalkpicks.live/referrals" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 14px;">Get Your Referral Link</a>
+        <a href="https://chalkpicks.pro/referrals" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 14px;">Get Your Referral Link</a>
       </div>
       ${upsellSection}
       <p style="font-size: 13px; color: #64748b; text-align: center; margin-top: 32px;">
@@ -642,7 +642,7 @@ function generateDay7Email(name: string, tier: string): string {
         You've been with ChalkPicks for a full week. As an Annual Elite member, you have access to everything — keep tracking your CLV and using the EV Finder to build your edge.
       </p>
       <div style="text-align: center; margin-top: 24px;">
-        <a href="https://chalkpicks.live/dashboard" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 14px;">View Your Dashboard</a>
+        <a href="https://chalkpicks.pro/dashboard" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 14px;">View Your Dashboard</a>
       </div>
       <p style="font-size: 13px; color: #64748b; text-align: center; margin-top: 32px;">— The ChalkPicks Team</p>
     </div>
@@ -667,7 +667,7 @@ function generateDay7Email(name: string, tier: string): string {
           <li>Priority support</li>
         </ul>
         <div style="text-align: center;">
-          <a href="https://chalkpicks.live/pricing" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 15px;">Upgrade Now — Save \$159</a>
+          <a href="https://chalkpicks.pro/pricing" style="display: inline-block; background: #39ff14; color: #000; font-weight: 700; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 15px;">Upgrade Now — Save \$159</a>
         </div>
       </div>
       <p style="font-size: 13px; color: #64748b; text-align: center; margin-top: 32px;">
@@ -791,11 +791,11 @@ function generateNewsletterWelcomeEmail(data: Record<string, any>): string {
           </div>
         </div>
         <div class="cta">
-          <a href="https://chalkpicks.live/picks">View Today's Picks →</a>
+          <a href="https://chalkpicks.pro/picks">View Today's Picks →</a>
         </div>
         <div class="footer">
-          You're receiving this because you subscribed at chalkpicks.live.<br />
-          <a href="https://chalkpicks.live/unsubscribe?email=${encodeURIComponent(email)}">Unsubscribe</a> · <a href="https://chalkpicks.live/privacy">Privacy Policy</a>
+          You're receiving this because you subscribed at chalkpicks.pro.<br />
+          <a href="https://chalkpicks.pro/unsubscribe?email=${encodeURIComponent(email)}">Unsubscribe</a> · <a href="https://chalkpicks.pro/privacy">Privacy Policy</a>
         </div>
       </div>
     </body>

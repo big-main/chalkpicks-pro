@@ -1,5 +1,13 @@
 import { Link } from "wouter";
-import { Handshake, ExternalLink, Star, Users, Globe, Megaphone, Mail } from "lucide-react";
+import {
+  Handshake,
+  ExternalLink,
+  Star,
+  Users,
+  Globe,
+  Megaphone,
+  Mail,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -13,7 +21,7 @@ const partners = [
     badge: "Featured Partner",
     collaboration: [
       "Featured listing on ToolPilot.ai directory",
-      "\"Featured On ToolPilot\" badge displayed on our site",
+      '"Featured On ToolPilot" badge displayed on our site',
       "Cross-promotion on social media channels",
       "Exposure on ToolPilot Android and Apple apps",
     ],
@@ -25,7 +33,7 @@ const collaborationOptions = [
     icon: Globe,
     title: "Badge Placement",
     description:
-      "Display our \"Powered by ChalkPicks\" badge on your website and link back to us for mutual SEO benefit.",
+      'Display our "Powered by ChalkPicks" badge on your website and link back to us for mutual SEO benefit.',
   },
   {
     icon: Megaphone,
@@ -63,7 +71,8 @@ export default function MediaPartners() {
               Media Partners
             </h1>
             <p className="text-lg text-white/50 max-w-xl mx-auto">
-              We collaborate with leading platforms in AI, sports analytics, and technology to deliver the best experience for our users.
+              We collaborate with leading platforms in AI, sports analytics, and
+              technology to deliver the best experience for our users.
             </p>
           </div>
         </div>
@@ -71,9 +80,11 @@ export default function MediaPartners() {
 
       {/* Featured Partners */}
       <div className="container py-12 md:py-16">
-        <h2 className="text-2xl font-bold text-white mb-8">Featured Partners</h2>
+        <h2 className="text-2xl font-bold text-white mb-8">
+          Featured Partners
+        </h2>
         <div className="space-y-6">
-          {partners.map((partner) => (
+          {partners.map(partner => (
             <Card
               key={partner.name}
               className="bg-white/[0.02] border-white/5 overflow-hidden"
@@ -87,7 +98,9 @@ export default function MediaPartners() {
                       alt={partner.name}
                       className="h-16 w-auto rounded-lg mb-4"
                     />
-                    <h3 className="text-xl font-bold text-white mb-1">{partner.name}</h3>
+                    <h3 className="text-xl font-bold text-white mb-1">
+                      {partner.name}
+                    </h3>
                     <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                       {partner.badge}
                     </span>
@@ -102,7 +115,8 @@ export default function MediaPartners() {
                         size="sm"
                         className="border-white/10 text-white/70 hover:text-white"
                       >
-                        Visit Site <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
+                        Visit Site{" "}
+                        <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
                       </Button>
                     </a>
                   </div>
@@ -137,13 +151,16 @@ export default function MediaPartners() {
       {/* Ways to Collaborate */}
       <div className="container py-12 md:py-16 border-t border-white/5">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-2xl font-bold text-white mb-3">Ways to Collaborate</h2>
+          <h2 className="text-2xl font-bold text-white mb-3">
+            Ways to Collaborate
+          </h2>
           <p className="text-white/50">
-            Interested in partnering with ChalkPicks Pro? Here's how we can work together to grow our audiences.
+            Interested in partnering with ChalkPicks Pro? Here's how we can work
+            together to grow our audiences.
           </p>
         </div>
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {collaborationOptions.map((option) => (
+          {collaborationOptions.map(option => (
             <Card
               key={option.title}
               className="bg-white/[0.02] border-white/5 hover:border-purple-500/20 transition-colors"
@@ -204,9 +221,11 @@ export default function MediaPartners() {
               Become a Partner
             </h3>
             <p className="text-sm text-white/50 mb-6 max-w-md mx-auto">
-              Want to collaborate with ChalkPicks Pro? We're always looking for new partners in AI, sports, and technology. Reach out and let's grow together.
+              Want to collaborate with ChalkPicks Pro? We're always looking for
+              new partners in AI, sports, and technology. Reach out and let's
+              grow together.
             </p>
-            <a href="mailto:admin@chalkpicks.live?subject=Media Partnership Inquiry">
+            <a href="mailto:admin@chalkpicks.pro?subject=Media Partnership Inquiry">
               <Button className="bg-purple-600 hover:bg-purple-700 text-white">
                 <Mail className="w-4 h-4 mr-2" /> Contact Us About Partnerships
               </Button>

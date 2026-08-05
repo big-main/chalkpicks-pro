@@ -56,26 +56,49 @@ function confidenceColor(score: number): string {
 }
 
 function resultBadge(result: string) {
-  if (result === "win") return <span className="text-xs font-bold text-[#00ff87] bg-[#00ff87]/10 border border-[#00ff87]/30 px-2 py-0.5 rounded">WIN ✓</span>;
-  if (result === "loss") return <span className="text-xs font-bold text-brand-red bg-brand-red/10 border border-brand-red/30 px-2 py-0.5 rounded">LOSS</span>;
-  if (result === "push") return <span className="text-xs font-bold text-brand-gold bg-brand-gold/10 border border-brand-gold/30 px-2 py-0.5 rounded">PUSH</span>;
-  return <span className="text-xs font-bold text-gray-400 bg-gray-400/10 border border-gray-400/30 px-2 py-0.5 rounded">PENDING</span>;
+  if (result === "win")
+    return (
+      <span className="text-xs font-bold text-[#00ff87] bg-[#00ff87]/10 border border-[#00ff87]/30 px-2 py-0.5 rounded">
+        WIN ✓
+      </span>
+    );
+  if (result === "loss")
+    return (
+      <span className="text-xs font-bold text-brand-red bg-brand-red/10 border border-brand-red/30 px-2 py-0.5 rounded">
+        LOSS
+      </span>
+    );
+  if (result === "push")
+    return (
+      <span className="text-xs font-bold text-brand-gold bg-brand-gold/10 border border-brand-gold/30 px-2 py-0.5 rounded">
+        PUSH
+      </span>
+    );
+  return (
+    <span className="text-xs font-bold text-gray-400 bg-gray-400/10 border border-gray-400/30 px-2 py-0.5 rounded">
+      PENDING
+    </span>
+  );
 }
 
-export default function SharePickCard({ pick, className = "" }: SharePickCardProps) {
+export default function SharePickCard({
+  pick,
+  className = "",
+}: SharePickCardProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const pickUrl = `${window.location.origin}/picks/${pick.id}/share`;
-  const matchup = pick.homeTeam && pick.awayTeam
-    ? `${pick.awayTeam} @ ${pick.homeTeam}`
-    : pick.recommendation;
+  const matchup =
+    pick.homeTeam && pick.awayTeam
+      ? `${pick.awayTeam} @ ${pick.homeTeam}`
+      : pick.recommendation;
 
   const tweetText = encodeURIComponent(
     `🎯 ${pick.recommendation}\n` +
-    `📊 Confidence: ${pick.confidenceScore}% | Edge: ${pick.edgeScore ? `+${pick.edgeScore}%` : "—"}\n` +
-    `💰 Odds: ${formatOdds(pick.odds)}\n` +
-    `\nFree AI picks → ${pickUrl}\n#SportsBetting #ChalkPicks`
+      `📊 Confidence: ${pick.confidenceScore}% | Edge: ${pick.edgeScore ? `+${pick.edgeScore}%` : "—"}\n` +
+      `💰 Odds: ${formatOdds(pick.odds)}\n` +
+      `\nFree AI picks → ${pickUrl}\n#SportsBetting #ChalkPicks`
   );
 
   const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
@@ -142,7 +165,9 @@ export default function SharePickCard({ pick, className = "" }: SharePickCardPro
                 {pick.recommendation}
               </p>
               {pick.odds && (
-                <p className="text-[#ff6b35] font-mono font-bold text-xl mt-1">{formatOdds(pick.odds)}</p>
+                <p className="text-[#ff6b35] font-mono font-bold text-xl mt-1">
+                  {formatOdds(pick.odds)}
+                </p>
               )}
             </div>
 
@@ -160,24 +185,35 @@ export default function SharePickCard({ pick, className = "" }: SharePickCardPro
               <div className="py-3 text-center">
                 <p className="text-xs text-gray-500 mb-1">Edge</p>
                 <p className="text-lg font-bold font-mono text-[#ffd700]">
-                  {pick.edgeScore ? `+${parseFloat(pick.edgeScore).toFixed(1)}%` : "—"}
+                  {pick.edgeScore
+                    ? `+${parseFloat(pick.edgeScore).toFixed(1)}%`
+                    : "—"}
                 </p>
               </div>
               <div className="py-3 text-center">
                 <p className="text-xs text-gray-500 mb-1">Odds</p>
-                <p className="text-lg font-bold font-mono text-white">{formatOdds(pick.odds)}</p>
+                <p className="text-lg font-bold font-mono text-white">
+                  {formatOdds(pick.odds)}
+                </p>
               </div>
             </div>
 
             {/* Footer */}
             <div className="px-4 py-2 bg-[#0a0a14] border-t border-[#2a2a3a] text-center">
-              <p className="text-xs text-gray-600">chalkpicks.live · Free AI Sports Picks</p>
+              <p className="text-xs text-gray-600">
+                chalkpicks.pro · Free AI Sports Picks
+              </p>
             </div>
           </div>
 
           {/* Share Buttons */}
           <div className="px-6 pb-6 space-y-3">
-            <a href={tweetUrl} target="_blank" rel="noopener noreferrer" className="block">
+            <a
+              href={tweetUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+            >
               <Button className="w-full bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white font-semibold">
                 <Twitter className="w-4 h-4 mr-2" />
                 Share on X / Twitter
@@ -189,9 +225,13 @@ export default function SharePickCard({ pick, className = "" }: SharePickCardPro
               className="w-full border-[#2a2a3a] text-white hover:bg-[#1a1a2a]"
             >
               {copied ? (
-                <><Check className="w-4 h-4 mr-2 text-[#00ff87]" /> Copied!</>
+                <>
+                  <Check className="w-4 h-4 mr-2 text-[#00ff87]" /> Copied!
+                </>
               ) : (
-                <><Link2 className="w-4 h-4 mr-2" /> Copy Link</>
+                <>
+                  <Link2 className="w-4 h-4 mr-2" /> Copy Link
+                </>
               )}
             </Button>
             <p className="text-xs text-gray-600 text-center">

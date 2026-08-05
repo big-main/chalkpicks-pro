@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://chalkpicks.live">
-    <img src="https://chalkpicks.live/favicon.ico" width="64" alt="ChalkPicks Logo" />
+  <a href="https://chalkpicks.pro">
+    <img src="https://chalkpicks.pro/favicon.ico" width="64" alt="ChalkPicks Logo" />
   </a>
 </p>
 
@@ -11,10 +11,10 @@
 </p>
 
 <p align="center">
-  <a href="https://chalkpicks.live">Live Site</a> &bull;
-  <a href="https://chalkpicks.live/methodology">Methodology</a> &bull;
-  <a href="https://chalkpicks.live/pricing">Pricing</a> &bull;
-  <a href="https://chalkpicks.live/blog">Blog</a>
+  <a href="https://chalkpicks.pro">Live Site</a> &bull;
+  <a href="https://chalkpicks.pro/methodology">Methodology</a> &bull;
+  <a href="https://chalkpicks.pro/pricing">Pricing</a> &bull;
+  <a href="https://chalkpicks.pro/blog">Blog</a>
 </p>
 
 <p align="center">
@@ -32,7 +32,7 @@
 
 ChalkPicks is a production SaaS platform that gives sports bettors a mathematical edge through multi-model AI analysis, real-time odds from 10+ sportsbooks, and professional-grade tools. The platform processes live market data 24/7 and generates picks with calculated edge scores, confidence ratings, and closing-line value tracking.
 
-**Live at:** [chalkpicks.live](https://chalkpicks.live)
+**Live at:** [chalkpicks.pro](https://chalkpicks.pro)
 
 ---
 
@@ -198,9 +198,9 @@ scripts/           ← Sitemap gen, snapshots, IndexNow, seed
 
 **Domains:**
 
-- [chalkpicks.live](https://chalkpicks.live)
-- [www.chalkpicks.live](https://www.chalkpicks.live)
-- [bet.chalkpicks.live](https://bet.chalkpicks.live)
+- [chalkpicks.pro](https://chalkpicks.pro)
+- [www.chalkpicks.pro](https://www.chalkpicks.pro)
+- [bet.chalkpicks.pro](https://bet.chalkpicks.pro)
 
 **Cloud Computer Mirror:** GCE VM with nginx, PM2, Ollama, Quant Sidecar
 

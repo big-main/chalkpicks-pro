@@ -41,7 +41,7 @@ export async function sendPickAlert(chatId: string, pick: any) {
 <b>Confidence:</b> ${pick.confidence}%
 <b>+EV:</b> ${pick.ev}%
 
-<a href="https://chalkpicks.live/picks/${pick.id}">View Full Analysis →</a>
+<a href="https://chalkpicks.pro/picks/${pick.id}">View Full Analysis →</a>
   `.trim();
 
   return sendTelegramMessage({
@@ -78,7 +78,7 @@ export async function sendSteamAlert(chatId: string, steam: any) {
 <b>Volume:</b> ${steam.volume}x normal
 <b>Direction:</b> ${steam.direction}
 
-<a href="https://chalkpicks.live/tools/line-movement">Check Line Movement Tool →</a>
+<a href="https://chalkpicks.pro/tools/line-movement">Check Line Movement Tool →</a>
   `.trim();
 
   return sendTelegramMessage({
@@ -88,7 +88,11 @@ export async function sendSteamAlert(chatId: string, steam: any) {
   });
 }
 
-export async function sendLeaderboardUpdate(chatId: string, rank: number, prize: number) {
+export async function sendLeaderboardUpdate(
+  chatId: string,
+  rank: number,
+  prize: number
+) {
   const text = `
 🏆 <b>Leaderboard Update!</b>
 

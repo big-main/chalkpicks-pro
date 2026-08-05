@@ -91,8 +91,8 @@ export default function FreePicks() {
       <PageMeta pathname="/free-picks" />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.live" },
-          { name: "Free Picks", url: "https://chalkpicks.live/free-picks" },
+          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Free Picks", url: "https://chalkpicks.pro/free-picks" },
         ]}
       />
       <FaqJsonLd faqs={FAQS} />

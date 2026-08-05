@@ -7,37 +7,46 @@ import { TRPCError } from "@trpc/server";
 
 export const communityAutomationRouter = router({
   // Get daily pick content for social media
-  getDailyPickContent: publicProcedure
-    .query(async () => {
-      // This would fetch today's top pick and format it for social media
-      // For now, return a template that can be used
-      return {
-        reddit: {
-          title: "Daily Picks - ChalkPicks AI Analysis",
-          subreddits: ["sportsbook", "DFS", "sportsbetting"],
-          content: "Check out today's AI-generated picks with confidence scores and backtested analysis.",
-          cta: "Visit chalkpicks.live for full analysis",
+  getDailyPickContent: publicProcedure.query(async () => {
+    // This would fetch today's top pick and format it for social media
+    // For now, return a template that can be used
+    return {
+      reddit: {
+        title: "Daily Picks - ChalkPicks AI Analysis",
+        subreddits: ["sportsbook", "DFS", "sportsbetting"],
+        content:
+          "Check out today's AI-generated picks with confidence scores and backtested analysis.",
+        cta: "Visit chalkpicks.pro for full analysis",
+      },
+      twitter: {
+        hashtags: [
+          "#sportsbetting",
+          "#picks",
+          "#ai",
+          "#predictions",
+          "#nfl",
+          "#nba",
+          "#mlb",
+        ],
+        content:
+          "Today's top pick from ChalkPicks AI: [Pick details] | Confidence: [Score]% | Backtest ROI: [ROI]%",
+        cta: "Full analysis: chalkpicks.pro",
+      },
+      discord: {
+        channels: ["sports-betting", "picks", "ai-predictions"],
+        embed: {
+          title: "Daily AI Pick",
+          description: "Today's top pick with full analysis",
+          fields: [
+            { name: "Recommendation", value: "[Pick]", inline: true },
+            { name: "Confidence", value: "[Score]%", inline: true },
+            { name: "Odds", value: "[Odds]", inline: true },
+            { name: "Analysis", value: "[AI Analysis]", inline: false },
+          ],
         },
-        twitter: {
-          hashtags: ["#sportsbetting", "#picks", "#ai", "#predictions", "#nfl", "#nba", "#mlb"],
-          content: "Today's top pick from ChalkPicks AI: [Pick details] | Confidence: [Score]% | Backtest ROI: [ROI]%",
-          cta: "Full analysis: chalkpicks.live",
-        },
-        discord: {
-          channels: ["sports-betting", "picks", "ai-predictions"],
-          embed: {
-            title: "Daily AI Pick",
-            description: "Today's top pick with full analysis",
-            fields: [
-              { name: "Recommendation", value: "[Pick]", inline: true },
-              { name: "Confidence", value: "[Score]%", inline: true },
-              { name: "Odds", value: "[Odds]", inline: true },
-              { name: "Analysis", value: "[AI Analysis]", inline: false },
-            ],
-          },
-        },
-      };
-    }),
+      },
+    };
+  }),
 
   // Create a scheduled posting job
   createScheduledPost: protectedProcedure

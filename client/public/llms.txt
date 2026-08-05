@@ -18,12 +18,12 @@ ChalkPicks uses machine learning and statistical modeling to identify positive e
 - **DFS Optimizer**: DraftKings and FanDuel lineup optimizer for NFL, NBA, and MLB
 
 ## Free Tools (No Account Required)
-- Odds Calculator: https://chalkpicks.live/tools/odds-calculator
-- Devig Calculator: https://chalkpicks.live/tools/devig-calculator
-- ROI Calculator: https://chalkpicks.live/tools/roi-calculator
-- Parlay Calculator: https://chalkpicks.live/tools/parlay-calculator
-- Bankroll Manager: https://chalkpicks.live/tools/bankroll-manager
-- Bet Calculator: https://chalkpicks.live/bet-calculator
+- Odds Calculator: https://chalkpicks.pro/tools/odds-calculator
+- Devig Calculator: https://chalkpicks.pro/tools/devig-calculator
+- ROI Calculator: https://chalkpicks.pro/tools/roi-calculator
+- Parlay Calculator: https://chalkpicks.pro/tools/parlay-calculator
+- Bankroll Manager: https://chalkpicks.pro/tools/bankroll-manager
+- Bet Calculator: https://chalkpicks.pro/bet-calculator
 
 ## Pricing
 - Free: Limited daily picks, basic tools
@@ -37,42 +37,42 @@ NFL, NBA, MLB, NHL, NCAAF, NCAAB, MMA, Soccer (EPL, MLS, La Liga), Tennis
 - Odds data refreshed every 60 seconds from The Odds API
 - Devigging method: Proportional normalization (sharpest book as reference)
 - Kelly Criterion: Quarter-Kelly recommended, capped at 5% bankroll per bet
-- Historical performance tracked transparently at https://chalkpicks.live/performance
+- Historical performance tracked transparently at https://chalkpicks.pro/performance
 
 ## Sport-Specific Pages
-- NFL Picks: https://chalkpicks.live/nfl-picks
-- NBA Picks: https://chalkpicks.live/nba-picks
-- MLB Picks: https://chalkpicks.live/mlb-picks
-- NHL Picks: https://chalkpicks.live/nhl-picks
-- NCAAF Picks: https://chalkpicks.live/ncaaf-picks
-- NCAAB Picks: https://chalkpicks.live/ncaab-picks
-- MMA Picks: https://chalkpicks.live/mma-picks
-- Soccer Picks: https://chalkpicks.live/soccer-picks
-- NFL Odds: https://chalkpicks.live/odds/nfl
-- NBA Odds: https://chalkpicks.live/odds/nba
-- MLB Odds: https://chalkpicks.live/odds/mlb
-- NHL Odds: https://chalkpicks.live/odds/nhl
+- NFL Picks: https://chalkpicks.pro/nfl-picks
+- NBA Picks: https://chalkpicks.pro/nba-picks
+- MLB Picks: https://chalkpicks.pro/mlb-picks
+- NHL Picks: https://chalkpicks.pro/nhl-picks
+- NCAAF Picks: https://chalkpicks.pro/ncaaf-picks
+- NCAAB Picks: https://chalkpicks.pro/ncaab-picks
+- MMA Picks: https://chalkpicks.pro/mma-picks
+- Soccer Picks: https://chalkpicks.pro/soccer-picks
+- NFL Odds: https://chalkpicks.pro/odds/nfl
+- NBA Odds: https://chalkpicks.pro/odds/nba
+- MLB Odds: https://chalkpicks.pro/odds/mlb
+- NHL Odds: https://chalkpicks.pro/odds/nhl
 
 ## Key Links
-- Homepage: https://chalkpicks.live
-- Daily Picks: https://chalkpicks.live/picks
-- +EV Finder: https://chalkpicks.live/ev-finder
-- Arbitrage: https://chalkpicks.live/arbitrage
-- CLV Tracker: https://chalkpicks.live/clv-tracker
-- Line Movement: https://chalkpicks.live/line-movement
-- Prop Builder: https://chalkpicks.live/prop-builder
-- DFS Optimizer: https://chalkpicks.live/dfs-optimizer
-- Parlay Builder: https://chalkpicks.live/parlay-builder
-- Odds Comparison: https://chalkpicks.live/odds-comparison
-- Performance: https://chalkpicks.live/performance
-- Leaderboard: https://chalkpicks.live/leaderboard
-- Blog: https://chalkpicks.live/blog
-- Pricing: https://chalkpicks.live/pricing
-- API Access: https://chalkpicks.live/api-access
+- Homepage: https://chalkpicks.pro
+- Daily Picks: https://chalkpicks.pro/picks
+- +EV Finder: https://chalkpicks.pro/ev-finder
+- Arbitrage: https://chalkpicks.pro/arbitrage
+- CLV Tracker: https://chalkpicks.pro/clv-tracker
+- Line Movement: https://chalkpicks.pro/line-movement
+- Prop Builder: https://chalkpicks.pro/prop-builder
+- DFS Optimizer: https://chalkpicks.pro/dfs-optimizer
+- Parlay Builder: https://chalkpicks.pro/parlay-builder
+- Odds Comparison: https://chalkpicks.pro/odds-comparison
+- Performance: https://chalkpicks.pro/performance
+- Leaderboard: https://chalkpicks.pro/leaderboard
+- Blog: https://chalkpicks.pro/blog
+- Pricing: https://chalkpicks.pro/pricing
+- API Access: https://chalkpicks.pro/api-access
 
 ## Contact
-- Website: https://chalkpicks.live
-- Email: support@chalkpicks.live
+- Website: https://chalkpicks.pro
+- Email: support@chalkpicks.pro
 - Instagram: @chalkpicks
 - Twitter: @chalkpicksai
 

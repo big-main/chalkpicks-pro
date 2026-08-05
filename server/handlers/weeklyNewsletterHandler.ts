@@ -115,13 +115,13 @@ Output HTML only (no markdown).`,
       ${newsletterBody}
     </div>
     <div style="text-align:center;margin-top:32px;">
-      <a href="https://chalkpicks.live/pricing" style="display:inline-block;background:#39ff14;color:#000;font-weight:700;padding:14px 32px;border-radius:8px;text-decoration:none;font-size:16px;">Upgrade to Pro →</a>
+      <a href="https://chalkpicks.pro/pricing" style="display:inline-block;background:#39ff14;color:#000;font-weight:700;padding:14px 32px;border-radius:8px;text-decoration:none;font-size:16px;">Upgrade to Pro →</a>
     </div>
     <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #1e1e3a;">
       <p style="color:#5a5a7a;font-size:12px;margin:0;">
-        <a href="https://chalkpicks.live" style="color:#5a5a7a;">ChalkPicks.live</a> | 
-        <a href="https://chalkpicks.live/picks" style="color:#5a5a7a;">Today's Picks</a> | 
-        <a href="https://chalkpicks.live/tools" style="color:#5a5a7a;">Free Tools</a>
+        <a href="https://chalkpicks.pro" style="color:#5a5a7a;">ChalkPicks.live</a> | 
+        <a href="https://chalkpicks.pro/picks" style="color:#5a5a7a;">Today's Picks</a> | 
+        <a href="https://chalkpicks.pro/tools" style="color:#5a5a7a;">Free Tools</a>
       </p>
     </div>
   </div>

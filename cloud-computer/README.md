@@ -1,6 +1,6 @@
 # ChalkPicks Cloud Computer
 
-Code that runs on the **Manus cloud computer** attached to chalkpicks.live. The
+Code that runs on the **Manus cloud computer** attached to chalkpicks.pro. The
 box does two jobs:
 
 1. **Serve the LLM** (Ollama) that the site's backend already routes to for
@@ -25,7 +25,7 @@ nano .env                     # paste it as WORKER_API_TOKEN
 ```
 
 Then set the **same** `WORKER_API_TOKEN` value in the site's environment (Manus
-env settings for chalkpicks.live) and publish. Verify end-to-end:
+env settings for chalkpicks.pro) and publish. Verify end-to-end:
 
 ```bash
 set -a && . ./.env && set +a && node worker.mjs
@@ -39,13 +39,13 @@ The cron installed by setup.sh repeats this daily at 13:00 UTC.
 **Primary: `qwen3:8b` via Ollama.** For a CPU box like this one it is the best
 balance of the five things that matter for ChalkPicks:
 
-| Criterion    | Why qwen3:8b |
-|--------------|--------------|
-| Performance  | Strongest instruction-following and writing quality in the ≤8B open class; handles structured prompts (article outlines, JSON) reliably. |
-| Speed        | Q4 quant (Ollama default) generates comfortably on CPU; content drafting is batch work, so tokens/sec matters less than quality-per-token. |
-| Efficiency   | ~5 GB RAM at Q4 — fits the box while leaving room for the OS and worker. |
-| Tools        | Native tool/function-calling support — ready for future agentic jobs (odds snapshots, steam-move alerts) without changing models. |
-| Reliability  | Apache-2.0, actively maintained, first-class in Ollama; and the site's LLM router health-checks this box every 30s and falls back to hosted models automatically, so a crash here never breaks the site. |
+| Criterion   | Why qwen3:8b                                                                                                                                                                                             |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Performance | Strongest instruction-following and writing quality in the ≤8B open class; handles structured prompts (article outlines, JSON) reliably.                                                                 |
+| Speed       | Q4 quant (Ollama default) generates comfortably on CPU; content drafting is batch work, so tokens/sec matters less than quality-per-token.                                                               |
+| Efficiency  | ~5 GB RAM at Q4 — fits the box while leaving room for the OS and worker.                                                                                                                                 |
+| Tools       | Native tool/function-calling support — ready for future agentic jobs (odds snapshots, steam-move alerts) without changing models.                                                                        |
+| Reliability | Apache-2.0, actively maintained, first-class in Ollama; and the site's LLM router health-checks this box every 30s and falls back to hosted models automatically, so a crash here never breaks the site. |
 
 **Fallback on-box: `llama3.2:3b`** — ~2 GB, roughly 2× faster; use it
 (`OLLAMA_MODEL=llama3.2:3b`) if the box is RAM-constrained or you want faster
@@ -55,7 +55,7 @@ runs at slightly lower prose quality.
 `qwen3:8b` (recommended); 16 GB+ and patient → `qwen3:14b` for the flagship
 daily article only.
 
-**What NOT to run here:** the user-facing chat's *fallback* and the flagship
+**What NOT to run here:** the user-facing chat's _fallback_ and the flagship
 daily picks article should stay on hosted models (the existing
 Claude/OpenRouter chain) — user-facing latency and uptime shouldn't depend on
 one small box. The architecture already does this: local-first, hosted-fallback.

@@ -9,8 +9,15 @@ import sharp from "sharp";
  */
 
 const SPORT_EMOJI: Record<string, string> = {
-  nfl: "🏈", nba: "🏀", mlb: "⚾", nhl: "🏒",
-  ncaaf: "🏈", ncaab: "🏀", soccer: "⚽", tennis: "🎾", mma: "🥊",
+  nfl: "🏈",
+  nba: "🏀",
+  mlb: "⚾",
+  nhl: "🏒",
+  ncaaf: "🏈",
+  ncaab: "🏀",
+  soccer: "⚽",
+  tennis: "🎾",
+  mma: "🥊",
 };
 
 function escapeXml(str: string): string {
@@ -35,26 +42,43 @@ function buildStorySvg(opts: {
   date: string;
 }): string {
   const {
-    sport, homeTeam, awayTeam, recommendation, odds,
-    confidenceScore, pickType, aiAnalysis, result, date,
+    sport,
+    homeTeam,
+    awayTeam,
+    recommendation,
+    odds,
+    confidenceScore,
+    pickType,
+    aiAnalysis,
+    result,
+    date,
   } = opts;
 
   const sportEmoji = SPORT_EMOJI[sport.toLowerCase()] ?? "🎯";
   const oddsStr = odds > 0 ? `+${odds}` : String(odds);
-  const confColor = confidenceScore >= 80 ? "#39ff14" : confidenceScore >= 65 ? "#f0b800" : "#e63946";
+  const confColor =
+    confidenceScore >= 80
+      ? "#39ff14"
+      : confidenceScore >= 65
+        ? "#f0b800"
+        : "#e63946";
 
   // Result overlay colors
-  const resultBg = result === "win"
-    ? "rgba(57,255,20,0.18)"
-    : result === "loss"
-    ? "rgba(230,57,70,0.18)"
-    : "none";
-  const resultText = result === "win" ? "✅ WIN" : result === "loss" ? "❌ LOSS" : "";
+  const resultBg =
+    result === "win"
+      ? "rgba(57,255,20,0.18)"
+      : result === "loss"
+        ? "rgba(230,57,70,0.18)"
+        : "none";
+  const resultText =
+    result === "win" ? "✅ WIN" : result === "loss" ? "❌ LOSS" : "";
   const resultColor = result === "win" ? "#39ff14" : "#e63946";
 
   // Truncate analysis to fit
   const analysisText = aiAnalysis
-    ? aiAnalysis.length > 160 ? aiAnalysis.slice(0, 157) + "…" : aiAnalysis
+    ? aiAnalysis.length > 160
+      ? aiAnalysis.slice(0, 157) + "…"
+      : aiAnalysis
     : "AI-powered analysis based on historical trends, matchup data, and real-time line movement.";
 
   // Wrap long text into lines (~28 chars per line for analysis at font-size 28)
@@ -79,7 +103,8 @@ function buildStorySvg(opts: {
   const matchupLines = wrapText(matchup, 28);
 
   // Gold logo text (crown + CHALKPICKS)
-  const goldLogoUrl = "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/cp-logo-gold-nCsATHVv3wk3X9VKdpDRvo.png";
+  const goldLogoUrl =
+    "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/cp-logo-gold-nCsATHVv3wk3X9VKdpDRvo.png";
 
   return `<svg width="1080" height="1920" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
@@ -166,9 +191,12 @@ function buildStorySvg(opts: {
 
   <!-- ═══ MATCHUP SECTION ═══ -->
   <text x="540" y="330" font-family="Arial" font-size="30" fill="rgba(200,210,230,0.55)" text-anchor="middle" letter-spacing="1">MATCHUP</text>
-  ${matchupLines.map((line, i) =>
-    `<text x="540" y="${370 + i * 46}" font-family="Arial Black, Arial" font-weight="900" font-size="40" fill="#f0f2f5" text-anchor="middle">${escapeXml(line)}</text>`
-  ).join("\n  ")}
+  ${matchupLines
+    .map(
+      (line, i) =>
+        `<text x="540" y="${370 + i * 46}" font-family="Arial Black, Arial" font-weight="900" font-size="40" fill="#f0f2f5" text-anchor="middle">${escapeXml(line)}</text>`
+    )
+    .join("\n  ")}
 
   <!-- ═══ PICK CARD ═══ -->
   <rect x="60" y="${340 + matchupLines.length * 46}" width="960" height="200" rx="24" fill="rgba(21,28,42,0.9)" stroke="rgba(57,255,20,0.25)" stroke-width="2"/>
@@ -192,21 +220,28 @@ function buildStorySvg(opts: {
   <!-- ═══ AI ANALYSIS CARD ═══ -->
   <rect x="60" y="${800 + matchupLines.length * 46}" width="960" height="${60 + analysisLines.length * 38 + 40}" rx="20" fill="rgba(21,28,42,0.7)" stroke="rgba(30,144,255,0.2)" stroke-width="1.5"/>
   <text x="140" y="${850 + matchupLines.length * 46}" font-family="Arial" font-size="22" fill="#1e90ff" letter-spacing="2">🤖 AI ANALYSIS</text>
-  ${analysisLines.map((line, i) =>
-    `<text x="90" y="${890 + matchupLines.length * 46 + i * 38}" font-family="Arial" font-size="26" fill="rgba(200,210,230,0.75)">${escapeXml(line)}</text>`
-  ).join("\n  ")}
+  ${analysisLines
+    .map(
+      (line, i) =>
+        `<text x="90" y="${890 + matchupLines.length * 46 + i * 38}" font-family="Arial" font-size="26" fill="rgba(200,210,230,0.75)">${escapeXml(line)}</text>`
+    )
+    .join("\n  ")}
 
   <!-- ═══ RESULT BADGE (if settled) ═══ -->
-  ${result && result !== "pending" ? `
+  ${
+    result && result !== "pending"
+      ? `
   <rect x="60" y="${1040 + matchupLines.length * 46 + analysisLines.length * 38}" width="960" height="100" rx="20" fill="${resultBg}" stroke="${resultColor}" stroke-width="2"/>
   <text x="540" y="${1105 + matchupLines.length * 46 + analysisLines.length * 38}" font-family="Arial Black, Arial" font-weight="900" font-size="52" fill="${resultColor}" text-anchor="middle">${resultText}</text>
-  ` : ""}
+  `
+      : ""
+  }
 
   <!-- ═══ DIVIDER ═══ -->
   <rect x="60" y="1760" width="960" height="1" fill="url(#goldGrad)" opacity="0.4"/>
 
   <!-- ═══ FOOTER ═══ -->
-  <text x="540" y="1820" font-family="Arial Black, Arial" font-weight="900" font-size="34" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="2">chalkpicks.live</text>
+  <text x="540" y="1820" font-family="Arial Black, Arial" font-weight="900" font-size="34" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="2">chalkpicks.pro</text>
   <text x="540" y="1870" font-family="Arial" font-size="22" fill="rgba(200,210,230,0.35)" text-anchor="middle">For entertainment purposes only. Bet responsibly.</text>
 
   <!-- ═══ BOTTOM ACCENT LINE ═══ -->
@@ -220,20 +255,24 @@ export const storyGeneratorRouter = router({
    * Returns base64-encoded PNG (1080×1920)
    */
   generateStory: publicProcedure
-    .input(z.object({
-      sport: z.string(),
-      homeTeam: z.string(),
-      awayTeam: z.string(),
-      recommendation: z.string(),
-      odds: z.number(),
-      confidenceScore: z.number().min(0).max(100),
-      pickType: z.string(),
-      aiAnalysis: z.string().optional(),
-      result: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        sport: z.string(),
+        homeTeam: z.string(),
+        awayTeam: z.string(),
+        recommendation: z.string(),
+        odds: z.number(),
+        confidenceScore: z.number().min(0).max(100),
+        pickType: z.string(),
+        aiAnalysis: z.string().optional(),
+        result: z.string().optional(),
+      })
+    )
     .mutation(async ({ input }) => {
       const date = new Date().toLocaleDateString("en-US", {
-        month: "short", day: "numeric", year: "numeric",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       });
 
       const svg = buildStorySvg({ ...input, date });

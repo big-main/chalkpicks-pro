@@ -95,7 +95,7 @@ deploy:production:
   image: bitnami/kubectl:latest
   environment:
     name: production
-    url: https://chalkpicks.live
+    url: https://chalkpicks.pro
   variables:
     KUBECONFIG: /tmp/kubeconfig
   before_script:
@@ -138,7 +138,7 @@ link_check:
   before_script:
     - npm install -g broken-link-checker
   script:
-    - blc https://chalkpicks.live --recursive --ordered --exclude-external --filter-level 3 || true
+    - blc https://chalkpicks.pro --recursive --ordered --exclude-external --filter-level 3 || true
   allow_failure: true
   rules:
     - if: $CI_COMMIT_BRANCH == "main"

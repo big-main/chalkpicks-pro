@@ -3,14 +3,14 @@
  * ChalkPicks Cloud-Computer Worker — the daily content factory.
  *
  * Runs on the Manus cloud computer next to Ollama. Each run it:
- *   1. pulls today's slate (active picks) from chalkpicks.live's worker API,
+ *   1. pulls today's slate (active picks) from chalkpicks.pro's worker API,
  *   2. drafts a game-preview article per matchup with the LOCAL LLM
  *      (zero marginal cost), and
  *   3. posts each article back to the site as a blog DRAFT for review —
  *      nothing auto-publishes.
  *
  * Zero npm dependencies (Node 18+: global fetch). Configure via env:
- *   CHALKPICKS_URL     site origin            (default https://chalkpicks.live)
+ *   CHALKPICKS_URL     site origin            (default https://chalkpicks.pro)
  *   WORKER_API_TOKEN   shared secret          (REQUIRED — same value as the site)
  *   OLLAMA_URL         Ollama base URL        (default http://127.0.0.1:11434)
  *   OLLAMA_MODEL       model tag              (default qwen3:8b)
@@ -20,7 +20,7 @@
  *   WORKER_API_TOKEN=... node worker.mjs
  */
 
-const SITE = (process.env.CHALKPICKS_URL ?? "https://chalkpicks.live").replace(/\/$/, "");
+const SITE = (process.env.CHALKPICKS_URL ?? "https://chalkpicks.pro").replace(/\/$/, "");
 const TOKEN = process.env.WORKER_API_TOKEN;
 const OLLAMA = (process.env.OLLAMA_URL ?? "http://127.0.0.1:11434").replace(/\/$/, "");
 const MODEL = process.env.OLLAMA_MODEL ?? "qwen3:8b";
@@ -60,7 +60,7 @@ async function generate(prompt, { maxTokens = 1200 } = {}) {
         {
           role: "system",
           content:
-            "You are a sports betting analytics writer for ChalkPicks (chalkpicks.live). " +
+            "You are a sports betting analytics writer for ChalkPicks (chalkpicks.pro). " +
             "Write clear, factual, engaging preview articles in Markdown. " +
             "NEVER promise profit or present a bet as a sure thing; frame everything as analysis. " +
             "Do not fabricate statistics, records, or injuries — write from the matchup facts given. " +
@@ -120,13 +120,13 @@ function previewPrompt(pick, date) {
     `- H1 title: catchy but factual, mentioning both teams.`,
     `- A 2-sentence opening that states the matchup and date.`,
     `- H2 "The Matchup" — what makes this game interesting, written generally (no invented stats).`,
-    `- H2 "ChalkPicks' AI Read" — explain the pick above, what ${pick.confidenceScore}% confidence means, and that the full analysis is on chalkpicks.live/picks.`,
+    `- H2 "ChalkPicks' AI Read" — explain the pick above, what ${pick.confidenceScore}% confidence means, and that the full analysis is on chalkpicks.pro/picks.`,
     `- H2 "How to Think About the Number" — briefly explain the ${pick.pickType} market and reading odds of ${oddsStr}.`,
     movementBlock
       ? `- Weave the LINE MOVEMENT numbers above into "ChalkPicks' AI Read" or its own short paragraph — cite the exact open->current numbers given, nothing else.`
       : ``,
-    `- One-line call to action to see today's full board at chalkpicks.live/picks.`,
-    `- Link (Markdown) to at least one of: chalkpicks.live/clv-tracker, chalkpicks.live/line-movement, chalkpicks.live/bet-calculator, wherever it's genuinely relevant to the surrounding sentence.`,
+    `- One-line call to action to see today's full board at chalkpicks.pro/picks.`,
+    `- Link (Markdown) to at least one of: chalkpicks.pro/clv-tracker, chalkpicks.pro/line-movement, chalkpicks.pro/bet-calculator, wherever it's genuinely relevant to the surrounding sentence.`,
     `- H2 "FAQ" as the LAST section, before the closing disclaimer line. It must contain`,
     `  EXACTLY 3 question/answer pairs, each formatted on its own lines as:`,
     `  **Q:** <question>`,

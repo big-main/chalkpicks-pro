@@ -43,8 +43,14 @@ function useGetPicksTool() {
               game: { type: "string" },
               pick: { type: "string" },
               betType: { type: "string" },
-              confidence: { type: "number", description: "0-100 confidence score" },
-              edgeScore: { type: "number", description: "Expected value edge %" },
+              confidence: {
+                type: "number",
+                description: "0-100 confidence score",
+              },
+              edgeScore: {
+                type: "number",
+                description: "Expected value edge %",
+              },
               odds: { type: "string", description: "American odds e.g. -110" },
               analysis: { type: "string" },
               isPremium: { type: "boolean" },
@@ -59,7 +65,9 @@ function useGetPicksTool() {
       const params = new URLSearchParams();
       if (sport) params.set("sport", sport);
       params.set("limit", String(limit));
-      const res = await fetch(`/api/trpc/picks.list?input=${encodeURIComponent(JSON.stringify({ sport, limit }))}`);
+      const res = await fetch(
+        `/api/trpc/picks.list?input=${encodeURIComponent(JSON.stringify({ sport, limit }))}`
+      );
       if (!res.ok) throw new Error("Failed to fetch picks");
       const json = await res.json();
       const picks = json?.result?.data?.picks ?? [];
@@ -95,7 +103,8 @@ function useCalculateParlayTool() {
         legs: {
           type: "array",
           items: { type: "number" },
-          description: "Array of American odds for each leg, e.g. [-110, +150, -130]",
+          description:
+            "Array of American odds for each leg, e.g. [-110, +150, -130]",
         },
         stake: {
           type: "number",
@@ -110,7 +119,10 @@ function useCalculateParlayTool() {
         parlayOdds: { type: "string", description: "Combined American odds" },
         decimalOdds: { type: "number" },
         impliedProbability: { type: "number", description: "0-100 %" },
-        potentialPayout: { type: "number", description: "Total return including stake" },
+        potentialPayout: {
+          type: "number",
+          description: "Total return including stake",
+        },
         profit: { type: "number", description: "Net profit" },
         legs: { type: "number" },
       },
@@ -191,7 +203,8 @@ function useConvertOddsTool() {
 
       const [num, den] = (() => {
         const frac = decimal - 1;
-        const gcd = (a: number, b: number): number => (b < 0.001 ? a : gcd(b, a % b));
+        const gcd = (a: number, b: number): number =>
+          b < 0.001 ? a : gcd(b, a % b);
         const n = Math.round(frac * 100);
         const d = 100;
         const g = gcd(n, d);
@@ -280,7 +293,8 @@ function usePlaceBetTrackerTool() {
       properties: {
         description: {
           type: "string",
-          description: "Short description of the bet, e.g. 'Chiefs -3.5 vs Raiders'",
+          description:
+            "Short description of the bet, e.g. 'Chiefs -3.5 vs Raiders'",
         },
         sportKey: {
           type: "string",
@@ -309,10 +323,18 @@ function usePlaceBetTrackerTool() {
         },
         pickId: {
           type: "number",
-          description: "Optional ChalkPicks pick ID to link this bet to a specific AI pick",
+          description:
+            "Optional ChalkPicks pick ID to link this bet to a specific AI pick",
         },
       },
-      required: ["description", "sportKey", "betType", "stake", "odds", "betDate"],
+      required: [
+        "description",
+        "sportKey",
+        "betType",
+        "stake",
+        "odds",
+        "betDate",
+      ],
     } as const,
     outputSchema: {
       type: "object",
@@ -324,10 +346,28 @@ function usePlaceBetTrackerTool() {
         message: { type: "string" },
       },
     } as const,
-    handler: async ({ description, sportKey, betType, stake, odds, betDate, notes, pickId }) => {
+    handler: async ({
+      description,
+      sportKey,
+      betType,
+      stake,
+      odds,
+      betDate,
+      notes,
+      pickId,
+    }) => {
       const body = JSON.stringify({
         "0": {
-          json: { description, sportKey, betType, stake, odds, betDate, notes, pickId },
+          json: {
+            description,
+            sportKey,
+            betType,
+            stake,
+            odds,
+            betDate,
+            notes,
+            pickId,
+          },
         },
       });
       const res = await fetch("/api/trpc/bets.add", {
@@ -343,7 +383,8 @@ function usePlaceBetTrackerTool() {
             betId: 0,
             description,
             potentialPayout: 0,
-            message: "You must be logged in to ChalkPicks to record bets. Visit https://chalkpicks.live/login",
+            message:
+              "You must be logged in to ChalkPicks to record bets. Visit https://chalkpicks.pro/login",
           };
         }
         throw new Error(`Failed to record bet: HTTP ${res.status}`);

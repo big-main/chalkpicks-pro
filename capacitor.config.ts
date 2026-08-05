@@ -4,7 +4,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
  * ChalkPicks native shell (iOS + Android) via Capacitor.
  *
  * Strategy: wrap the production web app so one React codebase ships web + mobile.
- * API traffic goes to https://chalkpicks.live (see server.url).
+ * API traffic goes to https://chalkpicks.pro (see server.url).
  *
  * Local native build:
  *   pnpm build && npx cap sync
@@ -17,7 +17,7 @@ const config: CapacitorConfig = {
   server: {
     // Production: load from live site so API cookies / tRPC work without CORS hacks.
     // For offline-capable shell later, set androidScheme/iosScheme and ship bundled webDir only.
-    url: "https://chalkpicks.live",
+    url: "https://chalkpicks.pro",
     cleartext: false,
   },
   plugins: {

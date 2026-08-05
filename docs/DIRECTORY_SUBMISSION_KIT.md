@@ -11,7 +11,7 @@ Estimated time: 30–45 minutes for priority set.
 ## Product Info (use everywhere)
 
 **Product Name:** ChalkPicks Pro  
-**Website:** https://chalkpicks.live  
+**Website:** https://chalkpicks.pro  
 **Founder:** Bigmain (Orange County, CA)  
 **Founded:** 2026
 
@@ -89,7 +89,7 @@ What you get:
 
 - **Name:** ChalkPicks Pro
 - **Tagline:** AI sports betting analytics — picks, +EV, CLV, public Pick Ledger
-- **Link:** https://chalkpicks.live
+- **Link:** https://chalkpicks.pro
 - **Topics:** Sports, Artificial Intelligence, Analytics, SaaS
 - **Description:** Medium + full above
 - **Launch day:** Tue/Wed; ensure /performance and /free-picks don’t show inventedish stats
@@ -144,17 +144,17 @@ What you get:
 **Body:**
 Built a couple of free tools:
 
-1. Odds calculator (American / decimal / fractional) — https://chalkpicks.live/tools/odds-calculator
-2. ROI helper — https://chalkpicks.live/tools/roi-calculator
+1. Odds calculator (American / decimal / fractional) — https://chalkpicks.pro/tools/odds-calculator
+2. ROI helper — https://chalkpicks.pro/tools/roi-calculator
 
-No signup required. If useful, the main product is AI-assisted analytics + CLV-oriented picks on chalkpicks.live — feedback welcome. 18+ / gamble responsibly.
+No signup required. If useful, the main product is AI-assisted analytics + CLV-oriented picks on chalkpicks.pro — feedback welcome. 18+ / gamble responsibly.
 
 ### r/sportsbetting
 
 **Title:** Free bankroll / unit-sizing helper (Kelly-style)
 
 **Body:**
-Free bankroll manager: https://chalkpicks.live/tools/bankroll-manager
+Free bankroll manager: https://chalkpicks.pro/tools/bankroll-manager
 
 Track stake sizing ideas and simple ROI math. Not advice — just a calculator. Site also has odds tools and analytics if you want to poke around.
 
@@ -169,14 +169,14 @@ Track stake sizing ideas and simple ROI math. Not advice — just a calculator. 
 ## X / Twitter (1/day, rotate)
 
 **1 — Tools**  
-Free odds calculator, no signup: chalkpicks.live/tools/odds-calculator  
+Free odds calculator, no signup: chalkpicks.pro/tools/odds-calculator  
 Built for people who actually size bets. #SportsBetting
 
 **2 — Moat**  
-We lock picks to a content hash before the game. Public verify path — not a screenshot after the score. chalkpicks.live
+We lock picks to a content hash before the game. Public verify path — not a screenshot after the score. chalkpicks.pro
 
 **3 — CLV**  
-Win rate without closing-line context is noise. We track process + CLV alongside results. chalkpicks.live
+Win rate without closing-line context is noise. We track process + CLV alongside results. chalkpicks.pro
 
 **4 — Avoid**  
 Any “92%” or “every time” line until ledger-backed stats are public and stable.

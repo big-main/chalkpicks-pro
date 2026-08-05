@@ -62,8 +62,8 @@ NFL • NBA • MLB • NHL • NCAAF • NCAAB • MMA • Soccer
 
 Download ChalkPicks Pro and start betting with data, not gut feelings.
 
-Website: https://chalkpicks.live
-Support: support@chalkpicks.live
+Website: https://chalkpicks.pro
+Support: support@chalkpicks.pro
 ```
 
 ## Keywords / Tags
@@ -96,11 +96,11 @@ sports betting, AI picks, betting analytics, odds comparison, NFL picks, NBA pic
 ## Privacy Policy URL
 
 ```
-https://chalkpicks.live/privacy
+https://chalkpicks.pro/privacy
 ```
 
 ## Terms of Service URL
 
 ```
-https://chalkpicks.live/terms
+https://chalkpicks.pro/terms
 ```

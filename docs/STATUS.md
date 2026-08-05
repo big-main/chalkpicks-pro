@@ -19,7 +19,7 @@
 1. **DB:** run `drizzle/0024_pick_ledger.sql` if not already applied
 2. **Env:** `JWT_SECRET` (≥32), `DATABASE_URL`, `ODDS_API_KEY`
 3. **Deploy** latest `main`
-4. **GSC:** sitemap `https://chalkpicks.live/sitemap-index.xml`
+4. **GSC:** sitemap `https://chalkpicks.pro/sitemap-index.xml`
 5. **Mobile:** `pnpm mobile:sync` then Xcode / Android Studio (replace TEAMID + Play SHA256 in `.well-known/`)
 
 ## Smoke after deploy

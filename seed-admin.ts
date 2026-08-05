@@ -11,25 +11,34 @@ async function main() {
   }
 
   const db = drizzle(process.env.DATABASE_URL);
-  
-  const adminEmail = "admin@chalkpicks.live";
+
+  const adminEmail = "admin@chalkpicks.pro";
   const adminPassword = "AdminPassword123!"; // You should change this after first login
   const adminName = "ChalkPicks Admin";
 
   console.log(`Setting up admin account for ${adminEmail}...`);
 
-  const existingUser = await db.select().from(users).where(eq(users.email, adminEmail)).limit(1);
+  const existingUser = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, adminEmail))
+    .limit(1);
 
   const passwordHash = await bcrypt.hash(adminPassword, 12);
 
   if (existingUser.length > 0) {
-    console.log("Admin user already exists. Updating to admin role and resetting password...");
-    await db.update(users)
-      .set({ 
-        role: "admin", 
+    console.log(
+      "Admin user already exists. Updating to admin role and resetting password..."
+    );
+    await db
+      .update(users)
+      .set({
+        role: "admin",
         passwordHash,
         subscriptionTier: "yearly",
-        subscriptionExpiresAt: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000) // 100 years
+        subscriptionExpiresAt: new Date(
+          Date.now() + 100 * 365 * 24 * 60 * 60 * 1000
+        ), // 100 years
       })
       .where(eq(users.id, existingUser[0].id));
   } else {
@@ -41,7 +50,9 @@ async function main() {
       role: "admin",
       loginMethod: "email",
       subscriptionTier: "yearly",
-      subscriptionExpiresAt: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000), // 100 years
+      subscriptionExpiresAt: new Date(
+        Date.now() + 100 * 365 * 24 * 60 * 60 * 1000
+      ), // 100 years
       lastSignedIn: new Date(),
     });
   }
@@ -52,7 +63,7 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error("Failed to setup admin account:", err);
   process.exit(1);
 });

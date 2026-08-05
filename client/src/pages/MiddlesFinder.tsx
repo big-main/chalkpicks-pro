@@ -2,13 +2,25 @@ import { useState, useMemo } from "react";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import { PageMeta } from "@/components/PageMeta";
-import { HowToJsonLd, BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/schema-jsonld";
+import {
+  HowToJsonLd,
+  BreadcrumbJsonLd,
+  FaqJsonLd,
+} from "@/components/seo/schema-jsonld";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Target, TrendingUp, ChevronRight, CheckCircle2, XCircle, Info } from "lucide-react";
+import {
+  ArrowLeft,
+  Target,
+  TrendingUp,
+  ChevronRight,
+  CheckCircle2,
+  XCircle,
+  Info,
+} from "lucide-react";
 
 const FAQS = [
   {
@@ -75,7 +87,10 @@ export default function MiddlesFinder() {
     const pMiddle = middleProbability / 100;
     const pOneSideWins = (1 - pMiddle) * 0.9;
     const pBothLose = (1 - pMiddle) * 0.1;
-    const ev = pMiddle * bothWinProfit + pOneSideWins * ((aWinsProfit + bWinsProfit) / 2) + pBothLose * bothLoseProfit;
+    const ev =
+      pMiddle * bothWinProfit +
+      pOneSideWins * ((aWinsProfit + bWinsProfit) / 2) +
+      pBothLose * bothLoseProfit;
 
     return {
       hasMiddle,
@@ -104,18 +119,36 @@ export default function MiddlesFinder() {
         description="Calculate middle opportunities in sports betting using the ChalkPicks free middles finder tool."
         totalTime="PT3M"
         steps={[
-          { name: "Enter the game name", text: "Input the teams or event you want to analyze for a middle opportunity." },
-          { name: "Enter Side A odds and line", text: "Input the American odds and spread/total line for Side A (e.g., -110 at -3)." },
-          { name: "Enter Side B odds and line", text: "Input the American odds and spread/total line for Side B at a different sportsbook (e.g., -110 at +4.5)." },
-          { name: "Enter your stake", text: "Input how much you want to bet on each side." },
-          { name: "Analyze the middle", text: "Review the middle window, probability, and expected value to decide if the middle is worth betting." },
+          {
+            name: "Enter the game name",
+            text: "Input the teams or event you want to analyze for a middle opportunity.",
+          },
+          {
+            name: "Enter Side A odds and line",
+            text: "Input the American odds and spread/total line for Side A (e.g., -110 at -3).",
+          },
+          {
+            name: "Enter Side B odds and line",
+            text: "Input the American odds and spread/total line for Side B at a different sportsbook (e.g., -110 at +4.5).",
+          },
+          {
+            name: "Enter your stake",
+            text: "Input how much you want to bet on each side.",
+          },
+          {
+            name: "Analyze the middle",
+            text: "Review the middle window, probability, and expected value to decide if the middle is worth betting.",
+          },
         ]}
       />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.live" },
-          { name: "Tools", url: "https://chalkpicks.live/tools" },
-          { name: "Middles Finder", url: "https://chalkpicks.live/tools/middles-finder" },
+          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Tools", url: "https://chalkpicks.pro/tools" },
+          {
+            name: "Middles Finder",
+            url: "https://chalkpicks.pro/tools/middles-finder",
+          },
         ]}
       />
       <FaqJsonLd faqs={FAQS} />
@@ -124,16 +157,26 @@ export default function MiddlesFinder() {
       <div className="pt-20 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <Link href="/tools">
-            <Button variant="ghost" size="sm" className="mb-6 text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mb-6 text-muted-foreground hover:text-foreground"
+            >
               <ArrowLeft className="w-4 h-4 mr-1.5" /> All Tools
             </Button>
           </Link>
 
           <div className="mb-8 text-center">
-            <Badge className="bg-[#39ff14]/10 text-[#39ff14] border-[#39ff14]/20 text-xs mb-4 px-3 py-1">FREE TOOL</Badge>
-            <h1 className="text-4xl font-bold text-foreground">Middles Finder</h1>
+            <Badge className="bg-[#39ff14]/10 text-[#39ff14] border-[#39ff14]/20 text-xs mb-4 px-3 py-1">
+              FREE TOOL
+            </Badge>
+            <h1 className="text-4xl font-bold text-foreground">
+              Middles Finder
+            </h1>
             <p className="mt-2 text-muted-foreground max-w-xl mx-auto">
-              Find middle opportunities where you can win both sides of a bet. Enter two lines from different sportsbooks to calculate your middle window and expected value.
+              Find middle opportunities where you can win both sides of a bet.
+              Enter two lines from different sportsbooks to calculate your
+              middle window and expected value.
             </p>
           </div>
 
@@ -141,36 +184,46 @@ export default function MiddlesFinder() {
             {/* Inputs */}
             <Card className="border-slate-700 bg-slate-800/50">
               <CardHeader>
-                <CardTitle className="text-[#39ff14] text-base">Game Details</CardTitle>
+                <CardTitle className="text-[#39ff14] text-base">
+                  Game Details
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label className="text-slate-300 text-sm mb-1.5 block">Game / Event</Label>
+                  <Label className="text-slate-300 text-sm mb-1.5 block">
+                    Game / Event
+                  </Label>
                   <Input
                     value={gameName}
-                    onChange={(e) => setGameName(e.target.value)}
+                    onChange={e => setGameName(e.target.value)}
                     placeholder="Chiefs vs Eagles"
                     className="bg-slate-700/50 border-slate-600 text-white"
                   />
                 </div>
 
                 <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
-                  <p className="text-xs font-semibold text-blue-400 mb-3">Side A (Book 1)</p>
+                  <p className="text-xs font-semibold text-blue-400 mb-3">
+                    Side A (Book 1)
+                  </p>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-slate-400 text-xs mb-1 block">Odds</Label>
+                      <Label className="text-slate-400 text-xs mb-1 block">
+                        Odds
+                      </Label>
                       <Input
                         value={sideAOdds}
-                        onChange={(e) => setSideAOdds(e.target.value)}
+                        onChange={e => setSideAOdds(e.target.value)}
                         placeholder="-110"
                         className="bg-slate-700/50 border-slate-600 text-white text-sm"
                       />
                     </div>
                     <div>
-                      <Label className="text-slate-400 text-xs mb-1 block">Line</Label>
+                      <Label className="text-slate-400 text-xs mb-1 block">
+                        Line
+                      </Label>
                       <Input
                         value={sideALine}
-                        onChange={(e) => setSideALine(e.target.value)}
+                        onChange={e => setSideALine(e.target.value)}
                         placeholder="-3"
                         className="bg-slate-700/50 border-slate-600 text-white text-sm"
                       />
@@ -179,22 +232,28 @@ export default function MiddlesFinder() {
                 </div>
 
                 <div className="p-3 rounded-lg bg-purple-500/5 border border-purple-500/20">
-                  <p className="text-xs font-semibold text-purple-400 mb-3">Side B (Book 2)</p>
+                  <p className="text-xs font-semibold text-purple-400 mb-3">
+                    Side B (Book 2)
+                  </p>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-slate-400 text-xs mb-1 block">Odds</Label>
+                      <Label className="text-slate-400 text-xs mb-1 block">
+                        Odds
+                      </Label>
                       <Input
                         value={sideBOdds}
-                        onChange={(e) => setSideBOdds(e.target.value)}
+                        onChange={e => setSideBOdds(e.target.value)}
                         placeholder="-110"
                         className="bg-slate-700/50 border-slate-600 text-white text-sm"
                       />
                     </div>
                     <div>
-                      <Label className="text-slate-400 text-xs mb-1 block">Line</Label>
+                      <Label className="text-slate-400 text-xs mb-1 block">
+                        Line
+                      </Label>
                       <Input
                         value={sideBLine}
-                        onChange={(e) => setSideBLine(e.target.value)}
+                        onChange={e => setSideBLine(e.target.value)}
                         placeholder="+4.5"
                         className="bg-slate-700/50 border-slate-600 text-white text-sm"
                       />
@@ -203,10 +262,12 @@ export default function MiddlesFinder() {
                 </div>
 
                 <div>
-                  <Label className="text-slate-300 text-sm mb-1.5 block">Stake Per Side ($)</Label>
+                  <Label className="text-slate-300 text-sm mb-1.5 block">
+                    Stake Per Side ($)
+                  </Label>
                   <Input
                     value={stake}
-                    onChange={(e) => setStake(e.target.value)}
+                    onChange={e => setStake(e.target.value)}
                     placeholder="100"
                     className="bg-slate-700/50 border-slate-600 text-white"
                   />
@@ -228,48 +289,83 @@ export default function MiddlesFinder() {
                     <div className="p-4 rounded-lg bg-[#39ff14]/5 border border-[#39ff14]/20 text-center">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <CheckCircle2 className="w-5 h-5 text-[#39ff14]" />
-                        <span className="text-[#39ff14] font-bold">Middle Exists!</span>
+                        <span className="text-[#39ff14] font-bold">
+                          Middle Exists!
+                        </span>
                       </div>
                       <p className="text-xs text-slate-400">
-                        Win both if margin is between {result.lowerBound} and {result.upperBound}
+                        Win both if margin is between {result.lowerBound} and{" "}
+                        {result.upperBound}
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="p-3 rounded-lg bg-slate-700/30 text-center">
-                        <p className="text-xs text-slate-400 mb-1">Middle Window</p>
-                        <p className="text-xl font-bold text-[#39ff14]">{result.middleWindow.toFixed(1)} pts</p>
+                        <p className="text-xs text-slate-400 mb-1">
+                          Middle Window
+                        </p>
+                        <p className="text-xl font-bold text-[#39ff14]">
+                          {result.middleWindow.toFixed(1)} pts
+                        </p>
                       </div>
                       <div className="p-3 rounded-lg bg-slate-700/30 text-center">
-                        <p className="text-xs text-slate-400 mb-1">Hit Probability</p>
-                        <p className="text-xl font-bold text-blue-400">~{result.middleProbability.toFixed(0)}%</p>
+                        <p className="text-xs text-slate-400 mb-1">
+                          Hit Probability
+                        </p>
+                        <p className="text-xl font-bold text-blue-400">
+                          ~{result.middleProbability.toFixed(0)}%
+                        </p>
                       </div>
                     </div>
 
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between py-1.5 border-b border-slate-700">
-                        <span className="text-slate-400">🏆 Both Win (Middle)</span>
-                        <span className="text-[#39ff14] font-bold">+${result.bothWinProfit.toFixed(2)}</span>
+                        <span className="text-slate-400">
+                          🏆 Both Win (Middle)
+                        </span>
+                        <span className="text-[#39ff14] font-bold">
+                          +${result.bothWinProfit.toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex justify-between py-1.5 border-b border-slate-700">
                         <span className="text-slate-400">Side A Wins Only</span>
-                        <span className={result.aWinsProfit >= 0 ? "text-emerald-400" : "text-red-400"}>
-                          {result.aWinsProfit >= 0 ? "+" : ""}${result.aWinsProfit.toFixed(2)}
+                        <span
+                          className={
+                            result.aWinsProfit >= 0
+                              ? "text-emerald-400"
+                              : "text-red-400"
+                          }
+                        >
+                          {result.aWinsProfit >= 0 ? "+" : ""}$
+                          {result.aWinsProfit.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between py-1.5 border-b border-slate-700">
                         <span className="text-slate-400">Side B Wins Only</span>
-                        <span className={result.bWinsProfit >= 0 ? "text-emerald-400" : "text-red-400"}>
-                          {result.bWinsProfit >= 0 ? "+" : ""}${result.bWinsProfit.toFixed(2)}
+                        <span
+                          className={
+                            result.bWinsProfit >= 0
+                              ? "text-emerald-400"
+                              : "text-red-400"
+                          }
+                        >
+                          {result.bWinsProfit >= 0 ? "+" : ""}$
+                          {result.bWinsProfit.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between py-1.5 border-b border-slate-700">
                         <span className="text-slate-400">Both Lose (Push)</span>
-                        <span className="text-red-400">${result.bothLoseProfit.toFixed(2)}</span>
+                        <span className="text-red-400">
+                          ${result.bothLoseProfit.toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex justify-between py-1.5">
-                        <span className="text-slate-400 font-semibold">Expected Value</span>
-                        <span className={`font-bold ${result.ev >= 0 ? "text-[#39ff14]" : "text-red-400"}`}>
+                        <span className="text-slate-400 font-semibold">
+                          Expected Value
+                        </span>
+                        <span
+                          className={`font-bold ${result.ev >= 0 ? "text-[#39ff14]" : "text-red-400"}`}
+                        >
                           {result.ev >= 0 ? "+" : ""}${result.ev.toFixed(2)}
                         </span>
                       </div>
@@ -278,7 +374,15 @@ export default function MiddlesFinder() {
                     <div className="flex items-start gap-2 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
                       <Info className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                       <p className="text-xs text-slate-400">
-                        Total risk: <strong className="text-white">${result.totalRisk.toFixed(2)}</strong>. Best case: <strong className="text-[#39ff14]">+${result.bothWinProfit.toFixed(2)}</strong> if the middle hits.
+                        Total risk:{" "}
+                        <strong className="text-white">
+                          ${result.totalRisk.toFixed(2)}
+                        </strong>
+                        . Best case:{" "}
+                        <strong className="text-[#39ff14]">
+                          +${result.bothWinProfit.toFixed(2)}
+                        </strong>{" "}
+                        if the middle hits.
                       </p>
                     </div>
                   </div>
@@ -287,20 +391,27 @@ export default function MiddlesFinder() {
                     <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20 text-center">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <XCircle className="w-5 h-5 text-red-400" />
-                        <span className="text-red-400 font-bold">No Middle</span>
+                        <span className="text-red-400 font-bold">
+                          No Middle
+                        </span>
                       </div>
                       <p className="text-xs text-slate-400">
-                        The lines overlap — no middle window exists. Try finding lines with a larger gap.
+                        The lines overlap — no middle window exists. Try finding
+                        lines with a larger gap.
                       </p>
                     </div>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between py-1.5 border-b border-slate-700">
                         <span className="text-slate-400">Side A Profit</span>
-                        <span className="text-emerald-400">+${result.profitA.toFixed(2)}</span>
+                        <span className="text-emerald-400">
+                          +${result.profitA.toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex justify-between py-1.5">
                         <span className="text-slate-400">Side B Profit</span>
-                        <span className="text-emerald-400">+${result.profitB.toFixed(2)}</span>
+                        <span className="text-emerald-400">
+                          +${result.profitB.toFixed(2)}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -312,20 +423,39 @@ export default function MiddlesFinder() {
           {/* Educational Section */}
           <Card className="border-slate-700 bg-slate-800/50 mb-6">
             <CardHeader>
-              <CardTitle className="text-white text-base">Middles Betting Strategy Guide</CardTitle>
+              <CardTitle className="text-white text-base">
+                Middles Betting Strategy Guide
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-slate-300">
               <p>
-                A "middle" is one of the most powerful strategies in sports betting. By betting both sides of a game at different lines from different sportsbooks, you create a scenario where both bets can win simultaneously.
+                A "middle" is one of the most powerful strategies in sports
+                betting. By betting both sides of a game at different lines from
+                different sportsbooks, you create a scenario where both bets can
+                win simultaneously.
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="p-3 rounded-lg bg-slate-700/30">
-                  <p className="font-semibold text-[#39ff14] mb-1">Example Middle</p>
-                  <p className="text-xs text-slate-400">You bet Chiefs -3 at Book A and Eagles +4.5 at Book B. If Chiefs win by exactly 4, both bets win. If Chiefs win by 3 or less, your Eagles bet wins. If Chiefs win by 5+, your Chiefs bet wins.</p>
+                  <p className="font-semibold text-[#39ff14] mb-1">
+                    Example Middle
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    You bet Chiefs -3 at Book A and Eagles +4.5 at Book B. If
+                    Chiefs win by exactly 4, both bets win. If Chiefs win by 3
+                    or less, your Eagles bet wins. If Chiefs win by 5+, your
+                    Chiefs bet wins.
+                  </p>
                 </div>
                 <div className="p-3 rounded-lg bg-slate-700/30">
-                  <p className="font-semibold text-blue-400 mb-1">Why Middles Work</p>
-                  <p className="text-xs text-slate-400">In the worst case, you lose only the vig on one side (small loss). In the best case, both bets win for a large profit. The risk/reward ratio is highly favorable when the middle window is 1+ points.</p>
+                  <p className="font-semibold text-blue-400 mb-1">
+                    Why Middles Work
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    In the worst case, you lose only the vig on one side (small
+                    loss). In the best case, both bets win for a large profit.
+                    The risk/reward ratio is highly favorable when the middle
+                    window is 1+ points.
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -333,10 +463,15 @@ export default function MiddlesFinder() {
 
           {/* FAQ */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-foreground mb-4">Frequently Asked Questions</h2>
+            <h2 className="text-xl font-bold text-foreground mb-4">
+              Frequently Asked Questions
+            </h2>
             <div className="space-y-3">
-              {FAQS.map((faq) => (
-                <Card key={faq.question} className="border-slate-700 bg-slate-800/30">
+              {FAQS.map(faq => (
+                <Card
+                  key={faq.question}
+                  className="border-slate-700 bg-slate-800/30"
+                >
                   <CardContent className="pt-4 pb-4">
                     <h3 className="text-sm font-semibold text-foreground mb-1.5 flex items-start gap-2">
                       <ChevronRight className="w-4 h-4 text-[#39ff14] mt-0.5 flex-shrink-0" />
@@ -350,9 +485,20 @@ export default function MiddlesFinder() {
           </div>
 
           {/* CTA */}
-          <div className="p-6 rounded-xl text-center" style={{ background: "rgba(57,255,20,0.05)", border: "1px solid rgba(57,255,20,0.15)" }}>
-            <p className="text-foreground font-semibold mb-1">Find line movement opportunities in real time</p>
-            <p className="text-muted-foreground text-sm mb-4">ChalkPicks tracks line movement across 15+ sportsbooks to alert you to middle opportunities</p>
+          <div
+            className="p-6 rounded-xl text-center"
+            style={{
+              background: "rgba(57,255,20,0.05)",
+              border: "1px solid rgba(57,255,20,0.15)",
+            }}
+          >
+            <p className="text-foreground font-semibold mb-1">
+              Find line movement opportunities in real time
+            </p>
+            <p className="text-muted-foreground text-sm mb-4">
+              ChalkPicks tracks line movement across 15+ sportsbooks to alert
+              you to middle opportunities
+            </p>
             <Link href="/line-movement">
               <Button className="bg-[#39ff14] hover:bg-[#32e012] text-black font-bold px-8">
                 View Line Movement →

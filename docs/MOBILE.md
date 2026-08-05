@@ -6,7 +6,7 @@
 
 | Platform | Delivery                                                         |
 | -------- | ---------------------------------------------------------------- |
-| Web      | chalkpicks.live                                                  |
+| Web      | chalkpicks.pro                                                   |
 | iOS      | App Store (WKWebView shell → live site or bundled `dist/public`) |
 | Android  | Play Store (same)                                                |
 
@@ -85,7 +85,7 @@ npx cap open android  # Android Studio
 
 ## Config notes (`capacitor.config.ts`)
 
-- `server.url = https://chalkpicks.live` — shell loads production (auth + API just work).
+- `server.url = https://chalkpicks.pro` — shell loads production (auth + API just work).
 - For **offline / App Review demos**, comment out `server.url` so the app uses bundled `webDir`.
 - Splash / status bar colors match brand `#080814`.
 
@@ -100,7 +100,7 @@ npx cap open android  # Android Studio
 ## Deep links
 
 - Custom scheme: `chalkpicks://` (set in Xcode / AndroidManifest)
-- Universal links: `https://chalkpicks.live/...` (apple-app-site-association + assetlinks.json — add before launch)
+- Universal links: `https://chalkpicks.pro/...` (apple-app-site-association + assetlinks.json — add before launch)
 
 ## Roadmap after first store build
 
@@ -130,7 +130,7 @@ python3 /home/ubuntu/gen_icons.py
 3. Open Xcode: `npx cap open ios` (or `open ios/App/App.xcworkspace`)
 4. Select `App` target → Signing & Capabilities → set your Apple Developer Team
 5. Bundle ID: `live.chalkpicks.app`
-6. Add capabilities: **Push Notifications** + **Associated Domains** (`applinks:chalkpicks.live`)
+6. Add capabilities: **Push Notifications** + **Associated Domains** (`applinks:chalkpicks.pro`)
 7. Product → Archive → Distribute App → App Store Connect → Upload
 
 ## Release Keystore (Android)

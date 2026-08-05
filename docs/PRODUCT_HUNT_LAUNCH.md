@@ -36,7 +36,7 @@ AI sports betting analytics — picks, +EV, CLV & Pick Ledger
 **Link**
 
 ```
-https://chalkpicks.live
+https://chalkpicks.pro
 ```
 
 **Topics**
@@ -86,13 +86,13 @@ Happy to answer anything about CLV, the ledger, or the stack.
 
 Upload in this order (most important first):
 
-| #   | Subject                               | URL to screenshot                                                                               |
-| --- | ------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| 1   | Logo / wordmark                       | — use brand asset                                                                               |
-| 2   | Daily picks UI with confidence scores | https://chalkpicks.live/picks                                                                   |
-| 3   | Free odds calculator                  | https://chalkpicks.live/tools                                                                   |
-| 4   | `/verify/:hash` proof screen          | https://chalkpicks.live/verify/173a20e7629e0617d78b75279a69fceec7cb99b9dd26616b3bb39bd897382937 |
-| 5   | Pricing page                          | https://chalkpicks.live/pricing                                                                 |
+| #   | Subject                               | URL to screenshot                                                                              |
+| --- | ------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| 1   | Logo / wordmark                       | — use brand asset                                                                              |
+| 2   | Daily picks UI with confidence scores | https://chalkpicks.pro/picks                                                                   |
+| 3   | Free odds calculator                  | https://chalkpicks.pro/tools                                                                   |
+| 4   | `/verify/:hash` proof screen          | https://chalkpicks.pro/verify/173a20e7629e0617d78b75279a69fceec7cb99b9dd26616b3bb39bd897382937 |
+| 5   | Pricing page                          | https://chalkpicks.pro/pricing                                                                 |
 
 ---
 

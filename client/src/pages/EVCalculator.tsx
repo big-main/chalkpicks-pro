@@ -109,11 +109,11 @@ export default function EVCalculator() {
       />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.live" },
-          { name: "Tools", url: "https://chalkpicks.live/tools" },
+          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Tools", url: "https://chalkpicks.pro/tools" },
           {
             name: "EV Calculator",
-            url: "https://chalkpicks.live/tools/ev-calculator",
+            url: "https://chalkpicks.pro/tools/ev-calculator",
           },
         ]}
       />

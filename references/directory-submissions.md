@@ -1,8 +1,8 @@
 # ChalkPicks Pro — Directory Submission Kit
 
-**Site:** https://chalkpicks.live
-**Sitemap:** https://chalkpicks.live/sitemap.xml
-**IndexNow Key:** https://chalkpicks.live/k937cd84x3s9krpmgd5r19dgutqc11hw.txt
+**Site:** https://chalkpicks.pro
+**Sitemap:** https://chalkpicks.pro/sitemap.xml
+**IndexNow Key:** https://chalkpicks.pro/k937cd84x3s9krpmgd5r19dgutqc11hw.txt
 **Last Updated:** 2026-07-31
 
 ---
@@ -13,7 +13,7 @@
 | ------------------- | ------------------------------------------------------------------------------------------------ |
 | Product Name        | ChalkPicks Pro                                                                                   |
 | Tagline             | AI-Powered Sports Betting Analytics — Beat the Closing Line                                      |
-| URL                 | https://chalkpicks.live                                                                          |
+| URL                 | https://chalkpicks.pro                                                                           |
 | Categories          | Sports Analytics, AI/ML Tools, SaaS, Betting Software                                            |
 | Pricing Model       | Freemium — Free tier + Pro ($29/mo) + Elite ($79/mo) + Elite Plus ($149/mo)                      |
 | Sports Covered      | NFL, NBA, MLB, NHL, NCAAF, NCAAB, MMA, Soccer                                                    |
@@ -59,8 +59,8 @@ Both search engines are verified and sitemaps submitted. IndexNow is active for 
 **Sitemap ping URLs (automated on each deploy):**
 
 ```
-https://www.google.com/ping?sitemap=https://chalkpicks.live/sitemap.xml
-https://www.bing.com/ping?sitemap=https://chalkpicks.live/sitemap.xml
+https://www.google.com/ping?sitemap=https://chalkpicks.pro/sitemap.xml
+https://www.bing.com/ping?sitemap=https://chalkpicks.pro/sitemap.xml
 ```
 
 ---
@@ -242,7 +242,7 @@ Execute submissions in this order to maximize early SEO impact and referral traf
 
 ## Admin Panel Integration
 
-All directory submissions are tracked in the **Directories** tab of the Admin Panel at https://chalkpicks.live/admin. The tracker supports status updates (Pending, Submitted, Approved, Rejected), submission dates, and notes. Use it to monitor progress across all 38 pre-populated directories organized by tier.
+All directory submissions are tracked in the **Directories** tab of the Admin Panel at https://chalkpicks.pro/admin. The tracker supports status updates (Pending, Submitted, Approved, Rejected), submission dates, and notes. Use it to monitor progress across all 38 pre-populated directories organized by tier.
 
 ---
 

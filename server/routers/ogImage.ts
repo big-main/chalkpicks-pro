@@ -8,14 +8,16 @@ import sharp from "sharp";
  */
 export const ogImageRouter = router({
   generatePickCard: publicProcedure
-    .input(z.object({
-      pickId: z.string(),
-      sport: z.string(),
-      team: z.string(),
-      pick: z.string(), // e.g., "Over 45.5"
-      confidence: z.number().min(0).max(100),
-      odds: z.string().optional(), // e.g., "-110"
-    }))
+    .input(
+      z.object({
+        pickId: z.string(),
+        sport: z.string(),
+        team: z.string(),
+        pick: z.string(), // e.g., "Over 45.5"
+        confidence: z.number().min(0).max(100),
+        odds: z.string().optional(), // e.g., "-110"
+      })
+    )
     .mutation(async ({ input }) => {
       // Generate a branded OG image card
       const width = 1200;
@@ -63,24 +65,26 @@ export const ogImageRouter = router({
           </text>
           
           <!-- Odds (if provided) -->
-          ${input.odds ? `
+          ${
+            input.odds
+              ? `
             <text x="60" y="400" font-size="24" fill="#9ca3af" font-family="Arial">
               Odds: ${input.odds}
             </text>
-          ` : ""}
+          `
+              : ""
+          }
           
           <!-- CTA -->
           <text x="60" y="580" font-size="20" fill="#9ca3af" font-family="Arial">
-            View full analysis at chalkpicks.live
+            View full analysis at chalkpicks.pro
           </text>
         </svg>
       `;
 
       try {
         // Convert SVG to PNG using sharp
-        const buffer = await sharp(Buffer.from(svg))
-          .png()
-          .toBuffer();
+        const buffer = await sharp(Buffer.from(svg)).png().toBuffer();
 
         return {
           success: true,

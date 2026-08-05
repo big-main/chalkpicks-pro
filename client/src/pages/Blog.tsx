@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
-import { BookOpen, Calendar, ArrowRight, ChevronLeft, ChevronRight, PenLine, CheckCircle2, Mail } from "lucide-react";
+import {
+  BookOpen,
+  Calendar,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  PenLine,
+  CheckCircle2,
+  Mail,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,7 +43,8 @@ export default function Blog() {
               The ChalkPicks Blog
             </h1>
             <p className="text-lg text-white/50 max-w-xl mx-auto">
-              Expert analysis, betting strategies, and AI-powered insights to sharpen your edge.
+              Expert analysis, betting strategies, and AI-powered insights to
+              sharpen your edge.
             </p>
           </div>
         </div>
@@ -58,8 +68,12 @@ export default function Blog() {
         ) : posts.length === 0 ? (
           <div className="text-center py-20">
             <BookOpen className="w-12 h-12 text-white/20 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-white/60 mb-2">No articles yet</h2>
-            <p className="text-white/40">Check back soon for expert sports betting content.</p>
+            <h2 className="text-xl font-semibold text-white/60 mb-2">
+              No articles yet
+            </h2>
+            <p className="text-white/40">
+              Check back soon for expert sports betting content.
+            </p>
           </div>
         ) : (
           <>
@@ -88,11 +102,14 @@ export default function Blog() {
                         <div className="flex items-center gap-1.5 text-xs text-white/30">
                           <Calendar className="w-3.5 h-3.5" />
                           {post.publishedAt
-                            ? new Date(post.publishedAt).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              })
+                            ? new Date(post.publishedAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                }
+                              )
                             : "Recently"}
                         </div>
                         <span className="text-xs text-emerald-400 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -111,7 +128,7 @@ export default function Blog() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  onClick={() => setPage(p => Math.max(0, p - 1))}
                   disabled={page === 0}
                   className="border-white/10 text-white/60"
                 >
@@ -123,7 +140,7 @@ export default function Blog() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
                   disabled={page >= totalPages - 1}
                   className="border-white/10 text-white/60"
                 >
@@ -149,17 +166,24 @@ export default function Blog() {
                   Share Your Edge with 10,000+ Bettors
                 </h2>
                 <p className="text-white/50 leading-relaxed mb-6">
-                  ChalkPicks Pro publishes expert-level sports betting content — strategy breakdowns, handicapping guides, bankroll management, and data-driven analysis. If you have a proven edge and can write clearly, we want to hear from you.
+                  ChalkPicks Pro publishes expert-level sports betting content —
+                  strategy breakdowns, handicapping guides, bankroll management,
+                  and data-driven analysis. If you have a proven edge and can
+                  write clearly, we want to hear from you.
                 </p>
                 <p className="text-white/40 text-sm leading-relaxed">
-                  Contributors get a byline, author bio, and a link back to their site or social. High-quality pieces are promoted across our newsletter and social channels.
+                  Contributors get a byline, author bio, and a link back to
+                  their site or social. High-quality pieces are promoted across
+                  our newsletter and social channels.
                 </p>
               </div>
 
               {/* Right: Guidelines + CTA */}
               <div className="flex-1 space-y-6">
                 <div className="p-5 rounded-xl bg-white/[0.03] border border-white/5">
-                  <h3 className="text-sm font-semibold text-white/80 mb-4 uppercase tracking-wider">Submission Guidelines</h3>
+                  <h3 className="text-sm font-semibold text-white/80 mb-4 uppercase tracking-wider">
+                    Submission Guidelines
+                  </h3>
                   <ul className="space-y-3">
                     {[
                       "800–2,500 words, original and unpublished",
@@ -167,8 +191,11 @@ export default function Blog() {
                       "Data-backed arguments — no hot takes without evidence",
                       "No affiliate links or promotional content",
                       "Include a 1–2 sentence author bio",
-                    ].map((item) => (
-                      <li key={item} className="flex items-start gap-2.5 text-sm text-white/50">
+                    ].map(item => (
+                      <li
+                        key={item}
+                        className="flex items-start gap-2.5 text-sm text-white/50"
+                      >
                         <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
                         {item}
                       </li>
@@ -177,7 +204,7 @@ export default function Blog() {
                 </div>
 
                 <a
-                  href="mailto:admin@chalkpicks.live?subject=Write%20for%20Us%20Submission&body=Hi%2C%0A%0AI'd%20like%20to%20contribute%20an%20article%20to%20ChalkPicks%20Pro.%0A%0AProposed%20title%3A%0ATopic%20summary%3A%0AWord%20count%20estimate%3A%0AAbout%20me%3A"
+                  href="mailto:admin@chalkpicks.pro?subject=Write%20for%20Us%20Submission&body=Hi%2C%0A%0AI'd%20like%20to%20contribute%20an%20article%20to%20ChalkPicks%20Pro.%0A%0AProposed%20title%3A%0ATopic%20summary%3A%0AWord%20count%20estimate%3A%0AAbout%20me%3A"
                   className="block"
                 >
                   <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
@@ -186,7 +213,8 @@ export default function Blog() {
                   </Button>
                 </a>
                 <p className="text-xs text-white/25 text-center">
-                  Email admin@chalkpicks.live — we review all pitches within 5 business days.
+                  Email admin@chalkpicks.pro — we review all pitches within 5
+                  business days.
                 </p>
               </div>
             </div>

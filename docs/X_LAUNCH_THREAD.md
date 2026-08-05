@@ -37,7 +37,7 @@ Every pick gets a SHA-256 hash at publish time. Public verify URL. Can't be edit
 ```
 Verify it yourself:
 
-chalkpicks.live/verify/173a20e7629e0617d78b75279a69fceec7cb99b9dd26616b3bb39bd897382937
+chalkpicks.pro/verify/173a20e7629e0617d78b75279a69fceec7cb99b9dd26616b3bb39bd897382937
 
 Tampa Bay Rays +1.5 — locked 7/30 at 4:43 AM, 19 hours before game time.
 
@@ -60,7 +60,7 @@ The free tools need zero signup:
 • Parlay Calculator
 • Free Bet Converter
 
-chalkpicks.live/tools
+chalkpicks.pro/tools
 
 Use them at the book. No account required.
 ```
@@ -90,7 +90,7 @@ If you've ever been burned by a picks service that couldn't prove anything:
 
 This is the alternative.
 
-🔗 chalkpicks.live
+🔗 chalkpicks.pro
 🗳️ [Product Hunt link]
 
 Feedback welcome — especially from sharp bettors who care about process.

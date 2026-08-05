@@ -20,7 +20,11 @@ import { ENV } from "../_core/env";
 import crypto from "crypto";
 
 // --- OAuth 1.0a helper (reuse from twitterPostHandler) ---
-function oauthHeader(method: string, url: string, params: Record<string, string>): string {
+function oauthHeader(
+  method: string,
+  url: string,
+  params: Record<string, string>
+): string {
   const oauthParams: Record<string, string> = {
     oauth_consumer_key: ENV.twitterConsumerKey,
     oauth_nonce: crypto.randomBytes(16).toString("hex"),
@@ -33,7 +37,7 @@ function oauthHeader(method: string, url: string, params: Record<string, string>
   const allParams = { ...params, ...oauthParams };
   const sortedKeys = Object.keys(allParams).sort();
   const paramString = sortedKeys
-    .map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(allParams[k])}`)
+    .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(allParams[k])}`)
     .join("&");
 
   const sigBase = [
@@ -43,19 +47,26 @@ function oauthHeader(method: string, url: string, params: Record<string, string>
   ].join("&");
 
   const sigKey = `${encodeURIComponent(ENV.twitterConsumerSecret)}&${encodeURIComponent(ENV.twitterAccessSecret)}`;
-  const signature = crypto.createHmac("sha1", sigKey).update(sigBase).digest("base64");
+  const signature = crypto
+    .createHmac("sha1", sigKey)
+    .update(sigBase)
+    .digest("base64");
 
   oauthParams.oauth_signature = signature;
 
   const headerParts = Object.keys(oauthParams)
     .sort()
-    .map((k) => `${encodeURIComponent(k)}="${encodeURIComponent(oauthParams[k])}"`)
+    .map(
+      k => `${encodeURIComponent(k)}="${encodeURIComponent(oauthParams[k])}"`
+    )
     .join(", ");
 
   return `OAuth ${headerParts}`;
 }
 
-async function postTweet(text: string): Promise<{ success: boolean; tweetId?: string; error?: string }> {
+async function postTweet(
+  text: string
+): Promise<{ success: boolean; tweetId?: string; error?: string }> {
   if (!ENV.twitterConsumerKey || !ENV.twitterAccessToken) {
     return { success: false, error: "Twitter credentials not configured" };
   }
@@ -75,9 +86,12 @@ async function postTweet(text: string): Promise<{ success: boolean; tweetId?: st
       signal: AbortSignal.timeout(15000),
     });
 
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     if (!res.ok) {
-      return { success: false, error: data.detail?.[0]?.message || data.title || "Unknown error" };
+      return {
+        success: false,
+        error: data.detail?.[0]?.message || data.title || "Unknown error",
+      };
     }
 
     return { success: true, tweetId: data.data?.id };
@@ -118,19 +132,23 @@ export async function twitterPickResultHandler(req: Request, res: Response) {
       .from(picks)
       .where(sql`${picks.result} IN ('win', 'loss')`);
 
-    const wins = allSettled.filter((p) => p.result === "win").length;
-    const losses = allSettled.filter((p) => p.result === "loss").length;
-    const winRate = allSettled.length > 0 ? Math.round((wins / allSettled.length) * 100) : 0;
+    const wins = allSettled.filter(p => p.result === "win").length;
+    const losses = allSettled.filter(p => p.result === "loss").length;
+    const winRate =
+      allSettled.length > 0 ? Math.round((wins / allSettled.length) * 100) : 0;
 
     let tweeted = 0;
     const results: any[] = [];
 
     for (const pick of recentResults) {
       const resultEmoji = pick.result === "win" ? "✅" : "❌";
-      const oddsText = pick.odds ? ` ${pick.odds > 0 ? "+" : ""}${pick.odds}` : "";
-      const pickText = pick.recommendation || `${pick.homeTeam} vs ${pick.awayTeam}`;
+      const oddsText = pick.odds
+        ? ` ${pick.odds > 0 ? "+" : ""}${pick.odds}`
+        : "";
+      const pickText =
+        pick.recommendation || `${pick.homeTeam} vs ${pick.awayTeam}`;
 
-      const tweet = `${resultEmoji} ${pick.result.toUpperCase()} — ${pickText}${oddsText}\n\n📊 Season: ${wins}-${losses} (${winRate}% win rate)\n\n🔥 Get daily AI picks at chalkpicks.live`;
+      const tweet = `${resultEmoji} ${pick.result.toUpperCase()} — ${pickText}${oddsText}\n\n📊 Season: ${wins}-${losses} (${winRate}% win rate)\n\n🔥 Get daily AI picks at chalkpicks.pro`;
 
       const postResult = await postTweet(tweet);
 

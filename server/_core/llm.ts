@@ -511,7 +511,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
         headers: {
           "content-type": "application/json",
           authorization: `Bearer ${ENV.openRouterApiKey}`,
-          "HTTP-Referer": "https://chalkpicks.live",
+          "HTTP-Referer": "https://chalkpicks.pro",
           "X-Title": "ChalkPicks",
         },
         body: JSON.stringify(orPayload),

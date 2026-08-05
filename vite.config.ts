@@ -73,8 +73,8 @@ export default defineConfig({
     allowedHosts: [
       "localhost",
       "127.0.0.1",
-      "chalkpicks.live",
-      "www.chalkpicks.live",
+      "chalkpicks.pro",
+      "www.chalkpicks.pro",
     ],
     fs: {
       strict: true,

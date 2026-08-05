@@ -8,7 +8,7 @@
  * Strategy: serve a static HTML snapshot to bot user-agents, SPA to everyone else.
  * In dev mode, we generate a minimal inline HTML shell with the JSON-LD baked in.
  *
- * Sanity check: curl -A "GPTBot" https://chalkpicks.live/<page> must return
+ * Sanity check: curl -A "GPTBot" https://chalkpicks.pro/<page> must return
  * full HTML with JSON-LD visible.
  */
 
@@ -61,7 +61,7 @@ function isBot(userAgent: string): boolean {
 
 // ─── JSON-LD builders ─────────────────────────────────────────────────────────
 
-const BASE_URL = "https://chalkpicks.live";
+const BASE_URL = "https://chalkpicks.pro";
 const LOGO_URL =
   "https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png";
 

@@ -51,6 +51,7 @@ import { antigravityRouter } from "./routers/antigravity";
 import { strategyRouter } from "./routers/strategy";
 import { pageSpeedRouter } from "./routers/pageSpeed";
 import { directoryTrackerRouter } from "./routers/directoryTracker";
+import { heartbeatRouter } from "./routers/heartbeat";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -296,6 +297,7 @@ export const appRouter = router({
   pageSpeed: pageSpeedRouter,
   directoryTracker: directoryTrackerRouter,
   sharpOpportunities: sharpOpportunitiesRouter,
+  heartbeat: heartbeatRouter,
 });
 
 export type AppRouter = typeof appRouter;

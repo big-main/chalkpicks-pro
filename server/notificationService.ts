@@ -9,6 +9,7 @@ import {
   users,
 } from "../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
+import { SITE_URL } from "@shared/seo-routes";
 
 // ─── Initialize Clients ───────────────────────────────────────────────────────
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || "";
@@ -16,8 +17,14 @@ const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const TWILIO_PHONE_FROM = process.env.TWILIO_PHONE_FROM || "";
 const APP_NAME = "ChalkPicks Pro";
-const APP_URL = process.env.APP_URL || "https://www.chalkpicks.pro";
-const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@chalkpicks.ml";
+// Canonical origin is the apex — SITE_URL, seo.ts ORIGIN, the client canonical
+// tag and the .live 301 in _core/index.ts all target `chalkpicks.pro` with no
+// `www`. Defaulting to the www host here would send every notification link
+// through an extra hop, or nowhere at all if www is never configured.
+const APP_URL = process.env.APP_URL || SITE_URL;
+// chalkpicks.ml is dead; sending from it fails SPF/DKIM and bounces. Matches
+// the sender server/email.ts already uses.
+const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@chalkpicks.pro";
 
 if (SENDGRID_API_KEY) {
   sgMail.setApiKey(SENDGRID_API_KEY);

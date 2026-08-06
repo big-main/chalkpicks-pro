@@ -166,7 +166,22 @@ export interface CorrelationPair {
   recommendation: "strong_corr" | "moderate_corr" | "negative_corr" | "neutral";
 }
 
-// ─── SharpAPI (primary free provider: 12 req/min = 17,280/day, no credit card) ─
+// ─── SharpAPI (Sharp plan: 1,000 req/min, 25 books, +EV/arb/low-hold/game-state) ─
+// Supports key rotation: SHARPAPI_KEY, SHARPAPI_KEY_2, SHARPAPI_KEY_3
+const SHARPAPI_KEYS = [
+  process.env.SHARPAPI_KEY || "",
+  process.env.SHARPAPI_KEY_2 || "",
+  process.env.SHARPAPI_KEY_3 || "",
+].filter(Boolean);
+let _sharpKeyIdx = 0;
+function getSharpKey(): string {
+  return SHARPAPI_KEYS[_sharpKeyIdx % Math.max(SHARPAPI_KEYS.length, 1)] ?? "";
+}
+function rotateSharpKey(): void {
+  if (SHARPAPI_KEYS.length > 1)
+    _sharpKeyIdx = (_sharpKeyIdx + 1) % SHARPAPI_KEYS.length;
+}
+// Legacy compat
 const SHARPAPI_KEY = process.env.SHARPAPI_KEY || "";
 const SHARPAPI_BASE = "https://api.sharpapi.io/api/v1";
 
@@ -182,22 +197,24 @@ const SPORT_SHARPAPI_MAP: Record<string, string> = {
   mma: "mma",
 };
 
-/** Fetch odds from SharpAPI free tier and normalize to OddsEvent[]. */
+/** Fetch odds from SharpAPI Sharp plan and normalize to OddsEvent[]. */
 async function fetchOddsFromSharpApi(sport: string): Promise<OddsEvent[]> {
-  if (!SHARPAPI_KEY) return [];
+  const key = getSharpKey();
+  if (!key) return [];
   const league = SPORT_SHARPAPI_MAP[sport.toLowerCase()];
   if (!league) return [];
 
   try {
     const url = `${SHARPAPI_BASE}/odds?league=${league}&market=main&limit=200`;
     const res = await fetch(url, {
-      headers: { "X-API-Key": SHARPAPI_KEY },
+      headers: { "X-API-Key": key },
       signal: AbortSignal.timeout(10_000),
     });
 
     if (!res.ok) {
       if (res.status === 429) {
-        console.warn(`[SharpAPI] Rate limited for ${sport}`);
+        console.warn(`[SharpAPI] Rate limited for ${sport} — rotating key`);
+        rotateSharpKey();
       } else {
         console.warn(`[SharpAPI] ${res.status} for ${sport}`);
       }

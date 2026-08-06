@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { formatSportLabel } from "@/lib/badges";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,11 @@ export function MyTrackedPicks() {
   const { user } = useAuth();
   const [selectedTab, setSelectedTab] = useState("all");
 
-  const { data: trackedPicks, isLoading, refetch } = trpc.tracking.getTrackedPicks.useQuery(
+  const {
+    data: trackedPicks,
+    isLoading,
+    refetch,
+  } = trpc.tracking.getTrackedPicks.useQuery(
     { userId: user?.id || 0 },
     { enabled: !!user?.id }
   );
@@ -20,8 +25,14 @@ export function MyTrackedPicks() {
     onSuccess: () => refetch(),
   });
 
-  if (!user) return <div className="text-center py-8">Please log in to view tracked picks.</div>;
-  if (isLoading) return <div className="text-center py-8">Loading tracked picks...</div>;
+  if (!user)
+    return (
+      <div className="text-center py-8">
+        Please log in to view tracked picks.
+      </div>
+    );
+  if (isLoading)
+    return <div className="text-center py-8">Loading tracked picks...</div>;
 
   const picks = trackedPicks || [];
   const wonPicks = picks.filter((p: any) => p.pick.result === "win");
@@ -33,7 +44,8 @@ export function MyTrackedPicks() {
   const wins = wonPicks.length;
   const losses = lostPicks.length;
   const pushes = pushedPicks.length;
-  const winRate = totalPicks > 0 ? ((wins / (totalPicks - pushes)) * 100).toFixed(1) : "0";
+  const winRate =
+    totalPicks > 0 ? ((wins / (totalPicks - pushes)) * 100).toFixed(1) : "0";
 
   // Calculate P&L (simplified: assume 1 unit per pick)
   const pnl = wins - losses;
@@ -42,7 +54,9 @@ export function MyTrackedPicks() {
     <div className="container mx-auto py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">My Tracked Picks</h1>
-        <p className="text-gray-600">Monitor your favorite picks and track performance</p>
+        <p className="text-gray-600">
+          Monitor your favorite picks and track performance
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -86,8 +100,11 @@ export function MyTrackedPicks() {
         <Card className={pnl >= 0 ? "border-green-200" : "border-red-200"}>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className={`text-3xl font-bold ${pnl >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {pnl >= 0 ? "+" : ""}{pnl}u
+              <div
+                className={`text-3xl font-bold ${pnl >= 0 ? "text-green-600" : "text-red-600"}`}
+              >
+                {pnl >= 0 ? "+" : ""}
+                {pnl}u
               </div>
               <p className="text-sm text-gray-600">P&L</p>
             </div>
@@ -99,7 +116,9 @@ export function MyTrackedPicks() {
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <TabsList className="mb-6">
           <TabsTrigger value="all">All ({totalPicks})</TabsTrigger>
-          <TabsTrigger value="pending">Pending ({pendingPicks.length})</TabsTrigger>
+          <TabsTrigger value="pending">
+            Pending ({pendingPicks.length})
+          </TabsTrigger>
           <TabsTrigger value="won">Won ({wins})</TabsTrigger>
           <TabsTrigger value="lost">Lost ({losses})</TabsTrigger>
         </TabsList>
@@ -139,7 +158,14 @@ function PicksList({ picks, onRemove }: any) {
     <div className="space-y-4">
       {picks.map((tracking: any) => {
         const pick = tracking.pick;
-        const resultEmoji = pick.result === "win" ? "🎉" : pick.result === "loss" ? "❌" : pick.result === "push" ? "🔄" : "⏳";
+        const resultEmoji =
+          pick.result === "win"
+            ? "🎉"
+            : pick.result === "loss"
+              ? "❌"
+              : pick.result === "push"
+                ? "🔄"
+                : "⏳";
 
         return (
           <Card key={tracking.id}>
@@ -150,16 +176,23 @@ function PicksList({ picks, onRemove }: any) {
                     <CardTitle className="text-lg">
                       {pick.homeTeam} vs {pick.awayTeam}
                     </CardTitle>
-                    <Badge variant={
-                      pick.result === "win" ? "default" :
-                      pick.result === "loss" ? "destructive" :
-                      pick.result === "push" ? "secondary" :
-                      "outline"
-                    }>
+                    <Badge
+                      variant={
+                        pick.result === "win"
+                          ? "default"
+                          : pick.result === "loss"
+                            ? "destructive"
+                            : pick.result === "push"
+                              ? "secondary"
+                              : "outline"
+                      }
+                    >
                       {resultEmoji} {pick.result?.toUpperCase() || "PENDING"}
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-600">{pick.sportKey.toUpperCase()} • {pick.pickDate}</p>
+                  <p className="text-sm text-gray-600">
+                    {formatSportLabel(pick.sportKey)} • {pick.pickDate}
+                  </p>
                 </div>
                 <Button
                   variant="ghost"
@@ -188,7 +221,11 @@ function PicksList({ picks, onRemove }: any) {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Odds</p>
-                  <p className="font-semibold">{pick.odds ? `${pick.odds > 0 ? "+" : ""}${pick.odds}` : "N/A"}</p>
+                  <p className="font-semibold">
+                    {pick.odds
+                      ? `${pick.odds > 0 ? "+" : ""}${pick.odds}`
+                      : "N/A"}
+                  </p>
                 </div>
               </div>
 

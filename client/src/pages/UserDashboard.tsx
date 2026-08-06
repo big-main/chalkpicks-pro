@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { formatSportLabel } from "@/lib/badges";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
@@ -730,7 +731,7 @@ export default function UserDashboard() {
                                 {bet.description}
                               </div>
                               <div className="text-xs text-muted-foreground">
-                                {bet.sportKey.toUpperCase()} ·{" "}
+                                {formatSportLabel(bet.sportKey)} ·{" "}
                                 {bet.betType.replace("_", " ")} · {bet.betDate}{" "}
                                 · Odds:{" "}
                                 {bet.odds > 0 ? `+${bet.odds}` : bet.odds}

@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import { formatSportLabel } from "@/lib/badges";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import NeonCard from "@/components/NeonCard";
@@ -451,11 +452,12 @@ export default function Performance() {
                     >
                       <td className="px-3 py-3">
                         <span className="text-base mr-1">
-                          {SPORT_ICONS[(pick.sportKey ?? "").toUpperCase()] ??
-                            "🎯"}
+                          {SPORT_ICONS[
+                            formatSportLabel(pick.sportKey)?.toUpperCase()
+                          ] ?? "🎯"}
                         </span>
                         <span className="text-xs text-white/40">
-                          {(pick.sportKey ?? "").toUpperCase()}
+                          {formatSportLabel(pick.sportKey)}
                         </span>
                       </td>
                       <td className="px-3 py-3 text-white/70">

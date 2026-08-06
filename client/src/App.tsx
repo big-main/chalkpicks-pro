@@ -130,6 +130,7 @@ const LeaderboardProfile = lazy(() => import("@/pages/LeaderboardProfile"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
 const ResponsibleGambling = lazy(() => import("@/pages/ResponsibleGambling"));
 const Verify = lazy(() => import("@/pages/Verify"));
+const VerifyIndex = lazy(() => import("@/pages/VerifyIndex"));
 const Methodology = lazy(() => import("@/pages/Methodology"));
 const HowItWorks = lazy(() => import("@/pages/HowItWorks"));
 const AppLinkTest = lazy(() => import("@/pages/AppLinkTest"));
@@ -171,6 +172,7 @@ function Router() {
               <Route path="/" component={Home} />
               <Route path="/picks" component={Picks} />
               <Route path="/picks/:id" component={PickDetail} />
+              <Route path="/verify" component={VerifyIndex} />
               <Route path="/verify/:hash" component={Verify} />
               <Route path="/stats" component={Stats} />
               <Route path="/backtesting" component={Backtesting} />

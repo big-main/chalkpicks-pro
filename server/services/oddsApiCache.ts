@@ -497,5 +497,12 @@ class OddsApiCacheService {
 }
 
 // ─── Singleton Export ───────────────────────────────────────────────────────
-
-export const oddsApiCache = new OddsApiCacheService();
+// SharpAPI Sharp plan is now the primary odds source (1,000 req/min, 17,280/day).
+// The Odds API is the secondary fallback — reduce conservation threshold so it
+// doesn't circuit-break prematurely on the 500/month free quota.
+export const oddsApiCache = new OddsApiCacheService({
+  monthlyQuotaLimit: 500,
+  conservationThreshold: 0.02, // only conserve when <2% remaining (was 20%)
+  defaultTtlMs: 3 * 60 * 1000, // 3 min TTL
+  lowQuotaTtlMs: 15 * 60 * 1000, // 15 min when low
+});

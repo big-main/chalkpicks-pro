@@ -1,4 +1,5 @@
 import React from "react";
+import { formatSportLabel } from "@/lib/badges";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { PageMeta } from "@/components/PageMeta";
@@ -288,8 +289,10 @@ export default function AILeaderboard() {
                   >
                     <ResultIcon result={pick.result} />
                     <span className="text-xs font-medium text-slate-500 w-12">
-                      {SPORT_EMOJI[pick.sportKey?.toUpperCase()] || "🎯"}{" "}
-                      {pick.sportKey?.toUpperCase()}
+                      {SPORT_EMOJI[
+                        formatSportLabel(pick.sportKey)?.toUpperCase()
+                      ] || "🎯"}{" "}
+                      {formatSportLabel(pick.sportKey)}
                     </span>
                     <span className="text-sm text-white flex-1 truncate">
                       {pick.awayTeam} @ {pick.homeTeam}

@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { formatSportLabel } from "@/lib/badges";
 import Navbar from "@/components/Navbar";
 import NeonCard from "@/components/NeonCard";
 import { PageMeta } from "@/components/PageMeta";
@@ -375,7 +376,7 @@ export default function Results() {
                               <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                                 <Badge className="text-xs bg-slate-700/50 text-slate-300 border-slate-600 shrink-0">
                                   {SPORT_LABELS[pick.sportKey] ??
-                                    pick.sportKey.toUpperCase()}
+                                    formatSportLabel(pick.sportKey)}
                                 </Badge>
                                 {pick.tier === "premium" && (
                                   <Badge className="text-xs bg-yellow-500/10 text-yellow-400 border-yellow-500/20 shrink-0">

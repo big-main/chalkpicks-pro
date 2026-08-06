@@ -2048,10 +2048,10 @@
 
 ## Next 5 Features (Jul 31 2026)
 
-- [ ] Add FAQ JSON-LD to Kelly & EV calculators (complete tools SEO pass)
-- [ ] Create /verify index page showing 10 most recent locked picks with hash + result
-- [ ] Upgrade OddsApiCache quota with second SharpAPI key rotation
-- [ ] Set up daily Reddit/IH posting automation for directory kit + picks
+- [x] Add FAQ JSON-LD to Kelly & EV calculators (complete tools SEO pass)
+- [x] Create /verify index page showing 10 most recent locked picks with hash + result
+- [x] Upgrade OddsApiCache quota with second SharpAPI key rotation
+- [x] Set up daily Reddit/IH posting automation for directory kit + picks
 - [ ] Build public /stats dashboard with leaderboard, platform metrics, top pickers
 
 ## SharpAPI Sharp Plan Integration (Aug 6 2026)
@@ -2067,7 +2067,7 @@
 - [x] Register stream route in index.ts
 - [x] All 224 tests passing (0 failures)
 - [x] Build frontend UI for +EV finder page (sharpOpportunities.getEVOpportunities)
-- [ ] Build frontend UI for arbitrage finder page (sharpOpportunities.getArbOpportunities)
-- [ ] Build frontend UI for low hold lines page (sharpOpportunities.getLowHoldLines)
+- [x] Build frontend UI for arbitrage finder page (sharpOpportunities.getArbOpportunities)
+- [x] Build frontend UI for low hold lines page (sharpOpportunities.getLowHoldLines)
 - [x] Add live game state widget to picks page (sharpOpportunities.getGameState)
 - [x] Wire SSE stream to live odds ticker on picks page (GameStateWidget renders live scores on Picks page)

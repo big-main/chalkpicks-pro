@@ -9,7 +9,7 @@ import { getDb } from "../db";
 import { userBets } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { getModelClvSkill } from "../_core/clv-skill";
-import { getLedgerByHash } from "../_core/pick-ledger";
+import { getLedgerByHash, getRecentLedger } from "../_core/pick-ledger";
 
 export const clvRouter = router({
   /**
@@ -24,6 +24,15 @@ export const clvRouter = router({
    * Public verify endpoint data for /verify/:hash
    * Proves a pick was locked pre-game and whether it was graded.
    */
+  getRecentLedger: publicProcedure
+    .input(
+      z.object({ limit: z.number().min(1).max(50).default(10) }).optional()
+    )
+    .query(async ({ input }) => {
+      const entries = await getRecentLedger(input?.limit ?? 10);
+      return { entries };
+    }),
+
   verifyByHash: publicProcedure
     .input(z.object({ hash: z.string().min(16).max(64) }))
     .query(async ({ input }) => {

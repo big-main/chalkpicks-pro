@@ -173,6 +173,31 @@ export async function getLedgerByHash(contentHash: string) {
   }
 }
 
+/** Get the N most recent public ledger entries for the /verify index page */
+export async function getRecentLedger(limit = 10) {
+  try {
+    const db = await getDb();
+    if (!db) return [];
+    const rows = await db.execute(sql`
+      SELECT pickId, contentHash, lockedAt, gameStartAt,
+             recommendation, sportKey, homeTeam, awayTeam, lineAtLock,
+             closingLine, clvValue, result, gradedAt
+      FROM pick_ledger
+      WHERE isPublic = 1
+      ORDER BY lockedAt DESC
+      LIMIT ${limit}
+    `);
+    const list = (rows as any)[0] ?? rows;
+    return Array.isArray(list) ? list : [];
+  } catch (err) {
+    console.warn(
+      "[PickLedger] getRecent failed:",
+      (err as Error)?.message ?? err
+    );
+    return [];
+  }
+}
+
 export async function gradeLedgerEntry(
   pickId: number,
   data: {

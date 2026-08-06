@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { formatSportLabel } from "@/lib/badges";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import NeonCard from "@/components/NeonCard";
@@ -203,7 +204,7 @@ export default function FreePicks() {
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <Badge className="text-xs bg-slate-700/50 text-slate-300 border-slate-600">
-                          {pick.sportKey?.toUpperCase() || "SPORT"}
+                          {formatSportLabel(pick.sportKey) || "SPORT"}
                         </Badge>
                         <Badge className="text-xs bg-[#39ff14]/10 text-[#39ff14] border-[#39ff14]/20">
                           FREE

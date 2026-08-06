@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { formatSportLabel } from "@/lib/badges";
 import { getSportBadgeClass, getTierBadgeClass } from "@/lib/badges";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -329,12 +330,7 @@ function PickCard({
               <span
                 className={`text-xs uppercase font-semibold px-2 py-0.5 rounded-full ${getSportBadgeClass(pick.sportKey)}`}
               >
-                {(pick.sportKey ?? "")
-                  .replace(
-                    /americanfootball_|basketball_|baseball_|icehockey_/i,
-                    ""
-                  )
-                  .toUpperCase()}
+                {formatSportLabel(pick.sportKey)}
               </span>
               <span className="text-xs text-muted-foreground">
                 {PICK_TYPE_LABELS[pick.pickType] ?? pick.pickType}

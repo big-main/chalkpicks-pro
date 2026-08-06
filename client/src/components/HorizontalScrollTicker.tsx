@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
+import { formatSportLabel } from "@/lib/badges";
 import { Link } from "wouter";
 import {
   Activity,
@@ -105,7 +106,7 @@ function PickCard({ pick }: { pick: any }) {
               border: `1px solid ${color}20`,
             }}
           >
-            {pick.sportKey?.toUpperCase() ?? "PICK"}
+            {formatSportLabel(pick.sportKey) || "PICK"}
           </span>
           <span
             className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded"

@@ -2052,7 +2052,7 @@
 - [x] Create /verify index page showing 10 most recent locked picks with hash + result
 - [x] Upgrade OddsApiCache quota with second SharpAPI key rotation
 - [x] Set up daily Reddit/IH posting automation for directory kit + picks
-- [ ] Build public /stats dashboard with leaderboard, platform metrics, top pickers
+- [x] Build public /stats dashboard with leaderboard, platform metrics, top pickers
 
 ## SharpAPI Sharp Plan Integration (Aug 6 2026)
 

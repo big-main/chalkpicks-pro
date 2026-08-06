@@ -1,10 +1,16 @@
 import { describe, it, expect } from "vitest";
 
-const KEY = process.env.SHARPAPI_KEY ?? "sk_live_59w5GsjUmKu3zE3iAUYeP2";
+// Live SharpAPI checks. CI deliberately supplies no real secrets ("Tests must
+// not need real secrets" — .github/workflows/ci.yml), so this suite skips
+// unless SHARPAPI_KEY is present, matching oddsApiIo.test.ts / railway.test.ts.
+//
+// There is no fallback key on purpose: a literal here is a published
+// credential, since this repository is public.
+const KEY = process.env.SHARPAPI_KEY;
 const BASE = "https://api.sharpapi.io/api/v1";
-const h = { "X-API-Key": KEY };
+const h = { "X-API-Key": KEY ?? "" };
 
-describe("SharpAPI Sharp Plan Validation", () => {
+describe.skipIf(!KEY)("SharpAPI Sharp Plan Validation", () => {
   it("odds endpoint returns data", async () => {
     const r = await fetch(`${BASE}/odds?limit=1`, {
       headers: h,

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
@@ -234,6 +234,21 @@ describe("Notification System", () => {
 
   // ── Scheduled Daily Picks (public endpoint) ───────────────────────────────
   describe("notifications.scheduledDailyPicks", () => {
+    // Configured per-test rather than read from the ambient environment. This
+    // endpoint is a publicProcedure, so the secret is its only access control
+    // and it fails closed when SCHEDULER_SECRET is unset — falling back to a
+    // literal here both reintroduced the old published credential and made the
+    // test fail anywhere the variable is absent, including CI.
+    const configuredValue = `scheduler-fixture-${Date.now()}`;
+
+    beforeEach(() => {
+      process.env.SCHEDULER_SECRET = configuredValue;
+    });
+
+    afterEach(() => {
+      delete process.env.SCHEDULER_SECRET;
+    });
+
     it("rejects unauthorized requests", async () => {
       const caller = createCaller();
       const result = await caller.notifications.scheduledDailyPicks({
@@ -243,12 +258,26 @@ describe("Notification System", () => {
       expect(result.message).toBe("Unauthorized");
     });
 
-    it("accepts correct scheduler secret", async () => {
+    it("accepts the configured scheduler secret", async () => {
       const caller = createCaller();
-      const secret =
-        process.env.SCHEDULER_SECRET || "chalkpicks-scheduler-2024";
-      const result = await caller.notifications.scheduledDailyPicks({ secret });
+      const result = await caller.notifications.scheduledDailyPicks({
+        secret: configuredValue,
+      });
       expect(result.success).toBe(true);
+    });
+
+    it("fails closed when SCHEDULER_SECRET is not configured", async () => {
+      delete process.env.SCHEDULER_SECRET;
+      const caller = createCaller();
+      // Every value must be rejected when no secret is set — including the
+      // empty string, which a naive `!==` check would accept against undefined.
+      for (const attempt of ["", "anything", configuredValue]) {
+        const result = await caller.notifications.scheduledDailyPicks({
+          secret: attempt,
+        });
+        expect(result.success).toBe(false);
+        expect(result.message).toBe("Unauthorized");
+      }
     });
   });
 });

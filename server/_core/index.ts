@@ -62,6 +62,16 @@ async function startServer() {
   const app = express();
   app.set("trust proxy", 1); // Trust first proxy (Manus/Cloud Run)
   const server = createServer(app);
+
+  // 301 redirect: chalkpicks.live → chalkpicks.pro (domain migration)
+  app.use((req, res, next) => {
+    const host = req.hostname;
+    if (host === "chalkpicks.live" || host === "www.chalkpicks.live") {
+      const newUrl = `https://chalkpicks.pro${req.originalUrl}`;
+      return res.redirect(301, newUrl);
+    }
+    next();
+  });
   // Register webhooks BEFORE body parsers (needs raw body)
   registerStripeWebhook(app);
   registerPayPalWebhook(app);

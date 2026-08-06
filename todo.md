@@ -2066,7 +2066,7 @@
 - [x] Create SSE proxy at GET /api/sharp/stream (real-time odds stream)
 - [x] Register stream route in index.ts
 - [x] All 224 tests passing (0 failures)
-- [ ] Build frontend UI for +EV finder page (sharpOpportunities.getEVOpportunities)
+- [x] Build frontend UI for +EV finder page (sharpOpportunities.getEVOpportunities)
 - [ ] Build frontend UI for arbitrage finder page (sharpOpportunities.getArbOpportunities)
 - [ ] Build frontend UI for low hold lines page (sharpOpportunities.getLowHoldLines)
 - [ ] Add live game state widget to picks page (sharpOpportunities.getGameState)

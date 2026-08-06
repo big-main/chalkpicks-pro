@@ -6,7 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FeatureGate } from "@/components/FeatureGate";
-import { ArbitrageFilters, type ArbitrageFilterOptions } from "@/components/ArbitrageFilters";
+import {
+  ArbitrageFilters,
+  type ArbitrageFilterOptions,
+} from "@/components/ArbitrageFilters";
 import {
   TrendingUp,
   TrendingDown,
@@ -20,11 +23,13 @@ import {
 } from "lucide-react";
 
 function ArbitrageFinderContent() {
-  const [selectedArbitrage, setSelectedArbitrage] = useState<number | null>(null);
+  const [selectedArbitrage, setSelectedArbitrage] = useState<number | null>(
+    null
+  );
   const [customOddsA, setCustomOddsA] = useState<string>("-110");
   const [customOddsB, setCustomOddsB] = useState<string>("-110");
   const [customStake, setCustomStake] = useState<string>("100");
-  
+
   // Filter state
   const [filters, setFilters] = useState<ArbitrageFilterOptions>({
     sports: [],
@@ -36,9 +41,15 @@ function ArbitrageFinderContent() {
     sortBy: "profit_desc",
     onlyActive: true,
   });
-  
+
   // Legacy minArbitrage state (for backward compatibility)
   const [minArbitrage, setMinArbitrage] = useState<string>("0.5");
+
+  // Live SharpAPI arbitrage opportunities (Sharp plan — real-time)
+  const liveArb = trpc.sharpOpportunities.getArbOpportunities.useQuery(
+    { limit: 50, minProfit: 0 },
+    { refetchInterval: 30000 }
+  );
 
   // Fetch opportunities with filters
   const opportunities = trpc.arbitrage.getOpportunities.useQuery({
@@ -85,10 +96,14 @@ function ArbitrageFinderContent() {
                   Arbitrage Finder
                 </span>
               </h1>
-              <p className="text-slate-400">Find guaranteed profit opportunities across sportsbooks</p>
+              <p className="text-slate-400">
+                Find guaranteed profit opportunities across sportsbooks
+              </p>
             </div>
             <div className="text-right hidden md:block">
-              <div className="text-3xl font-bold text-brand-gold">{opportunities.data?.length || 0}</div>
+              <div className="text-3xl font-bold text-brand-gold">
+                {(liveArb.data?.count || 0) + (opportunities.data?.length || 0)}
+              </div>
               <p className="text-sm text-slate-400">Active Opportunities</p>
             </div>
           </div>
@@ -111,7 +126,9 @@ function ArbitrageFinderContent() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-slate-400 text-sm mb-1">Total Trades</p>
-                    <p className="text-2xl font-bold text-white">{stats.data.totalTrades}</p>
+                    <p className="text-2xl font-bold text-white">
+                      {stats.data.totalTrades}
+                    </p>
                   </div>
                   <Target className="w-8 h-8 text-brand-gold opacity-50" />
                 </div>
@@ -122,7 +139,9 @@ function ArbitrageFinderContent() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-slate-400 text-sm mb-1">Completed</p>
-                    <p className="text-2xl font-bold text-white">{stats.data.completedTrades}</p>
+                    <p className="text-2xl font-bold text-white">
+                      {stats.data.completedTrades}
+                    </p>
                   </div>
                   <CheckCircle2 className="w-8 h-8 text-brand-green opacity-50" />
                 </div>
@@ -133,7 +152,9 @@ function ArbitrageFinderContent() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-slate-400 text-sm mb-1">Total Profit</p>
-                    <p className="text-2xl font-bold text-white">${stats.data.totalProfit.toFixed(2)}</p>
+                    <p className="text-2xl font-bold text-white">
+                      ${stats.data.totalProfit.toFixed(2)}
+                    </p>
                   </div>
                   <DollarSign className="w-8 h-8 text-brand-green opacity-50" />
                 </div>
@@ -144,7 +165,9 @@ function ArbitrageFinderContent() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-slate-400 text-sm mb-1">Avg Profit</p>
-                    <p className="text-2xl font-bold text-white">${stats.data.averageProfit.toFixed(2)}</p>
+                    <p className="text-2xl font-bold text-white">
+                      ${stats.data.averageProfit.toFixed(2)}
+                    </p>
                   </div>
                   <TrendingUp className="w-8 h-8 text-brand-blue opacity-50" />
                 </div>
@@ -154,15 +177,107 @@ function ArbitrageFinderContent() {
         )}
 
         {/* Tabs */}
-        <Tabs defaultValue="opportunities" className="mb-8">
+        <Tabs defaultValue="sharp" className="mb-8">
           <TabsList className="bg-slate-800 border border-slate-700">
-            <TabsTrigger value="opportunities" className="data-[state=active]:bg-slate-700">
-              Live Opportunities
+            <TabsTrigger
+              value="sharp"
+              className="data-[state=active]:bg-slate-700"
+            >
+              ⚡ Sharp Live ({liveArb.data?.count ?? 0})
             </TabsTrigger>
-            <TabsTrigger value="calculator" className="data-[state=active]:bg-slate-700">
+            <TabsTrigger
+              value="opportunities"
+              className="data-[state=active]:bg-slate-700"
+            >
+              Tracked
+            </TabsTrigger>
+            <TabsTrigger
+              value="calculator"
+              className="data-[state=active]:bg-slate-700"
+            >
               Calculator
             </TabsTrigger>
           </TabsList>
+
+          {/* Sharp Live Arb Tab */}
+          <TabsContent value="sharp" className="space-y-4">
+            {liveArb.isLoading ? (
+              <Card className="bg-slate-800 border-slate-700 p-8 text-center">
+                <p className="text-slate-400">
+                  Loading live arbitrage from 25 sportsbooks...
+                </p>
+              </Card>
+            ) : liveArb.data?.opportunities &&
+              liveArb.data.opportunities.length > 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {liveArb.data.opportunities.map(arb => (
+                  <Card
+                    key={arb.id}
+                    className="bg-slate-800 border-amber-500/30 hover:border-amber-500/60 transition-all"
+                  >
+                    <CardContent className="pt-6">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-xs text-slate-400 mb-0.5">
+                              {arb.leagueLabel || arb.league}
+                            </p>
+                            <h3 className="font-semibold text-white text-sm">
+                              {arb.eventName}
+                            </h3>
+                          </div>
+                          <div className="text-right">
+                            {arb.isLive && (
+                              <Badge className="bg-red-500/20 text-red-400 border-red-500/30 mb-1">
+                                LIVE
+                              </Badge>
+                            )}
+                            <div className="text-2xl font-bold text-amber-400">
+                              +{arb.estimatedNetProfitPercent.toFixed(1)}%
+                            </div>
+                            <p className="text-xs text-slate-400">net profit</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          {arb.legs.map((leg, li) => (
+                            <div
+                              key={li}
+                              className="bg-slate-700/50 rounded p-2"
+                            >
+                              <p className="text-xs text-slate-400">
+                                {leg.sportsbook}
+                              </p>
+                              <p className="text-xs font-medium text-white truncate">
+                                {leg.selection}
+                              </p>
+                              <p className="text-sm font-bold text-amber-400">
+                                {leg.oddsAmerican > 0 ? "+" : ""}
+                                {leg.oddsAmerican}
+                              </p>
+                              <p className="text-xs text-slate-500">
+                                {leg.stakePercent.toFixed(1)}% stake
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-slate-500">
+                          {new Date(arb.detectedAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="bg-slate-800 border-slate-700 p-8 text-center">
+                <AlertCircle className="w-12 h-12 text-slate-500 mx-auto mb-3" />
+                <p className="text-slate-400">
+                  No live arbitrage opportunities right now. Refreshing every
+                  30s.
+                </p>
+              </Card>
+            )}
+          </TabsContent>
 
           {/* Live Opportunities */}
           <TabsContent value="opportunities" className="space-y-4">
@@ -171,7 +286,7 @@ function ArbitrageFinderContent() {
                 type="number"
                 placeholder="Min arbitrage %"
                 value={minArbitrage}
-                onChange={(e) => setMinArbitrage(e.target.value)}
+                onChange={e => setMinArbitrage(e.target.value)}
                 className="w-40 bg-slate-800 border-slate-700 text-white"
                 step="0.01"
               />
@@ -188,7 +303,9 @@ function ArbitrageFinderContent() {
                   <Card
                     key={arb.id}
                     className={`bg-slate-800 border-slate-700 hover:border-amber-500/50 transition-all cursor-pointer ${
-                      selectedArbitrage === arb.id ? "ring-2 ring-amber-500" : ""
+                      selectedArbitrage === arb.id
+                        ? "ring-2 ring-amber-500"
+                        : ""
                     }`}
                     onClick={() => setSelectedArbitrage(arb.id)}
                   >
@@ -196,21 +313,39 @@ function ArbitrageFinderContent() {
                       <div className="space-y-4">
                         {/* Matchup */}
                         <div>
-                          <p className="text-sm text-slate-400 mb-1">{arb.sport.toUpperCase()}</p>
-                          <h3 className="font-semibold text-white">{arb.matchup}</h3>
+                          <p className="text-sm text-slate-400 mb-1">
+                            {arb.sport.toUpperCase()}
+                          </p>
+                          <h3 className="font-semibold text-white">
+                            {arb.matchup}
+                          </h3>
                         </div>
 
                         {/* Outcomes */}
                         <div className="grid grid-cols-2 gap-4">
                           <div className="bg-slate-700/50 rounded p-3">
-                            <p className="text-xs text-slate-400 mb-1">{arb.bookA}</p>
-                            <p className="text-sm font-semibold text-white mb-1">{arb.outcomeA}</p>
-                            <p className="text-lg font-bold text-brand-gold">{arb.oddsA > 0 ? "+" : ""}{arb.oddsA}</p>
+                            <p className="text-xs text-slate-400 mb-1">
+                              {arb.bookA}
+                            </p>
+                            <p className="text-sm font-semibold text-white mb-1">
+                              {arb.outcomeA}
+                            </p>
+                            <p className="text-lg font-bold text-brand-gold">
+                              {arb.oddsA > 0 ? "+" : ""}
+                              {arb.oddsA}
+                            </p>
                           </div>
                           <div className="bg-slate-700/50 rounded p-3">
-                            <p className="text-xs text-slate-400 mb-1">{arb.bookB}</p>
-                            <p className="text-sm font-semibold text-white mb-1">{arb.outcomeB}</p>
-                            <p className="text-lg font-bold text-brand-gold">{arb.oddsB > 0 ? "+" : ""}{arb.oddsB}</p>
+                            <p className="text-xs text-slate-400 mb-1">
+                              {arb.bookB}
+                            </p>
+                            <p className="text-sm font-semibold text-white mb-1">
+                              {arb.outcomeB}
+                            </p>
+                            <p className="text-lg font-bold text-brand-gold">
+                              {arb.oddsB > 0 ? "+" : ""}
+                              {arb.oddsB}
+                            </p>
                           </div>
                         </div>
 
@@ -218,11 +353,15 @@ function ArbitrageFinderContent() {
                         <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-700">
                           <div>
                             <p className="text-xs text-slate-400">Arb %</p>
-                            <p className="text-sm font-bold text-brand-green">{(arb.arbitragePercentage * 100).toFixed(2)}%</p>
+                            <p className="text-sm font-bold text-brand-green">
+                              {(arb.arbitragePercentage * 100).toFixed(2)}%
+                            </p>
                           </div>
                           <div>
                             <p className="text-xs text-slate-400">Profit</p>
-                            <p className="text-sm font-bold text-brand-green">${arb.guaranteedProfit.toFixed(2)}</p>
+                            <p className="text-sm font-bold text-brand-green">
+                              ${arb.guaranteedProfit.toFixed(2)}
+                            </p>
                           </div>
                           <div>
                             <p className="text-xs text-slate-400">Expires</p>
@@ -234,16 +373,26 @@ function ArbitrageFinderContent() {
 
                         {/* Stakes */}
                         <div className="bg-slate-700/30 rounded p-3">
-                          <p className="text-xs text-slate-400 mb-2">Stakes ($100 total)</p>
+                          <p className="text-xs text-slate-400 mb-2">
+                            Stakes ($100 total)
+                          </p>
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-xs text-slate-400">{arb.bookA}</p>
-                              <p className="text-sm font-bold text-white">${arb.stakeA.toFixed(2)}</p>
+                              <p className="text-xs text-slate-400">
+                                {arb.bookA}
+                              </p>
+                              <p className="text-sm font-bold text-white">
+                                ${arb.stakeA.toFixed(2)}
+                              </p>
                             </div>
                             <div className="text-slate-500">+</div>
                             <div>
-                              <p className="text-xs text-slate-400">{arb.bookB}</p>
-                              <p className="text-sm font-bold text-white">${arb.stakeB.toFixed(2)}</p>
+                              <p className="text-xs text-slate-400">
+                                {arb.bookB}
+                              </p>
+                              <p className="text-sm font-bold text-white">
+                                ${arb.stakeB.toFixed(2)}
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -261,7 +410,10 @@ function ArbitrageFinderContent() {
             ) : (
               <Card className="bg-slate-800 border-slate-700 p-8 text-center">
                 <AlertCircle className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-                <p className="text-slate-400">No arbitrage opportunities found. Try lowering the minimum percentage.</p>
+                <p className="text-slate-400">
+                  No arbitrage opportunities found. Try lowering the minimum
+                  percentage.
+                </p>
               </Card>
             )}
           </TabsContent>
@@ -278,31 +430,37 @@ function ArbitrageFinderContent() {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-sm text-slate-400 mb-2 block">Book A Odds (American)</label>
+                    <label className="text-sm text-slate-400 mb-2 block">
+                      Book A Odds (American)
+                    </label>
                     <Input
                       type="number"
                       value={customOddsA}
-                      onChange={(e) => setCustomOddsA(e.target.value)}
+                      onChange={e => setCustomOddsA(e.target.value)}
                       placeholder="-110"
                       className="bg-slate-700 border-slate-600 text-white"
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-slate-400 mb-2 block">Book B Odds (American)</label>
+                    <label className="text-sm text-slate-400 mb-2 block">
+                      Book B Odds (American)
+                    </label>
                     <Input
                       type="number"
                       value={customOddsB}
-                      onChange={(e) => setCustomOddsB(e.target.value)}
+                      onChange={e => setCustomOddsB(e.target.value)}
                       placeholder="-110"
                       className="bg-slate-700 border-slate-600 text-white"
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-slate-400 mb-2 block">Total Stake ($)</label>
+                    <label className="text-sm text-slate-400 mb-2 block">
+                      Total Stake ($)
+                    </label>
                     <Input
                       type="number"
                       value={customStake}
-                      onChange={(e) => setCustomStake(e.target.value)}
+                      onChange={e => setCustomStake(e.target.value)}
                       placeholder="100"
                       className="bg-slate-700 border-slate-600 text-white"
                     />
@@ -322,18 +480,32 @@ function ArbitrageFinderContent() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-slate-400 mb-1">Stake A</p>
-                        <p className="text-2xl font-bold text-white">${calculateCustom.data.stakeA.toFixed(2)}</p>
+                        <p className="text-2xl font-bold text-white">
+                          ${calculateCustom.data.stakeA.toFixed(2)}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-slate-400 mb-1">Stake B</p>
-                        <p className="text-2xl font-bold text-white">${calculateCustom.data.stakeB.toFixed(2)}</p>
+                        <p className="text-2xl font-bold text-white">
+                          ${calculateCustom.data.stakeB.toFixed(2)}
+                        </p>
                       </div>
                     </div>
                     <div className="border-t border-slate-600 pt-4">
-                      <p className="text-sm text-slate-400 mb-2">Guaranteed Profit</p>
+                      <p className="text-sm text-slate-400 mb-2">
+                        Guaranteed Profit
+                      </p>
                       <div className="flex items-baseline gap-2">
-                        <p className="text-3xl font-bold text-brand-green">${calculateCustom.data.guaranteedProfit.toFixed(2)}</p>
-                        <p className="text-lg font-semibold text-brand-green">({(calculateCustom.data.profitPercentage * 100).toFixed(2)}%)</p>
+                        <p className="text-3xl font-bold text-brand-green">
+                          ${calculateCustom.data.guaranteedProfit.toFixed(2)}
+                        </p>
+                        <p className="text-lg font-semibold text-brand-green">
+                          (
+                          {(
+                            calculateCustom.data.profitPercentage * 100
+                          ).toFixed(2)}
+                          %)
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -342,7 +514,9 @@ function ArbitrageFinderContent() {
                 {calculateCustom.error && (
                   <div className="bg-brand-red/10 border border-brand-red/30 rounded-lg p-4 flex items-start gap-3">
                     <AlertCircle className="w-5 h-5 text-brand-red flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-red-300">{calculateCustom.error.message}</p>
+                    <p className="text-sm text-red-300">
+                      {calculateCustom.error.message}
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -355,5 +529,7 @@ function ArbitrageFinderContent() {
 }
 
 export default function ArbitrageFinder() {
-  return <FeatureGate feature="arbitrage" children={<ArbitrageFinderContent />} />;
+  return (
+    <FeatureGate feature="arbitrage" children={<ArbitrageFinderContent />} />
+  );
 }

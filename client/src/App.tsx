@@ -61,6 +61,7 @@ const SubscriptionDashboard = lazy(
   () => import("@/pages/SubscriptionDashboard")
 );
 const ArbitrageFinder = lazy(() => import("@/pages/ArbitrageFinder"));
+const LowHoldLines = lazy(() => import("@/pages/LowHoldLines"));
 const AffiliateHub = lazy(() => import("@/pages/AffiliateHub"));
 const LiveLeaderboard = lazy(() => import("@/pages/LiveLeaderboard"));
 const CommunityChat = lazy(() => import("@/pages/CommunityChat"));
@@ -217,6 +218,7 @@ function Router() {
               <Route path="/profile" component={UserProfile} />
               <Route path="/onboarding" component={Onboarding} />
               <Route path="/arbitrage" component={ArbitrageFinder} />
+              <Route path="/tools/low-hold" component={LowHoldLines} />
               <Route
                 path="/arbitrage-opportunities"
                 component={ArbitrageOpportunitiesPage}

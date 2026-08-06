@@ -38,6 +38,7 @@ import { storyScheduledRouter } from "./routers/storyScheduled";
 import { communityAutomationRouter } from "./routers/communityAutomation";
 import { blogRouter } from "./routers/blog";
 import { evRouter } from "./routers/ev";
+import { sharpOpportunitiesRouter } from "./routers/sharpOpportunities";
 import { quantRouter } from "./routers/quant";
 import { sharpMoneyRouter } from "./routers/sharpMoney";
 import { apiKeysRouter } from "./routers/apiKeys";
@@ -294,6 +295,7 @@ export const appRouter = router({
   strategy: strategyRouter,
   pageSpeed: pageSpeedRouter,
   directoryTracker: directoryTrackerRouter,
+  sharpOpportunities: sharpOpportunitiesRouter,
 });
 
 export type AppRouter = typeof appRouter;

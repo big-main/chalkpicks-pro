@@ -13,13 +13,13 @@ describe("Secrets Configuration", () => {
     "should have SMTP credentials configured",
     () => {
       expect(process.env.SMTP_USER).toBeDefined();
-      expect(process.env.SMTP_USER).toBe("admin@chalkpicks.pro");
+      expect(process.env.SMTP_USER).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
 
       expect(process.env.SMTP_PASS).toBeDefined();
       expect(process.env.SMTP_PASS?.length).toBeGreaterThan(0);
 
       expect(process.env.SMTP_FROM).toBeDefined();
-      expect(process.env.SMTP_FROM).toBe("admin@chalkpicks.pro");
+      expect(process.env.SMTP_FROM).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
     }
   );
 

@@ -79,6 +79,10 @@ async function startServer() {
   // Storage proxy for uploaded assets
   registerStorageProxy(app);
 
+  // SharpAPI real-time odds stream proxy (SSE)
+  const { sharpStreamHandler } = await import("../routes/sharpStream");
+  app.get("/api/sharp/stream", sharpStreamHandler);
+
   // Security middleware (helmet, rate limiting, sanitization)
   registerSecurityMiddleware(app);
 

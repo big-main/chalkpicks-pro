@@ -2053,3 +2053,21 @@
 - [ ] Upgrade OddsApiCache quota with second SharpAPI key rotation
 - [ ] Set up daily Reddit/IH posting automation for directory kit + picks
 - [ ] Build public /stats dashboard with leaderboard, platform metrics, top pickers
+
+## SharpAPI Sharp Plan Integration (Aug 6 2026)
+
+- [x] Update SHARPAPI_KEY to new Sharp plan key (sk_live_59w5...)
+- [x] Add fetchSharpEVOpportunities() to dataService.ts
+- [x] Add fetchSharpArbOpportunities() to dataService.ts
+- [x] Add fetchSharpLowHoldLines() to dataService.ts
+- [x] Add fetchSharpGameState() to dataService.ts
+- [x] Create sharpOpportunities tRPC router (EV, arb, low hold, game state)
+- [x] Register sharpOpportunitiesRouter in routers.ts
+- [x] Create SSE proxy at GET /api/sharp/stream (real-time odds stream)
+- [x] Register stream route in index.ts
+- [x] All 224 tests passing (0 failures)
+- [ ] Build frontend UI for +EV finder page (sharpOpportunities.getEVOpportunities)
+- [ ] Build frontend UI for arbitrage finder page (sharpOpportunities.getArbOpportunities)
+- [ ] Build frontend UI for low hold lines page (sharpOpportunities.getLowHoldLines)
+- [ ] Add live game state widget to picks page (sharpOpportunities.getGameState)
+- [ ] Wire SSE stream to live odds ticker on picks page

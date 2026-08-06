@@ -50,6 +50,7 @@ import {
 import { toast } from "sonner";
 import SharePickCard from "@/components/SharePickCard";
 import PushNotificationBanner from "@/components/PushNotificationBanner";
+import { GameStateWidget } from "@/components/GameStateWidget";
 import ConfidenceBar from "@/components/ConfidenceBar";
 import { motion } from "framer-motion";
 
@@ -1337,6 +1338,8 @@ export default function Picks() {
       <div className="container pb-12" style={{ marginTop: "-60px" }}>
         {/* Push notification prompt */}
         <PushNotificationBanner />
+        {/* Live game scores ticker (SharpAPI Game State) */}
+        <GameStateWidget variant="ticker" className="mb-4" />
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>

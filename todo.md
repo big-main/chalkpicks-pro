@@ -2069,5 +2069,5 @@
 - [x] Build frontend UI for +EV finder page (sharpOpportunities.getEVOpportunities)
 - [ ] Build frontend UI for arbitrage finder page (sharpOpportunities.getArbOpportunities)
 - [ ] Build frontend UI for low hold lines page (sharpOpportunities.getLowHoldLines)
-- [ ] Add live game state widget to picks page (sharpOpportunities.getGameState)
-- [ ] Wire SSE stream to live odds ticker on picks page
+- [x] Add live game state widget to picks page (sharpOpportunities.getGameState)
+- [x] Wire SSE stream to live odds ticker on picks page (GameStateWidget renders live scores on Picks page)

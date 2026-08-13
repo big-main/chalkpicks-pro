@@ -2071,3 +2071,30 @@
 - [x] Build frontend UI for low hold lines page (sharpOpportunities.getLowHoldLines)
 - [x] Add live game state widget to picks page (sharpOpportunities.getGameState)
 - [x] Wire SSE stream to live odds ticker on picks page (GameStateWidget renders live scores on Picks page)
+
+## Migration Preservation — chalkpicks.pro
+
+- [ ] Preserve `chalkpicks.pro` as the primary production domain during external-host migration; cut over DNS only after replacement smoke tests pass and keep Manus as rollback target
+- [ ] Export DNS, SSL, canonical URL, redirect, webhook, and environment configuration without exposing secret values
+- [ ] Verify `chalkpicks.pro` and `www.chalkpicks.pro` resolve correctly after cutover
+
+## Hosting Migration
+
+- [ ] Freeze Manus source state and create a complete portable backup bundle
+- [ ] Deploy the replacement host from the Manus-synced GitHub mirror
+- [ ] Restore database and validate auth, subscriptions, picks, ledger, odds, SSE, and scheduled automations
+- [ ] Confirm one-way Manus → GitHub → replacement-host update pathway
+- [ ] Run production smoke checks before DNS cutover
+- [ ] Document rollback procedure to Manus
+
+## Migration History
+
+- [x] User confirmed `chalkpicks.pro` must remain the primary domain
+- [x] User prefers free hosting or Railway because of existing subscription; compatibility and pricing evaluated; Railway selected as preferred first target
+- [x] Do not delete or disable the Manus deployment until replacement parity is verified
+
+## Current Infrastructure Notes
+
+- [x] Cloud Computer is available for persistent services and migration tooling; `/home/ubuntu/agents.md` checked and not present before system-level changes
+- [x] Existing project expects Node/Express/tRPC/Drizzle and can be deployed without a framework rewrite
+- [x] Existing Quant sidecar target is `http://35.237.81.82:8091`; verified as an expected target but not yet healthy

@@ -2107,3 +2107,5 @@
 - [x] Verify `pnpm check` passes
 - [x] Verify the full suite passes locally: 31 test files passed, 1 skipped; 217 tests passed, 8 skipped
 - [ ] Verify GitHub CI passes for the migration checkpoint so Railway no longer skips the deployment
+
+- [ ] Clear the stale Railway `npm run migrate` pre-deploy setting and disable sleep mode for the live SSE service in railway.json

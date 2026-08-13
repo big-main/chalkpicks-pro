@@ -2109,3 +2109,13 @@
 - [ ] Verify GitHub CI passes for the migration checkpoint so Railway no longer skips the deployment
 
 - [ ] Clear the stale Railway `npm run migrate` pre-deploy setting and disable sleep mode for the live SSE service in railway.json
+
+## Railway Runtime Blocker
+
+- [ ] Provision a compatible Railway database or document an external TiDB/MySQL connection for the replacement host
+- [ ] Supply Railway application secrets through the authenticated Railway UI or another secure secret channel; never commit or print values
+- [ ] Verify `JWT_SECRET` is at least 32 characters and `DATABASE_URL` is present before retrying the service
+- [ ] Retry the Railway deployment and confirm the service reaches healthy/running state
+
+- [x] Database service and domain purchased on Railway
+- [ ] Trigger Railway deployment and verify service health

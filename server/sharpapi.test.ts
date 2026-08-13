@@ -1,10 +1,13 @@
 import { describe, it, expect } from "vitest";
 
-const KEY = process.env.SHARPAPI_KEY ?? "sk_live_59w5GsjUmKu3zE3iAUYeP2";
+const KEY = process.env.SHARPAPI_KEY ?? "";
 const BASE = "https://api.sharpapi.io/api/v1";
 const h = { "X-API-Key": KEY };
 
-describe("SharpAPI Sharp Plan Validation", () => {
+describe.skipIf(
+  process.env.RUN_EXTERNAL_INTEGRATION_TESTS !== "true" ||
+    !process.env.SHARPAPI_KEY
+)("SharpAPI Sharp Plan Validation", () => {
   it("odds endpoint returns data", async () => {
     const r = await fetch(`${BASE}/odds?limit=1`, {
       headers: h,

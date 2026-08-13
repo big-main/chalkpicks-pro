@@ -49,3 +49,9 @@ Keep `chalkpicks.pro` as the primary domain. Prepare Railway as the preferred re
 [2]: https://docs.railway.com/guides/express "Deploy an Express App | Railway Guides"
 [3]: https://render.com/docs/free "Deploy for Free | Render Docs"
 [4]: https://www.koyeb.com/pricing "Koyeb Pricing"
+
+## 5. Current Railway Project Inspection
+
+The existing Railway project was found through the read-only Railway API using project ID `c13dde22-2ed9-4e8e-b1c1-9c63b727f2e1`. It contains one service named `chalkpicks-pro` and a production-like environment named `Chalkpicks Env`; a separate pull-request environment also exists. The service's latest recorded deployment was `CRASHED` on August 6, 2026. Its service settings currently have no explicit build command, no explicit start command, and no healthcheck path. The repository now includes `railway.json` to make those settings deterministic on the next deployment.
+
+The Railway API token used for inspection was not authorized to read variable values or deployment logs. No variable values were requested or exported. The Railway browser dashboard was not available in the current browser session, so no dashboard mutation was performed. The existing project and Manus deployment remain untouched.

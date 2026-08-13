@@ -2098,3 +2098,12 @@
 - [x] Cloud Computer is available for persistent services and migration tooling; `/home/ubuntu/agents.md` checked and not present before system-level changes
 - [x] Existing project expects Node/Express/tRPC/Drizzle and can be deployed without a framework rewrite
 - [x] Existing Quant sidecar target is `http://35.237.81.82:8091`; verified as an expected target but not yet healthy
+
+## CI Migration Hardening — Aug 13, 2026
+
+- [x] Make third-party credential tests skip when the credential is not injected into CI
+- [x] Remove the committed SharpAPI fallback key from tests
+- [x] Require `RUN_EXTERNAL_INTEGRATION_TESTS=true` before live OpenAI, SharpAPI, Discord, or Telegram checks run
+- [x] Verify `pnpm check` passes
+- [x] Verify the full suite passes locally: 31 test files passed, 1 skipped; 217 tests passed, 8 skipped
+- [ ] Verify GitHub CI passes for the migration checkpoint so Railway no longer skips the deployment

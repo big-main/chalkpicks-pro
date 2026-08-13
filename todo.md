@@ -2074,18 +2074,18 @@
 
 ## Migration Preservation — chalkpicks.pro
 
-- [ ] Preserve `chalkpicks.pro` as the primary production domain during external-host migration; cut over DNS only after replacement smoke tests pass and keep Manus as rollback target
-- [ ] Export DNS, SSL, canonical URL, redirect, webhook, and environment configuration without exposing secret values
-- [ ] Verify `chalkpicks.pro` and `www.chalkpicks.pro` resolve correctly after cutover
+- [x] Preserve `chalkpicks.pro` as the primary production domain during external-host migration; cut over DNS only after replacement smoke tests pass and keep Manus as rollback target
+- [x] Export DNS, SSL, canonical URL, redirect, webhook, and environment configuration without exposing secret values
+- [x] Verify `chalkpicks.pro` and `www.chalkpicks.pro` resolve correctly after cutover
 
 ## Hosting Migration
 
-- [ ] Freeze Manus source state and create a complete portable backup bundle
-- [ ] Deploy the replacement host from the Manus-synced GitHub mirror
-- [ ] Restore database and validate auth, subscriptions, picks, ledger, odds, SSE, and scheduled automations
-- [ ] Confirm one-way Manus → GitHub → replacement-host update pathway
-- [ ] Run production smoke checks before DNS cutover
-- [ ] Document rollback procedure to Manus
+- [x] Freeze Manus source state and create a complete portable backup bundle
+- [x] Deploy the replacement host from the Manus-synced GitHub mirror
+- [x] Restore database and validate auth, subscriptions, picks, ledger, odds, SSE, and scheduled automations
+- [x] Confirm one-way Manus → GitHub → replacement-host update pathway
+- [x] Run production smoke checks before DNS cutover
+- [x] Document rollback procedure to Manus
 
 ## Migration History
 
@@ -2106,7 +2106,7 @@
 - [x] Require `RUN_EXTERNAL_INTEGRATION_TESTS=true` before live OpenAI, SharpAPI, Discord, or Telegram checks run
 - [x] Verify `pnpm check` passes
 - [x] Verify the full suite passes locally: 31 test files passed, 1 skipped; 217 tests passed, 8 skipped
-- [ ] Verify GitHub CI passes for the migration checkpoint so Railway no longer skips the deployment
+- [x] Verify GitHub CI passes for the migration checkpoint so Railway no longer skips the deployment
 
 - [x] Clear the stale Railway `npm run migrate` pre-deploy setting and disable sleep mode for the live SSE service in railway.json
 

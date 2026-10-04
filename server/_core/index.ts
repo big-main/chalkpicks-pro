@@ -14,6 +14,7 @@ import { registerRevenueCatWebhook } from "../revenuecat-webhook";
 import { startScheduler } from "../scheduler";
 import { initializeWebSocket } from "../websocket";
 import { startLiveDataStreaming } from "./liveDataStreamer";
+import { shouldRunBackgroundJobs } from "./backgroundJobPolicy";
 import { arbitrageRefreshHandler } from "../handlers/arbitrageRefreshHandler";
 import { dailySocialPostHandler } from "../handlers/dailySocialPostHandler";
 import { weeklyNewsletterHandler } from "../handlers/weeklyNewsletterHandler";
@@ -1088,10 +1089,15 @@ async function startServer() {
     console.warn(`Server running on http://localhost:${port}/`);
     // Initialize WebSocket for real-time updates
     initializeWebSocket(server);
-    // Start live data streaming
-    startLiveDataStreaming();
-    // Start daily picks scheduler
-    startScheduler();
+    if (shouldRunBackgroundJobs()) {
+      // Start live data streaming and daily picks scheduler in production only.
+      startLiveDataStreaming();
+      startScheduler();
+    } else {
+      console.warn(
+        "[BackgroundJobs] Disabled outside production (set ENABLE_BACKGROUND_JOBS=true to opt in)"
+      );
+    }
   });
 }
 

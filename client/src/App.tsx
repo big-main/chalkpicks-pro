@@ -2,7 +2,6 @@ import { lazy, Suspense } from "react";
 import { AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/PageTransition";
 import { useLocation } from "wouter";
-import { WebMCPTools } from "@/components/WebMCPTools";
 import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
 import { StructuredData } from "@/components/StructuredData";
 import {
@@ -20,12 +19,11 @@ import { usePageTracking } from "@/hooks/usePageTracking";
 
 import Home from "./pages/Home";
 import NotFound from "@/pages/NotFound";
-import { SocialProofTicker } from "@/components/SocialProofTicker";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { AiChatWidget } from "@/components/AiChatWidget";
 import { SwipeNavProvider } from "@/components/SwipeNavProvider";
 import { BackButton } from "@/components/BackButton";
-import ExitIntentPopup from "@/components/ExitIntentPopup";
+const DeferredGlobalWidgets = lazy(
+  () => import("@/components/DeferredGlobalWidgets")
+);
 
 const Picks = lazy(() => import("./pages/Picks"));
 const PickDetail = lazy(() => import("./pages/PickDetail"));
@@ -330,17 +328,15 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <WebMCPTools />
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster richColors position="top-right" />
           <SwipeNavProvider>
             <BackButton />
             <Router />
-            <SocialProofTicker />
-            <MobileBottomNav />
-            <AiChatWidget />
-            <ExitIntentPopup />
+            <Suspense fallback={null}>
+              <DeferredGlobalWidgets />
+            </Suspense>
           </SwipeNavProvider>
         </TooltipProvider>
       </ThemeProvider>

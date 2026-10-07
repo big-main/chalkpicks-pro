@@ -28,13 +28,17 @@ export function HeroBackground({ className = "" }: { className?: string }) {
     }
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     };
 
     const createParticles = () => {
-      const count = Math.min(60, Math.floor((canvas.offsetWidth * canvas.offsetHeight) / 15000));
+      const count = Math.min(
+        36,
+        Math.floor((canvas.offsetWidth * canvas.offsetHeight) / 22000)
+      );
       particles = [];
       for (let i = 0; i < count; i++) {
         particles.push({
@@ -85,7 +89,7 @@ export function HeroBackground({ className = "" }: { className?: string }) {
       const w = canvas.offsetWidth;
       const h = canvas.offsetHeight;
 
-      particles.forEach((p) => {
+      particles.forEach(p => {
         p.x += p.vx;
         p.y += p.vy;
 
@@ -129,18 +133,24 @@ export function HeroBackground({ className = "" }: { className?: string }) {
       animationId = requestAnimationFrame(animate);
     };
 
+    const stopWhenHidden = () => {
+      if (document.hidden) cancelAnimationFrame(animationId);
+      else animationId = requestAnimationFrame(animate);
+    };
+
     resize();
     createParticles();
     animationId = requestAnimationFrame(animate);
 
-    window.addEventListener("resize", () => {
-      resize();
-      createParticles();
-    });
+    window.addEventListener("resize", resize);
+    window.addEventListener("resize", createParticles);
+    document.addEventListener("visibilitychange", stopWhenHidden);
 
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", createParticles);
+      document.removeEventListener("visibilitychange", stopWhenHidden);
     };
   }, []);
 

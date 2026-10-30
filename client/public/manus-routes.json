@@ -1,0 +1,322 @@
+{
+  "routes": [
+    {
+      "path": "/"
+    },
+    {
+      "path": "/picks"
+    },
+    {
+      "path": "/picks/:id"
+    },
+    {
+      "path": "/verify"
+    },
+    {
+      "path": "/verify/:hash"
+    },
+    {
+      "path": "/stats"
+    },
+    {
+      "path": "/backtesting"
+    },
+    {
+      "path": "/dashboard"
+    },
+    {
+      "path": "/leaderboard"
+    },
+    {
+      "path": "/leaderboard/:username"
+    },
+    {
+      "path": "/pricing"
+    },
+    {
+      "path": "/payment/success"
+    },
+    {
+      "path": "/matchup-analysis"
+    },
+    {
+      "path": "/subscription-management"
+    },
+    {
+      "path": "/feedback-analytics"
+    },
+    {
+      "path": "/notifications"
+    },
+    {
+      "path": "/ev-finder"
+    },
+    {
+      "path": "/tools"
+    },
+    {
+      "path": "/signup"
+    },
+    {
+      "path": "/login"
+    },
+    {
+      "path": "/account-settings"
+    },
+    {
+      "path": "/subscription-dashboard"
+    },
+    {
+      "path": "/admin/promos"
+    },
+    {
+      "path": "/kalshi"
+    },
+    {
+      "path": "/clv-tracker"
+    },
+    {
+      "path": "/parlay-builder"
+    },
+    {
+      "path": "/parlay-flow"
+    },
+    {
+      "path": "/bankroll-tracker"
+    },
+    {
+      "path": "/refer"
+    },
+    {
+      "path": "/referral"
+    },
+    {
+      "path": "/picks/:id/share"
+    },
+    {
+      "path": "/affiliate"
+    },
+    {
+      "path": "/live-leaderboard"
+    },
+    {
+      "path": "/community"
+    },
+    {
+      "path": "/bet-builder"
+    },
+    {
+      "path": "/parlay-tracker"
+    },
+    {
+      "path": "/elite-plus"
+    },
+    {
+      "path": "/api-access"
+    },
+    {
+      "path": "/reseller"
+    },
+    {
+      "path": "/profile"
+    },
+    {
+      "path": "/onboarding"
+    },
+    {
+      "path": "/arbitrage"
+    },
+    {
+      "path": "/tools/low-hold"
+    },
+    {
+      "path": "/arbitrage-opportunities"
+    },
+    {
+      "path": "/sportsbooks"
+    },
+    {
+      "path": "/sponsors"
+    },
+    {
+      "path": "/admin"
+    },
+    {
+      "path": "/admin/stats"
+    },
+    {
+      "path": "/credits"
+    },
+    {
+      "path": "/prop-builder"
+    },
+    {
+      "path": "/line-movement"
+    },
+    {
+      "path": "/correlation-finder"
+    },
+    {
+      "path": "/odds-comparison"
+    },
+    {
+      "path": "/performance"
+    },
+    {
+      "path": "/bet-calculator"
+    },
+    {
+      "path": "/learn/:slug"
+    },
+    {
+      "path": "/story-generator"
+    },
+    {
+      "path": "/story-history"
+    },
+    {
+      "path": "/tools/odds-calculator"
+    },
+    {
+      "path": "/tools/roi-calculator"
+    },
+    {
+      "path": "/community-automation"
+    },
+    {
+      "path": "/daily-picks"
+    },
+    {
+      "path": "/tools/bankroll-manager"
+    },
+    {
+      "path": "/tools/parlay-calculator"
+    },
+    {
+      "path": "/admin/blog"
+    },
+    {
+      "path": "/partners"
+    },
+    {
+      "path": "/nfl-picks"
+    },
+    {
+      "path": "/nba-picks"
+    },
+    {
+      "path": "/mlb-picks"
+    },
+    {
+      "path": "/nhl-picks"
+    },
+    {
+      "path": "/ncaaf-picks"
+    },
+    {
+      "path": "/ncaab-picks"
+    },
+    {
+      "path": "/mma-picks"
+    },
+    {
+      "path": "/soccer-picks"
+    },
+    {
+      "path": "/odds/nfl"
+    },
+    {
+      "path": "/odds/nba"
+    },
+    {
+      "path": "/odds/mlb"
+    },
+    {
+      "path": "/odds/nhl"
+    },
+    {
+      "path": "/tools/devig-calculator"
+    },
+    {
+      "path": "/dfs-optimizer"
+    },
+    {
+      "path": "/elo-ratings"
+    },
+    {
+      "path": "/monte-carlo"
+    },
+    {
+      "path": "/sharp-money"
+    },
+    {
+      "path": "/consensus"
+    },
+    {
+      "path": "/free-pick"
+    },
+    {
+      "path": "/tools/kelly-calculator"
+    },
+    {
+      "path": "/tools/ev-calculator"
+    },
+    {
+      "path": "/strategy-builder"
+    },
+    {
+      "path": "/free-picks"
+    },
+    {
+      "path": "/ai-leaderboard"
+    },
+    {
+      "path": "/tools/free-bet-converter"
+    },
+    {
+      "path": "/tools/middles-finder"
+    },
+    {
+      "path": "/guides"
+    },
+    {
+      "path": "/public-betting"
+    },
+    {
+      "path": "/results"
+    },
+    {
+      "path": "/blog"
+    },
+    {
+      "path": "/blog/best-sports-betting-picks"
+    },
+    {
+      "path": "/blog/ai-sports-betting"
+    },
+    {
+      "path": "/blog/sports-betting-strategy"
+    },
+    {
+      "path": "/blog/:slug"
+    },
+    {
+      "path": "/terms"
+    },
+    {
+      "path": "/privacy"
+    },
+    {
+      "path": "/responsible-gambling"
+    },
+    {
+      "path": "/methodology"
+    },
+    {
+      "path": "/how-it-works"
+    },
+    {
+      "path": "/app-link-test"
+    }
+  ]
+}

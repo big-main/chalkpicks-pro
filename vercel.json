@@ -3,8 +3,17 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist/public",
+  "rewrites": [
+    {
+      "source": "/api/trpc/:path*",
+      "destination": "/api/trpc?procedure=:path*"
+    }
+  ],
   "functions": {
-    "api/[...path].js": {
+    "api/trpc.js": {
+      "maxDuration": 60
+    },
+    "api/stripe/webhook.js": {
       "maxDuration": 60
     },
     "api/health.ts": {

@@ -305,6 +305,48 @@ export const picksRouter = router({
       };
     }),
 
+  preview: publicProcedure.query(async () => {
+    const today = new Date().toISOString().split("T")[0];
+    const db = await getDb();
+    if (!db) {
+      const pick = generateMockPicks(today)[0];
+      return {
+        pick: pick
+          ? {
+              sportKey: pick.sportKey,
+              pickType: pick.pickType,
+              homeTeam: pick.homeTeam,
+              awayTeam: pick.awayTeam,
+              recommendation: pick.recommendation,
+              confidenceScore: pick.confidenceScore,
+              edgeScore: pick.edgeScore,
+            }
+          : null,
+      };
+    }
+
+    const [pick] = await db
+      .select({
+        sportKey: picks.sportKey,
+        pickType: picks.pickType,
+        homeTeam: picks.homeTeam,
+        awayTeam: picks.awayTeam,
+        recommendation: picks.recommendation,
+        confidenceScore: picks.confidenceScore,
+        edgeScore: picks.edgeScore,
+      })
+      .from(picks)
+      .where(and(eq(picks.isActive, true), eq(picks.pickDate, today)))
+      .orderBy(
+        desc(picks.isFeatured),
+        desc(picks.edgeScore),
+        desc(picks.confidenceScore)
+      )
+      .limit(1);
+
+    return { pick: pick ?? null };
+  }),
+
   byId: publicProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {

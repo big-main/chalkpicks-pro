@@ -32,7 +32,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 // Lazy-load Recharts to reduce TBT on initial page load
 const LazyRechartsChart = lazy(() => import("@/components/LazyRechartsChart"));
-import HorizontalScrollTicker from "@/components/HorizontalScrollTicker";
+import DeferredHomeTicker from "@/components/DeferredHomeTicker";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
@@ -84,11 +84,10 @@ function AnimatedCounter({
 }
 
 function LiveDashboardPreview() {
-  const { data: picksData } = trpc.picks.list.useQuery({
-    limit: 1,
-    tier: "all",
+  const { data: previewData } = trpc.picks.preview.useQuery(undefined, {
+    staleTime: 60_000,
   });
-  const pick = picksData?.picks?.[0];
+  const pick = previewData?.pick;
 
   return (
     <motion.div
@@ -458,7 +457,7 @@ export default function Home() {
 
       {/* ─── LIVE TICKER ─── */}
       <div className="border-y border-white/5">
-        <HorizontalScrollTicker />
+        <DeferredHomeTicker />
       </div>
 
       {/* ─── STATS BAR ─── */}

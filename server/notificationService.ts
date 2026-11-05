@@ -1,4 +1,3 @@
-import sgMail from "@sendgrid/mail";
 import twilio from "twilio";
 import { getDb } from "./db";
 import {
@@ -11,17 +10,13 @@ import {
 import { eq, and, desc } from "drizzle-orm";
 
 // ─── Initialize Clients ───────────────────────────────────────────────────────
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || "";
+const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const TWILIO_PHONE_FROM = process.env.TWILIO_PHONE_FROM || "";
 const APP_NAME = "ChalkPicks Pro";
 const APP_URL = process.env.APP_URL || "https://www.chalkpicks.pro";
 const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@chalkpicks.ml";
-
-if (SENDGRID_API_KEY) {
-  sgMail.setApiKey(SENDGRID_API_KEY);
-}
 
 let twilioClient: ReturnType<typeof twilio> | null = null;
 if (TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN) {
@@ -267,20 +262,30 @@ export const smsTemplates = {
 
 // ─── Core Send Functions ──────────────────────────────────────────────────────
 async function sendEmail(options: SendEmailOptions): Promise<boolean> {
-  if (!SENDGRID_API_KEY) {
+  if (!RESEND_API_KEY) {
     console.warn(
-      `[Notifications] Email skipped (no SendGrid key): ${options.subject} → ${options.to}`
+      `[Notifications] Email skipped (no Resend key): ${options.subject} → ${options.to}`
     );
     return false;
   }
   try {
-    await sgMail.send({
-      to: options.to,
-      from: { email: FROM_EMAIL, name: APP_NAME },
-      subject: options.subject,
-      html: options.html,
-      text: options.text || options.subject,
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        to: [options.to],
+        from: `${APP_NAME} <${FROM_EMAIL}>`,
+        subject: options.subject,
+        html: options.html,
+        text: options.text || options.subject,
+      }),
     });
+    if (!response.ok) {
+      throw new Error(`Resend returned HTTP ${response.status}`);
+    }
     console.warn(
       `[Notifications] Email sent: ${options.subject} → ${options.to}`
     );

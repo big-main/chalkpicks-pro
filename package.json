@@ -21,7 +21,8 @@
     "mobile:ios": "npx cap open ios",
     "mobile:android": "npx cap open android",
     "mobile:add": "npx cap add ios && npx cap add android",
-    "dev:check": "node scripts/dev-server-check.mjs"
+    "dev:check": "node scripts/dev-server-check.mjs",
+    "sync:github": "node scripts/sync-github-canonical.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.94.0",

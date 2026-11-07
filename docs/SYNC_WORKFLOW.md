@@ -15,7 +15,7 @@ Manus Workspace (edit here)
     │
     ├── webdev_save_checkpoint → auto-deploys to chalkpicks.pro
     │
-    └── git push github main --force → mirrors to GitHub
+    └── pnpm sync:github → verifies and mirrors the checkpoint to GitHub
 ```
 
 ## Rules
@@ -24,7 +24,9 @@ Manus Workspace (edit here)
 2. **Never create PRs on GitHub** — they will conflict with force-pushes from Manus
 3. **Never edit code on GitHub** (web editor, Codespaces, etc.) — those changes will be overwritten
 4. **Force-push is intentional** — Manus owns the history; GitHub is a mirror for backup/visibility
-5. **After every checkpoint**, push to GitHub: `git push github main --force`
+5. **After every checkpoint**, run `pnpm sync:github`. The command verifies the
+   configured mirror, refuses a dirty working tree, uses a lease-protected push,
+   and confirms that both branches end on the same SHA.
 
 ## Why Force-Push?
 
@@ -49,7 +51,9 @@ If GitHub somehow gets ahead of Manus (someone pushed directly):
 | GitHub         | Read-only mirror                      | github.com/big-main/chalkpicks-pro |
 | Railway        | DNS registrar for chalkpicks.pro only | railway.com (no code deployed)     |
 
-## Automated Sync (Future)
+## Automated Sync
 
-A post-checkpoint hook can automate the GitHub push. Until then, every Manus session
-must end with `git push github main --force` after the final checkpoint.
+Every Manus session must end with `pnpm sync:github` after the final checkpoint.
+Use `pnpm sync:github -- --check` to verify parity without pushing. Only use
+`pnpm sync:github -- --rewrite` after reviewing a divergent GitHub history and
+confirming that the Manus checkpoint remains the intended source of truth.

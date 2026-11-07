@@ -31,7 +31,7 @@ describe("performance guardrails", () => {
   it("bounds hero canvas work and cleans up visibility listeners", () => {
     const hero = readProjectFile("client/src/components/HeroBackground.tsx");
     expect(hero).toContain("Math.min(window.devicePixelRatio || 1, 1.5)");
-    expect(hero).toContain("Math.min(36");
+    expect(hero).toMatch(/Math\.min\(\s*36/);
     expect(hero).toContain('document.addEventListener("visibilitychange"');
     expect(hero).toContain('document.removeEventListener("visibilitychange"');
   });

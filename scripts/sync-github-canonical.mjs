@@ -12,10 +12,29 @@ const rewriteRequested = process.argv.includes("--rewrite");
 const checkOnly = process.argv.includes("--check");
 
 function git(args, options = {}) {
-  const output = execFileSync("git", args, {
+  const isPush = args[0] === "push";
+  const commandArgs = isPush
+    ? [
+        "-c",
+        'credential.helper=!f() { printf "username=x-access-token\\npassword=%s\\n" "$GH_TOKEN"; }; f',
+        ...args,
+      ]
+    : args;
+  const env = isPush
+    ? {
+        ...process.env,
+        GH_TOKEN: execFileSync("gh", ["auth", "token"], {
+          encoding: "utf8",
+          stdio: ["ignore", "pipe", "pipe"],
+        }).trim(),
+        GIT_TERMINAL_PROMPT: "0",
+      }
+    : undefined;
+  const output = execFileSync("git", commandArgs, {
     cwd: process.cwd(),
     encoding: "utf8",
     stdio: options.quiet ? ["ignore", "pipe", "pipe"] : "inherit",
+    ...(env ? { env } : {}),
   });
   return typeof output === "string" ? output.trim() : "";
 }

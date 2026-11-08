@@ -12,11 +12,12 @@ const rewriteRequested = process.argv.includes("--rewrite");
 const checkOnly = process.argv.includes("--check");
 
 function git(args, options = {}) {
-  return execFileSync("git", args, {
+  const output = execFileSync("git", args, {
     cwd: process.cwd(),
     encoding: "utf8",
     stdio: options.quiet ? ["ignore", "pipe", "pipe"] : "inherit",
-  }).trim();
+  });
+  return typeof output === "string" ? output.trim() : "";
 }
 
 function fail(message) {

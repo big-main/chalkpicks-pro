@@ -43,6 +43,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
+import { DISCORD_INVITE_URL } from "@/lib/links";
 
 // Logo URLs — gold crown + red splatter
 const LOGO_FULL =
@@ -920,7 +921,7 @@ export default function Navbar() {
             ) : (
               <>
                 <a
-                  href="https://discord.gg/rUrkBW9N"
+                  href="${DISCORD_INVITE_URL}"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hidden sm:flex"
@@ -1030,7 +1031,7 @@ export default function Navbar() {
                   <div className="pt-3 mt-2 border-t border-white/5 space-y-2">
                     <div className="flex gap-2">
                       <a
-                        href="https://discord.gg/rUrkBW9N"
+                        href="${DISCORD_INVITE_URL}"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1"

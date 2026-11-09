@@ -166,8 +166,31 @@ export const backtestRouter = router({
         const roi = graded > 0
           ? (totalProfit / (graded * input.stakePerBet)) * 100
           : 0;
+        let backtestId = Date.now();
+        try {
+          const [saved] = await db.insert(backtests).values({
+            userId: ctx.user.id,
+            name: input.name,
+            sportKey: input.sportKey,
+            pickType: input.pickType,
+            minConfidence: input.minConfidence,
+            dateFrom: input.dateFrom,
+            dateTo: input.dateTo,
+            totalPicks: settledPicks.length,
+            wins,
+            losses,
+            pushes,
+            winRate: String(graded > 0 ? Math.round((wins / graded) * 1000) / 10 : 0),
+            roi: String(Math.round(roi * 100) / 100),
+            totalProfit: String(Math.round(totalProfit * 100) / 100),
+            results: results.slice(-50),
+          });
+          backtestId = (saved as any).insertId ?? backtestId;
+        } catch (saveError) {
+          console.warn("[backtest] Historical ledger run could not be saved:", saveError);
+        }
         return {
-          id: Date.now(),
+          id: backtestId,
           name: input.name,
           sportKey: input.sportKey ?? "all",
           strategy: input.strategy,
@@ -214,7 +237,7 @@ export const backtestRouter = router({
       limit: z.number().int().min(1).max(500).optional().default(100),
       sportKey: z.string().optional(),
     }))
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       const db = await getDb();
       if (!db) return [];
       const conditions = [inArray(picks.result, ["win", "loss", "push"])];
@@ -228,7 +251,7 @@ export const backtestRouter = router({
   list: proProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) return [];
-    return db.select().from(backtests).where(eq(backtests.userId, ctx.user.id)).orderBy(backtests.createdAt);
+    return db.select().from(backtests).where(eq(backtests.userId, ctx.user.id)).orderBy(desc(backtests.createdAt));
   }),
 
   // Public demo backtest

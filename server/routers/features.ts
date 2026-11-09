@@ -93,8 +93,9 @@ function checkFeatureAccess(
   if (!hasSubscriptionAccess) {
     hasAccess = false;
     reason = `Requires ${allowedTiers[0]} subscription or higher`;
-  } else if (hasApplied && !isApproved) {
-    // Applied but not yet approved — restrict to free-tier features only
+  } else if (hasApplied && !isApproved && currentTier !== "yearly") {
+    // Annual Elite bypasses application-tier gating; admin is handled above.
+    // Lower tiers remain subject to the existing review workflow.
     const freeFeatures = ACCESS_TIER_FEATURES.free;
     hasAccess = (freeFeatures as readonly string[]).includes(feature);
     if (!hasAccess) reason = "Application pending review";

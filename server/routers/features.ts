@@ -99,8 +99,8 @@ function checkFeatureAccess(
     const freeFeatures = ACCESS_TIER_FEATURES.free;
     hasAccess = (freeFeatures as readonly string[]).includes(feature);
     if (!hasAccess) reason = "Application pending review";
-  } else if (isApproved && !hasAccessTierAccess) {
-    // Approved but access tier doesn't include this feature
+  } else if (isApproved && !hasAccessTierAccess && currentTier !== "yearly") {
+    // Approved but access tier doesn't include this feature. Annual Elite bypasses this gate.
     hasAccess = false;
     reason = `Requires ${getRequiredAccessTier(feature)} access tier or higher`;
   } else {

@@ -3,7 +3,6 @@ import { z } from "zod/v4";
 import { getDb } from "../db";
 import { backtests, picks } from "../../drizzle/schema";
 import { eq, and, gte, lte, inArray, desc } from "drizzle-orm";
-import { TRPCError } from "@trpc/server";
 
 export const backtestRouter = router({
   run: proProcedure
@@ -269,6 +268,8 @@ export const backtestRouter = router({
         roi: Math.round(roi * 100) / 100,
         totalProfit: Math.round((wins * 100 * 0.909 - losses * 100) * 100) / 100,
         bankrollHistory,
+        source: "illustrative_demo",
+        message: "Illustrative demo data only. These figures are not actual ChalkPicks results.",
         confidenceBreakdown: [
           { range: "60-70%", picks: 30, winRate: 62.5, roi: 5.2 },
           { range: "70-80%", picks: 45, winRate: 71.4, roi: 14.8 },

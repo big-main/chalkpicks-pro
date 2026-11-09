@@ -1,9 +1,10 @@
 import { Link } from "wouter";
+import { useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import {
   Calculator, DollarSign, Shield, Layers, Target, TrendingUp, Sigma, Zap,
-  Gift, Crosshair, ArrowRight
+  Gift, Crosshair, ArrowRight, Search, Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -81,6 +82,15 @@ const tools = [
 ];
 
 export default function ToolsHub() {
+  const [search, setSearch] = useState("");
+  const visibleTools = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return tools;
+    return tools.filter(tool =>
+      `${tool.label} ${tool.desc}`.toLowerCase().includes(query)
+    );
+  }, [search]);
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-16">
       <Navbar />
@@ -106,13 +116,28 @@ export default function ToolsHub() {
               Sports Betting <span className="text-[#39ff14]">Power Tools</span>
             </h1>
             <p className="text-lg text-white/60 max-w-2xl mx-auto">
-              Free calculators and tools for professional sports bettors. Calculate odds, ROI, Kelly Criterion, parlays, and more.
+              Find the right calculator fast. Compare odds, measure expected value, size bets, and manage risk.
             </p>
+            <div className="max-w-xl mx-auto mt-8 relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+              <input
+                type="search"
+                value={search}
+                onChange={event => setSearch(event.target.value)}
+                placeholder="Search calculators and tools..."
+                aria-label="Search tools"
+                className="w-full rounded-xl border border-white/10 bg-black/40 py-3 pl-11 pr-4 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-[#39ff14]/50 focus:ring-2 focus:ring-[#39ff14]/10"
+              />
+            </div>
+            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-white/40">
+              <Sparkles className="w-3.5 h-3.5 text-[#39ff14]" />
+              {visibleTools.length} tools available · Search by name or what you want to calculate
+            </div>
           </motion.div>
 
           {/* Tools Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {tools.map((tool, idx) => {
+            {visibleTools.map((tool, idx) => {
               const Icon = tool.icon;
               return (
                 <motion.div
@@ -162,6 +187,14 @@ export default function ToolsHub() {
               );
             })}
           </div>
+          {visibleTools.length === 0 && (
+            <div className="mt-8 rounded-xl border border-white/10 bg-white/[0.03] p-10 text-center">
+              <Search className="mx-auto mb-3 h-7 w-7 text-white/30" />
+              <p className="font-semibold text-white">No matching tools</p>
+              <p className="mt-1 text-sm text-white/45">Try another search term or clear your search.</p>
+              <button onClick={() => setSearch("")} className="mt-4 rounded-lg border border-[#39ff14]/30 px-4 py-2 text-sm text-[#39ff14] hover:bg-[#39ff14]/10">Clear search</button>
+            </div>
+          )}
         </div>
       </section>
 

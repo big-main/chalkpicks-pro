@@ -20,187 +20,6 @@ const SPORTS_LIST = [
   { key: "mma", name: "MMA/UFC", icon: "🥊" },
 ];
 
-// Seed realistic mock picks for demo (dev/fallback only — never invent in prod scheduler)
-function generateMockPicks(date: string) {
-  const mockPicks = [
-    {
-      sportKey: "nfl",
-      pickDate: date,
-      pickType: "spread" as const,
-      tier: "free" as const,
-      homeTeam: "Kansas City Chiefs",
-      awayTeam: "Las Vegas Raiders",
-      recommendation: "Chiefs -7.5",
-      odds: -110,
-      confidenceScore: 87,
-      edgeScore: "4.20",
-      aiAnalysis:
-        "The Chiefs have dominated this matchup historically, covering 8 of the last 10 meetings. Mahomes has a 94.3 passer rating at home this season, and the Raiders defense ranks 28th against the pass. With Hill and Kelce both healthy, expect a comfortable cover.",
-      keyFactors: [
-        "Home field advantage",
-        "Mahomes 94.3 home passer rating",
-        "Raiders 28th pass defense",
-        "8-2 ATS in last 10 meetings",
-      ],
-      isFeatured: true,
-      result: "win" as const,
-    },
-    {
-      sportKey: "nba",
-      pickDate: date,
-      pickType: "over_under" as const,
-      tier: "free" as const,
-      homeTeam: "Boston Celtics",
-      awayTeam: "Golden State Warriors",
-      recommendation: "Over 224.5",
-      odds: -115,
-      confidenceScore: 79,
-      edgeScore: "3.10",
-      aiAnalysis:
-        "Both teams rank top-5 in offensive efficiency. The Celtics-Warriors matchup historically goes over 68% of the time. Warriors pace of play (101.2 possessions/game) combined with Celtics 3-point volume creates high-scoring environments.",
-      keyFactors: [
-        "Both teams top-5 offense",
-        "68% historical over rate",
-        "Warriors fast pace",
-        "No key injuries",
-      ],
-      isFeatured: false,
-      result: "win" as const,
-    },
-    {
-      sportKey: "mlb",
-      pickDate: date,
-      pickType: "moneyline" as const,
-      tier: "premium" as const,
-      homeTeam: "Los Angeles Dodgers",
-      awayTeam: "San Francisco Giants",
-      recommendation: "Dodgers ML",
-      odds: -145,
-      confidenceScore: 82,
-      edgeScore: "5.80",
-      aiAnalysis:
-        "Shohei Ohtani's 2.31 ERA at home this season is elite. Giants bullpen ERA of 4.89 is exploitable in late innings. Dodgers have won 14 of last 18 home games against NL West rivals.",
-      keyFactors: [
-        "Ohtani 2.31 home ERA",
-        "Giants bullpen 4.89 ERA",
-        "14-4 last 18 home vs NL West",
-        "Dodgers lineup depth",
-      ],
-      isFeatured: true,
-      result: "pending" as const,
-    },
-    {
-      sportKey: "nhl",
-      pickDate: date,
-      pickType: "spread" as const,
-      tier: "premium" as const,
-      homeTeam: "Colorado Avalanche",
-      awayTeam: "Minnesota Wild",
-      recommendation: "Avalanche -1.5 (+120)",
-      odds: 120,
-      confidenceScore: 73,
-      edgeScore: "6.40",
-      aiAnalysis:
-        "MacKinnon leads the league in points-per-game at home. Avalanche power play is clicking at 28.4% efficiency. Wild have allowed 3+ goals in 7 of last 10 road games.",
-      keyFactors: [
-        "MacKinnon home dominance",
-        "28.4% power play efficiency",
-        "Wild 3+ goals allowed in 7/10 road games",
-      ],
-      isFeatured: false,
-      result: "pending" as const,
-    },
-    {
-      sportKey: "nba",
-      pickDate: date,
-      pickType: "player_prop" as const,
-      tier: "free" as const,
-      homeTeam: "Denver Nuggets",
-      awayTeam: "Phoenix Suns",
-      recommendation: "Nikola Jokic Over 27.5 Points",
-      odds: -110,
-      confidenceScore: 85,
-      edgeScore: "4.90",
-      aiAnalysis:
-        "Jokic averages 31.2 points in his last 8 games against Phoenix. Suns rank 25th in defending centers. With Murray questionable, Jokic's usage rate increases to 38.2%.",
-      keyFactors: [
-        "31.2 pts avg vs Phoenix",
-        "Suns 25th vs centers",
-        "Murray questionable",
-        "38.2% usage rate",
-      ],
-      isFeatured: true,
-      result: "win" as const,
-    },
-    {
-      sportKey: "nfl",
-      pickDate: date,
-      pickType: "over_under" as const,
-      tier: "free" as const,
-      homeTeam: "Philadelphia Eagles",
-      awayTeam: "Dallas Cowboys",
-      recommendation: "Under 47.5",
-      odds: -108,
-      confidenceScore: 76,
-      edgeScore: "2.80",
-      aiAnalysis:
-        "NFC East rivalry games historically trend under 58% of the time. Both defenses rank top-10 in DVOA. Cold weather forecast (28\u00b0F) historically suppresses scoring by 4-6 points.",
-      keyFactors: [
-        "58% historical under rate",
-        "Both defenses top-10 DVOA",
-        "28\u00b0F game-time temp",
-        "Rivalry game defensive intensity",
-      ],
-      isFeatured: false,
-      result: "loss" as const,
-    },
-    {
-      sportKey: "mlb",
-      pickDate: date,
-      pickType: "spread" as const,
-      tier: "premium" as const,
-      homeTeam: "New York Yankees",
-      awayTeam: "Boston Red Sox",
-      recommendation: "Yankees -1.5 (+105)",
-      odds: 105,
-      confidenceScore: 71,
-      edgeScore: "3.50",
-      aiAnalysis:
-        "Gerrit Cole's 1.98 ERA at home this season is dominant. Red Sox lineup ranks 22nd in OPS vs right-handed pitching. Yankees have covered -1.5 in 11 of Cole's last 15 home starts.",
-      keyFactors: [
-        "Cole 1.98 home ERA",
-        "Red Sox 22nd vs RHP",
-        "11-4 ATS in Cole home starts",
-      ],
-      isFeatured: false,
-      result: "pending" as const,
-    },
-    {
-      sportKey: "soccer",
-      pickDate: date,
-      pickType: "moneyline" as const,
-      tier: "premium" as const,
-      homeTeam: "Manchester City",
-      awayTeam: "Arsenal",
-      recommendation: "Man City ML",
-      odds: -130,
-      confidenceScore: 80,
-      edgeScore: "4.10",
-      aiAnalysis:
-        "Pep Guardiola's side has won 9 consecutive home Premier League matches. Haaland has scored in 6 of last 8 home appearances. Arsenal missing key midfielder through suspension.",
-      keyFactors: [
-        "9 consecutive home wins",
-        "Haaland 6 goals last 8 home",
-        "Arsenal key suspension",
-        "City home form 88% win rate",
-      ],
-      isFeatured: false,
-      result: "pending" as const,
-    },
-  ];
-  return mockPicks;
-}
-
 export const picksRouter = router({
   list: publicProcedure
     .input(
@@ -216,30 +35,15 @@ export const picksRouter = router({
     )
     .query(async ({ input }) => {
       const db = await getDb();
-      const today = input.date ?? new Date().toISOString().split("T")[0];
       const offset = (input.page - 1) * input.limit;
 
       if (!db) {
-        let mockData = generateMockPicks(today);
-        if (input.sportKey)
-          mockData = mockData.filter(p => p.sportKey === input.sportKey);
-        if (input.tier !== "all")
-          mockData = mockData.filter(p => p.tier === input.tier);
-        if (input.dateFrom)
-          mockData = mockData.filter(p => p.pickDate >= input.dateFrom!);
-        if (input.dateTo)
-          mockData = mockData.filter(p => p.pickDate <= input.dateTo!);
+        // Never publish seeded/demo matchups as live recommendations.
         return {
-          picks: mockData.slice(offset, offset + input.limit).map((p, i) => ({
-            ...p,
-            id: i + 1,
-            gameId: null,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isActive: true,
-          })),
-          total: mockData.length,
+          picks: [],
+          total: 0,
           sports: SPORTS_LIST,
+          message: "Live picks are temporarily unavailable while the picks database reconnects.",
         };
       }
 

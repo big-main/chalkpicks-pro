@@ -88,7 +88,7 @@ const SPORTSBOOKS = [
   { value: "Barstool", label: "Barstool" },
 ];
 
-type DatePreset = "today" | "yesterday" | "last7" | "last30" | "all";
+type DatePreset = "today" | "upcoming";
 
 interface FilterState {
   sport: string;
@@ -105,57 +105,49 @@ const DEFAULT_FILTERS: FilterState = {
   sport: "all",
   tier: "all",
   pickType: "all",
-  result: "all",
+  result: "pending",
   minConfidence: 0,
   minEdge: 0,
   sortBy: "confidence_desc",
   sportsbook: "all",
-  datePreset: "last7",
+  datePreset: "upcoming",
 };
 
 const DATE_PRESETS: { value: DatePreset; label: string; icon: string }[] = [
   { value: "today", label: "Today", icon: "📅" },
-  { value: "yesterday", label: "Yesterday", icon: "📆" },
-  { value: "last7", label: "Last 7 Days", icon: "📊" },
-  { value: "last30", label: "Last 30 Days", icon: "📈" },
-  { value: "all", label: "All Time", icon: "🗂️" },
+  { value: "upcoming", label: "Today + Next 14 Days", icon: "🗓️" },
 ];
 
 function getDateRange(preset: DatePreset): {
   dateFrom?: string;
   dateTo?: string;
 } {
+  // Use local calendar dates so the board follows the bettor's timezone.
   const today = new Date();
-  const fmt = (d: Date) => d.toISOString().split("T")[0];
-  switch (preset) {
-    case "today":
-      return { dateFrom: fmt(today), dateTo: fmt(today) };
-    case "yesterday": {
-      const y = new Date(today);
-      y.setDate(y.getDate() - 1);
-      return { dateFrom: fmt(y), dateTo: fmt(y) };
-    }
-    case "last7": {
-      const from = new Date(today);
-      from.setDate(from.getDate() - 7);
-      return { dateFrom: fmt(from) };
-    }
-    case "last30": {
-      const from = new Date(today);
-      from.setDate(from.getDate() - 30);
-      return { dateFrom: fmt(from) };
-    }
-    case "all":
-      return {};
-    default:
-      return {};
-  }
+  const fmt = (d: Date) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+  if (preset === "today") return { dateFrom: fmt(today), dateTo: fmt(today) };
+  const end = new Date(today);
+  end.setDate(end.getDate() + 14);
+  return { dateFrom: fmt(today), dateTo: fmt(end) };
 }
 
 function getStoredFilters(): FilterState {
   try {
     const stored = localStorage.getItem("chalkpicks_pick_filters");
-    if (stored) return { ...DEFAULT_FILTERS, ...JSON.parse(stored) };
+    if (stored) {
+      const parsed = JSON.parse(stored) as Partial<FilterState>;
+      return {
+        ...DEFAULT_FILTERS,
+        ...parsed,
+        datePreset: parsed.datePreset === "today" ? "today" : "upcoming",
+        result: "pending",
+      };
+    }
   } catch {}
   return DEFAULT_FILTERS;
 }
@@ -830,26 +822,13 @@ function FilterBar({
                 </Select>
               </div>
 
-              {/* Result */}
-              <div>
-                <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">
-                  Result
-                </Label>
-                <Select
-                  value={filters.result}
-                  onValueChange={v => updateFilter("result", v)}
-                >
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Results</SelectItem>
-                    <SelectItem value="win">Wins Only</SelectItem>
-                    <SelectItem value="loss">Losses Only</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="push">Pushes</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Settled results live in Backtesting; this board stays focused on actionable bets. */}
+              <div className="rounded-lg border border-emerald-400/20 bg-emerald-400/5 p-3">
+                <p className="text-xs font-semibold text-emerald-300">Active bets only</p>
+                <p className="mt-1 text-xs text-muted-foreground">Settled picks are kept in Backtesting for historical analysis.</p>
+                <Link href="/backtesting" className="mt-2 inline-flex text-xs font-semibold text-emerald-300 hover:text-emerald-200">
+                  Open Backtesting →
+                </Link>
               </div>
 
               {/* Min Confidence */}
@@ -1115,6 +1094,7 @@ export default function Picks() {
         : (filters.tier as "free" | "premium" | "all"),
     dateFrom: dateRange.dateFrom,
     dateTo: dateRange.dateTo,
+    limit: 100,
   });
   const { data: sports } = trpc.picks.sports.useQuery();
   const { data: sportCounts } = trpc.picks.sportCounts.useQuery(undefined, {
@@ -1147,8 +1127,10 @@ export default function Picks() {
     ];
   }, [sports, favorites]);
 
-  const isPremiumUser = !!(
-    user?.subscriptionTier && user.subscriptionTier !== "free"
+  const subscriptionIsCurrent = !user?.subscriptionExpiresAt ||
+    new Date(String(user.subscriptionExpiresAt)).getTime() > Date.now();
+  const isPremiumUser = user?.role === "admin" || !!(
+    user?.subscriptionTier && user.subscriptionTier !== "free" && subscriptionIsCurrent
   );
 
   // Count active filters (beyond defaults)
@@ -1157,12 +1139,11 @@ export default function Picks() {
     if (filters.sport !== "all") count++;
     if (filters.tier !== "all") count++;
     if (filters.pickType !== "all") count++;
-    if (filters.result !== "all") count++;
     if (filters.minConfidence > 0) count++;
     if (filters.minEdge > 0) count++;
     if (filters.sortBy !== "confidence_desc") count++;
     if (filters.sportsbook !== "all") count++;
-    if (filters.datePreset !== "last7") count++;
+    if (filters.datePreset !== "upcoming") count++;
     return count;
   }, [filters]);
 
@@ -1174,8 +1155,8 @@ export default function Picks() {
     // Apply client-side filters
     if (filters.pickType !== "all")
       picks = picks.filter((p: any) => p.pickType === filters.pickType);
-    if (filters.result !== "all")
-      picks = picks.filter((p: any) => p.result === filters.result);
+    // The Picks board is an action queue, not a results archive.
+    picks = picks.filter((p: any) => p.result === "pending" || !p.result);
     if (filters.minConfidence > 0)
       picks = picks.filter(
         (p: any) => (p.confidenceScore || 0) >= filters.minConfidence
@@ -1350,6 +1331,11 @@ export default function Picks() {
           </div>
           <div className="flex items-center gap-3">
             <PushNotificationButton isPremiumUser={isPremiumUser} />
+            <Link href="/backtesting">
+              <Button variant="outline" size="sm" className="h-9 gap-2">
+                <Calendar className="w-3.5 h-3.5" /> Backtesting
+              </Button>
+            </Link>
             <Button
               onClick={() => refetch()}
               variant="outline"
@@ -1476,7 +1462,7 @@ export default function Picks() {
           <Card className="bg-card border-border p-8 text-center">
             <Filter className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-muted-foreground text-sm mb-3">
-              No picks match your current filters.
+              {picksData?.message || "No active picks match your current filters."}
             </p>
             <Button
               variant="outline"

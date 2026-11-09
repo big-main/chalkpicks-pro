@@ -63,7 +63,7 @@ export const premiumProcedure = t.procedure.use(
       !ctx.user.subscriptionExpiresAt || ctx.user.subscriptionExpiresAt > new Date()
     );
 
-    if (!isActive) {
+    if (!isActive && ctx.user.role !== "admin") {
       throw new TRPCError({
         code: "FORBIDDEN",
         message: "Premium subscription required. Upgrade to access this feature.",
@@ -92,7 +92,7 @@ export const proProcedure = t.procedure.use(
       !ctx.user.subscriptionExpiresAt || ctx.user.subscriptionExpiresAt > new Date()
     );
 
-    if (!isProActive) {
+    if (!isProActive && ctx.user.role !== "admin") {
       throw new TRPCError({
         code: "FORBIDDEN",
         message: "Monthly Pro or Annual Elite subscription required. Upgrade to access this feature.",

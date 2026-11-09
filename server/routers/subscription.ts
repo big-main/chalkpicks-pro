@@ -188,6 +188,19 @@ export const subscriptionRouter = router({
     }),
 
   mySubscription: protectedProcedure.query(async ({ ctx }) => {
+    // Admins receive the same entitlement shape as Elite so every existing
+    // client-side subscription gate resolves consistently.
+    if (ctx.user.role === "admin") {
+      return {
+        tier: "yearly",
+        expiresAt: null,
+        isActive: true,
+        accountBalance: 0,
+        isAdmin: true,
+        unlimitedCredits: true,
+      };
+    }
+
     const db = await getDb();
     if (!db)
       return {
@@ -226,6 +239,8 @@ export const subscriptionRouter = router({
       expiresAt: u.subscriptionExpiresAt,
       isActive,
       accountBalance: parseFloat(u.accountBalance.toString()),
+      isAdmin: false,
+      unlimitedCredits: isActive && u.subscriptionTier === "yearly",
     };
   }),
 

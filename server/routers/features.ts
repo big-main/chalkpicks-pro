@@ -93,13 +93,14 @@ function checkFeatureAccess(
   if (!hasSubscriptionAccess) {
     hasAccess = false;
     reason = `Requires ${allowedTiers[0]} subscription or higher`;
-  } else if (hasApplied && !isApproved) {
-    // Applied but not yet approved — restrict to free-tier features only
+  } else if (hasApplied && !isApproved && currentTier !== "yearly") {
+    // Annual Elite bypasses application-tier gating; admin is handled above.
+    // Lower tiers remain subject to the existing review workflow.
     const freeFeatures = ACCESS_TIER_FEATURES.free;
     hasAccess = (freeFeatures as readonly string[]).includes(feature);
     if (!hasAccess) reason = "Application pending review";
-  } else if (isApproved && !hasAccessTierAccess) {
-    // Approved but access tier doesn't include this feature
+  } else if (isApproved && !hasAccessTierAccess && currentTier !== "yearly") {
+    // Approved but access tier doesn't include this feature. Annual Elite bypasses this gate.
     hasAccess = false;
     reason = `Requires ${getRequiredAccessTier(feature)} access tier or higher`;
   } else {
@@ -129,6 +130,15 @@ export const featureRouter = router({
       feature: z.enum(Object.keys(FEATURE_TIERS) as [FeatureName, ...FeatureName[]]),
     }))
     .query(async ({ input, ctx }) => {
+      if (ctx.user.role === "admin") {
+        return {
+          hasAccess: true,
+          tier: "admin",
+          requiredTier: FEATURE_TIERS[input.feature][0],
+          message: "Administrator access granted",
+        };
+      }
+
       const db = await getDb();
       if (!db) {
         return {
@@ -176,6 +186,18 @@ export const featureRouter = router({
 
   // Get feature access summary for current user
   getAccessSummary: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role === "admin") {
+      return {
+        tier: "admin",
+        accessTier: "professional",
+        applicationStatus: "approved",
+        isActive: true,
+        features: Object.fromEntries(
+          Object.keys(FEATURE_TIERS).map(feature => [feature, true])
+        ),
+      };
+    }
+
     const db = await getDb();
     if (!db) {
       return {

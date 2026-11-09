@@ -35,6 +35,8 @@ const PICK_TYPES = [
 export default function Backtesting() {
   const { isAuthenticated } = useAuth();
   const { data: subscription } = trpc.subscription.mySubscription.useQuery();
+  const { data: historicalPicks = [], isLoading: isHistoryLoading } =
+    trpc.backtest.history.useQuery({ limit: 100 });
   const [sport, setSport] = useState("nfl");
   const [pickType, setPickType] = useState("all");
   const [dateFrom, setDateFrom] = useState("2024-01-01");
@@ -75,8 +77,10 @@ export default function Backtesting() {
         strategy,
       });
       setResults(result);
-      const isQuantSidecar = (result as any).source === "quant_sidecar";
-      toast.success(isQuantSidecar ? "⚡ Quant sidecar backtest complete!" : "Backtest complete (simulation mode)");
+      const source = (result as any).source;
+      if (source === "quant_sidecar") toast.success("⚡ Quant sidecar backtest complete!");
+      else if (source === "historical_ledger") toast.success("Backtest complete using settled ChalkPicks records.");
+      else toast.info((result as any).message || "No settled picks matched those filters.");
     } catch (error: any) {
       toast.error(error?.message ?? "Backtest failed");
       console.error(error);
@@ -384,6 +388,66 @@ export default function Backtesting() {
               )}
             </div>
           </div>
+
+          <Card className="mt-8">
+            <CardHeader>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="w-5 h-5" /> Settled Picks Archive
+                  </CardTitle>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Historical wins, losses, and pushes live here—not on the active Picks board.
+                  </p>
+                </div>
+                <Badge variant="outline">{historicalPicks.length} shown</Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isHistoryLoading ? (
+                <p className="py-6 text-center text-sm text-muted-foreground">Loading settled picks…</p>
+              ) : historicalPicks.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  No settled picks have been recorded yet. Once picks are graded, they’ll appear here for review and backtesting.
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[720px] text-sm">
+                    <thead>
+                      <tr className="border-b border-border text-left text-muted-foreground">
+                        <th className="py-3 pr-4">Date</th>
+                        <th className="py-3 pr-4">Sport</th>
+                        <th className="py-3 pr-4">Matchup</th>
+                        <th className="py-3 pr-4">Pick</th>
+                        <th className="py-3 pr-4 text-right">Odds</th>
+                        <th className="py-3 pr-4 text-right">Confidence</th>
+                        <th className="py-3 text-right">Result</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historicalPicks.map((pick: any) => (
+                        <tr key={pick.id} className="border-b border-border/50">
+                          <td className="py-3 pr-4 text-muted-foreground">{pick.pickDate}</td>
+                          <td className="py-3 pr-4 uppercase">{pick.sportKey}</td>
+                          <td className="py-3 pr-4">{pick.awayTeam || "—"} @ {pick.homeTeam || "—"}</td>
+                          <td className="py-3 pr-4 font-medium">{pick.recommendation}</td>
+                          <td className="py-3 pr-4 text-right font-mono">{pick.odds == null ? "—" : pick.odds > 0 ? `+${pick.odds}` : pick.odds}</td>
+                          <td className="py-3 pr-4 text-right">{pick.confidenceScore}%</td>
+                          <td className="py-3 text-right">
+                            <Badge variant="outline" className={
+                              pick.result === "win" ? "border-emerald-500/40 text-emerald-400" :
+                              pick.result === "loss" ? "border-red-500/40 text-red-400" :
+                              "border-muted-foreground/30 text-muted-foreground"
+                            }>{String(pick.result).toUpperCase()}</Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

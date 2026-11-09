@@ -1,13 +1,133 @@
 import { Link } from "wouter";
+import { useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import {
   Calculator, DollarSign, Shield, Layers, Target, TrendingUp, Sigma, Zap,
-  Gift, Crosshair, ArrowRight
+  Gift, Crosshair, ArrowRight, Search, Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const tools = [
+  {
+    href: "/ev-finder",
+    label: "+EV Finder",
+    icon: TrendingUp,
+    desc: "Compare market prices and fair probabilities to identify positive expected value.",
+    color: "#39ff14",
+  },
+  {
+    href: "/arbitrage",
+    label: "Arbitrage Finder",
+    icon: Crosshair,
+    desc: "Compare opposing prices and account for fees, limits, and settlement risk.",
+    color: "#06b6d4",
+  },
+  {
+    href: "/kalshi",
+    label: "Prediction Markets",
+    icon: Layers,
+    desc: "Explore event contracts, implied probabilities, spreads, and market movement.",
+    color: "#a855f7",
+  },
+  {
+    href: "/clv-tracker",
+    label: "CLV Tracker",
+    icon: TrendingUp,
+    desc: "Measure whether your entry prices beat the closing market price.",
+    color: "#60a5fa",
+  },
+  {
+    href: "/line-movement",
+    label: "Line Movement",
+    icon: Zap,
+    desc: "Track price changes and identify meaningful market movement.",
+    color: "#f97316",
+  },
+  {
+    href: "/sharp-money",
+    label: "Sharp Money",
+    icon: Target,
+    desc: "Review market signals and price movement associated with respected action.",
+    color: "#ec4899",
+  },
+  {
+    href: "/prop-builder",
+    label: "Player Props",
+    icon: Crosshair,
+    desc: "Explore player prop markets, projections, and available pricing.",
+    color: "#22d3ee",
+  },
+  {
+    href: "/correlation-finder",
+    label: "Correlation Finder",
+    icon: Layers,
+    desc: "Review relationships between outcomes before building multi-leg bets.",
+    color: "#14b8a6",
+  },
+  {
+    href: "/parlay-builder",
+    label: "Parlay Builder",
+    icon: Layers,
+    desc: "Build parlays and evaluate combined prices and probability assumptions.",
+    color: "#facc15",
+  },
+  {
+    href: "/monte-carlo",
+    label: "Monte Carlo Simulator",
+    icon: Sigma,
+    desc: "Stress-test bankroll paths, variance, and drawdown scenarios.",
+    color: "#a78bfa",
+  },
+  {
+    href: "/strategy-builder",
+    label: "Strategy Builder",
+    icon: Target,
+    desc: "Define betting rules and evaluate them against historical outcomes.",
+    color: "#fb923c",
+  },
+  {
+    href: "/backtesting",
+    label: "Backtesting",
+    icon: TrendingUp,
+    desc: "Test strategies against settled ChalkPicks records and review historical results.",
+    color: "#34d399",
+  },
+  {
+    href: "/odds-comparison",
+    label: "Odds Comparison",
+    icon: Calculator,
+    desc: "Compare available prices across supported sportsbooks.",
+    color: "#38bdf8",
+  },
+  {
+    href: "/consensus",
+    label: "Market Consensus",
+    icon: Shield,
+    desc: "Compare market consensus with ChalkPicks model opinions.",
+    color: "#f472b6",
+  },
+  {
+    href: "/elo-ratings",
+    label: "Elo Ratings",
+    icon: Sigma,
+    desc: "Explore team strength ratings and model-implied win probabilities.",
+    color: "#84cc16",
+  },
+  {
+    href: "/dfs-optimizer",
+    label: "DFS Optimizer",
+    icon: Zap,
+    desc: "Evaluate daily fantasy roster combinations and projections.",
+    color: "#f59e0b",
+  },
+  {
+    href: "/bankroll-tracker",
+    label: "Bankroll Tracker",
+    icon: DollarSign,
+    desc: "Track deposits, stakes, returns, and bankroll performance.",
+    color: "#10b981",
+  },
   {
     href: "/tools/odds-calculator",
     label: "Odds Calculator",
@@ -81,6 +201,15 @@ const tools = [
 ];
 
 export default function ToolsHub() {
+  const [search, setSearch] = useState("");
+  const visibleTools = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return tools;
+    return tools.filter(tool =>
+      `${tool.label} ${tool.desc}`.toLowerCase().includes(query)
+    );
+  }, [search]);
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-16">
       <Navbar />
@@ -106,13 +235,28 @@ export default function ToolsHub() {
               Sports Betting <span className="text-[#39ff14]">Power Tools</span>
             </h1>
             <p className="text-lg text-white/60 max-w-2xl mx-auto">
-              Free calculators and tools for professional sports bettors. Calculate odds, ROI, Kelly Criterion, parlays, and more.
+              Find the right calculator fast. Compare odds, measure expected value, size bets, and manage risk.
             </p>
+            <div className="max-w-xl mx-auto mt-8 relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+              <input
+                type="search"
+                value={search}
+                onChange={event => setSearch(event.target.value)}
+                placeholder="Search calculators and tools..."
+                aria-label="Search tools"
+                className="w-full rounded-xl border border-white/10 bg-black/40 py-3 pl-11 pr-4 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-[#39ff14]/50 focus:ring-2 focus:ring-[#39ff14]/10"
+              />
+            </div>
+            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-white/40">
+              <Sparkles className="w-3.5 h-3.5 text-[#39ff14]" />
+              {visibleTools.length} tools available · Search by name or what you want to calculate
+            </div>
           </motion.div>
 
           {/* Tools Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {tools.map((tool, idx) => {
+            {visibleTools.map((tool, idx) => {
               const Icon = tool.icon;
               return (
                 <motion.div
@@ -162,6 +306,14 @@ export default function ToolsHub() {
               );
             })}
           </div>
+          {visibleTools.length === 0 && (
+            <div className="mt-8 rounded-xl border border-white/10 bg-white/[0.03] p-10 text-center">
+              <Search className="mx-auto mb-3 h-7 w-7 text-white/30" />
+              <p className="font-semibold text-white">No matching tools</p>
+              <p className="mt-1 text-sm text-white/45">Try another search term or clear your search.</p>
+              <button onClick={() => setSearch("")} className="mt-4 rounded-lg border border-[#39ff14]/30 px-4 py-2 text-sm text-[#39ff14] hover:bg-[#39ff14]/10">Clear search</button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -179,7 +331,7 @@ export default function ToolsHub() {
               Built for Professional Bettors
             </h2>
             <p className="text-white/60 max-w-2xl mx-auto">
-              All tools are free forever. No signup required. Calculate faster, bet smarter.
+              Use the calculators for free. Elite unlocks every live scanner, research tool, and advanced analytics feature without credit purchases.
             </p>
           </motion.div>
 
@@ -190,8 +342,8 @@ export default function ToolsHub() {
                 desc: "Real-time odds conversion, Kelly sizing, and EV calculations at your fingertips.",
               },
               {
-                title: "No Signup Required",
-                desc: "Use any tool without creating an account. All calculations are done locally in your browser.",
+                title: "Clear Access",
+                desc: "Free calculators stay accessible. Elite members get the complete live-data and analytics suite.",
               },
               {
                 title: "Mobile Friendly",

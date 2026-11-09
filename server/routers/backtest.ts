@@ -1,9 +1,8 @@
-import { protectedProcedure, publicProcedure, router, proProcedure } from "../_core/trpc";
+import { publicProcedure, router, proProcedure } from "../_core/trpc";
 import { z } from "zod/v4";
 import { getDb } from "../db";
 import { backtests, picks } from "../../drizzle/schema";
-import { eq, and, gte, lte } from "drizzle-orm";
-import { TRPCError } from "@trpc/server";
+import { eq, and, gte, lte, inArray, desc } from "drizzle-orm";
 
 export const backtestRouter = router({
   run: proProcedure
@@ -111,94 +110,148 @@ export const backtestRouter = router({
             return backtestData;
           }
         } catch (e) {
-          // Quant sidecar unavailable — fall through to simulation
+          // Quant sidecar unavailable — fall through to the settled-pick ledger
           console.warn("[backtest] Quant sidecar unavailable, falling back to simulation:", e);
         }
       }
 
-      // Generate mock backtest results for demo
-      const daysDiff = Math.ceil((new Date(input.dateTo).getTime() - new Date(input.dateFrom).getTime()) / (1000 * 60 * 60 * 24));
-      const totalPicks = Math.max(10, Math.floor(daysDiff * 1.8));
-      const winRate = 0.68 + (input.minConfidence / 100) * 0.15;
-      const wins = Math.round(totalPicks * winRate);
-      const losses = Math.round(totalPicks * (1 - winRate) * 0.95);
-      const pushes = totalPicks - wins - losses;
-      const roi = ((wins * 0.909 - losses) / totalPicks) * 100;
-      const totalProfit = (wins * input.stakePerBet * 0.909 - losses * input.stakePerBet);
+      // If the quant sidecar is unavailable, backtest the actual settled
+      // ChalkPicks ledger. Never fabricate wins/losses or performance stats.
+      if (db) {
+        const conditions = [
+          gte(picks.pickDate, input.dateFrom),
+          lte(picks.pickDate, input.dateTo),
+          inArray(picks.result, ["win", "loss", "push"]),
+        ];
+        if (input.sportKey) conditions.push(eq(picks.sportKey, input.sportKey));
+        if (input.pickType) conditions.push(eq(picks.pickType, input.pickType as any));
+        if (input.minConfidence > 0) conditions.push(gte(picks.confidenceScore, input.minConfidence));
 
-      // Build pick-by-pick results
-      const results = Array.from({ length: Math.min(totalPicks, 50) }, (_, i) => {
-        const date = new Date(input.dateFrom);
-        date.setDate(date.getDate() + Math.floor(i * (daysDiff / totalPicks)));
-        const isWin = Math.random() < winRate;
-        const isPush = !isWin && Math.random() < 0.05;
-        const result = isWin ? "win" : isPush ? "push" : "loss";
-        const profit = result === "win" ? input.stakePerBet * 0.909 : result === "loss" ? -input.stakePerBet : 0;
-        return {
-          date: date.toISOString().split("T")[0],
-          pick: `Pick ${i + 1}`,
-          confidence: input.minConfidence + Math.floor(Math.random() * (95 - input.minConfidence)),
-          result,
-          profit: Math.round(profit * 100) / 100,
-          bankroll: Math.round((input.initialBankroll + profit * (i + 1)) * 100) / 100,
-        };
-      });
+        const settledPicks = await db.select().from(picks).where(and(...conditions)).orderBy(picks.pickDate);
+        const startingBankroll = input.initialBankroll;
+        let bankroll = startingBankroll;
+        let wins = 0;
+        let losses = 0;
+        let pushes = 0;
+        let totalProfit = 0;
 
-      if (!db) {
+        const results = settledPicks.map((pick) => {
+          const odds = pick.odds ?? -110;
+          let profit = 0;
+          if (pick.result === "win") {
+            wins += 1;
+            profit = odds > 0
+              ? input.stakePerBet * (odds / 100)
+              : input.stakePerBet * (100 / Math.abs(odds));
+          } else if (pick.result === "loss") {
+            losses += 1;
+            profit = -input.stakePerBet;
+          } else {
+            pushes += 1;
+          }
+          bankroll += profit;
+          totalProfit += profit;
+          return {
+            date: pick.pickDate,
+            pick: pick.recommendation,
+            confidence: pick.confidenceScore,
+            result: pick.result,
+            odds,
+            profit: Math.round(profit * 100) / 100,
+            bankroll: Math.round(bankroll * 100) / 100,
+          };
+        });
+
+        const graded = wins + losses;
+        const roi = graded > 0
+          ? (totalProfit / (graded * input.stakePerBet)) * 100
+          : 0;
+        let backtestId = Date.now();
+        try {
+          const [saved] = await db.insert(backtests).values({
+            userId: ctx.user.id,
+            name: input.name,
+            sportKey: input.sportKey,
+            pickType: input.pickType,
+            minConfidence: input.minConfidence,
+            dateFrom: input.dateFrom,
+            dateTo: input.dateTo,
+            totalPicks: settledPicks.length,
+            wins,
+            losses,
+            pushes,
+            winRate: String(graded > 0 ? Math.round((wins / graded) * 1000) / 10 : 0),
+            roi: String(Math.round(roi * 100) / 100),
+            totalProfit: String(Math.round(totalProfit * 100) / 100),
+            results: results.slice(-50),
+          });
+          backtestId = (saved as any).insertId ?? backtestId;
+        } catch (saveError) {
+          console.warn("[backtest] Historical ledger run could not be saved:", saveError);
+        }
         return {
-          id: Date.now(),
+          id: backtestId,
           name: input.name,
           sportKey: input.sportKey ?? "all",
-          totalPicks,
+          strategy: input.strategy,
+          strategyApplied: input.strategy === "flat" ? "flat" : "flat_fallback_without_quant_sidecar",
+          totalPicks: settledPicks.length,
           wins,
           losses,
           pushes,
-          winRate: Math.round(winRate * 1000) / 10,
+          winRate: graded > 0 ? (wins / graded) * 100 : 0,
           roi: Math.round(roi * 100) / 100,
           totalProfit: Math.round(totalProfit * 100) / 100,
-          results,
+          startingBankroll,
+          endingBankroll: Math.round(bankroll * 100) / 100,
+          results: results.slice(-500),
           createdAt: new Date(),
+          source: settledPicks.length ? "historical_ledger" : "no_historical_data",
+          message: settledPicks.length
+            ? undefined
+            : "No settled picks matched this sport, market, confidence and date range. Try a wider date range.",
         };
       }
 
-      const [inserted] = await db.insert(backtests).values({
-        userId: ctx.user.id,
-        name: input.name,
-        sportKey: input.sportKey,
-        pickType: input.pickType,
-        minConfidence: input.minConfidence,
-        dateFrom: input.dateFrom,
-        dateTo: input.dateTo,
-        totalPicks,
-        wins,
-        losses,
-        pushes,
-        winRate: String(Math.round(winRate * 1000) / 10),
-        roi: String(Math.round(roi * 100) / 100),
-        totalProfit: String(Math.round(totalProfit * 100) / 100),
-        results,
-      });
-
       return {
-        id: (inserted as any).insertId,
+        id: Date.now(),
         name: input.name,
         sportKey: input.sportKey ?? "all",
-        totalPicks,
-        wins,
-        losses,
-        pushes,
-        winRate: Math.round(winRate * 1000) / 10,
-        roi: Math.round(roi * 100) / 100,
-        totalProfit: Math.round(totalProfit * 100) / 100,
-        results,
+        totalPicks: 0,
+        wins: 0,
+        losses: 0,
+        pushes: 0,
+        winRate: 0,
+        roi: 0,
+        totalProfit: 0,
+        results: [],
         createdAt: new Date(),
+        source: "no_historical_data",
+        message: "Historical records are unavailable because the database is not connected.",
       };
+
+    }),
+
+  history: proProcedure
+    .input(z.object({
+      limit: z.number().int().min(1).max(500).optional().default(100),
+      sportKey: z.string().optional(),
+    }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) return [];
+      const conditions = [inArray(picks.result, ["win", "loss", "push"])];
+      if (input.sportKey) conditions.push(eq(picks.sportKey, input.sportKey));
+      return db.select().from(picks)
+        .where(and(...conditions))
+        .orderBy(desc(picks.pickDate), desc(picks.createdAt))
+        .limit(input.limit);
     }),
 
   list: proProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) return [];
-    return db.select().from(backtests).where(eq(backtests.userId, ctx.user.id)).orderBy(backtests.createdAt);
+    return db.select().from(backtests).where(eq(backtests.userId, ctx.user.id)).orderBy(desc(backtests.createdAt));
   }),
 
   // Public demo backtest
@@ -238,6 +291,8 @@ export const backtestRouter = router({
         roi: Math.round(roi * 100) / 100,
         totalProfit: Math.round((wins * 100 * 0.909 - losses * 100) * 100) / 100,
         bankrollHistory,
+        source: "illustrative_demo",
+        message: "Illustrative demo data only. These figures are not actual ChalkPicks results.",
         confidenceBreakdown: [
           { range: "60-70%", picks: 30, winRate: 62.5, roi: 5.2 },
           { range: "70-80%", picks: 45, winRate: 71.4, roi: 14.8 },

@@ -35,7 +35,6 @@ export const picksRouter = router({
     )
     .query(async ({ input }) => {
       const db = await getDb();
-      const today = input.date ?? new Date().toISOString().split("T")[0];
       const offset = (input.page - 1) * input.limit;
 
       if (!db) {

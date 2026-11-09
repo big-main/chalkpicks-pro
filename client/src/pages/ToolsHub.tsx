@@ -10,6 +10,125 @@ import { Button } from "@/components/ui/button";
 
 const tools = [
   {
+    href: "/ev-finder",
+    label: "+EV Finder",
+    icon: TrendingUp,
+    desc: "Compare market prices and fair probabilities to identify positive expected value.",
+    color: "#39ff14",
+  },
+  {
+    href: "/arbitrage",
+    label: "Arbitrage Finder",
+    icon: Crosshair,
+    desc: "Compare opposing prices and account for fees, limits, and settlement risk.",
+    color: "#06b6d4",
+  },
+  {
+    href: "/kalshi",
+    label: "Prediction Markets",
+    icon: Layers,
+    desc: "Explore event contracts, implied probabilities, spreads, and market movement.",
+    color: "#a855f7",
+  },
+  {
+    href: "/clv-tracker",
+    label: "CLV Tracker",
+    icon: TrendingUp,
+    desc: "Measure whether your entry prices beat the closing market price.",
+    color: "#60a5fa",
+  },
+  {
+    href: "/line-movement",
+    label: "Line Movement",
+    icon: Zap,
+    desc: "Track price changes and identify meaningful market movement.",
+    color: "#f97316",
+  },
+  {
+    href: "/sharp-money",
+    label: "Sharp Money",
+    icon: Target,
+    desc: "Review market signals and price movement associated with respected action.",
+    color: "#ec4899",
+  },
+  {
+    href: "/prop-builder",
+    label: "Player Props",
+    icon: Crosshair,
+    desc: "Explore player prop markets, projections, and available pricing.",
+    color: "#22d3ee",
+  },
+  {
+    href: "/correlation-finder",
+    label: "Correlation Finder",
+    icon: Layers,
+    desc: "Review relationships between outcomes before building multi-leg bets.",
+    color: "#14b8a6",
+  },
+  {
+    href: "/parlay-builder",
+    label: "Parlay Builder",
+    icon: Layers,
+    desc: "Build parlays and evaluate combined prices and probability assumptions.",
+    color: "#facc15",
+  },
+  {
+    href: "/monte-carlo",
+    label: "Monte Carlo Simulator",
+    icon: Sigma,
+    desc: "Stress-test bankroll paths, variance, and drawdown scenarios.",
+    color: "#a78bfa",
+  },
+  {
+    href: "/strategy-builder",
+    label: "Strategy Builder",
+    icon: Target,
+    desc: "Define betting rules and evaluate them against historical outcomes.",
+    color: "#fb923c",
+  },
+  {
+    href: "/backtesting",
+    label: "Backtesting",
+    icon: TrendingUp,
+    desc: "Test strategies against settled ChalkPicks records and review historical results.",
+    color: "#34d399",
+  },
+  {
+    href: "/odds-comparison",
+    label: "Odds Comparison",
+    icon: Calculator,
+    desc: "Compare available prices across supported sportsbooks.",
+    color: "#38bdf8",
+  },
+  {
+    href: "/consensus",
+    label: "Market Consensus",
+    icon: Shield,
+    desc: "Compare market consensus with ChalkPicks model opinions.",
+    color: "#f472b6",
+  },
+  {
+    href: "/elo-ratings",
+    label: "Elo Ratings",
+    icon: Sigma,
+    desc: "Explore team strength ratings and model-implied win probabilities.",
+    color: "#84cc16",
+  },
+  {
+    href: "/dfs-optimizer",
+    label: "DFS Optimizer",
+    icon: Zap,
+    desc: "Evaluate daily fantasy roster combinations and projections.",
+    color: "#f59e0b",
+  },
+  {
+    href: "/bankroll-tracker",
+    label: "Bankroll Tracker",
+    icon: DollarSign,
+    desc: "Track deposits, stakes, returns, and bankroll performance.",
+    color: "#10b981",
+  },
+  {
     href: "/tools/odds-calculator",
     label: "Odds Calculator",
     icon: Calculator,
@@ -212,7 +331,7 @@ export default function ToolsHub() {
               Built for Professional Bettors
             </h2>
             <p className="text-white/60 max-w-2xl mx-auto">
-              All tools are free forever. No signup required. Calculate faster, bet smarter.
+              Use the calculators for free. Elite unlocks every live scanner, research tool, and advanced analytics feature without credit purchases.
             </p>
           </motion.div>
 
@@ -223,8 +342,8 @@ export default function ToolsHub() {
                 desc: "Real-time odds conversion, Kelly sizing, and EV calculations at your fingertips.",
               },
               {
-                title: "No Signup Required",
-                desc: "Use any tool without creating an account. All calculations are done locally in your browser.",
+                title: "Clear Access",
+                desc: "Free calculators stay accessible. Elite members get the complete live-data and analytics suite.",
               },
               {
                 title: "Mobile Friendly",

@@ -1128,7 +1128,7 @@ export default function Picks() {
   }, [sports, favorites]);
 
   const subscriptionIsCurrent = !user?.subscriptionExpiresAt ||
-    new Date(user.subscriptionExpiresAt).getTime() > Date.now();
+    new Date(String(user.subscriptionExpiresAt)).getTime() > Date.now();
   const isPremiumUser = user?.role === "admin" || !!(
     user?.subscriptionTier && user.subscriptionTier !== "free" && subscriptionIsCurrent
   );

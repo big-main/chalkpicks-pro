@@ -66,7 +66,8 @@ export const toolsRouter = router({
     }))
     .mutation(async ({ ctx, input }) => {
       // Deduct credits
-      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.propBuilder, ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly");
+      const unlimitedAccess = ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly";
+      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.propBuilder, unlimitedAccess);
       if (!deduction.success) {
         return { 
           error: "insufficient_credits", 
@@ -92,7 +93,7 @@ export const toolsRouter = router({
       return {
         error: null,
         balance: deduction.remaining,
-        creditUsed: CREDIT_COSTS.propBuilder,
+        creditUsed: unlimitedAccess ? 0 : CREDIT_COSTS.propBuilder,
         data: {
           props: filtered.slice(0, 20),
           topPicks: filtered.filter(p => p.ev > 3).slice(0, 5),
@@ -110,7 +111,8 @@ export const toolsRouter = router({
       sharpOnly: z.boolean().optional().default(false),
     }))
     .mutation(async ({ ctx, input }) => {
-      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.lineMovement, ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly");
+      const unlimitedAccess = ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly";
+      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.lineMovement, unlimitedAccess);
       if (!deduction.success) {
         return { 
           error: "insufficient_credits", 
@@ -131,7 +133,7 @@ export const toolsRouter = router({
       return {
         error: null,
         balance: deduction.remaining,
-        creditUsed: CREDIT_COSTS.lineMovement,
+        creditUsed: unlimitedAccess ? 0 : CREDIT_COSTS.lineMovement,
         data: {
           movements: filtered.slice(0, 30),
           sharpMoves: movements.filter(m => m.isSharpMove).length,
@@ -149,7 +151,8 @@ export const toolsRouter = router({
       minCorrelation: z.number().min(0).max(1).optional().default(0.3),
     }))
     .mutation(async ({ ctx, input }) => {
-      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.correlationFinder, ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly");
+      const unlimitedAccess = ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly";
+      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.correlationFinder, unlimitedAccess);
       if (!deduction.success) {
         return { 
           error: "insufficient_credits", 
@@ -167,7 +170,7 @@ export const toolsRouter = router({
       return {
         error: null,
         balance: deduction.remaining,
-        creditUsed: CREDIT_COSTS.correlationFinder,
+        creditUsed: unlimitedAccess ? 0 : CREDIT_COSTS.correlationFinder,
         data: {
           correlations: filtered,
           strongPairs: filtered.filter(c => c.recommendation === "strong_corr").length,
@@ -185,7 +188,8 @@ export const toolsRouter = router({
       minEV: z.number().optional().default(2),
     }))
     .mutation(async ({ ctx, input }) => {
-      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.evFinder, ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly");
+      const unlimitedAccess = ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly";
+      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.evFinder, unlimitedAccess);
       if (!deduction.success) {
         return { 
           error: "insufficient_credits", 
@@ -203,7 +207,7 @@ export const toolsRouter = router({
       return {
         error: null,
         balance: deduction.remaining,
-        creditUsed: CREDIT_COSTS.evFinder,
+        creditUsed: unlimitedAccess ? 0 : CREDIT_COSTS.evFinder,
         data: {
           bets: filtered.slice(0, 20).map(b => ({
             matchup: `${b.event.awayTeam} @ ${b.event.homeTeam}`,

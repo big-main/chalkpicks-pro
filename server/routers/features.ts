@@ -129,6 +129,15 @@ export const featureRouter = router({
       feature: z.enum(Object.keys(FEATURE_TIERS) as [FeatureName, ...FeatureName[]]),
     }))
     .query(async ({ input, ctx }) => {
+      if (ctx.user.role === "admin") {
+        return {
+          hasAccess: true,
+          tier: "admin",
+          requiredTier: FEATURE_TIERS[input.feature][0],
+          message: "Administrator access granted",
+        };
+      }
+
       const db = await getDb();
       if (!db) {
         return {
@@ -176,6 +185,18 @@ export const featureRouter = router({
 
   // Get feature access summary for current user
   getAccessSummary: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role === "admin") {
+      return {
+        tier: "admin",
+        accessTier: "professional",
+        applicationStatus: "approved",
+        isActive: true,
+        features: Object.fromEntries(
+          Object.keys(FEATURE_TIERS).map(feature => [feature, true])
+        ),
+      };
+    }
+
     const db = await getDb();
     if (!db) {
       return {

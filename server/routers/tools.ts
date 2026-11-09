@@ -31,7 +31,9 @@ const CREDIT_COSTS = {
 } as const;
 
 // Helper: deduct credits from user
-async function deductCredits(userId: number, amount: number): Promise<{ success: boolean; remaining: number }> {
+async function deductCredits(userId: number, amount: number, unlimited = false): Promise<{ success: boolean; remaining: number }> {
+  // Annual Elite and administrators never spend credits.
+  if (unlimited) return { success: true, remaining: 0 };
   const db = await getDb();
   if (!db) throw new Error("Database unavailable");
   const [user] = await db.select({ balance: users.accountBalance }).from(users).where(eq(users.id, userId));
@@ -64,7 +66,7 @@ export const toolsRouter = router({
     }))
     .mutation(async ({ ctx, input }) => {
       // Deduct credits
-      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.propBuilder);
+      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.propBuilder, ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly");
       if (!deduction.success) {
         return { 
           error: "insufficient_credits", 
@@ -108,7 +110,7 @@ export const toolsRouter = router({
       sharpOnly: z.boolean().optional().default(false),
     }))
     .mutation(async ({ ctx, input }) => {
-      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.lineMovement);
+      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.lineMovement, ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly");
       if (!deduction.success) {
         return { 
           error: "insufficient_credits", 
@@ -147,7 +149,7 @@ export const toolsRouter = router({
       minCorrelation: z.number().min(0).max(1).optional().default(0.3),
     }))
     .mutation(async ({ ctx, input }) => {
-      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.correlationFinder);
+      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.correlationFinder, ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly");
       if (!deduction.success) {
         return { 
           error: "insufficient_credits", 
@@ -183,7 +185,7 @@ export const toolsRouter = router({
       minEV: z.number().optional().default(2),
     }))
     .mutation(async ({ ctx, input }) => {
-      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.evFinder);
+      const deduction = await deductCredits(ctx.user.id as number, CREDIT_COSTS.evFinder, ctx.user.role === "admin" || ctx.user.subscriptionTier === "yearly");
       if (!deduction.success) {
         return { 
           error: "insufficient_credits", 

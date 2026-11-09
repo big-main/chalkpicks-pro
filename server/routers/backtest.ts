@@ -1,4 +1,4 @@
-import { protectedProcedure, publicProcedure, router, proProcedure } from "../_core/trpc";
+import { publicProcedure, router, proProcedure } from "../_core/trpc";
 import { z } from "zod/v4";
 import { getDb } from "../db";
 import { backtests, picks } from "../../drizzle/schema";

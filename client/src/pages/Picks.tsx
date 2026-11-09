@@ -1094,6 +1094,7 @@ export default function Picks() {
         : (filters.tier as "free" | "premium" | "all"),
     dateFrom: dateRange.dateFrom,
     dateTo: dateRange.dateTo,
+    limit: 100,
   });
   const { data: sports } = trpc.picks.sports.useQuery();
   const { data: sportCounts } = trpc.picks.sportCounts.useQuery(undefined, {
@@ -1461,7 +1462,7 @@ export default function Picks() {
           <Card className="bg-card border-border p-8 text-center">
             <Filter className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-muted-foreground text-sm mb-3">
-              No picks match your current filters.
+              {picksData?.message || "No active picks match your current filters."}
             </p>
             <Button
               variant="outline"

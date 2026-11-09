@@ -1,3 +1,4 @@
+import { DISCORD_INVITE_URL } from "@/lib/links";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -386,7 +387,7 @@ export default function Home() {
                   </button>
                 )}
                 <a
-                  href="https://discord.gg/rUrkBW9N"
+                  href="${DISCORD_INVITE_URL}"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

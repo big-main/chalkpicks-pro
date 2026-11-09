@@ -110,7 +110,7 @@ export const backtestRouter = router({
             return backtestData;
           }
         } catch (e) {
-          // Quant sidecar unavailable — fall through to simulation
+          // Quant sidecar unavailable — fall through to the settled-pick ledger
           console.warn("[backtest] Quant sidecar unavailable, falling back to simulation:", e);
         }
       }

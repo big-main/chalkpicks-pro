@@ -822,26 +822,13 @@ function FilterBar({
                 </Select>
               </div>
 
-              {/* Result */}
-              <div>
-                <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">
-                  Result
-                </Label>
-                <Select
-                  value={filters.result}
-                  onValueChange={v => updateFilter("result", v)}
-                >
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Results</SelectItem>
-                    <SelectItem value="win">Wins Only</SelectItem>
-                    <SelectItem value="loss">Losses Only</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="push">Pushes</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Settled results live in Backtesting; this board stays focused on actionable bets. */}
+              <div className="rounded-lg border border-emerald-400/20 bg-emerald-400/5 p-3">
+                <p className="text-xs font-semibold text-emerald-300">Active bets only</p>
+                <p className="mt-1 text-xs text-muted-foreground">Settled picks are kept in Backtesting for historical analysis.</p>
+                <Link href="/backtesting" className="mt-2 inline-flex text-xs font-semibold text-emerald-300 hover:text-emerald-200">
+                  Open Backtesting →
+                </Link>
               </div>
 
               {/* Min Confidence */}
@@ -1166,8 +1153,8 @@ export default function Picks() {
     // Apply client-side filters
     if (filters.pickType !== "all")
       picks = picks.filter((p: any) => p.pickType === filters.pickType);
-    if (filters.result !== "all")
-      picks = picks.filter((p: any) => p.result === filters.result);
+    // The Picks board is an action queue, not a results archive.
+    picks = picks.filter((p: any) => p.result === "pending" || !p.result);
     if (filters.minConfidence > 0)
       picks = picks.filter(
         (p: any) => (p.confidenceScore || 0) >= filters.minConfidence

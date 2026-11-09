@@ -1136,7 +1136,6 @@ export default function Picks() {
     if (filters.sport !== "all") count++;
     if (filters.tier !== "all") count++;
     if (filters.pickType !== "all") count++;
-    if (filters.result !== "all") count++;
     if (filters.minConfidence > 0) count++;
     if (filters.minEdge > 0) count++;
     if (filters.sortBy !== "confidence_desc") count++;
@@ -1329,6 +1328,11 @@ export default function Picks() {
           </div>
           <div className="flex items-center gap-3">
             <PushNotificationButton isPremiumUser={isPremiumUser} />
+            <Link href="/backtesting">
+              <Button variant="outline" size="sm" className="h-9 gap-2">
+                <Calendar className="w-3.5 h-3.5" /> Backtesting
+              </Button>
+            </Link>
             <Button
               onClick={() => refetch()}
               variant="outline"

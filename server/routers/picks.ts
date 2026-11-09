@@ -220,26 +220,12 @@ export const picksRouter = router({
       const offset = (input.page - 1) * input.limit;
 
       if (!db) {
-        let mockData = generateMockPicks(today);
-        if (input.sportKey)
-          mockData = mockData.filter(p => p.sportKey === input.sportKey);
-        if (input.tier !== "all")
-          mockData = mockData.filter(p => p.tier === input.tier);
-        if (input.dateFrom)
-          mockData = mockData.filter(p => p.pickDate >= input.dateFrom!);
-        if (input.dateTo)
-          mockData = mockData.filter(p => p.pickDate <= input.dateTo!);
+        // Never publish seeded/demo matchups as live recommendations.
         return {
-          picks: mockData.slice(offset, offset + input.limit).map((p, i) => ({
-            ...p,
-            id: i + 1,
-            gameId: null,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isActive: true,
-          })),
-          total: mockData.length,
+          picks: [],
+          total: 0,
           sports: SPORTS_LIST,
+          message: "Live picks are temporarily unavailable while the picks database reconnects.",
         };
       }
 

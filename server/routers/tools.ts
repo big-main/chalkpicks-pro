@@ -1,6 +1,6 @@
 /**
  * Tools Router — Prop Builder, Line Movement, Correlation Finder
- * All tools consume credits per use and return real/cached data.
+ * Paid tools return real/cached data; annual Elite and admins bypass credit charges.
  */
 import { z } from "zod/v4";
 import { router, protectedProcedure, publicProcedure, premiumProcedure } from "../_core/trpc";
@@ -21,7 +21,7 @@ import {
   type CorrelationPair,
 } from "../services/dataService";
 
-// Credit costs per tool use
+// Credit costs for non-Elite paid subscribers
 const CREDIT_COSTS = {
   propBuilder: 2,
   lineMovement: 1,

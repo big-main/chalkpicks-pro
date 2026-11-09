@@ -88,7 +88,7 @@ const SPORTSBOOKS = [
   { value: "Barstool", label: "Barstool" },
 ];
 
-type DatePreset = "today" | "yesterday" | "last7" | "last30" | "all";
+type DatePreset = "today" | "upcoming";
 
 interface FilterState {
   sport: string;
@@ -105,57 +105,49 @@ const DEFAULT_FILTERS: FilterState = {
   sport: "all",
   tier: "all",
   pickType: "all",
-  result: "all",
+  result: "pending",
   minConfidence: 0,
   minEdge: 0,
   sortBy: "confidence_desc",
   sportsbook: "all",
-  datePreset: "last7",
+  datePreset: "upcoming",
 };
 
 const DATE_PRESETS: { value: DatePreset; label: string; icon: string }[] = [
   { value: "today", label: "Today", icon: "📅" },
-  { value: "yesterday", label: "Yesterday", icon: "📆" },
-  { value: "last7", label: "Last 7 Days", icon: "📊" },
-  { value: "last30", label: "Last 30 Days", icon: "📈" },
-  { value: "all", label: "All Time", icon: "🗂️" },
+  { value: "upcoming", label: "Today + Next 14 Days", icon: "🗓️" },
 ];
 
 function getDateRange(preset: DatePreset): {
   dateFrom?: string;
   dateTo?: string;
 } {
+  // Use local calendar dates so the board follows the bettor's timezone.
   const today = new Date();
-  const fmt = (d: Date) => d.toISOString().split("T")[0];
-  switch (preset) {
-    case "today":
-      return { dateFrom: fmt(today), dateTo: fmt(today) };
-    case "yesterday": {
-      const y = new Date(today);
-      y.setDate(y.getDate() - 1);
-      return { dateFrom: fmt(y), dateTo: fmt(y) };
-    }
-    case "last7": {
-      const from = new Date(today);
-      from.setDate(from.getDate() - 7);
-      return { dateFrom: fmt(from) };
-    }
-    case "last30": {
-      const from = new Date(today);
-      from.setDate(from.getDate() - 30);
-      return { dateFrom: fmt(from) };
-    }
-    case "all":
-      return {};
-    default:
-      return {};
-  }
+  const fmt = (d: Date) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+  if (preset === "today") return { dateFrom: fmt(today), dateTo: fmt(today) };
+  const end = new Date(today);
+  end.setDate(end.getDate() + 14);
+  return { dateFrom: fmt(today), dateTo: fmt(end) };
 }
 
 function getStoredFilters(): FilterState {
   try {
     const stored = localStorage.getItem("chalkpicks_pick_filters");
-    if (stored) return { ...DEFAULT_FILTERS, ...JSON.parse(stored) };
+    if (stored) {
+      const parsed = JSON.parse(stored) as Partial<FilterState>;
+      return {
+        ...DEFAULT_FILTERS,
+        ...parsed,
+        datePreset: parsed.datePreset === "today" ? "today" : "upcoming",
+        result: "pending",
+      };
+    }
   } catch {}
   return DEFAULT_FILTERS;
 }
@@ -1147,7 +1139,7 @@ export default function Picks() {
     ];
   }, [sports, favorites]);
 
-  const isPremiumUser = !!(
+  const isPremiumUser = user?.role === "admin" || !!(
     user?.subscriptionTier && user.subscriptionTier !== "free"
   );
 
@@ -1162,7 +1154,7 @@ export default function Picks() {
     if (filters.minEdge > 0) count++;
     if (filters.sortBy !== "confidence_desc") count++;
     if (filters.sportsbook !== "all") count++;
-    if (filters.datePreset !== "last7") count++;
+    if (filters.datePreset !== "upcoming") count++;
     return count;
   }, [filters]);
 

@@ -1126,8 +1126,10 @@ export default function Picks() {
     ];
   }, [sports, favorites]);
 
+  const subscriptionIsCurrent = !user?.subscriptionExpiresAt ||
+    new Date(user.subscriptionExpiresAt).getTime() > Date.now();
   const isPremiumUser = user?.role === "admin" || !!(
-    user?.subscriptionTier && user.subscriptionTier !== "free"
+    user?.subscriptionTier && user.subscriptionTier !== "free" && subscriptionIsCurrent
   );
 
   // Count active filters (beyond defaults)

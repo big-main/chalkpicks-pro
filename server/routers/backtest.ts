@@ -2,7 +2,7 @@ import { protectedProcedure, publicProcedure, router, proProcedure } from "../_c
 import { z } from "zod/v4";
 import { getDb } from "../db";
 import { backtests, picks } from "../../drizzle/schema";
-import { eq, and, gte, lte } from "drizzle-orm";
+import { eq, and, gte, lte, inArray } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const backtestRouter = router({
@@ -116,7 +116,99 @@ export const backtestRouter = router({
         }
       }
 
-      // Generate mock backtest results for demo
+      // If the quant sidecar is unavailable, backtest the actual settled
+      // ChalkPicks ledger. Never fabricate wins/losses or performance stats.
+      if (db) {
+        const conditions = [
+          gte(picks.pickDate, input.dateFrom),
+          lte(picks.pickDate, input.dateTo),
+          inArray(picks.result, ["win", "loss", "push"]),
+        ];
+        if (input.sportKey) conditions.push(eq(picks.sportKey, input.sportKey));
+        if (input.pickType) conditions.push(eq(picks.pickType, input.pickType as any));
+        if (input.minConfidence > 0) conditions.push(gte(picks.confidenceScore, input.minConfidence));
+
+        const settledPicks = await db.select().from(picks).where(and(...conditions)).orderBy(picks.pickDate);
+        const startingBankroll = input.initialBankroll;
+        let bankroll = startingBankroll;
+        let wins = 0;
+        let losses = 0;
+        let pushes = 0;
+        let totalProfit = 0;
+
+        const results = settledPicks.map((pick) => {
+          const odds = pick.odds ?? -110;
+          let profit = 0;
+          if (pick.result === "win") {
+            wins += 1;
+            profit = odds > 0
+              ? input.stakePerBet * (odds / 100)
+              : input.stakePerBet * (100 / Math.abs(odds));
+          } else if (pick.result === "loss") {
+            losses += 1;
+            profit = -input.stakePerBet;
+          } else {
+            pushes += 1;
+          }
+          bankroll += profit;
+          totalProfit += profit;
+          return {
+            date: pick.pickDate,
+            pick: pick.recommendation,
+            confidence: pick.confidenceScore,
+            result: pick.result,
+            odds,
+            profit: Math.round(profit * 100) / 100,
+            bankroll: Math.round(bankroll * 100) / 100,
+          };
+        });
+
+        const graded = wins + losses;
+        const roi = graded > 0
+          ? (totalProfit / (graded * input.stakePerBet)) * 100
+          : 0;
+        return {
+          id: Date.now(),
+          name: input.name,
+          sportKey: input.sportKey ?? "all",
+          strategy: input.strategy,
+          strategyApplied: input.strategy === "flat" ? "flat" : "flat_fallback_without_quant_sidecar",
+          totalPicks: settledPicks.length,
+          wins,
+          losses,
+          pushes,
+          winRate: graded > 0 ? (wins / graded) * 100 : 0,
+          roi: Math.round(roi * 100) / 100,
+          totalProfit: Math.round(totalProfit * 100) / 100,
+          startingBankroll,
+          endingBankroll: Math.round(bankroll * 100) / 100,
+          results: results.slice(-500),
+          createdAt: new Date(),
+          source: settledPicks.length ? "historical_ledger" : "no_historical_data",
+          message: settledPicks.length
+            ? undefined
+            : "No settled picks matched this sport, market, confidence and date range. Try a wider date range.",
+        };
+      }
+
+      return {
+        id: Date.now(),
+        name: input.name,
+        sportKey: input.sportKey ?? "all",
+        totalPicks: 0,
+        wins: 0,
+        losses: 0,
+        pushes: 0,
+        winRate: 0,
+        roi: 0,
+        totalProfit: 0,
+        results: [],
+        createdAt: new Date(),
+        source: "no_historical_data",
+        message: "Historical records are unavailable because the database is not connected.",
+      };
+
+      // Legacy synthetic demo simulation intentionally removed from live backtesting.
       const daysDiff = Math.ceil((new Date(input.dateTo).getTime() - new Date(input.dateFrom).getTime()) / (1000 * 60 * 60 * 24));
       const totalPicks = Math.max(10, Math.floor(daysDiff * 1.8));
       const winRate = 0.68 + (input.minConfidence / 100) * 0.15;

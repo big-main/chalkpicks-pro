@@ -387,7 +387,7 @@ export default function Home() {
                   </button>
                 )}
                 <a
-                  href="${DISCORD_INVITE_URL}"
+                  href={DISCORD_INVITE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

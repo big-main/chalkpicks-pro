@@ -75,8 +75,10 @@ export default function Backtesting() {
         strategy,
       });
       setResults(result);
-      const isQuantSidecar = (result as any).source === "quant_sidecar";
-      toast.success(isQuantSidecar ? "⚡ Quant sidecar backtest complete!" : "Backtest complete (simulation mode)");
+      const source = (result as any).source;
+      if (source === "quant_sidecar") toast.success("⚡ Quant sidecar backtest complete!");
+      else if (source === "historical_ledger") toast.success("Backtest complete using settled ChalkPicks records.");
+      else toast.info((result as any).message || "No settled picks matched those filters.");
     } catch (error: any) {
       toast.error(error?.message ?? "Backtest failed");
       console.error(error);

@@ -2,7 +2,7 @@ import { protectedProcedure, publicProcedure, router, proProcedure } from "../_c
 import { z } from "zod/v4";
 import { getDb } from "../db";
 import { backtests, picks } from "../../drizzle/schema";
-import { eq, and, gte, lte, inArray } from "drizzle-orm";
+import { eq, and, gte, lte, inArray, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const backtestRouter = router({
@@ -208,6 +208,22 @@ export const backtestRouter = router({
         message: "Historical records are unavailable because the database is not connected.",
       };
 
+    }),
+
+  history: proProcedure
+    .input(z.object({
+      limit: z.number().int().min(1).max(500).optional().default(100),
+      sportKey: z.string().optional(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) return [];
+      const conditions = [inArray(picks.result, ["win", "loss", "push"])];
+      if (input.sportKey) conditions.push(eq(picks.sportKey, input.sportKey));
+      return db.select().from(picks)
+        .where(and(...conditions))
+        .orderBy(desc(picks.pickDate), desc(picks.createdAt))
+        .limit(input.limit);
     }),
 
   list: proProcedure.query(async ({ ctx }) => {

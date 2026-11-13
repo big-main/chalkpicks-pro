@@ -131,8 +131,8 @@ export default function DailyPicks() {
 
         <div className="space-y-10">
           {data?.days.map(day => {
-            const wins = day.picks.filter(p => p.result === "win").length;
-            const losses = day.picks.filter(p => p.result === "loss").length;
+            const wins = day.picks.filter((p: any) => p.result === "win").length;
+            const losses = day.picks.filter((p: any) => p.result === "loss").length;
             return (
               <section key={day.date}>
                 <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
@@ -160,7 +160,7 @@ export default function DailyPicks() {
                   )}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {day.picks.map(pick => {
+                  {day.picks.map((pick: any) => {
                     const rs =
                       RESULT_STYLES[pick.result ?? "pending"] ??
                       RESULT_STYLES.pending;

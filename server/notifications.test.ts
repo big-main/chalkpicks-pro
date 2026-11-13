@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
@@ -101,6 +101,10 @@ function createCaller() {
 describe("Notification System", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   // ── In-App Notifications ──────────────────────────────────────────────────
@@ -245,8 +249,8 @@ describe("Notification System", () => {
 
     it("accepts correct scheduler secret", async () => {
       const caller = createCaller();
-      const secret =
-        process.env.SCHEDULER_SECRET || "chalkpicks-scheduler-2024";
+      const secret = "chalkpicks-ci-scheduler-secret-with-32-plus-chars";
+      vi.stubEnv("SCHEDULER_SECRET", secret);
       const result = await caller.notifications.scheduledDailyPicks({ secret });
       expect(result.success).toBe(true);
     });

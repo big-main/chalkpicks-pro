@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
-import type { Server } from "node:http";
+import { createServer, type Server } from "node:http";
 
 const config = JSON.parse(
   readFileSync(new URL("../vercel.json", import.meta.url), "utf8")
@@ -13,8 +13,9 @@ beforeAll(async () => {
   vi.stubEnv("JWT_SECRET", "test-only-vercel-session-secret-32-chars");
   const { createApp } = await import("./_core/index");
   const initialized = await createApp({ serverless: true });
-  server = initialized.server;
-  expect(server.listening).toBe(false);
+  expect(initialized.server.listening).toBe(false);
+  const { default: handler } = await import("../api/index");
+  server = createServer(handler);
   await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
   const address = server.address();
   if (!address || typeof address === "string")

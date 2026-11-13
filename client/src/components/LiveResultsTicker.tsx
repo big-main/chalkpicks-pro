@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import type { RecentSettledPick } from "@/lib/pick-types";
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Minus, CheckCircle2, XCircle } from "lucide-react";
 import { Link } from "wouter";
@@ -11,8 +12,8 @@ export function LiveResultsTicker() {
   if (!data?.picks || data.picks.length === 0) return null;
 
   const results = data.picks;
-  const wins = results.filter((p: any) => p.result === "win").length;
-  const losses = results.filter((p: any) => p.result === "loss").length;
+  const wins = results.filter((p: RecentSettledPick) => p.result === "win").length;
+  const losses = results.filter((p: RecentSettledPick) => p.result === "loss").length;
 
   return (
     <section className="py-3 border-b border-white/5 bg-[rgba(57,255,20,0.02)] overflow-hidden">

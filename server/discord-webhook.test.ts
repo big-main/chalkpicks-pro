@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from "vitest";
 
-describe("Discord Webhook Configuration", () => {
+describe.skipIf(!process.env.DISCORD_WEBHOOK_URL)("Discord Webhook Configuration", () => {
   it("DISCORD_WEBHOOK_URL should be set", () => {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     expect(webhookUrl, "DISCORD_WEBHOOK_URL must be set").toBeTruthy();

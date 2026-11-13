@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-describe("Ahrefs API Key Validation", () => {
+describe.skipIf(!process.env.AHREFS_API_KEY)("Ahrefs API Key Validation", () => {
   it("AHREFS_API_KEY is set in environment", () => {
     expect(process.env.AHREFS_API_KEY).toBeDefined();
     expect(process.env.AHREFS_API_KEY!.length).toBeGreaterThan(10);

@@ -304,8 +304,8 @@ export default function HorizontalScrollTicker() {
       combined.push({ type: "article", data: articles[ai++] });
   }
 
-  const wins = picks.filter(p => p.result === "win").length;
-  const losses = picks.filter(p => p.result === "loss").length;
+  const wins = picks.filter((p: any) => p.result === "win").length;
+  const losses = picks.filter((p: any) => p.result === "loss").length;
   const total = wins + losses;
   const winPct = total > 0 ? Math.round((wins / total) * 100) : null;
   const isLoading = combined.length === 0;

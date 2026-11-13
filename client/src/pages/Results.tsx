@@ -326,7 +326,7 @@ export default function Results() {
               const losses = dayPicks.filter((p: any) => p.result === "loss").length;
               const pushes = dayPicks.filter((p: any) => p.result === "push").length;
               const pending = dayPicks.filter(
-                (p: any) =>                 p => p.result === "pending"
+                (p: any) => p.result === "pending"
               ).length;
               const isExpanded = expandedDays.has(date);
 

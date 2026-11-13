@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import type { RecentSettledPick } from "@/lib/pick-types";
 import { formatSportLabel } from "@/lib/badges";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
@@ -437,7 +438,7 @@ export default function Performance() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(recent?.picks ?? []).map((pick: any, i: number) => (
+                  {(recent?.picks ?? []).map((pick: RecentSettledPick, i: number) => (
                     <tr
                       key={pick.id ?? i}
                       className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]"

@@ -77,7 +77,7 @@ export const ogImageRouter = router({
           
           <!-- CTA -->
           <text x="60" y="580" font-size="20" fill="#9ca3af" font-family="Arial">
-            View full analysis at chalkpicks.pro
+            View full analysis at chalkpicks.live
           </text>
         </svg>
       `;

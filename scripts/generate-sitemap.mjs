@@ -11,7 +11,7 @@ import { build } from "esbuild";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
-const SITE_URL = "https://chalkpicks.pro";
+const SITE_URL = "https://chalkpicks.live";
 
 async function loadTsModule(entry) {
   const outdir = path.join(ROOT, "dist");

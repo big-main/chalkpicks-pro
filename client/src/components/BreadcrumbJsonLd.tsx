@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { buildBreadcrumbListJsonLd } from "@shared/jsonLdBuilders";
 
-const BASE_URL = "https://chalkpicks.pro";
+const BASE_URL = "https://chalkpicks.live";
 
 /**
  * Maps each route path to its human-readable breadcrumb trail.

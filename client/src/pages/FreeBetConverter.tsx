@@ -111,11 +111,11 @@ export default function FreeBetConverter() {
       />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.pro" },
-          { name: "Tools", url: "https://chalkpicks.pro/tools" },
+          { name: "Home", url: "https://chalkpicks.live" },
+          { name: "Tools", url: "https://chalkpicks.live/tools" },
           {
             name: "Free Bet Converter",
-            url: "https://chalkpicks.pro/tools/free-bet-converter",
+            url: "https://chalkpicks.live/tools/free-bet-converter",
           },
         ]}
       />

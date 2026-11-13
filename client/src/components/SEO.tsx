@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 
-const SITE_URL = "https://chalkpicks.pro";
+const SITE_URL = "https://chalkpicks.live";
 const DEFAULT_TITLE =
   "AI Betting Analytics & +EV Finder | ChalkPicks Sports Picks";
 const DEFAULT_DESCRIPTION =

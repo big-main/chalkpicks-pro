@@ -105,7 +105,7 @@ export const pageSpeedRouter = router({
   audit: adminProcedure
     .input(
       z.object({
-        url: z.string().url().default("https://www.chalkpicks.pro"),
+        url: z.string().url().default("https://www.chalkpicks.live"),
         strategy: z.enum(["mobile", "desktop"]).default("mobile"),
       })
     )
@@ -120,7 +120,7 @@ export const pageSpeedRouter = router({
   auditBoth: adminProcedure
     .input(
       z.object({
-        url: z.string().url().default("https://www.chalkpicks.pro"),
+        url: z.string().url().default("https://www.chalkpicks.live"),
       })
     )
     .mutation(async ({ input }) => {

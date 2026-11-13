@@ -8,6 +8,7 @@ import {
   users,
 } from "../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
+import { SITE_URL } from "../shared/seo-routes";
 
 // ─── Initialize Clients ───────────────────────────────────────────────────────
 const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
@@ -15,7 +16,7 @@ const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const TWILIO_PHONE_FROM = process.env.TWILIO_PHONE_FROM || "";
 const APP_NAME = "ChalkPicks Pro";
-const APP_URL = process.env.APP_URL || "https://www.chalkpicks.pro";
+const APP_URL = SITE_URL;
 const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@chalkpicks.ml";
 
 let twilioClient: ReturnType<typeof twilio> | null = null;

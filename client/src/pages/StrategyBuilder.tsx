@@ -170,10 +170,10 @@ export default function StrategyBuilder() {
       <PageMeta pathname="/strategy-builder" />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Home", url: "https://chalkpicks.live" },
           {
             name: "Strategy Builder",
-            url: "https://chalkpicks.pro/strategy-builder",
+            url: "https://chalkpicks.live/strategy-builder",
           },
         ]}
       />

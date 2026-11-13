@@ -58,7 +58,7 @@ export async function sendPushToUser(
     body: payload.body,
     icon: payload.icon ?? "/icon-192.png",
     badge: payload.badge ?? "/icon-72.png",
-    url: payload.url ?? "https://chalkpicks.pro",
+    url: payload.url ?? "https://chalkpicks.live",
     tag: payload.tag ?? "chalkpicks",
   });
 
@@ -136,7 +136,7 @@ export async function broadcastPush(
     body: payload.body,
     icon: payload.icon ?? "/icon-192.png",
     badge: payload.badge ?? "/icon-72.png",
-    url: payload.url ?? "https://chalkpicks.pro",
+    url: payload.url ?? "https://chalkpicks.live",
     tag: payload.tag ?? "chalkpicks",
   });
 
@@ -201,7 +201,7 @@ export async function sendEVAlert(pick: {
   await broadcastPush({
     title: `🔥 New +EV Pick: ${pick.sport.toUpperCase()}`,
     body: `${pick.team} ${pick.betType} (${oddsStr}) — EV: ${evStr} | Confidence: ${pick.confidence}%`,
-    url: "https://chalkpicks.pro/ev-finder",
+    url: "https://chalkpicks.live/ev-finder",
     tag: "ev-alert",
     icon: "/icon-192.png",
   });
@@ -217,7 +217,7 @@ export async function sendDailyPicksPush(
   await broadcastPush({
     title: `📊 ${pickCount} New ChalkPicks Today`,
     body: `Top picks for ${topSport} and more are ready. Check your dashboard.`,
-    url: "https://chalkpicks.pro/picks",
+    url: "https://chalkpicks.live/picks",
     tag: "daily-picks",
     icon: "/icon-192.png",
   });

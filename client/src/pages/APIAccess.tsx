@@ -278,7 +278,7 @@ function APIAccessInner() {
             <code className="text-primary">X-API-Key</code> header:
           </p>
           <pre className="bg-muted/30 rounded-lg p-4 text-sm font-mono text-foreground overflow-x-auto">
-            {`curl https://chalkpicks.pro/api/v1/picks \\
+            {`curl https://chalkpicks.live/api/v1/picks \\
   -H "X-API-Key: cp_your_key_here" \\
   -H "Content-Type: application/json"`}
           </pre>

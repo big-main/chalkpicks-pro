@@ -23,7 +23,7 @@ interface GeneratedPost {
 }
 
 async function generateSocialContent(pick: any): Promise<GeneratedPost[]> {
-  const prompt = `You are a sports betting social media manager for ChalkPicks Pro (chalkpicks.pro).
+  const prompt = `You are a sports betting social media manager for ChalkPicks Pro (chalkpicks.live).
 Generate engaging social media posts for today's top pick:
 
 Sport: ${pick.sport}
@@ -39,7 +39,7 @@ Generate 3 posts (one for each platform):
 
 Each post should:
 - Highlight the pick and confidence score
-- Include a subtle CTA to chalkpicks.pro
+- Include a subtle CTA to chalkpicks.live
 - Feel authentic, not spammy
 - Be under 280 chars for Twitter
 

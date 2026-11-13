@@ -148,7 +148,7 @@ export async function twitterPickResultHandler(req: Request, res: Response) {
       const pickText =
         pick.recommendation || `${pick.homeTeam} vs ${pick.awayTeam}`;
 
-      const tweet = `${resultEmoji} ${pick.result.toUpperCase()} — ${pickText}${oddsText}\n\n📊 Season: ${wins}-${losses} (${winRate}% win rate)\n\n🔥 Get daily AI picks at chalkpicks.pro`;
+      const tweet = `${resultEmoji} ${pick.result.toUpperCase()} — ${pickText}${oddsText}\n\n📊 Season: ${wins}-${losses} (${winRate}% win rate)\n\n🔥 Get daily AI picks at chalkpicks.live`;
 
       const postResult = await postTweet(tweet);
 

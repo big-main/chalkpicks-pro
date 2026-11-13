@@ -143,11 +143,11 @@ export default function MiddlesFinder() {
       />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.pro" },
-          { name: "Tools", url: "https://chalkpicks.pro/tools" },
+          { name: "Home", url: "https://chalkpicks.live" },
+          { name: "Tools", url: "https://chalkpicks.live/tools" },
           {
             name: "Middles Finder",
-            url: "https://chalkpicks.pro/tools/middles-finder",
+            url: "https://chalkpicks.live/tools/middles-finder",
           },
         ]}
       />

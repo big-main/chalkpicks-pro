@@ -1,54 +1,44 @@
-# ChalkPicks Pro — Canonical Sync and Deployment
+# ChalkPicks Pro — Manus Hosting and Canonical Sync
 
-## Source of truth
+## Current direction
 
-Edit the Manus workspace at `/home/ubuntu/chalkpicks-pro`. Save a tested Manus checkpoint before mirroring it to `big-main/chalkpicks-pro`. The active `.pro` production domains currently serve the Git-linked Vercel project `chalkpicks-pro-free`, not the Manus preview.
+The owner selected `https://chalkpicks.live` as the sole intended public website on 2026-11-13. Manus hosts the full Express/React application; GitHub is a code mirror. The `.pro` website is retired. Do not resume Vercel deployment work, redirect `.live` to `.pro`, cancel domain registration, or deploy a separately edited copy.
 
-A Manus checkpoint alone does not update those Vercel domains. The required path is:
+## One source, one pathway
 
 ```text
-Manus workspace → tests/build → Manus checkpoint → pnpm sync:github
-                                                     ↓
-                                             GitHub main
-                                                     ↓
-                                        Vercel production build
-                                                     ↓
-                                      production acceptance checks
+Manus workspace → tests and build → Manus checkpoint → Manus publish
+                                         ↓
+                                  pnpm sync:github
+                                         ↓
+                              big-main/chalkpicks-pro
 ```
 
-Do not deploy separately edited copies or replace the deployment remote with GitHub. If another agent adds GitHub commits, inspect and reconcile them in Manus before checkpointing; do not silently overwrite divergent work.
+All edits originate in `/home/ubuntu/chalkpicks-pro`. After every checkpoint run `pnpm sync:github`. The script verifies the repository, refuses a dirty working tree, and confirms matching local and GitHub SHAs. If GitHub contains independent updates, inspect and reconcile them in Manus before checkpointing; do not silently discard work. Do not remove branch protection or rewrite divergent history without reviewing and preserving needed commits.
 
-## Post-checkpoint sync
+## Hosting and domain state
 
-Run `pnpm sync:github`. The guarded script refuses a dirty working tree, verifies the intended repository, pushes the canonical checkpoint, and verifies the resulting GitHub SHA. Normal updates should fast-forward. Use rewrite mode only after reviewing the divergence and preserving any updates that must be kept. Do not remove branch protection to force a push.
+The source now uses `.live` in website URLs, canonicals, sitemaps, API documentation, notification links, and social links. `www.chalkpicks.live` normalizes to the apex with a method-preserving 308. The apex must never redirect to itself or to `.pro`.
 
-Check local and fetched GitHub SHAs against the Vercel production deployment's `githubCommitSha`. A READY build is not proof of working routes or database connectivity.
+The existing Vercel project was paused on 2026-11-13, and external checks confirmed that both `.pro` hosts return `DEPLOYMENT_PAUSED`. It was not deleted, and neither domain registration was surrendered. Vercel builds are disabled by the repository's `git.deploymentEnabled: false` guard. Remove remaining Vercel domain attachments through project settings when available; pausing alone does not remove authoritative DNS records.
 
-## Production routing
+The `.live` nameservers checked on 2026-11-13 are `ns1.globaldomaingroup.com` and `ns2.globaldomaingroup.com`. Its public response, along with the stable Manus hosts, still showed `Site Unavailable` before publishing this source update. A Cloudflare response header does not establish that the user's Cloudflare account controls the DNS zone.
 
-`vercel.json` routes API requests, JSON health, API documentation, the dynamic blog sitemap, and storage proxy requests to `api/index.ts`. That adapter initializes the existing Express application without opening a listening port, attaching WebSockets, or starting in-process jobs. Client-side document routes fall back to `index.html`; missing assets and verification files must remain real 404s.
+The browser's Manus workspace showed a restore-data notice and no listed websites. Confirm the correct owning account and complete any required restoration before claiming production is live. If restoration is required, confirm all correct backup packages first: the account restoration workflow is one-time and an older snapshot can omit later database activity. Do not overwrite current member or billing data with an unreviewed backup.
 
-The deployment redirects `www.chalkpicks.pro` to the apex so host-only login cookies stay on one hostname. Legacy `.live` redirects are prepared in Vercel but do not take effect while authoritative DNS sends visitors elsewhere. Verification and registrar DNS updates are required separately.
+## Release acceptance
 
-The `.live` authoritative nameservers checked on 2026-11-13 are `ns1.globaldomaingroup.com` and `ns2.globaldomaingroup.com`. A Cloudflare response header alone does not mean the user's Cloudflare account controls that zone. Preserve mail and verification records during DNS changes.
+A saved checkpoint or healthy sandbox preview alone is not proof of healthy Manus production. Verify the stable hosting domain and `.live` independently after publishing and reconnecting the domain under Settings → Domains.
 
-## Backend configuration
+Required checks:
 
-Keep secrets in provider environment settings, never in Git. Preserve the intended database and JWT identity configuration. Vercel needs the app's server-only odds, storage, AI, and payment credentials for the features that use them.
+- `/health` returns JSON with `status: ok`, not maintenance or SPA HTML.
+- Direct page visits and refreshes work on signup, login, picks, pricing, tools, and dashboard.
+- Anonymous tRPC auth returns its JSON contract; protected routes deny anonymous access.
+- Database-backed queries return valid, real results; no fabricated fallback picks.
+- Login, admin permissions, and premium access work for the authorized owner account.
+- Sitemap and canonical tags use `.live`; www redirects preserve path and query.
+- Streaming and automation status are verified separately, without creating duplicate posting jobs.
+- GitHub matches the intended Manus checkpoint.
 
-Scheduled mutation handlers fail closed in the Function; they require a dedicated worker. This adapter restores HTTP APIs, not persistent background jobs or WebSockets. Verify live odds streaming separately, including provider quotas and runtime timeout behavior. Never use the ephemeral Manus preview as a permanent production API origin.
-
-## Acceptance checks
-
-After each deployment:
-
-1. Direct visits and refreshes work on login, signup, picks, pricing, tools, dashboard, and document routes.
-2. `/health` responds with JSON containing `status: ok`, not SPA HTML.
-3. Anonymous `/api/trpc/auth.me` returns the tRPC JSON contract; protected procedures deny anonymous users.
-4. Database-backed public stats and picks queries return valid JSON. Verify real data freshness independently of HTTP success.
-5. JS/CSS assets retain their MIME types; nonexistent assets return 404.
-6. Authentication cookies remain HttpOnly and use HTTPS. Test account login with authorized credentials without creating fake users or modifying billing.
-7. Canonical and legacy redirects preserve path and query, with no loops.
-8. Local, GitHub, and the live Vercel deployment resolve to the intended SHA.
-
-Record limitations honestly. A functioning homepage does not establish healthy subscriptions, live data, automations, or the legacy domain redirect.
+Preserve configured email senders and payment credentials. URL migration does not verify email-domain deliverability or change Stripe billing records. Treat those integrations as separate checks.

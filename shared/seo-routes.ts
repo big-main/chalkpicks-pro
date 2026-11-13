@@ -15,7 +15,7 @@ export interface RouteSEOEntry {
   priority?: number;
 }
 
-export const SITE_URL = "https://chalkpicks.pro";
+export const SITE_URL = "https://chalkpicks.live";
 
 export const routeSEO: RouteSEOEntry[] = [
   {

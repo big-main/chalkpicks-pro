@@ -550,12 +550,12 @@ export default function Pricing() {
         description="AI-powered sports betting picks and analytics platform with +EV finder, CLV tracker, arbitrage detector, and line movement alerts. Daily, Monthly, and Yearly subscription plans."
         price="19.99"
         priceCurrency="USD"
-        url="https://chalkpicks.pro/pricing"
+        url="https://chalkpicks.live/pricing"
       />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.pro" },
-          { name: "Pricing", url: "https://chalkpicks.pro/pricing" },
+          { name: "Home", url: "https://chalkpicks.live" },
+          { name: "Pricing", url: "https://chalkpicks.live/pricing" },
         ]}
       />
       <Navbar />

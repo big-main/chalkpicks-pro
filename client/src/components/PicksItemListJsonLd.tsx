@@ -36,7 +36,7 @@ export function PicksItemListJsonLd({
       document.head.appendChild(script);
     }
 
-    const origin = "https://chalkpicks.pro";
+    const origin = "https://chalkpicks.live";
     const data = {
       "@context": "https://schema.org",
       "@type": "ItemList",

@@ -37,6 +37,7 @@ import { apiReference } from "@scalar/express-api-reference";
 import compression from "compression";
 import { getSitemapXml } from "./sitemap";
 import { registerIndexNowKeyRoute } from "./indexnow";
+import { canonicalDomainRedirect } from "../middleware/canonicalDomain";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -57,7 +58,7 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
   throw new Error(`No available port found starting from ${startPort}`);
 }
 
-export async function createApp({ serverless = false } = {}) {
+async function startServer() {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET environment variable is required but not set");
   }
@@ -65,25 +66,8 @@ export async function createApp({ serverless = false } = {}) {
   app.set("trust proxy", 1); // Trust first proxy (Manus/Cloud Run)
   const server = createServer(app);
 
-  // Cron gateways do not protect requests arriving through Vercel Functions.
-  // Fail closed here rather than exposing social posts or payouts publicly.
-  if (serverless) {
-    app.use("/api/scheduled", (_req, res) => {
-      res
-        .status(503)
-        .json({ error: "Scheduled jobs require the dedicated worker" });
-    });
-  }
-
-  // 301 redirect: chalkpicks.live → chalkpicks.pro (domain migration)
-  app.use((req, res, next) => {
-    const host = req.hostname;
-    if (host === "chalkpicks.live" || host === "www.chalkpicks.live") {
-      const newUrl = `https://chalkpicks.pro${req.originalUrl}`;
-      return res.redirect(301, newUrl);
-    }
-    next();
-  });
+  // .live is the active domain; never redirect it to the retired .pro site.
+  app.use(canonicalDomainRedirect);
   // Register webhooks BEFORE body parsers (needs raw body)
   registerStripeWebhook(app);
   registerPayPalWebhook(app);
@@ -134,12 +118,12 @@ export async function createApp({ serverless = false } = {}) {
         contact: {
           name: "ChalkPicks Support",
           email: "admin@chalkpicks.pro",
-          url: "https://chalkpicks.pro",
+          url: "https://chalkpicks.live",
         },
-        license: { name: "Proprietary", url: "https://chalkpicks.pro/terms" },
+        license: { name: "Proprietary", url: "https://chalkpicks.live/terms" },
       },
       servers: [
-        { url: "https://chalkpicks.pro/api", description: "Production" },
+        { url: "https://chalkpicks.live/api", description: "Production" },
         { url: "https://chalkpicks.manus.space/api", description: "Staging" },
       ],
       security: [{ cookieAuth: [] }],
@@ -866,12 +850,12 @@ export async function createApp({ serverless = false } = {}) {
                           successUrl: {
                             type: "string",
                             format: "uri",
-                            example: "https://chalkpicks.pro/payment-success",
+                            example: "https://chalkpicks.live/payment-success",
                           },
                           cancelUrl: {
                             type: "string",
                             format: "uri",
-                            example: "https://chalkpicks.pro/pricing",
+                            example: "https://chalkpicks.live/pricing",
                           },
                         },
                         required: ["planId", "successUrl", "cancelUrl"],
@@ -1029,7 +1013,7 @@ export async function createApp({ serverless = false } = {}) {
           const lastmod = p.updatedAt
             ? new Date(p.updatedAt).toISOString().split("T")[0]
             : new Date().toISOString().split("T")[0];
-          return `  <url>\n    <loc>https://chalkpicks.pro/blog/${p.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
+          return `  <url>\n    <loc>https://chalkpicks.live/blog/${p.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
         })
         .join("\n");
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
@@ -1074,15 +1058,6 @@ export async function createApp({ serverless = false } = {}) {
     });
   });
 
-  // Vercel serves the frontend from its CDN; never turn missing API routes
-  // into successful HTML responses or start Vite in a Function.
-  if (serverless) {
-    app.use((_req, res) => {
-      res.status(404).json({ error: "API route not found" });
-    });
-    return { app, server };
-  }
-
   // Prerender middleware — must be before Vite/static so bots get HTML+JSON-LD
   registerPrerenderMiddleware(app);
   // development mode uses Vite, production mode uses static files
@@ -1092,11 +1067,6 @@ export async function createApp({ serverless = false } = {}) {
     serveStatic(app);
   }
 
-  return { app, server };
-}
-
-async function startServer() {
-  const { server } = await createApp();
   const preferredPort = parseInt(process.env.PORT || "3000");
   // In production, NEVER shift ports — the health check and load balancer
   // expect exactly the PORT env var. Only auto-scan in development.
@@ -1125,7 +1095,4 @@ async function startServer() {
   });
 }
 
-// Function imports initialize routes only; the managed server still self-starts.
-if (!process.env.VERCEL) {
-  startServer().catch(console.error);
-}
+startServer().catch(console.error);

@@ -155,10 +155,10 @@ export default function GuidesHub() {
       <PageMeta pathname="/guides" />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Home", url: "https://chalkpicks.live" },
           {
             name: "Sports Betting Guides",
-            url: "https://chalkpicks.pro/guides",
+            url: "https://chalkpicks.live/guides",
           },
         ]}
       />

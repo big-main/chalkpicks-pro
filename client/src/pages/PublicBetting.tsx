@@ -179,10 +179,10 @@ export default function PublicBetting() {
       <PageMeta pathname="/public-betting" />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Home", url: "https://chalkpicks.live" },
           {
             name: "Public Betting",
-            url: "https://chalkpicks.pro/public-betting",
+            url: "https://chalkpicks.live/public-betting",
           },
         ]}
       />

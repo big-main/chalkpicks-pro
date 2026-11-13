@@ -1,5 +1,5 @@
 /**
- * Dynamic, DB-backed sitemap for chalkpicks.pro.
+ * Dynamic, DB-backed sitemap for chalkpicks.live.
  *
  * The legacy pipeline (scripts/generate-sitemap.mjs) baked slugs from the static
  * client/src/data/blog-posts.ts into client/public/sitemap.xml at build time, so

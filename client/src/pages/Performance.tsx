@@ -437,7 +437,7 @@ export default function Performance() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(recent?.picks ?? []).map((pick, i) => (
+                  {(recent?.picks ?? []).map((pick: any, i: number) => (
                     <tr
                       key={pick.id ?? i}
                       className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]"

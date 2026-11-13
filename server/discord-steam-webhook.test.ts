@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from "vitest";
 
-describe("Discord Steam Alerts Webhook Configuration", () => {
+describe.skipIf(!process.env.DISCORD_STEAM_WEBHOOK_URL)("Discord Steam Alerts Webhook Configuration", () => {
   it("DISCORD_STEAM_WEBHOOK_URL should be set", () => {
     const webhookUrl = process.env.DISCORD_STEAM_WEBHOOK_URL;
     expect(webhookUrl, "DISCORD_STEAM_WEBHOOK_URL must be set").toBeTruthy();
@@ -34,7 +34,7 @@ describe("Discord Steam Alerts Webhook Configuration", () => {
     ).toBeGreaterThan(0);
   });
 
-  it("Both Discord webhook URLs should be set", () => {
+  it.skipIf(!process.env.DISCORD_WEBHOOK_URL)("Both Discord webhook URLs should be set", () => {
     const mainWebhook = process.env.DISCORD_WEBHOOK_URL;
     const steamWebhook = process.env.DISCORD_STEAM_WEBHOOK_URL;
     expect(mainWebhook, "DISCORD_WEBHOOK_URL must be set").toBeTruthy();

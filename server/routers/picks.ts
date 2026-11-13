@@ -43,7 +43,8 @@ export const picksRouter = router({
           picks: [],
           total: 0,
           sports: SPORTS_LIST,
-          message: "Live picks are temporarily unavailable while the picks database reconnects.",
+          message:
+            "Live picks are temporarily unavailable while the picks database reconnects.",
         };
       }
 
@@ -79,29 +80,6 @@ export const picksRouter = router({
           .where(and(...conditions)),
       ]);
 
-      if (pickList.length === 0) {
-        const mockData = generateMockPicks(today);
-        const toInsert = mockData.map(p => ({
-          ...p,
-          gameId: null,
-          edgeScore: p.edgeScore,
-          keyFactors: p.keyFactors,
-          isActive: true,
-        }));
-        try {
-          await db.insert(picks).values(toInsert);
-          const seeded = await db
-            .select()
-            .from(picks)
-            .where(eq(picks.isActive, true))
-            .orderBy(desc(picks.isFeatured), desc(picks.confidenceScore))
-            .limit(input.limit);
-          return { picks: seeded, total: seeded.length, sports: SPORTS_LIST };
-        } catch {
-          return { picks: [], total: 0, sports: SPORTS_LIST };
-        }
-      }
-
       return {
         picks: pickList,
         total: countResult[0]?.count ?? 0,
@@ -112,22 +90,7 @@ export const picksRouter = router({
   preview: publicProcedure.query(async () => {
     const today = new Date().toISOString().split("T")[0];
     const db = await getDb();
-    if (!db) {
-      const pick = generateMockPicks(today)[0];
-      return {
-        pick: pick
-          ? {
-              sportKey: pick.sportKey,
-              pickType: pick.pickType,
-              homeTeam: pick.homeTeam,
-              awayTeam: pick.awayTeam,
-              recommendation: pick.recommendation,
-              confidenceScore: pick.confidenceScore,
-              edgeScore: pick.edgeScore,
-            }
-          : null,
-      };
-    }
+    if (!db) return { pick: null };
 
     const [pick] = await db
       .select({
@@ -155,21 +118,7 @@ export const picksRouter = router({
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
       const db = await getDb();
-      if (!db) {
-        const mockPicks = generateMockPicks(
-          new Date().toISOString().split("T")[0]
-        );
-        const mock = mockPicks[input.id - 1];
-        if (!mock) throw new TRPCError({ code: "NOT_FOUND" });
-        return {
-          ...mock,
-          id: input.id,
-          gameId: null,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          isActive: true,
-        };
-      }
+      if (!db) throw new TRPCError({ code: "NOT_FOUND" });
       const result = await db
         .select()
         .from(picks)
@@ -521,28 +470,7 @@ export const picksRouter = router({
     .query(async ({ input }) => {
       const limit = input?.limit ?? 10;
       const db = await getDb();
-      if (!db) {
-        const mock = generateMockPicks(new Date().toISOString().split("T")[0]);
-        return {
-          picks: mock
-            .filter(p => p.result !== "pending")
-            .slice(0, limit)
-            .map((p, i) => ({
-              id: i + 1,
-              sportKey: p.sportKey,
-              pickType: p.pickType,
-              homeTeam: p.homeTeam,
-              awayTeam: p.awayTeam,
-              recommendation: p.recommendation,
-              odds: p.odds,
-              confidenceScore: p.confidenceScore,
-              edgeScore: p.edgeScore,
-              result: p.result,
-              tier: p.tier,
-              createdAt: new Date(),
-            })),
-        };
-      }
+      if (!db) return { picks: [] };
       const recent = await db
         .select({
           id: picks.id,
@@ -580,33 +508,7 @@ export const picksRouter = router({
       cutoff.setDate(cutoff.getDate() - input.days);
       const cutoffStr = cutoff.toISOString().split("T")[0];
 
-      if (!db) {
-        const today = new Date().toISOString().split("T")[0];
-        let mockData = generateMockPicks(today);
-        if (input.sportKey)
-          mockData = mockData.filter(p => p.sportKey === input.sportKey);
-        return {
-          days: [
-            {
-              date: today,
-              picks: mockData.map((p, i) => ({
-                id: i + 1,
-                pickDate: today,
-                sportKey: p.sportKey,
-                pickType: p.pickType as string,
-                homeTeam: p.homeTeam,
-                awayTeam: p.awayTeam,
-                recommendation: p.recommendation,
-                odds: p.odds,
-                confidenceScore: p.confidenceScore,
-                result: p.result as string,
-                tier: p.tier as string,
-              })),
-            },
-          ],
-          sports: SPORTS_LIST,
-        };
-      }
+      if (!db) return { days: [], sports: SPORTS_LIST };
 
       const conditions = [
         eq(picks.isActive, true),
@@ -652,24 +554,7 @@ export const picksRouter = router({
   freeDailyPick: publicProcedure.query(async () => {
     const db = await getDb();
     const today = new Date().toISOString().split("T")[0];
-    if (!db) {
-      const mock = generateMockPicks(today).filter(p => p.tier === "free");
-      if (mock.length === 0) return { pick: null, date: today };
-      const best = mock.sort(
-        (a, b) => b.confidenceScore - a.confidenceScore
-      )[0];
-      return {
-        pick: {
-          ...best,
-          id: 1,
-          gameId: null,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          isActive: true,
-        },
-        date: today,
-      };
-    }
+    if (!db) return { pick: null, date: today };
     const [freePick] = await db
       .select()
       .from(picks)

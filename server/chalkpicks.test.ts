@@ -10,19 +10,21 @@ vi.mock("./db", () => ({
 // Mock LLM
 vi.mock("./_core/llm", () => ({
   invokeLLM: vi.fn().mockResolvedValue({
-    choices: [{
-      message: {
-        content: JSON.stringify({
-          recommendation: "Chiefs -7.5",
-          odds: -110,
-          confidenceScore: 85,
-          edgeScore: 4.2,
-          aiAnalysis: "Strong home favorite with elite QB play.",
-          keyFactors: ["Home field", "Mahomes form", "Raiders defense rank"],
-          tier: "free",
-        }),
+    choices: [
+      {
+        message: {
+          content: JSON.stringify({
+            recommendation: "Chiefs -7.5",
+            odds: -110,
+            confidenceScore: 85,
+            edgeScore: 4.2,
+            aiAnalysis: "Strong home favorite with elite QB play.",
+            keyFactors: ["Home field", "Mahomes form", "Raiders defense rank"],
+            tier: "free",
+          }),
+        },
       },
-    }],
+    ],
   }),
 }));
 
@@ -37,7 +39,9 @@ function createPublicContext(): TrpcContext {
   };
 }
 
-function createAuthContext(overrides: Partial<NonNullable<TrpcContext["user"]>> = {}): TrpcContext {
+function createAuthContext(
+  overrides: Partial<NonNullable<TrpcContext["user"]>> = {}
+): TrpcContext {
   return {
     user: {
       id: 1,
@@ -88,12 +92,12 @@ describe("auth", () => {
 
 // ─── Picks Tests ──────────────────────────────────────────────────────────────
 describe("picks", () => {
-  it("returns mock picks when DB is unavailable", async () => {
+  it("returns an honest empty state when DB is unavailable", async () => {
     const caller = appRouter.createCaller(createPublicContext());
     const result = await caller.picks.list({ limit: 5 });
     expect(result.picks).toBeDefined();
     expect(Array.isArray(result.picks)).toBe(true);
-    expect(result.picks.length).toBeGreaterThan(0);
+    expect(result.picks).toHaveLength(0);
   });
 
   it("returns sports list with picks", async () => {
@@ -108,18 +112,14 @@ describe("picks", () => {
     const caller = appRouter.createCaller(createPublicContext());
     const result = await caller.picks.list({ sportKey: "nfl", limit: 10 });
     expect(result.picks).toBeDefined();
-    // Mock picks include NFL picks
+    // No fabricated picks are returned when the database is unavailable.
     const nflPicks = result.picks.filter((p: any) => p.sportKey === "nfl");
-    expect(nflPicks.length).toBeGreaterThan(0);
+    expect(nflPicks).toHaveLength(0);
   });
 
-  it("returns a specific pick by ID", async () => {
+  it("does not fabricate a specific pick when DB is unavailable", async () => {
     const caller = appRouter.createCaller(createPublicContext());
-    const pick = await caller.picks.byId({ id: 1 });
-    expect(pick).toBeDefined();
-    expect(pick.id).toBe(1);
-    expect(pick.recommendation).toBeDefined();
-    expect(pick.confidenceScore).toBeGreaterThan(0);
+    await expect(caller.picks.byId({ id: 1 })).rejects.toThrow();
   });
 
   it("throws NOT_FOUND for invalid pick ID", async () => {
@@ -146,7 +146,10 @@ describe("picks", () => {
 
   it("generates AI picks for authenticated users", async () => {
     const caller = appRouter.createCaller(createAuthContext());
-    const result = await caller.picks.generateAI({ sportKey: "nfl", matchup: "Chiefs vs Raiders" });
+    const result = await caller.picks.generateAI({
+      sportKey: "nfl",
+      matchup: "Chiefs vs Raiders",
+    });
     expect(result.success).toBe(true);
     expect(result.pick).toBeDefined();
     expect(result.pick.recommendation).toBeDefined();
@@ -156,7 +159,12 @@ describe("picks", () => {
 // ─── Leaderboard Tests ────────────────────────────────────────────────────────
 describe("leaderboard", () => {
   it("returns leaderboard entries", async () => {
-    const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "daily", subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) }));
+    const caller = appRouter.createCaller(
+      createAuthContext({
+        subscriptionTier: "daily",
+        subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      })
+    );
     const entries = await caller.leaderboard.list({ period: "all", limit: 10 });
     expect(Array.isArray(entries)).toBe(true);
     expect(entries.length).toBeGreaterThan(0);
@@ -171,13 +179,23 @@ describe("leaderboard", () => {
   });
 
   it("returns null myRank when DB unavailable", async () => {
-    const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "daily", subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) }));
+    const caller = appRouter.createCaller(
+      createAuthContext({
+        subscriptionTier: "daily",
+        subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      })
+    );
     const rank = await caller.leaderboard.myRank();
     expect(rank).toBeNull();
   });
 
   it("leaderboard entries have required fields", async () => {
-    const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "daily", subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) }));
+    const caller = appRouter.createCaller(
+      createAuthContext({
+        subscriptionTier: "daily",
+        subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      })
+    );
     const entries = await caller.leaderboard.list({ period: "all", limit: 5 });
     const first = entries[0];
     expect(first).toHaveProperty("rank");
@@ -224,7 +242,10 @@ describe("subscription", () => {
   it("requires auth to create checkout", async () => {
     const caller = appRouter.createCaller(createPublicContext());
     await expect(
-      caller.subscription.createCheckout({ tier: "monthly", origin: "https://example.com" })
+      caller.subscription.createCheckout({
+        tier: "monthly",
+        origin: "https://example.com",
+      })
     ).rejects.toThrow();
   });
 });
@@ -254,14 +275,16 @@ describe("bets", () => {
 
   it("requires auth to add a bet", async () => {
     const caller = appRouter.createCaller(createPublicContext());
-    await expect(caller.bets.add({
-      sportKey: "nfl",
-      description: "Chiefs -7.5",
-      betType: "spread",
-      stake: 100,
-      odds: -110,
-      betDate: "2026-04-07",
-    })).rejects.toThrow();
+    await expect(
+      caller.bets.add({
+        sportKey: "nfl",
+        description: "Chiefs -7.5",
+        betType: "spread",
+        stake: 100,
+        odds: -110,
+        betDate: "2026-04-07",
+      })
+    ).rejects.toThrow();
   });
 });
 
@@ -277,21 +300,36 @@ describe("stats", () => {
   }, 15000);
 
   it("returns all games", async () => {
-    const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "daily", subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) }));
+    const caller = appRouter.createCaller(
+      createAuthContext({
+        subscriptionTier: "daily",
+        subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      })
+    );
     const result = await caller.stats.allGames();
     expect(result).toBeDefined();
     expect(Array.isArray(result)).toBe(true);
   }, 15000);
 
   it("returns live games", async () => {
-    const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "daily", subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) }));
+    const caller = appRouter.createCaller(
+      createAuthContext({
+        subscriptionTier: "daily",
+        subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      })
+    );
     const result = await caller.stats.liveGames({ sportKey: "nfl" });
     expect(result).toBeDefined();
     expect(Array.isArray(result)).toBe(true);
   });
 
   it("returns injury reports", async () => {
-    const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "daily", subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) }));
+    const caller = appRouter.createCaller(
+      createAuthContext({
+        subscriptionTier: "daily",
+        subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      })
+    );
     const result = await caller.stats.injuryReport({ sport: "nfl" });
     expect(result).toBeDefined();
     expect(Array.isArray(result)).toBe(true);
@@ -301,7 +339,12 @@ describe("stats", () => {
 // ─── Backtest Tests ───────────────────────────────────────────────────────────
 describe("backtest", () => {
   it("runs backtest and returns results", async () => {
-    const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "monthly", subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) }));
+    const caller = appRouter.createCaller(
+      createAuthContext({
+        subscriptionTier: "monthly",
+        subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      })
+    );
     const result = await caller.backtest.run({
       name: "NFL Spread Test",
       sportKey: "nfl",
@@ -313,14 +356,19 @@ describe("backtest", () => {
       stakePerBet: 100,
     });
     expect(result).toBeDefined();
-    expect(result.totalPicks).toBeGreaterThan(0);
+    expect(result.totalPicks).toBe(0);
     expect(typeof result.winRate).toBe("number");
     expect(typeof result.roi).toBe("number");
     expect(Array.isArray(result.results)).toBe(true);
   });
 
   it("backtest results have correct structure", async () => {
-    const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "monthly", subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) }));
+    const caller = appRouter.createCaller(
+      createAuthContext({
+        subscriptionTier: "monthly",
+        subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      })
+    );
     const result = await caller.backtest.run({
       name: "NBA Over/Under Test",
       sportKey: "nba",

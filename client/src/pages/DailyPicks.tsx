@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import SEO from "@/components/SEO";
 import { trpc } from "@/lib/trpc";
+import type { ArchivePick } from "@/lib/pick-types";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, TrendingUp, ChevronRight } from "lucide-react";
@@ -131,8 +132,8 @@ export default function DailyPicks() {
 
         <div className="space-y-10">
           {data?.days.map(day => {
-            const wins = day.picks.filter((p: any) => p.result === "win").length;
-            const losses = day.picks.filter((p: any) => p.result === "loss").length;
+            const wins = day.picks.filter((p: ArchivePick) => p.result === "win").length;
+            const losses = day.picks.filter((p: ArchivePick) => p.result === "loss").length;
             return (
               <section key={day.date}>
                 <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
@@ -160,7 +161,7 @@ export default function DailyPicks() {
                   )}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {day.picks.map((pick: any) => {
+                  {day.picks.map((pick: ArchivePick) => {
                     const rs =
                       RESULT_STYLES[pick.result ?? "pending"] ??
                       RESULT_STYLES.pending;

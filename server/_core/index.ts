@@ -57,13 +57,23 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
   throw new Error(`No available port found starting from ${startPort}`);
 }
 
-async function startServer() {
+export async function createApp({ serverless = false } = {}) {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET environment variable is required but not set");
   }
   const app = express();
   app.set("trust proxy", 1); // Trust first proxy (Manus/Cloud Run)
   const server = createServer(app);
+
+  // Cron gateways do not protect requests arriving through Vercel Functions.
+  // Fail closed here rather than exposing social posts or payouts publicly.
+  if (serverless) {
+    app.use("/api/scheduled", (_req, res) => {
+      res
+        .status(503)
+        .json({ error: "Scheduled jobs require the dedicated worker" });
+    });
+  }
 
   // 301 redirect: chalkpicks.live → chalkpicks.pro (domain migration)
   app.use((req, res, next) => {
@@ -1064,6 +1074,15 @@ async function startServer() {
     });
   });
 
+  // Vercel serves the frontend from its CDN; never turn missing API routes
+  // into successful HTML responses or start Vite in a Function.
+  if (serverless) {
+    app.use((_req, res) => {
+      res.status(404).json({ error: "API route not found" });
+    });
+    return { app, server };
+  }
+
   // Prerender middleware — must be before Vite/static so bots get HTML+JSON-LD
   registerPrerenderMiddleware(app);
   // development mode uses Vite, production mode uses static files
@@ -1073,6 +1092,11 @@ async function startServer() {
     serveStatic(app);
   }
 
+  return { app, server };
+}
+
+async function startServer() {
+  const { server } = await createApp();
   const preferredPort = parseInt(process.env.PORT || "3000");
   // In production, NEVER shift ports — the health check and load balancer
   // expect exactly the PORT env var. Only auto-scan in development.
@@ -1101,4 +1125,7 @@ async function startServer() {
   });
 }
 
-startServer().catch(console.error);
+// Function imports initialize routes only; the managed server still self-starts.
+if (!process.env.VERCEL) {
+  startServer().catch(console.error);
+}

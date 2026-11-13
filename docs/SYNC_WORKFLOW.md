@@ -1,59 +1,54 @@
-# ChalkPicks Pro — Single-Pathway Sync Workflow
+# ChalkPicks Pro — Canonical Sync and Deployment
 
-## Source of Truth
+## Source of truth
 
-**Manus workspace** is the single source of truth for ChalkPicks Pro.
+Edit the Manus workspace at `/home/ubuntu/chalkpicks-pro`. Save a tested Manus checkpoint before mirroring it to `big-main/chalkpicks-pro`. The active `.pro` production domains currently serve the Git-linked Vercel project `chalkpicks-pro-free`, not the Manus preview.
 
-- All code changes happen in the Manus sandbox (`/home/ubuntu/chalkpicks-pro`)
-- Every `webdev_save_checkpoint` auto-deploys to production at `chalkpicks.pro`
-- GitHub (`big-main/chalkpicks-pro`) is a **read-only mirror** — never edit code directly on GitHub
+A Manus checkpoint alone does not update those Vercel domains. The required path is:
 
-## Sync Flow (One-Way)
-
-```
-Manus Workspace (edit here)
-    │
-    ├── webdev_save_checkpoint → auto-deploys to chalkpicks.pro
-    │
-    └── pnpm sync:github → verifies and mirrors the checkpoint to GitHub
+```text
+Manus workspace → tests/build → Manus checkpoint → pnpm sync:github
+                                                     ↓
+                                             GitHub main
+                                                     ↓
+                                        Vercel production build
+                                                     ↓
+                                      production acceptance checks
 ```
 
-## Rules
+Do not deploy separately edited copies or replace the deployment remote with GitHub. If another agent adds GitHub commits, inspect and reconcile them in Manus before checkpointing; do not silently overwrite divergent work.
 
-1. **Never push to GitHub independently** — all pushes come from Manus after a checkpoint
-2. **Never create PRs on GitHub** — they will conflict with force-pushes from Manus
-3. **Never edit code on GitHub** (web editor, Codespaces, etc.) — those changes will be overwritten
-4. **Force-push is intentional** — Manus owns the history; GitHub is a mirror for backup/visibility
-5. **After every checkpoint**, run `pnpm sync:github`. The command verifies the
-   configured mirror, refuses a dirty working tree, uses a lease-protected push,
-   and confirms that both branches end on the same SHA.
+## Post-checkpoint sync
 
-## Why Force-Push?
+Run `pnpm sync:github`. The guarded script refuses a dirty working tree, verifies the intended repository, pushes the canonical checkpoint, and verifies the resulting GitHub SHA. Normal updates should fast-forward. Use rewrite mode only after reviewing the divergence and preserving any updates that must be kept. Do not remove branch protection to force a push.
 
-Manus rewrites history on each checkpoint (squash-like behavior). Regular pushes fail because
-the histories diverge. Force-push keeps GitHub in sync without merge conflicts.
+Check local and fetched GitHub SHAs against the Vercel production deployment's `githubCommitSha`. A READY build is not proof of working routes or database connectivity.
 
-## Recovery
+## Production routing
 
-If GitHub somehow gets ahead of Manus (someone pushed directly):
+`vercel.json` routes API requests, JSON health, API documentation, the dynamic blog sitemap, and storage proxy requests to `api/index.ts`. That adapter initializes the existing Express application without opening a listening port, attaching WebSockets, or starting in-process jobs. Client-side document routes fall back to `index.html`; missing assets and verification files must remain real 404s.
 
-1. `git fetch github`
-2. `git log --oneline github/main` — check what was added
-3. Cherry-pick any needed commits into the Manus workspace
-4. Save checkpoint
-5. Force-push to re-sync
+The deployment redirects `www.chalkpicks.pro` to the apex so host-only login cookies stay on one hostname. Legacy `.live` redirects are prepared in Vercel but do not take effect while authoritative DNS sends visitors elsewhere. Verification and registrar DNS updates are required separately.
 
-## Connected Platforms
+The `.live` authoritative nameservers checked on 2026-11-13 are `ns1.globaldomaingroup.com` and `ns2.globaldomaingroup.com`. A Cloudflare response header alone does not mean the user's Cloudflare account controls that zone. Preserve mail and verification records during DNS changes.
 
-| Platform       | Role                                  | URL                                |
-| -------------- | ------------------------------------- | ---------------------------------- |
-| Manus (origin) | Source of truth + deploy              | chalkpicks.pro                     |
-| GitHub         | Read-only mirror                      | github.com/big-main/chalkpicks-pro |
-| Railway        | DNS registrar for chalkpicks.pro only | railway.com (no code deployed)     |
+## Backend configuration
 
-## Automated Sync
+Keep secrets in provider environment settings, never in Git. Preserve the intended database and JWT identity configuration. Vercel needs the app's server-only odds, storage, AI, and payment credentials for the features that use them.
 
-Every Manus session must end with `pnpm sync:github` after the final checkpoint.
-Use `pnpm sync:github -- --check` to verify parity without pushing. Only use
-`pnpm sync:github -- --rewrite` after reviewing a divergent GitHub history and
-confirming that the Manus checkpoint remains the intended source of truth.
+Scheduled mutation handlers fail closed in the Function; they require a dedicated worker. This adapter restores HTTP APIs, not persistent background jobs or WebSockets. Verify live odds streaming separately, including provider quotas and runtime timeout behavior. Never use the ephemeral Manus preview as a permanent production API origin.
+
+## Acceptance checks
+
+After each deployment:
+
+1. Direct visits and refreshes work on login, signup, picks, pricing, tools, dashboard, and document routes.
+2. `/health` responds with JSON containing `status: ok`, not SPA HTML.
+3. Anonymous `/api/trpc/auth.me` returns the tRPC JSON contract; protected procedures deny anonymous users.
+4. Database-backed public stats and picks queries return valid JSON. Verify real data freshness independently of HTTP success.
+5. JS/CSS assets retain their MIME types; nonexistent assets return 404.
+6. Authentication cookies remain HttpOnly and use HTTPS. Test account login with authorized credentials without creating fake users or modifying billing.
+7. Canonical and legacy redirects preserve path and query, with no loops.
+8. Local, GitHub, and the live Vercel deployment resolve to the intended SHA.
+
+Record limitations honestly. A functioning homepage does not establish healthy subscriptions, live data, automations, or the legacy domain redirect.

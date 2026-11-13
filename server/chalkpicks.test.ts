@@ -88,12 +88,12 @@ describe("auth", () => {
 
 // ─── Picks Tests ──────────────────────────────────────────────────────────────
 describe("picks", () => {
-  it("returns mock picks when DB is unavailable", async () => {
+  it("returns an explicit empty state when the picks DB is unavailable", async () => {
     const caller = appRouter.createCaller(createPublicContext());
     const result = await caller.picks.list({ limit: 5 });
-    expect(result.picks).toBeDefined();
-    expect(Array.isArray(result.picks)).toBe(true);
-    expect(result.picks.length).toBeGreaterThan(0);
+    expect(result.picks).toEqual([]);
+    expect(result.total).toBe(0);
+    expect(result.message).toContain("database reconnects");
   });
 
   it("returns sports list with picks", async () => {
@@ -104,22 +104,18 @@ describe("picks", () => {
     expect(result.sports.length).toBeGreaterThan(0);
   });
 
-  it("filters picks by sport", async () => {
+  it("does not invent sport-filtered picks when the DB is unavailable", async () => {
     const caller = appRouter.createCaller(createPublicContext());
     const result = await caller.picks.list({ sportKey: "nfl", limit: 10 });
-    expect(result.picks).toBeDefined();
-    // Mock picks include NFL picks
-    const nflPicks = result.picks.filter((p: any) => p.sportKey === "nfl");
-    expect(nflPicks.length).toBeGreaterThan(0);
+    expect(result.picks).toEqual([]);
+    expect(result.total).toBe(0);
   });
 
-  it("returns a specific pick by ID", async () => {
+  it("reports unavailable records rather than fabricating a pick by ID", async () => {
     const caller = appRouter.createCaller(createPublicContext());
-    const pick = await caller.picks.byId({ id: 1 });
-    expect(pick).toBeDefined();
-    expect(pick.id).toBe(1);
-    expect(pick.recommendation).toBeDefined();
-    expect(pick.confidenceScore).toBeGreaterThan(0);
+    await expect(caller.picks.byId({ id: 1 })).rejects.toMatchObject({
+      code: "INTERNAL_SERVER_ERROR",
+    });
   });
 
   it("throws NOT_FOUND for invalid pick ID", async () => {
@@ -155,19 +151,22 @@ describe("picks", () => {
 
 // ─── Leaderboard Tests ────────────────────────────────────────────────────────
 describe("leaderboard", () => {
-  it("returns leaderboard entries", async () => {
+  it("returns no fabricated leaderboard entries when the DB is unavailable", async () => {
     const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "daily", subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) }));
     const entries = await caller.leaderboard.list({ period: "all", limit: 10 });
-    expect(Array.isArray(entries)).toBe(true);
-    expect(entries.length).toBeGreaterThan(0);
+    expect(entries).toEqual([]);
   });
 
-  it("returns leaderboard stats", async () => {
+  it("returns neutral leaderboard stats when the DB is unavailable", async () => {
     const caller = appRouter.createCaller(createPublicContext());
     const stats = await caller.leaderboard.stats();
-    expect(stats.totalBettors).toBeGreaterThan(0);
-    expect(stats.avgWinRate).toBeGreaterThan(0);
-    expect(stats.topROI).toBeGreaterThan(0);
+    expect(stats).toEqual({
+      totalBettors: 0,
+      avgWinRate: 0,
+      avgRoi: 0,
+      topROI: 0,
+      totalPicksTracked: 0,
+    });
   });
 
   it("returns null myRank when DB unavailable", async () => {
@@ -176,16 +175,10 @@ describe("leaderboard", () => {
     expect(rank).toBeNull();
   });
 
-  it("leaderboard entries have required fields", async () => {
+  it("keeps the leaderboard empty instead of inventing profile rows without DB data", async () => {
     const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "daily", subscriptionExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) }));
     const entries = await caller.leaderboard.list({ period: "all", limit: 5 });
-    const first = entries[0];
-    expect(first).toHaveProperty("rank");
-    expect(first).toHaveProperty("displayName");
-    expect(first).toHaveProperty("winRate");
-    expect(first).toHaveProperty("roi");
-    expect(first).toHaveProperty("wins");
-    expect(first).toHaveProperty("losses");
+    expect(entries).toEqual([]);
   });
 });
 
@@ -300,7 +293,7 @@ describe("stats", () => {
 
 // ─── Backtest Tests ───────────────────────────────────────────────────────────
 describe("backtest", () => {
-  it("runs backtest and returns results", async () => {
+  it("returns an honest empty backtest when no historical database is connected", async () => {
     const caller = appRouter.createCaller(createAuthContext({ subscriptionTier: "monthly", subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) }));
     const result = await caller.backtest.run({
       name: "NFL Spread Test",
@@ -313,7 +306,9 @@ describe("backtest", () => {
       stakePerBet: 100,
     });
     expect(result).toBeDefined();
-    expect(result.totalPicks).toBeGreaterThan(0);
+    expect(result.totalPicks).toBe(0);
+    expect(result.source).toBe("no_historical_data");
+    expect(result.message).toContain("database is not connected");
     expect(typeof result.winRate).toBe("number");
     expect(typeof result.roi).toBe("number");
     expect(Array.isArray(result.results)).toBe(true);

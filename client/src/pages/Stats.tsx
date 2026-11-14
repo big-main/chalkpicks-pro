@@ -594,8 +594,6 @@ export default function Stats() {
 
                 <Card className="bg-card border-border">
                   <CardHeader className="pb-2">
-                    <Card className="bg-card border-border">
-                  <CardHeader className="pb-2">
                     <CardTitle className="text-base">Historical Odds Movement</CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -613,8 +611,6 @@ export default function Stats() {
                 </Card>
 
                 <Card className="bg-card border-border lg:col-span-2">
-                  <CardHeader className="pb-2">
-                    <Card className="bg-card border-border lg:col-span-2">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base">Historical Totals Performance</CardTitle>
                   </CardHeader>

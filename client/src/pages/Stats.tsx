@@ -61,7 +61,7 @@ export default function Stats() {
       { sportKey: sport, limit: 12 },
       { enabled: hasPremiumAccess, staleTime: 15_000, refetchInterval: 30_000 }
     );
-  const { data: injuries } = trpc.stats.injuryReport.useQuery(
+  const { data: injuries, isLoading: injuriesLoading } = trpc.stats.injuryReport.useQuery(
     { sportKey: sport },
     { enabled: hasPremiumAccess, staleTime: 15_000, refetchInterval: 30_000 }
   );
@@ -221,9 +221,9 @@ export default function Stats() {
             {[
               {
                 label: "Live Games",
-                value:
-                  liveGames?.filter((g: any) => g.status === "live").length ??
-                  0,
+                value: gamesLoading
+                  ? "…"
+                  : (liveGames?.filter((g: any) => g.status === "live").length ?? 0),
                 sub: "In progress",
               },
               {
@@ -233,7 +233,7 @@ export default function Stats() {
               },
               {
                 label: "Injury Reports",
-                value: injuries?.length ?? 0,
+                value: injuriesLoading ? "…" : (injuries?.length ?? 0),
                 sub: "Returned by current feed",
               },
               {
@@ -561,7 +561,8 @@ export default function Stats() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
+                    {teamTrends.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={250}>
                       <BarChart data={teamTrends}>
                         <CartesianGrid
                           strokeDasharray="3 3"
@@ -589,6 +590,15 @@ export default function Stats() {
                         />
                       </BarChart>
                     </ResponsiveContainer>
+                    ) : (
+                      <div className="min-h-[250px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/70 bg-secondary/30 px-6 text-center">
+                        <Activity className="h-8 w-8 text-muted-foreground mb-3" />
+                        <p className="font-medium text-foreground">No live scores in the current feed</p>
+                        <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+                          Score snapshots will appear when live games are returned for the selected sport.
+                        </p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 

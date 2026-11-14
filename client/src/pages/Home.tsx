@@ -413,25 +413,23 @@ export default function Home() {
                 <div className="flex items-center gap-1.5 text-sm text-white/50">
                   <Users className="w-3.5 h-3.5 text-[#39ff14]" />
                   <span className="font-semibold text-white/70">
-                    {siteStats
-                      ? `${(siteStats.totalMembers / 1000).toFixed(1)}K+`
-                      : "12.8K+"}
+                    {siteStats ? siteStats.totalMembers.toLocaleString() : "—"}
                   </span>
                   <span>members</span>
                 </div>
                 <div className="w-px h-4 bg-white/10" />
                 <div className="flex items-center gap-1.5 text-sm text-white/50">
                   <Star className="w-3.5 h-3.5 text-[#f0b800]" />
-                  <span className="font-semibold text-white/70">4.9</span>
-                  <span>rating</span>
+                  <span className="font-semibold text-white/70">Public</span>
+                  <span>pick ledger</span>
                 </div>
                 <div className="w-px h-4 bg-white/10" />
                 <div className="flex items-center gap-1.5 text-sm text-white/50">
                   <Brain className="w-3.5 h-3.5 text-[#60a5fa]" />
                   <span className="font-semibold text-white/70">
                     {siteStats
-                      ? `${Math.round(siteStats.totalPicksGenerated / 1000)}K+`
-                      : "847K+"}
+                      ? siteStats.totalPicksGenerated.toLocaleString()
+                      : "—"}
                   </span>
                   <span>picks</span>
                 </div>
@@ -468,25 +466,23 @@ export default function Home() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-12">
             <div className="text-center">
               <div className="font-display text-3xl lg:text-4xl text-[#39ff14] mb-1">
-                <AnimatedCounter value={siteStats?.picksToday ?? 8} />
+                <AnimatedCounter value={siteStats?.picksToday ?? 0} />
               </div>
               <div className="text-sm text-white/50">Today's AI Picks</div>
             </div>
             <div className="text-center">
               <div className="font-display text-3xl lg:text-4xl text-[#f0b800] mb-1">
                 <AnimatedCounter
-                  value={
-                    siteStats ? Math.round(siteStats.totalMembers / 1000) : 12
-                  }
-                  suffix="K+"
+                  value={siteStats?.totalMembers ?? 0}
+                  suffix=""
                 />
               </div>
-              <div className="text-sm text-white/50">Active Members</div>
+              <div className="text-sm text-white/50">Registered Members</div>
             </div>
             <div className="text-center">
               <div className="font-display text-3xl lg:text-4xl text-[#60a5fa] mb-1">
                 <AnimatedCounter
-                  value={siteStats ? Math.round(siteStats.winRate) : 71}
+                  value={siteStats ? Math.round(siteStats.winRate) : 0}
                   suffix="%"
                 />
               </div>
@@ -495,12 +491,8 @@ export default function Home() {
             <div className="text-center">
               <div className="font-display text-3xl lg:text-4xl text-[#06b6d4] mb-1">
                 <AnimatedCounter
-                  value={
-                    siteStats
-                      ? Math.round(siteStats.totalPicksGenerated / 1000)
-                      : 847
-                  }
-                  suffix="K+"
+                  value={siteStats?.totalPicksGenerated ?? 0}
+                  suffix=""
                 />
               </div>
               <div className="text-sm text-white/50">Picks Generated</div>
@@ -703,7 +695,7 @@ export default function Home() {
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-5 rounded-full glass-card-static text-xs font-semibold">
               <Shield className="w-3.5 h-3.5 text-brand-green" />
-              <span className="text-white/60">Trusted by Thousands</span>
+              <span className="text-white/60">Transparent Pick Tracking</span>
             </div>
             <h2 className="font-display text-3xl lg:text-4xl text-white">
               Less Hype, More{" "}
@@ -715,29 +707,29 @@ export default function Home() {
             {[
               {
                 value: siteStats
-                  ? `${(siteStats.totalMembers / 1000).toFixed(1)}K+`
-                  : "12.8K+",
-                label: "Active Members",
+                  ? siteStats.totalMembers.toLocaleString()
+                  : "—",
+                label: "Registered Members",
                 icon: Users,
                 color: "#39ff14",
               },
               {
                 value: siteStats
-                  ? `${Math.round(siteStats.totalPicksGenerated / 1000)}K+`
-                  : "847K+",
+                  ? siteStats.totalPicksGenerated.toLocaleString()
+                  : "—",
                 label: "Picks Generated",
                 icon: Brain,
                 color: "#f0b800",
               },
               {
-                value: "4.9/5",
-                label: "Member Rating",
+                value: "Public",
+                label: "Pick Ledger",
                 icon: Star,
                 color: "#60a5fa",
               },
               {
-                value: "24/7",
-                label: "AI Monitoring",
+                value: "Real Data",
+                label: "Analytics",
                 icon: Activity,
                 color: "#06b6d4",
               },
@@ -760,7 +752,7 @@ export default function Home() {
               <span className="live-dot" />
               <span className="text-sm text-white/60">
                 <strong className="text-brand-green">
-                  {siteStats?.paidSubscribers ?? 247}
+                  {siteStats?.paidSubscribers ?? "—"}
                 </strong>{" "}
                 paid subscribers active
               </span>

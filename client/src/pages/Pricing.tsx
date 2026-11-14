@@ -582,10 +582,7 @@ export default function Pricing() {
             Pick Your <span className="text-emerald-gradient">Edge</span>
           </h1>
           <p className="mt-4 text-lg max-w-xl mx-auto text-white/45">
-            Join{" "}
-            {siteStats
-              ? `${Math.round(siteStats.totalMembers / 1000)}K+`
-              : "thousands of"}{" "}
+            Join {siteStats ? siteStats.totalMembers.toLocaleString() : "other"}{" "}
             sharp bettors using AI-powered analytics, real-time odds, and
             professional tools to beat the books.
           </p>
@@ -594,20 +591,20 @@ export default function Pricing() {
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full glass-card-static text-xs font-semibold">
               <span className="live-dot" />
               <span className="text-white/60">
-                {siteStats?.paidSubscribers ?? "3,241"} active subscribers
+                {siteStats?.paidSubscribers ?? "—"} active subscribers
               </span>
             </div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full glass-card-static text-xs font-semibold">
               <span className="text-[#39ff14]">✓</span>
               <span className="text-white/60">
-                {siteStats ? `${siteStats.winRate.toFixed(1)}%` : "71.4%"} AI
-                win rate
+                {siteStats ? `${siteStats.winRate.toFixed(1)}%` : "—"} AI win
+                rate
               </span>
             </div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full glass-card-static text-xs font-semibold">
               <span className="text-[#f0b800]">⚡</span>
               <span className="text-white/60">
-                {siteStats?.picksToday ?? 8} picks live today
+                {siteStats?.picksToday ?? "—"} picks live today
               </span>
             </div>
           </div>

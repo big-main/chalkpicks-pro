@@ -38,12 +38,12 @@ export const systemRouter = router({
    */
   siteStats: publicProcedure.query(async () => {
     const FALLBACK = {
-      totalMembers: 12847,
-      paidSubscribers: 3241,
-      totalPicksGenerated: 847293,
-      picksToday: 8,
-      winRate: 71.4,
-      newsletterSubscribers: 4182,
+      totalMembers: 0,
+      paidSubscribers: 0,
+      totalPicksGenerated: 0,
+      picksToday: 0,
+      winRate: 0,
+      newsletterSubscribers: 0,
     };
     if (siteStatsCache && siteStatsCache.expiresAt > Date.now()) {
       return siteStatsCache.value;
@@ -68,7 +68,7 @@ export const systemRouter = router({
           .select({ count: sql<number>`count(*)` })
           .from(users)
           .where(
-            sql`subscription_tier != 'free' AND subscription_tier IS NOT NULL`
+            sql`${users.subscriptionTier} IN ('daily', 'monthly', 'yearly') AND ${users.subscriptionExpiresAt} > UTC_TIMESTAMP()`
           ),
         db
           .select({ count: sql<number>`count(*)` })
@@ -77,14 +77,16 @@ export const systemRouter = router({
         db
           .select({ count: sql<number>`count(*)` })
           .from(picks)
-          .where(sql`is_active = 1 AND pick_date = ${today}`),
+          .where(sql`${picks.isActive} = 1 AND ${picks.pickDate} = ${today}`),
         db
           .select({
-            wins: sql<number>`sum(case when result = 'win' then 1 else 0 end)`,
-            losses: sql<number>`sum(case when result = 'loss' then 1 else 0 end)`,
+            wins: sql<number>`sum(case when ${picks.result} = 'win' then 1 else 0 end)`,
+            losses: sql<number>`sum(case when ${picks.result} = 'loss' then 1 else 0 end)`,
           })
           .from(picks)
-          .where(sql`is_active = 1 AND result IN ('win','loss')`),
+          .where(
+            sql`${picks.isActive} = 1 AND ${picks.result} IN ('win','loss')`
+          ),
         db
           .select({ count: sql<number>`count(*)` })
           .from(newsletterSubscribers)
@@ -103,18 +105,13 @@ export const systemRouter = router({
       const winRate =
         total > 0 ? Math.round((wins / total) * 1000) / 10 : FALLBACK.winRate;
 
-      const value = {
-        totalMembers: totalMembers > 0 ? totalMembers : FALLBACK.totalMembers,
-        paidSubscribers:
-          paidSubscribers > 0 ? paidSubscribers : FALLBACK.paidSubscribers,
-        totalPicksGenerated:
-          totalPicksGenerated > 0
-            ? totalPicksGenerated
-            : FALLBACK.totalPicksGenerated,
-        picksToday: picksToday > 0 ? picksToday : FALLBACK.picksToday,
-        winRate: total >= 10 ? winRate : FALLBACK.winRate,
-        newsletterSubscribers:
-          newsletterSubs > 0 ? newsletterSubs : FALLBACK.newsletterSubscribers,
+      const value: SiteStats = {
+        totalMembers,
+        paidSubscribers,
+        totalPicksGenerated,
+        picksToday,
+        winRate,
+        newsletterSubscribers: newsletterSubs,
       };
       siteStatsCache = { expiresAt: Date.now() + 60_000, value };
       return value;

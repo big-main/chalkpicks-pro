@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
-import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { Paywall } from "@/components/Paywall";
 import { Badge } from "@/components/ui/badge";
@@ -33,33 +32,32 @@ const PICK_TYPES = [
 ];
 
 export default function Backtesting() {
-  const { isAuthenticated } = useAuth();
   const { data: subscription } = trpc.subscription.mySubscription.useQuery();
+  const hasProAccess = subscription?.isActive && (subscription?.tier === "monthly" || subscription?.tier === "yearly");
   const { data: historicalPicks = [], isLoading: isHistoryLoading } =
-    trpc.backtest.history.useQuery({ limit: 100 });
+    trpc.backtest.history.useQuery({ limit: 100 }, { enabled: !!hasProAccess });
+  const { mutateAsync: runBacktestMutation } = trpc.backtest.run.useMutation();
   const [sport, setSport] = useState("nfl");
   const [pickType, setPickType] = useState("all");
   const [dateFrom, setDateFrom] = useState("2024-01-01");
-  const [dateTo, setDateTo] = useState(new Date().toISOString().split("T")[0]);
+  const [dateTo, setDateTo] = useState(() => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  });
   const [minConfidence, setMinConfidence] = useState([70]);
   const [bankroll, setBankroll] = useState([10000]);
   const [stakePerBet, setStakePerBet] = useState([100]);
-  const [minEV, setMinEV] = useState([3]);
   const [strategy, setStrategy] = useState<"kelly" | "quarter_kelly" | "flat">("kelly");
   const [results, setResults] = useState<any>(null);
   const [isRunning, setIsRunning] = useState(false);
 
-  const hasProAccess = subscription?.isActive && (subscription?.tier === "monthly" || subscription?.tier === "yearly");
-
   if (!hasProAccess) {
-    return <Paywall tier="monthly" title="Backtesting Engine" description="Test your strategies against historical data with real Kelly sizing from the Python quant sidecar" />;
+    return <Paywall tier="monthly" title="Backtesting Engine" description="Test strategies against settled ChalkPicks records. Kelly sizing is available when the quant service is online; ledger fallback uses flat stakes." />;
   }
 
-  const { mutateAsync: runBacktestMutation } = trpc.backtest.run.useMutation();
-
   const runBacktest = async () => {
-    if (dateFrom >= dateTo) {
-      toast.error("'Date From' must be before 'Date To'");
+    if (dateFrom > dateTo) {
+      toast.error("'Date From' must be on or before 'Date To'");
       return;
     }
     setIsRunning(true);
@@ -90,7 +88,9 @@ export default function Backtesting() {
   };
 
   const isQuantResult = results?.source === "quant_sidecar";
-  const winRateDisplay = results ? (results.winRate < 1 ? (results.winRate * 100).toFixed(1) : results.winRate.toFixed(1)) : null;
+  const winRateDisplay = results
+    ? (isQuantResult ? Number(results.winRate) * 100 : Number(results.winRate)).toFixed(1)
+    : null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -109,7 +109,7 @@ export default function Backtesting() {
               )}
             </div>
             <p className="text-muted-foreground">
-              Test Kelly/Quarter-Kelly sizing strategies via the Python quant sidecar (Elo engine + Monte Carlo)
+              Evaluate historical settled picks, bankroll paths and drawdowns. The quant engine applies Kelly sizing when available; ledger fallback is explicitly flat-stake.
             </p>
           </div>
 
@@ -157,11 +157,6 @@ export default function Backtesting() {
                 <div>
                   <Label>Min Confidence: {minConfidence[0]}%</Label>
                   <Slider value={minConfidence} onValueChange={setMinConfidence} min={50} max={95} step={5} />
-                </div>
-
-                <div>
-                  <Label>Min EV: {minEV[0]}%</Label>
-                  <Slider value={minEV} onValueChange={setMinEV} min={1} max={10} step={0.5} />
                 </div>
 
                 <div>
@@ -219,6 +214,15 @@ export default function Backtesting() {
 
               {results && (
                 <>
+                  {results.strategyApplied === "flat_fallback_without_quant_sidecar" && (
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+                      <div className="font-semibold">Quant engine unavailable — flat-stake fallback used</div>
+                      <p className="mt-1 text-xs leading-relaxed text-amber-100/75">
+                        This result is calculated from settled ChalkPicks ledger entries. Full Kelly or Quarter Kelly was not applied, so do not interpret this run as a Kelly-sized simulation.
+                      </p>
+                    </div>
+                  )}
+
                   {/* Summary Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <Card>

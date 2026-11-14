@@ -34,6 +34,11 @@ jobs:
       - name: Typecheck
         run: pnpm check
 
+      # A small set of integration tests imports the same compiled Vercel
+      # handler that production deploys, so generate the build artifact first.
+      - name: Build test artifacts
+        run: pnpm build
+
       - name: Unit tests
         run: pnpm test
         env:

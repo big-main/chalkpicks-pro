@@ -201,7 +201,7 @@ export default function SharePickCard({
             {/* Footer */}
             <div className="px-4 py-2 bg-[#0a0a14] border-t border-[#2a2a3a] text-center">
               <p className="text-xs text-gray-600">
-                chalkpicks.live · Free AI Sports Picks
+                chalkpicks.pro · Free AI Sports Picks
               </p>
             </div>
           </div>

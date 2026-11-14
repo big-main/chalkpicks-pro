@@ -97,10 +97,10 @@ function SharpMoneyContent() {
     <div className="min-h-screen bg-slate-950 text-white p-6">
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.live" },
+          { name: "Home", url: "https://chalkpicks.pro" },
           {
             name: "Sharp Money Detector",
-            url: "https://chalkpicks.live/sharp-money",
+            url: "https://chalkpicks.pro/sharp-money",
           },
         ]}
       />

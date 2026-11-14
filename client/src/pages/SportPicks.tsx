@@ -326,11 +326,11 @@ export default function SportPicks(props: any) {
       <FAQPageJsonLd faqs={config.faqs} pageId={config.slug} />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.live" },
-          { name: "Picks", url: "https://chalkpicks.live/picks" },
+          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Picks", url: "https://chalkpicks.pro/picks" },
           {
             name: `${config.name} Picks`,
-            url: `https://chalkpicks.live/${config.slug}`,
+            url: `https://chalkpicks.pro/${config.slug}`,
           },
         ]}
       />

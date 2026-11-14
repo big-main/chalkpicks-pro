@@ -36,10 +36,10 @@ const DEEP_LINKS = [
 ];
 
 const UNIVERSAL_LINKS = [
-  "https://chalkpicks.live/picks",
-  "https://chalkpicks.live/ev-finder",
-  "https://chalkpicks.live/pricing",
-  "https://chalkpicks.live/nfl-picks",
+  "https://chalkpicks.pro/picks",
+  "https://chalkpicks.pro/ev-finder",
+  "https://chalkpicks.pro/pricing",
+  "https://chalkpicks.pro/nfl-picks",
 ];
 
 export default function AppLinkTest() {

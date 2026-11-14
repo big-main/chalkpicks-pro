@@ -111,11 +111,11 @@ export default function ROICalculator() {
       />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.live" },
-          { name: "Tools", url: "https://chalkpicks.live/tools" },
+          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Tools", url: "https://chalkpicks.pro/tools" },
           {
             name: "ROI Calculator",
-            url: "https://chalkpicks.live/tools/roi-calculator",
+            url: "https://chalkpicks.pro/tools/roi-calculator",
           },
         ]}
       />

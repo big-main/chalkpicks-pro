@@ -6,11 +6,11 @@ describe("Ahrefs API Key Validation", () => {
     expect(process.env.AHREFS_API_KEY!.length).toBeGreaterThan(10);
   });
 
-  it("Ahrefs API responds with valid data for chalkpicks.live", async () => {
+  it("Ahrefs API responds with valid data for chalkpicks.pro", async () => {
     const apiKey = process.env.AHREFS_API_KEY;
     if (!apiKey) throw new Error("AHREFS_API_KEY not set");
 
-    const url = `https://api.ahrefs.com/v3/site-explorer/domain-rating?target=chalkpicks.live&date=2026-07-30`;
+    const url = `https://api.ahrefs.com/v3/site-explorer/domain-rating?target=chalkpicks.pro&date=2026-07-30`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${apiKey}` },
     });

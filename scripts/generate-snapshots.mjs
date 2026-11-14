@@ -21,7 +21,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const DIST_PUBLIC = path.join(ROOT, "dist", "public");
 const SNAPSHOT_DIR = path.join(DIST_PUBLIC, "snapshots");
-const SITE_URL = "https://chalkpicks.live";
+const SITE_URL = "https://chalkpicks.pro";
 
 // ---------------------------------------------------------------------------
 // Load shared route metadata + blog content (via esbuild-friendly dynamic import

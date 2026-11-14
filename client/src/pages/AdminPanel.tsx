@@ -59,7 +59,7 @@ export default function AdminPanel() {
     | "directories"
     | "cache"
   >("overview");
-  const [psUrl, setPsUrl] = useState("https://www.chalkpicks.live");
+  const [psUrl, setPsUrl] = useState("https://www.chalkpicks.pro");
   const [psResult, setPsResult] = useState<null | {
     mobile: ReturnType<typeof Object.create>;
     desktop: ReturnType<typeof Object.create>;
@@ -1511,7 +1511,7 @@ export default function AdminPanel() {
                 <input
                   value={psUrl}
                   onChange={e => setPsUrl(e.target.value)}
-                  placeholder="https://www.chalkpicks.live"
+                  placeholder="https://www.chalkpicks.pro"
                   className="flex-1 px-3 py-2 rounded text-sm"
                   style={{
                     background: "rgba(255,255,255,0.05)",

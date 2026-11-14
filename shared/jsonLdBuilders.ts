@@ -16,7 +16,7 @@ export interface BreadcrumbLdItem {
 
 export function buildBreadcrumbListJsonLd(
   items: BreadcrumbLdItem[],
-  baseUrl = "https://chalkpicks.live"
+  baseUrl = "https://chalkpicks.pro"
 ): object {
   return {
     "@context": "https://schema.org",

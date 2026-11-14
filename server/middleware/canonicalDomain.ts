@@ -1,9 +1,13 @@
 import type { RequestHandler } from "express";
 
-/** Keep login cookies and public links on the active .live apex domain. */
+/** Keep public links and login cookies on the active .pro apex domain. */
 export const canonicalDomainRedirect: RequestHandler = (req, res, next) => {
-  if (req.hostname === "www.chalkpicks.live") {
-    res.redirect(308, `https://chalkpicks.live${req.originalUrl}`);
+  if (
+    ["www.chalkpicks.pro", "chalkpicks.live", "www.chalkpicks.live"].includes(
+      req.hostname
+    )
+  ) {
+    res.redirect(308, `https://chalkpicks.pro${req.originalUrl}`);
     return;
   }
   next();

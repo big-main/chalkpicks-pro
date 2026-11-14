@@ -241,7 +241,7 @@ function buildStorySvg(opts: {
   <rect x="60" y="1760" width="960" height="1" fill="url(#goldGrad)" opacity="0.4"/>
 
   <!-- ═══ FOOTER ═══ -->
-  <text x="540" y="1820" font-family="Arial Black, Arial" font-weight="900" font-size="34" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="2">chalkpicks.live</text>
+  <text x="540" y="1820" font-family="Arial Black, Arial" font-weight="900" font-size="34" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="2">chalkpicks.pro</text>
   <text x="540" y="1870" font-family="Arial" font-size="22" fill="rgba(200,210,230,0.35)" text-anchor="middle">For entertainment purposes only. Bet responsibly.</text>
 
   <!-- ═══ BOTTOM ACCENT LINE ═══ -->

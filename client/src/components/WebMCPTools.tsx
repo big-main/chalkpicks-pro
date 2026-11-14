@@ -384,7 +384,7 @@ function usePlaceBetTrackerTool() {
             description,
             potentialPayout: 0,
             message:
-              "You must be logged in to ChalkPicks to record bets. Visit https://chalkpicks.live/login",
+              "You must be logged in to ChalkPicks to record bets. Visit https://chalkpicks.pro/login",
           };
         }
         throw new Error(`Failed to record bet: HTTP ${res.status}`);

@@ -61,7 +61,7 @@ export function ReferralPage() {
     return null;
   }
 
-  const referralLink = `https://chalkpicks.live?ref=${user.id}`;
+  const referralLink = `https://chalkpicks.pro?ref=${user.id}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);

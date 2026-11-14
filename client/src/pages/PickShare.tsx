@@ -20,7 +20,7 @@ export default function PickShare() {
 
     const title = `${pick.recommendation} - ${pick.awayTeam} vs ${pick.homeTeam} | ChalkPicks`;
     const description = `${pick.confidenceScore}% confidence pick on ${pick.recommendation} at ${pick.odds && pick.odds > 0 ? "+" : ""}${pick.odds}. ${pick.keyFactors || "AI-powered sports pick."}`;
-    const imageUrl = `https://chalkpicks.live/og-pick-${pick.id}.png`;
+    const imageUrl = `https://chalkpicks.pro/og-pick-${pick.id}.png`;
 
     // Update title
     document.title = title;

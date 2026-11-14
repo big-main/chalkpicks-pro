@@ -97,11 +97,11 @@ export default function AILeaderboard() {
       <PageMeta />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.live" },
-          { name: "Performance", url: "https://chalkpicks.live/performance" },
+          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Performance", url: "https://chalkpicks.pro/performance" },
           {
             name: "AI Leaderboard",
-            url: "https://chalkpicks.live/ai-leaderboard",
+            url: "https://chalkpicks.pro/ai-leaderboard",
           },
         ]}
       />

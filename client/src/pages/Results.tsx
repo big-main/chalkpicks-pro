@@ -181,8 +181,8 @@ export default function Results() {
       <PageMeta pathname="/results" />
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.live" },
-          { name: "Pick Results", url: "https://chalkpicks.live/results" },
+          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Pick Results", url: "https://chalkpicks.pro/results" },
         ]}
       />
       <FaqJsonLd faqs={FAQS} />

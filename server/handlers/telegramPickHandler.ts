@@ -114,7 +114,7 @@ export async function telegramPickHandler(req: Request, res: Response) {
         ``,
         `${recommendation}...`,
         ``,
-        `🔗 <a href="https://chalkpicks.live/picks">View Full Analysis →</a>`,
+        `🔗 <a href="https://chalkpicks.pro/picks">View Full Analysis →</a>`,
         ``,
         `<i>ChalkPicks Pro — AI-Powered Sports Betting Analytics</i>`,
       ].join("\n");
@@ -124,7 +124,7 @@ export async function telegramPickHandler(req: Request, res: Response) {
         ``,
         `No picks scheduled for today. Check back tomorrow for our AI-powered analysis.`,
         ``,
-        `🔗 <a href="https://chalkpicks.live">Visit ChalkPicks →</a>`,
+        `🔗 <a href="https://chalkpicks.pro">Visit ChalkPicks →</a>`,
       ].join("\n");
     }
 

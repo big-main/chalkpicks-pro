@@ -24,7 +24,7 @@ export default function AffiliateHub() {
     return null;
   }
 
-  const affiliateLink = `https://chalkpicks.live?ref=${user.id}`;
+  const affiliateLink = `https://chalkpicks.pro?ref=${user.id}`;
   const referralCode = `CHALK${user.id}`;
   const totalEarnings = 2847.5; // Mock data
   const totalReferrals = 23;

@@ -5,7 +5,7 @@ describe("buildSitemapXml", () => {
   it("renders a valid urlset with loc/lastmod/changefreq/priority", () => {
     const xml = buildSitemapXml([
       {
-        loc: "https://chalkpicks.live/",
+        loc: "https://chalkpicks.pro/",
         lastmod: "2026-07-20",
         changefreq: "daily",
         priority: 1,
@@ -16,7 +16,7 @@ describe("buildSitemapXml", () => {
     expect(xml).toContain(
       '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
     );
-    expect(xml).toContain("<loc>https://chalkpicks.live/</loc>");
+    expect(xml).toContain("<loc>https://chalkpicks.pro/</loc>");
     expect(xml).toContain("<lastmod>2026-07-20</lastmod>");
     expect(xml).toContain("<changefreq>daily</changefreq>");
     expect(xml).toContain("<priority>1.0</priority>");
@@ -25,7 +25,7 @@ describe("buildSitemapXml", () => {
   it("includes a published blog slug entry", () => {
     const xml = buildSitemapXml([
       {
-        loc: "https://chalkpicks.live/blog/some-new-article",
+        loc: "https://chalkpicks.pro/blog/some-new-article",
         lastmod: "2026-07-20",
         changefreq: "weekly",
         priority: 0.7,
@@ -33,23 +33,23 @@ describe("buildSitemapXml", () => {
     ]);
 
     expect(xml).toContain(
-      "<loc>https://chalkpicks.live/blog/some-new-article</loc>"
+      "<loc>https://chalkpicks.pro/blog/some-new-article</loc>"
     );
   });
 
   it("omits optional fields that are not provided", () => {
-    const xml = buildSitemapXml([{ loc: "https://chalkpicks.live/tools" }]);
+    const xml = buildSitemapXml([{ loc: "https://chalkpicks.pro/tools" }]);
 
-    expect(xml).toContain("<loc>https://chalkpicks.live/tools</loc>");
+    expect(xml).toContain("<loc>https://chalkpicks.pro/tools</loc>");
     expect(xml).not.toContain("<lastmod>");
     expect(xml).not.toContain("<changefreq>");
     expect(xml).not.toContain("<priority>");
   });
 
   it("XML-escapes special characters in URLs", () => {
-    const xml = buildSitemapXml([{ loc: "https://chalkpicks.live/blog/a&b" }]);
+    const xml = buildSitemapXml([{ loc: "https://chalkpicks.pro/blog/a&b" }]);
 
-    expect(xml).toContain("<loc>https://chalkpicks.live/blog/a&amp;b</loc>");
+    expect(xml).toContain("<loc>https://chalkpicks.pro/blog/a&amp;b</loc>");
     expect(xml).not.toContain("a&b</loc>");
   });
 

@@ -35,17 +35,17 @@ const POST_TEMPLATES = [
   {
     title: "Free sports betting odds calculator — no signup required",
     body: (pick: any) =>
-      `We built a free odds converter + EV calculator at **chalkpicks.live/tools/odds-calculator** — no account needed.\n\nAlso has ROI tracker, Kelly criterion, and parlay calculator.\n\nToday's featured pick (hash-locked before game time for transparency):\n\n**${pick.awayTeam} @ ${pick.homeTeam}**\n${pick.recommendation}${pick.odds ? ` (${pick.odds > 0 ? "+" : ""}${pick.odds})` : ""}\n\nVerify it was locked pre-game: chalkpicks.live/verify/${pick.contentHash || ""}\n\nFeedback welcome — what tools do you actually use?`,
+      `We built a free odds converter + EV calculator at **chalkpicks.pro/tools/odds-calculator** — no account needed.\n\nAlso has ROI tracker, Kelly criterion, and parlay calculator.\n\nToday's featured pick (hash-locked before game time for transparency):\n\n**${pick.awayTeam} @ ${pick.homeTeam}**\n${pick.recommendation}${pick.odds ? ` (${pick.odds > 0 ? "+" : ""}${pick.odds})` : ""}\n\nVerify it was locked pre-game: chalkpicks.pro/verify/${pick.contentHash || ""}\n\nFeedback welcome — what tools do you actually use?`,
   },
   {
     title: "How we hash-lock picks before games to prevent retroactive edits",
     body: (pick: any) =>
-      `Most picks sites can claim any win rate they want — there's no way to verify the pick existed before the game.\n\nWe SHA-256 hash every pick at publish time and expose a public verify path:\n\n**chalkpicks.live/verify/${pick.contentHash || ""}**\n\nToday's example:\n- **${pick.awayTeam} @ ${pick.homeTeam}**\n- ${pick.recommendation}${pick.odds ? ` at ${pick.odds > 0 ? "+" : ""}${pick.odds}` : ""}\n- Locked: ${pick.lockedAt ? new Date(pick.lockedAt).toLocaleString() : "pre-game"}\n\nFree tools (no signup): chalkpicks.live/tools\n\nCurious if anyone else tracks CLV systematically?`,
+      `Most picks sites can claim any win rate they want — there's no way to verify the pick existed before the game.\n\nWe SHA-256 hash every pick at publish time and expose a public verify path:\n\n**chalkpicks.pro/verify/${pick.contentHash || ""}**\n\nToday's example:\n- **${pick.awayTeam} @ ${pick.homeTeam}**\n- ${pick.recommendation}${pick.odds ? ` at ${pick.odds > 0 ? "+" : ""}${pick.odds}` : ""}\n- Locked: ${pick.lockedAt ? new Date(pick.lockedAt).toLocaleString() : "pre-game"}\n\nFree tools (no signup): chalkpicks.pro/tools\n\nCurious if anyone else tracks CLV systematically?`,
   },
   {
     title: "Sports picks with CLV tracking — free tool",
     body: (pick: any) =>
-      `Built a CLV tracker to measure process quality, not just win rate.\n\nToday's ${formatSportLabel(pick.sportKey)} pick:\n**${pick.awayTeam} @ ${pick.homeTeam}** — ${pick.recommendation}${pick.odds ? ` (${pick.odds > 0 ? "+" : ""}${pick.odds})` : ""}\n\nClosing line value (CLV) tells you if you got the better of the market, regardless of outcome. Positive CLV over time = good process.\n\nFree tools at chalkpicks.live/tools — no account needed.\n\nWhat's your CLV over the last 100 bets?`,
+      `Built a CLV tracker to measure process quality, not just win rate.\n\nToday's ${formatSportLabel(pick.sportKey)} pick:\n**${pick.awayTeam} @ ${pick.homeTeam}** — ${pick.recommendation}${pick.odds ? ` (${pick.odds > 0 ? "+" : ""}${pick.odds})` : ""}\n\nClosing line value (CLV) tells you if you got the better of the market, regardless of outcome. Positive CLV over time = good process.\n\nFree tools at chalkpicks.pro/tools — no account needed.\n\nWhat's your CLV over the last 100 bets?`,
   },
 ];
 

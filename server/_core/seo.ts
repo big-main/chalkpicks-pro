@@ -1,7 +1,7 @@
 /**
  * Server-side per-route SEO injection for the SPA.
  *
- * chalkpicks.live is a client-rendered React app: without this, every URL
+ * chalkpicks.pro is a client-rendered React app: without this, every URL
  * serves the same static index.html — an empty <body> and the homepage's meta.
  * AI crawlers (GPTBot, ClaudeBot, PerplexityBot) don't execute JavaScript and
  * search engines see 30+ URLs with identical titles — the root cause of the
@@ -22,7 +22,7 @@
 import { resolvePageMeta } from "@shared/routeMeta";
 import { eq, desc } from "drizzle-orm";
 
-const ORIGIN = "https://chalkpicks.live";
+const ORIGIN = "https://chalkpicks.pro";
 
 /** Escape text for safe embedding into HTML attribute/text positions. */
 export function esc(s: string): string {

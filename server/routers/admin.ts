@@ -382,7 +382,7 @@ export const adminRouter = router({
     // Telegram
     if (ENV.telegramBotToken && ENV.telegramChatId) {
       try {
-        const msg = `🧪 *ChalkPicks Test Post*\n\nBot is live and connected. Daily picks will be posted here at 8 AM PT.\n\n[View Picks →](https://chalkpicks.live/picks)`;
+        const msg = `🧪 *ChalkPicks Test Post*\n\nBot is live and connected. Daily picks will be posted here at 8 AM PT.\n\n[View Picks →](https://chalkpicks.pro/picks)`;
         const tgRes = await fetch(
           `https://api.telegram.org/bot${ENV.telegramBotToken}/sendMessage`,
           {

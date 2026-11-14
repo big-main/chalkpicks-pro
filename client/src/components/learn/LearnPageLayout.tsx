@@ -61,9 +61,9 @@ export function LearnPageLayout({
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900">
       <BreadcrumbJsonLd
         items={[
-          { name: "Home", url: "https://chalkpicks.live" },
-          { name: "Learn", url: "https://chalkpicks.live/learn" },
-          { name: title, url: `https://chalkpicks.live${path}` },
+          { name: "Home", url: "https://chalkpicks.pro" },
+          { name: "Learn", url: "https://chalkpicks.pro/learn" },
+          { name: title, url: `https://chalkpicks.pro${path}` },
         ]}
       />
       <FaqJsonLd faqs={faqs} />

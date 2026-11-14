@@ -16,7 +16,7 @@ export const communityAutomationRouter = router({
         subreddits: ["sportsbook", "DFS", "sportsbetting"],
         content:
           "Check out today's AI-generated picks with confidence scores and backtested analysis.",
-        cta: "Visit chalkpicks.live for full analysis",
+        cta: "Visit chalkpicks.pro for full analysis",
       },
       twitter: {
         hashtags: [
@@ -30,7 +30,7 @@ export const communityAutomationRouter = router({
         ],
         content:
           "Today's top pick from ChalkPicks AI: [Pick details] | Confidence: [Score]% | Backtest ROI: [ROI]%",
-        cta: "Full analysis: chalkpicks.live",
+        cta: "Full analysis: chalkpicks.pro",
       },
       discord: {
         channels: ["sports-betting", "picks", "ai-predictions"],

@@ -246,7 +246,7 @@ export default function RailwayStatusWidget() {
 
       <div className="mt-2 pt-2 border-t border-slate-700">
         <p className="text-[10px] text-slate-600">
-          Primary: Manus (chalkpicks.live) · Backup: Railway · Auto-refreshes
+          Primary: Manus (chalkpicks.pro) · Backup: Railway · Auto-refreshes
           every 30s
         </p>
       </div>

@@ -59,7 +59,7 @@ export async function generateOgImage(req: Request, res: Response) {
     // Footer Branding
     ctx.fillStyle = "#64748b"; // slate-500
     ctx.font = "30px sans-serif";
-    ctx.fillText("chalkpicks.live", 60, 570);
+    ctx.fillText("chalkpicks.pro", 60, 570);
 
     // Convert to buffer and send
     const buffer = canvas.toBuffer("image/png");

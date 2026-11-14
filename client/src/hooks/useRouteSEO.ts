@@ -33,7 +33,7 @@ function upsertCanonical(href: string) {
  * which runs after this hook in the render cycle.
  *
  * Fixes the duplicate-content signal caused by every page having
- * canonical="https://chalkpicks.live/".
+ * canonical="https://chalkpicks.pro/".
  */
 export function useRouteSEO() {
   const [location] = useLocation();

@@ -6,7 +6,7 @@
  *
  * Setup:
  *  1. Go to app.revenuecat.com → Project → Integrations → Webhooks
- *  2. Add webhook URL: https://chalkpicks.live/api/revenuecat/webhook
+ *  2. Add webhook URL: https://chalkpicks.pro/api/revenuecat/webhook
  *  3. Set the Authorization header to REVENUECAT_WEBHOOK_SECRET env var
  *
  * Docs: https://www.revenuecat.com/docs/webhooks

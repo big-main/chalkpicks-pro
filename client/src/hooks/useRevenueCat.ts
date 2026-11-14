@@ -11,7 +11,7 @@
  *  3. Create products in App Store Connect / Google Play Console matching the IDs below
  *  4. Add those products to a RevenueCat Offering called "default"
  *  5. In RevenueCat dashboard → Integrations → Webhooks, add:
- *       URL: https://chalkpicks.live/api/revenuecat/webhook
+ *       URL: https://chalkpicks.pro/api/revenuecat/webhook
  *       Authorization: value of REVENUECAT_WEBHOOK_SECRET env var
  */
 import { useState, useEffect, useCallback } from "react";

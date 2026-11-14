@@ -70,7 +70,7 @@ export const smsRouter = router({
       if (!ctx.user) throw new Error("Not authenticated");
 
       try {
-        const message = `🎯 New ChalkPicks Alert!\n${input.sport}: ${input.recommendation}\nConfidence: ${input.confidence}%\n\nCheck your picks: chalkpicks.live/picks`;
+        const message = `🎯 New ChalkPicks Alert!\n${input.sport}: ${input.recommendation}\nConfidence: ${input.confidence}%\n\nCheck your picks: chalkpicks.pro/picks`;
 
         await twilioClient.messages.create({
           body: message,
@@ -135,7 +135,7 @@ export const smsRouter = router({
       if (!ctx.user) throw new Error("Not authenticated");
 
       try {
-        const message = `⚡ Steam Move Detected!\n${input.sport}\n${input.event}\nMovement: ${input.movement}\n\nAct fast: chalkpicks.live/picks`;
+        const message = `⚡ Steam Move Detected!\n${input.sport}\n${input.event}\nMovement: ${input.movement}\n\nAct fast: chalkpicks.pro/picks`;
 
         await twilioClient.messages.create({
           body: message,

@@ -19,7 +19,7 @@ import { invokeLLM } from "../_core/llm";
 import { notifyOwner } from "../_core/notification";
 
 const INDEXNOW_KEY = "chalkpicks2026indexnow";
-const INDEXNOW_HOST = "chalkpicks.live";
+const INDEXNOW_HOST = "chalkpicks.pro";
 
 const SPORT_LABELS: Record<string, string> = {
   americanfootball_nfl: "NFL",

@@ -1,11 +1,66 @@
 {
-  "git": {
-    "deploymentEnabled": false
-  },
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.chalkpicks.pro"
+        }
+      ],
+      "destination": "https://chalkpicks.pro/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "chalkpicks.live"
+        }
+      ],
+      "destination": "https://chalkpicks.pro/:path*",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.chalkpicks.live"
+        }
+      ],
+      "destination": "https://chalkpicks.pro/:path*",
+      "statusCode": 301
+    }
+  ],
   "rewrites": [
     {
-      "source": "/((?!api(?:/|$)).*)",
+      "source": "/api/:path*",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/health",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/openapi.json",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/sitemap-blog.xml",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/manus-storage/:path*",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/((?!api(?:/|$)|assets(?:/|$)|.*\\.).*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": true
+  }
 }

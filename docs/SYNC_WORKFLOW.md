@@ -1,44 +1,48 @@
-# ChalkPicks Pro — Manus Hosting and Canonical Sync
+# ChalkPicks Pro — One Canonical Release Path
 
-## Current direction
+## Current production choice
 
-The owner selected `https://chalkpicks.live` as the sole intended public website on 2026-11-13. Manus hosts the full Express/React application; GitHub is a code mirror. The `.pro` website is retired. Do not resume Vercel deployment work, redirect `.live` to `.pro`, cancel domain registration, or deploy a separately edited copy.
-
-## One source, one pathway
+On 2026-11-13 the owner authorized restoring a working `.pro` website after the Manus-hosted `.live` site continued returning a platform billing notice. Keep one source of truth in `/home/ubuntu/chalkpicks-pro`. Do not resume domain switching or deploy separately edited copies.
 
 ```text
-Manus workspace → tests and build → Manus checkpoint → Manus publish
-                                         ↓
-                                  pnpm sync:github
-                                         ↓
-                              big-main/chalkpicks-pro
+Manus workspace → tests + production build → Manus checkpoint
+                                                ↓
+                                         pnpm sync:github
+                                                ↓
+                                  big-main/chalkpicks-pro main
+                                                ↓
+                            Git-linked Vercel production deployment
+                                                ↓
+                                real HTTP/API acceptance tests
 ```
 
-All edits originate in `/home/ubuntu/chalkpicks-pro`. After every checkpoint run `pnpm sync:github`. The script verifies the repository, refuses a dirty working tree, and confirms matching local and GitHub SHAs. If GitHub contains independent updates, inspect and reconcile them in Manus before checkpointing; do not silently discard work. Do not remove branch protection or rewrite divergent history without reviewing and preserving needed commits.
+The Vercel project is `chalkpicks-pro-free` (`prj_Kgysm3zlM1WypzPt02ffgUkiBB86`). Only a READY deployment matching the intended checkpoint and passing the checks below is a successful production release. A healthy Manus preview does not establish healthy public hosting.
 
-## Hosting and domain state
+## Backend split
 
-The source now uses `.live` in website URLs, canonicals, sitemaps, API documentation, notification links, and social links. `www.chalkpicks.live` normalizes to the apex with a method-preserving 308. The apex must never redirect to itself or to `.pro`.
+`server/_core/app.ts` initializes the existing Express routes without importing Vite, opening a listening port, starting WebSockets, or starting in-process schedulers. `api/index.ts` reuses that factory in a warm Vercel Function. `server/_core/index.ts` remains the normal Manus/standalone bootstrap, including frontend serving and persistent-job startup.
 
-The existing Vercel project was paused on 2026-11-13, and external checks confirmed that both `.pro` hosts return `DEPLOYMENT_PAUSED`. It was not deleted, and neither domain registration was surrendered. Vercel builds are disabled by the repository's `git.deploymentEnabled: false` guard. Remove remaining Vercel domain attachments through project settings when available; pausing alone does not remove authoritative DNS records.
+The failed previous function deployment imported `_core/index.ts`, which pulled frontend-only Vite/Tailwind native binaries into the API dependency trace. The bundle regression test now forbids that dependency path.
 
-The `.live` nameservers checked on 2026-11-13 are `ns1.globaldomaingroup.com` and `ns2.globaldomaingroup.com`. Its public response, along with the stable Manus hosts, still showed `Site Unavailable` before publishing this source update. A Cloudflare response header does not establish that the user's Cloudflare account controls the DNS zone.
+`vercel.json` routes API, health, dynamic blog sitemap and storage requests to the backend, preserves direct React document routes, and leaves missing assets as real 404s. Scheduled mutation handlers fail closed in the Function; do not create duplicate automated posting or payout jobs to compensate. Persistent WebSockets and scheduled workers require their existing dedicated runtime and must be checked separately.
 
-The browser's Manus workspace showed a restore-data notice and no listed websites. Confirm the correct owning account and complete any required restoration before claiming production is live. If restoration is required, confirm all correct backup packages first: the account restoration workflow is one-time and an older snapshot can omit later database activity. Do not overwrite current member or billing data with an unreviewed backup.
+## Required checks after every release
 
-## Release acceptance
+1. Homepage, signup, login, picks, pricing, tools and dashboard documents load directly.
+2. `/health` is JSON with `status: ok`, not an HTML 200.
+3. Anonymous `/api/trpc/auth.me` returns its real tRPC contract. Protected procedures reject anonymous visitors.
+4. A database-backed public query returns real JSON. Verify freshness separately; never fabricate picks to hide upstream failures.
+5. Authorized user sessions preserve admin role and paid access. Do not create fake accounts or alter billing as a smoke test.
+6. `/assets/does-not-exist.js` is a 404, not HTML.
+7. `www.chalkpicks.pro` redirects to the apex while preserving path and query. Canonical tags and sitemap use `.pro`.
+8. Local HEAD, fetched GitHub main, and the production deployment commit match.
 
-A saved checkpoint or healthy sandbox preview alone is not proof of healthy Manus production. Verify the stable hosting domain and `.live` independently after publishing and reconnecting the domain under Settings → Domains.
+## GitHub synchronization
 
-Required checks:
+Run `pnpm sync:github` after every saved checkpoint. The script refuses dirty state and confirms SHA parity. If GitHub has independent updates, inspect and reconcile them in Manus before saving the next checkpoint. Preserve needed work and recovery history; do not silently force-push divergent changes.
 
-- `/health` returns JSON with `status: ok`, not maintenance or SPA HTML.
-- Direct page visits and refreshes work on signup, login, picks, pricing, tools, and dashboard.
-- Anonymous tRPC auth returns its JSON contract; protected routes deny anonymous access.
-- Database-backed queries return valid, real results; no fabricated fallback picks.
-- Login, admin permissions, and premium access work for the authorized owner account.
-- Sitemap and canonical tags use `.live`; www redirects preserve path and query.
-- Streaming and automation status are verified separately, without creating duplicate posting jobs.
-- GitHub matches the intended Manus checkpoint.
+## Domain and credentials
 
-Preserve configured email senders and payment credentials. URL migration does not verify email-domain deliverability or change Stripe billing records. Treat those integrations as separate checks.
+Domain registrations remain untouched. The public `.pro` DNS currently reaches Vercel despite the domains being registered in Manus. Registration and serving destination are separate. Do not move authoritative DNS while recovering the working backend.
+
+Keep database, JWT, payment, email and provider secrets in environment settings, never Git or logs. Preserve the existing member database and sender identities. The `.live` Manus hosting notice is an independent provider issue; code changes or cache-busting cannot clear it. Do not claim the `.live` site, paid checkout, live odds, or scheduled automations are recovered without testing each one.

@@ -138,12 +138,12 @@ export async function postMorningPickToDiscord(): Promise<{
           },
           {
             name: "🔓 Full Analysis",
-            value: "[View on ChalkPicks →](https://chalkpicks.live/picks)",
+            value: "[View on ChalkPicks →](https://chalkpicks.pro/picks)",
             inline: false,
           },
         ],
         footer: {
-          text: "ChalkPicks Pro • AI-Powered Sports Analytics • chalkpicks.live",
+          text: "ChalkPicks Pro • AI-Powered Sports Analytics • chalkpicks.pro",
         },
         timestamp: new Date().toISOString(),
       };
@@ -151,9 +151,9 @@ export async function postMorningPickToDiscord(): Promise<{
       embed = {
         title: "🎯 FREE DAILY PICK",
         description:
-          "Our AI is analyzing today's slate. The free daily pick drops shortly!\n\n[View all picks →](https://chalkpicks.live/picks)",
+          "Our AI is analyzing today's slate. The free daily pick drops shortly!\n\n[View all picks →](https://chalkpicks.pro/picks)",
         color: COLORS.morning,
-        footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+        footer: { text: "ChalkPicks Pro • chalkpicks.pro" },
         timestamp: new Date().toISOString(),
       };
     }
@@ -161,9 +161,9 @@ export async function postMorningPickToDiscord(): Promise<{
     embed = {
       title: "🎯 FREE DAILY PICK",
       description:
-        "Today's free pick is live on ChalkPicks!\n\n[View all picks →](https://chalkpicks.live/picks)",
+        "Today's free pick is live on ChalkPicks!\n\n[View all picks →](https://chalkpicks.pro/picks)",
       color: COLORS.morning,
-      footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+      footer: { text: "ChalkPicks Pro • chalkpicks.pro" },
       timestamp: new Date().toISOString(),
     };
   }
@@ -221,13 +221,12 @@ export async function postAfternoonAlertToDiscord(): Promise<{
           },
           {
             name: "⚡ Real-Time Alerts",
-            value:
-              "[Steam Move Tracker →](https://chalkpicks.live/sharp-money)",
+            value: "[Steam Move Tracker →](https://chalkpicks.pro/sharp-money)",
             inline: false,
           },
         ],
         footer: {
-          text: "ChalkPicks Pro • Sharp Money Tracker • chalkpicks.live",
+          text: "ChalkPicks Pro • Sharp Money Tracker • chalkpicks.pro",
         },
         timestamp: new Date().toISOString(),
       };
@@ -235,9 +234,9 @@ export async function postAfternoonAlertToDiscord(): Promise<{
       embed = {
         title: "🔥 SHARP MONEY ALERT",
         description:
-          "Our steam move detector is scanning 40+ sportsbooks for line movement.\n\n[Real-time alerts →](https://chalkpicks.live/sharp-money)",
+          "Our steam move detector is scanning 40+ sportsbooks for line movement.\n\n[Real-time alerts →](https://chalkpicks.pro/sharp-money)",
         color: COLORS.afternoon,
-        footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+        footer: { text: "ChalkPicks Pro • chalkpicks.pro" },
         timestamp: new Date().toISOString(),
       };
     }
@@ -245,9 +244,9 @@ export async function postAfternoonAlertToDiscord(): Promise<{
     embed = {
       title: "🔥 SHARP MONEY ALERT",
       description:
-        "Check the latest sharp money movements on ChalkPicks.\n\n[View alerts →](https://chalkpicks.live/sharp-money)",
+        "Check the latest sharp money movements on ChalkPicks.\n\n[View alerts →](https://chalkpicks.pro/sharp-money)",
       color: COLORS.afternoon,
-      footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+      footer: { text: "ChalkPicks Pro • chalkpicks.pro" },
       timestamp: new Date().toISOString(),
     };
   }
@@ -288,12 +287,12 @@ export async function postSteamAlertToDiscord(alert: {
       },
       {
         name: "🔥 Track Live",
-        value: "[Steam Move Tracker →](https://chalkpicks.live/sharp-money)",
+        value: "[Steam Move Tracker →](https://chalkpicks.pro/sharp-money)",
         inline: false,
       },
     ],
     footer: {
-      text: "ChalkPicks Pro • Real-Time Steam Alerts • chalkpicks.live",
+      text: "ChalkPicks Pro • Real-Time Steam Alerts • chalkpicks.pro",
     },
     timestamp: new Date().toISOString(),
   };
@@ -366,7 +365,7 @@ export async function postEveningResultsToDiscord(): Promise<{
         });
       fields.push({
         name: "📈 Full History",
-        value: "[Track our record →](https://chalkpicks.live/picks)",
+        value: "[Track our record →](https://chalkpicks.pro/picks)",
         inline: false,
       });
 
@@ -375,16 +374,16 @@ export async function postEveningResultsToDiscord(): Promise<{
         description: `**Record: ${record}** (${winRate}% win rate)`,
         color,
         fields,
-        footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+        footer: { text: "ChalkPicks Pro • chalkpicks.pro" },
         timestamp: new Date().toISOString(),
       };
     } else {
       embed = {
         title: "📊 DAILY RESULTS",
         description:
-          "Yesterday's picks are still being graded. Check back soon!\n\n[Track our record →](https://chalkpicks.live/picks)",
+          "Yesterday's picks are still being graded. Check back soon!\n\n[Track our record →](https://chalkpicks.pro/picks)",
         color: COLORS.evening,
-        footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+        footer: { text: "ChalkPicks Pro • chalkpicks.pro" },
         timestamp: new Date().toISOString(),
       };
     }
@@ -392,9 +391,9 @@ export async function postEveningResultsToDiscord(): Promise<{
     embed = {
       title: "📊 DAILY RESULTS",
       description:
-        "Check yesterday's pick results on ChalkPicks.\n\n[View results →](https://chalkpicks.live/picks)",
+        "Check yesterday's pick results on ChalkPicks.\n\n[View results →](https://chalkpicks.pro/picks)",
       color: COLORS.evening,
-      footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+      footer: { text: "ChalkPicks Pro • chalkpicks.pro" },
       timestamp: new Date().toISOString(),
     };
   }
@@ -450,12 +449,12 @@ export async function postNightPreviewToDiscord(): Promise<{
           },
           {
             name: "🔓 Full Pick",
-            value: "[Available at 8am PT →](https://chalkpicks.live/picks)",
+            value: "[Available at 8am PT →](https://chalkpicks.pro/picks)",
             inline: false,
           },
         ],
         footer: {
-          text: "ChalkPicks Pro • Free pick drops at 8am PT • chalkpicks.live",
+          text: "ChalkPicks Pro • Free pick drops at 8am PT • chalkpicks.pro",
         },
         timestamp: new Date().toISOString(),
       };
@@ -463,9 +462,9 @@ export async function postNightPreviewToDiscord(): Promise<{
       embed = {
         title: "🌙 TOMORROW'S PREVIEW",
         description:
-          "Our AI is analyzing tomorrow's slate overnight. Free daily pick drops at **8am PT**.\n\n[Get notified →](https://chalkpicks.live)",
+          "Our AI is analyzing tomorrow's slate overnight. Free daily pick drops at **8am PT**.\n\n[Get notified →](https://chalkpicks.pro)",
         color: COLORS.night,
-        footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+        footer: { text: "ChalkPicks Pro • chalkpicks.pro" },
         timestamp: new Date().toISOString(),
       };
     }
@@ -473,9 +472,9 @@ export async function postNightPreviewToDiscord(): Promise<{
     embed = {
       title: "🌙 TOMORROW'S PREVIEW",
       description:
-        "Tomorrow's top pick is being analyzed. Free pick drops at **8am PT**.\n\n[Subscribe for alerts →](https://chalkpicks.live)",
+        "Tomorrow's top pick is being analyzed. Free pick drops at **8am PT**.\n\n[Subscribe for alerts →](https://chalkpicks.pro)",
       color: COLORS.night,
-      footer: { text: "ChalkPicks Pro • chalkpicks.live" },
+      footer: { text: "ChalkPicks Pro • chalkpicks.pro" },
       timestamp: new Date().toISOString(),
     };
   }

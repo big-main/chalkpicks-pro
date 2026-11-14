@@ -1,373 +1,373 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://chalkpicks.live/</loc>
+    <loc>https://chalkpicks.pro/</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/picks</loc>
+    <loc>https://chalkpicks.pro/picks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/daily-picks</loc>
+    <loc>https://chalkpicks.pro/daily-picks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/nfl-picks</loc>
+    <loc>https://chalkpicks.pro/nfl-picks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/nba-picks</loc>
+    <loc>https://chalkpicks.pro/nba-picks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/mlb-picks</loc>
+    <loc>https://chalkpicks.pro/mlb-picks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/nhl-picks</loc>
+    <loc>https://chalkpicks.pro/nhl-picks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/ncaaf-picks</loc>
+    <loc>https://chalkpicks.pro/ncaaf-picks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/ncaab-picks</loc>
+    <loc>https://chalkpicks.pro/ncaab-picks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/mma-picks</loc>
+    <loc>https://chalkpicks.pro/mma-picks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/soccer-picks</loc>
+    <loc>https://chalkpicks.pro/soccer-picks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/stats</loc>
+    <loc>https://chalkpicks.pro/stats</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/ev-finder</loc>
-    <lastmod>2026-07-30</lastmod>
-    <changefreq>hourly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://chalkpicks.live/arbitrage</loc>
+    <loc>https://chalkpicks.pro/ev-finder</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/prop-builder</loc>
+    <loc>https://chalkpicks.pro/arbitrage</loc>
+    <lastmod>2026-07-30</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://chalkpicks.pro/prop-builder</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/parlay-builder</loc>
+    <loc>https://chalkpicks.pro/parlay-builder</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/line-movement</loc>
+    <loc>https://chalkpicks.pro/line-movement</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/correlation-finder</loc>
+    <loc>https://chalkpicks.pro/correlation-finder</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/clv-tracker</loc>
+    <loc>https://chalkpicks.pro/clv-tracker</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/backtesting</loc>
+    <loc>https://chalkpicks.pro/backtesting</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/tools</loc>
+    <loc>https://chalkpicks.pro/tools</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/pricing</loc>
+    <loc>https://chalkpicks.pro/pricing</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/leaderboard</loc>
+    <loc>https://chalkpicks.pro/leaderboard</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/sportsbooks</loc>
+    <loc>https://chalkpicks.pro/sportsbooks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/kalshi</loc>
+    <loc>https://chalkpicks.pro/kalshi</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/blog</loc>
+    <loc>https://chalkpicks.pro/blog</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/signup</loc>
+    <loc>https://chalkpicks.pro/signup</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/login</loc>
+    <loc>https://chalkpicks.pro/login</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/learn/closing-line-value</loc>
+    <loc>https://chalkpicks.pro/learn/closing-line-value</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/learn/no-vig-odds</loc>
+    <loc>https://chalkpicks.pro/learn/no-vig-odds</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/learn/expected-value-betting</loc>
+    <loc>https://chalkpicks.pro/learn/expected-value-betting</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/learn/kelly-criterion</loc>
+    <loc>https://chalkpicks.pro/learn/kelly-criterion</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/learn/line-movement</loc>
+    <loc>https://chalkpicks.pro/learn/line-movement</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/free-pick</loc>
+    <loc>https://chalkpicks.pro/free-pick</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/tools/kelly-calculator</loc>
+    <loc>https://chalkpicks.pro/tools/kelly-calculator</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/tools/ev-calculator</loc>
+    <loc>https://chalkpicks.pro/tools/ev-calculator</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/tools/odds-calculator</loc>
+    <loc>https://chalkpicks.pro/tools/odds-calculator</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/tools/roi-calculator</loc>
+    <loc>https://chalkpicks.pro/tools/roi-calculator</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/tools/bankroll-manager</loc>
+    <loc>https://chalkpicks.pro/tools/bankroll-manager</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/tools/parlay-calculator</loc>
+    <loc>https://chalkpicks.pro/tools/parlay-calculator</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/tools/devig-calculator</loc>
+    <loc>https://chalkpicks.pro/tools/devig-calculator</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/performance</loc>
+    <loc>https://chalkpicks.pro/performance</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/ai-leaderboard</loc>
+    <loc>https://chalkpicks.pro/ai-leaderboard</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/free-picks</loc>
+    <loc>https://chalkpicks.pro/free-picks</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/strategy-builder</loc>
+    <loc>https://chalkpicks.pro/strategy-builder</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/tools/free-bet-converter</loc>
+    <loc>https://chalkpicks.pro/tools/free-bet-converter</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/tools/middles-finder</loc>
+    <loc>https://chalkpicks.pro/tools/middles-finder</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/guides</loc>
+    <loc>https://chalkpicks.pro/guides</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/public-betting</loc>
+    <loc>https://chalkpicks.pro/public-betting</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/results</loc>
+    <loc>https://chalkpicks.pro/results</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/verify</loc>
+    <loc>https://chalkpicks.pro/verify</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/responsible-gambling</loc>
+    <loc>https://chalkpicks.pro/responsible-gambling</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/methodology</loc>
+    <loc>https://chalkpicks.pro/methodology</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/how-it-works</loc>
+    <loc>https://chalkpicks.pro/how-it-works</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/blog/best-ai-sports-betting-tools-2026</loc>
+    <loc>https://chalkpicks.pro/blog/best-ai-sports-betting-tools-2026</loc>
     <lastmod>2026-07-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/blog/what-is-plus-ev-betting</loc>
+    <loc>https://chalkpicks.pro/blog/what-is-plus-ev-betting</loc>
     <lastmod>2026-07-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/blog/how-to-find-arbitrage-bets</loc>
+    <loc>https://chalkpicks.pro/blog/how-to-find-arbitrage-bets</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/blog/sports-betting-bankroll-management</loc>
+    <loc>https://chalkpicks.pro/blog/sports-betting-bankroll-management</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/blog/ai-picks-vs-handicappers</loc>
+    <loc>https://chalkpicks.pro/blog/ai-picks-vs-handicappers</loc>
     <lastmod>2026-06-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/blog/closing-line-value-clv-explained</loc>
+    <loc>https://chalkpicks.pro/blog/closing-line-value-clv-explained</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/blog/steam-moves-in-sports-betting</loc>
+    <loc>https://chalkpicks.pro/blog/steam-moves-in-sports-betting</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chalkpicks.live/blog/kelly-criterion-sports-betting-calculator</loc>
+    <loc>https://chalkpicks.pro/blog/kelly-criterion-sports-betting-calculator</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

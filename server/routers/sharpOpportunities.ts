@@ -1,11 +1,29 @@
 import { router, publicProcedure, premiumProcedure } from "../_core/trpc";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
+import { SharpApiError } from "../services/sharpApiClient";
 import {
   fetchSharpEVOpportunities,
   fetchSharpArbOpportunities,
   fetchSharpLowHoldLines,
   fetchSharpGameState,
 } from "../services/dataService";
+
+async function sharpResult<T>(load: () => Promise<T>): Promise<T> {
+  try {
+    return await load();
+  } catch (error) {
+    if (error instanceof SharpApiError) {
+      throw new TRPCError({
+        code:
+          error.status === 429 ? "TOO_MANY_REQUESTS" : "SERVICE_UNAVAILABLE",
+        message: error.message,
+        cause: error,
+      });
+    }
+    throw error;
+  }
+}
 
 export const sharpOpportunitiesRouter = router({
   /** +EV opportunities — Pro+ feature, available to premium users */
@@ -19,11 +37,13 @@ export const sharpOpportunitiesRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const opps = await fetchSharpEVOpportunities({
-        sport: input.sport,
-        limit: input.limit,
-        minEV: input.minEV,
-      });
+      const opps = await sharpResult(() =>
+        fetchSharpEVOpportunities({
+          sport: input.sport,
+          limit: input.limit,
+          minEV: input.minEV,
+        })
+      );
       const filtered = input.liveOnly ? opps.filter(o => o.isLive) : opps;
       return {
         opportunities: filtered,
@@ -43,11 +63,13 @@ export const sharpOpportunitiesRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const opps = await fetchSharpArbOpportunities({
-        sport: input.sport,
-        limit: input.limit,
-        liveOnly: input.liveOnly,
-      });
+      const opps = await sharpResult(() =>
+        fetchSharpArbOpportunities({
+          sport: input.sport,
+          limit: input.limit,
+          liveOnly: input.liveOnly,
+        })
+      );
       const filtered = opps.filter(
         o => o.estimatedNetProfitPercent >= input.minProfit
       );
@@ -68,11 +90,13 @@ export const sharpOpportunitiesRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const lines = await fetchSharpLowHoldLines({
-        sport: input.sport,
-        limit: input.limit,
-        maxHold: input.maxHold,
-      });
+      const lines = await sharpResult(() =>
+        fetchSharpLowHoldLines({
+          sport: input.sport,
+          limit: input.limit,
+          maxHold: input.maxHold,
+        })
+      );
       return {
         lines,
         count: lines.length,
@@ -88,7 +112,7 @@ export const sharpOpportunitiesRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const games = await fetchSharpGameState(input.sport);
+      const games = await sharpResult(() => fetchSharpGameState(input.sport));
       return {
         games,
         count: games.length,

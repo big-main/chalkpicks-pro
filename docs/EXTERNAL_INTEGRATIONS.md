@@ -12,13 +12,13 @@ Railway is retired from the ChalkPicks application deployment path. Its inaccess
 
 All SharpAPI REST adapters and SSE now use one server-only client. It trims and deduplicates up to three configured keys, tries another existing key once for documented invalid/expired/disabled-key errors, and remembers rejected credentials until configuration changes. A 403 permission denial never triggers credential rotation. A 429 honors the provider reset window instead of bypassing rate limits. Credentials stay in headers and requests cannot redirect to another host.
 
-Premium provider errors propagate instead of masquerading as successful empty data. SSE requires an authenticated admin or an active paid subscription. Upstream connections are canceled when the client disconnects, and stalled connection setup has a bounded timeout. These changes do not manufacture data or restore upstream plan entitlements.
+Premium provider errors propagate instead of masquerading as successful empty data. The tRPC router maps known provider failures to safe `SERVICE_UNAVAILABLE` responses (HTTP 503), and rate limiting to `TOO_MANY_REQUESTS`, instead of a generic production 500 or instructions to renew an already-valid user subscription. SSE requires an authenticated admin or an active paid subscription. Upstream connections are canceled when the client disconnects, and stalled connection setup has a bounded timeout. These changes do not manufacture data or restore upstream plan entitlements.
 
 Live tests use the same SharpAPI authentication client as the app. They still require HTTP 200 and documented data shapes. AI tests no longer treat network failures or rejected credentials as success. OpenRouter checks its authenticated `/key` endpoint rather than a public model catalog; Discord checks both active webhook configurations with metadata-only GET requests.
 
 ## Validation result
 
-TypeScript and the production build pass. The 22 new auth/stream/retirement regression tests pass. The full suite completes with 320 passing tests and 9 failing live checks: four SharpAPI feature permission failures, three AI provider authentication failures, and two unknown Discord webhooks. Telegram and odds-api.io live checks pass. These failures are retained deliberately; neither rejected authentication nor skipped integration probes are a successful repair.
+TypeScript and the production build pass. The 26 new auth/stream/retirement/API-error regression tests pass. The most recent full-suite run, before the final five deterministic assertions were added, completed with 320 passing tests and 9 failing live checks: four SharpAPI feature permission failures, three AI provider authentication failures, and two unknown Discord webhooks. Telegram and odds-api.io live checks pass. These failures are retained deliberately; neither rejected authentication nor skipped integration probes are a successful repair.
 
 ## Required configuration to finish
 

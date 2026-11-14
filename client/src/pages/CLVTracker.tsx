@@ -101,7 +101,7 @@ function CLVTrackerContent() {
 
         {/* Charts */}
         <Tabs defaultValue="distribution" className="mb-8">
-          <TabsList className="bg-slate-800 border border-border">
+          <TabsList className="bg-secondary border border-border">
             <TabsTrigger value="distribution">Distribution</TabsTrigger>
             <TabsTrigger value="winrate">Win Rate</TabsTrigger>
             <TabsTrigger value="bytype">By Bet Type</TabsTrigger>

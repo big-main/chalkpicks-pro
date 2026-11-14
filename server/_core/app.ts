@@ -47,7 +47,7 @@ export async function createApp({ serverless = false } = {}) {
     });
   }
 
-  // .live is the active domain; never redirect it to the retired .pro site.
+  // Normalize aliases to the selected .pro site without redirecting its apex.
   app.use(canonicalDomainRedirect);
   // Register webhooks BEFORE body parsers (needs raw body)
   registerStripeWebhook(app);

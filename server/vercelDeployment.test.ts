@@ -14,7 +14,7 @@ beforeAll(async () => {
   const { createApp } = await import("./_core/app");
   const initialized = await createApp({ serverless: true });
   expect(initialized.server.listening).toBe(false);
-  const { default: handler } = await import("../api/index");
+  const { default: handler } = await import("../api/index.js");
   server = createServer(handler);
   await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
   const address = server.address();

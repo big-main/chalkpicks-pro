@@ -65,6 +65,6 @@ describe("ChalkPicks .pro canonical domain", () => {
       readFileSync(new URL("../vercel.json", import.meta.url), "utf8")
     );
     expect(config.git.deploymentEnabled).toBe(true);
-    expect(existsSync(new URL("../api/index.ts", import.meta.url))).toBe(true);
+    expect(existsSync(new URL("../api/index.js", import.meta.url))).toBe(true);
   });
 });

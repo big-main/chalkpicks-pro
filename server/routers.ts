@@ -89,7 +89,9 @@ export const appRouter = router({
   antigravity: antigravityRouter,
   newsletter: newsletterRouter,
   auth: router({
-    me: publicProcedure.query(opts => opts.ctx.user),
+    me: publicProcedure.query(opts =>
+      opts.ctx.user ? safeUser(opts.ctx.user) : null
+    ),
 
     register: publicProcedure
       .input(

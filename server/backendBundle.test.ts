@@ -4,7 +4,7 @@ import { build } from "esbuild";
 describe("Backend deployment dependency graph", () => {
   it("excludes Vite, Tailwind and the listening-server bootstrap", async () => {
     const result = await build({
-      entryPoints: ["api/index.ts"],
+      entryPoints: ["server/_core/vercelHandler.ts"],
       bundle: true,
       platform: "node",
       packages: "external",

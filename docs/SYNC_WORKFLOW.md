@@ -20,7 +20,7 @@ The Vercel project is `chalkpicks-pro-free` (`prj_Kgysm3zlM1WypzPt02ffgUkiBB86`)
 
 ## Backend split
 
-`server/_core/app.ts` initializes the existing Express routes without importing Vite, opening a listening port, starting WebSockets, or starting in-process schedulers. `api/index.ts` reuses that factory in a warm Vercel Function. `server/_core/index.ts` remains the normal Manus/standalone bootstrap, including frontend serving and persistent-job startup.
+`server/_core/app.ts` initializes the existing Express routes without importing Vite, opening a listening port, starting WebSockets, or starting in-process schedulers. `server/_core/vercelHandler.ts` reuses that factory in a warm Vercel Function. The build bundles it to `dist/vercel-api.mjs`; `api/index.js` imports that explicit-extension artifact. This avoids Vercel emitting unresolved extensionless TypeScript imports. `server/_core/index.ts` remains the normal Manus/standalone bootstrap, including frontend serving and persistent-job startup.
 
 The failed previous function deployment imported `_core/index.ts`, which pulled frontend-only Vite/Tailwind native binaries into the API dependency trace. The bundle regression test now forbids that dependency path.
 

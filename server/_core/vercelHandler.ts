@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { createApp } from "../server/_core/app";
+import { createApp } from "./app";
 
 let initialization: ReturnType<typeof createApp> | undefined;
 

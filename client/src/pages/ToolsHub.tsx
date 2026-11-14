@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import {
   Calculator, DollarSign, Shield, Layers, Target, TrendingUp, Sigma, Zap,
-  Gift, Crosshair, ArrowRight, Search, Sparkles
+  Gift, Crosshair, ArrowRight, Search, Sparkles, Activity, BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -35,6 +35,27 @@ const tools = [
     label: "CLV Tracker",
     icon: TrendingUp,
     desc: "Measure whether your entry prices beat the closing market price.",
+    color: "#60a5fa",
+  },
+  {
+    href: "/stats",
+    label: "Live Sports Stats",
+    icon: Activity,
+    desc: "Review current game states, player feed results and injury updates.",
+    color: "#22d3ee",
+  },
+  {
+    href: "/performance",
+    label: "Performance Analytics",
+    icon: BarChart3,
+    desc: "Explore the verified pick record, results by sport and pick type, and monthly performance.",
+    color: "#34d399",
+  },
+  {
+    href: "/results",
+    label: "Verified Results",
+    icon: Shield,
+    desc: "Review settled picks and independently verify recorded pick snapshots.",
     color: "#60a5fa",
   },
   {
@@ -200,15 +221,38 @@ const tools = [
   },
 ];
 
+const categories = [
+  { id: "all", label: "All tools" },
+  { id: "markets", label: "Markets & edge" },
+  { id: "props", label: "Props & parlays" },
+  { id: "modeling", label: "Modeling & research" },
+  { id: "analytics", label: "Performance & analytics" },
+  { id: "bankroll", label: "Bankroll & calculators" },
+] as const;
+
+type ToolCategory = (typeof categories)[number]["id"];
+
+function getToolCategory(href: string): Exclude<ToolCategory, "all"> {
+  if (["/ev-finder", "/arbitrage", "/kalshi", "/line-movement", "/sharp-money", "/odds-comparison", "/consensus"].includes(href)) return "markets";
+  if (["/prop-builder", "/correlation-finder", "/parlay-builder", "/tools/parlay-calculator", "/tools/free-bet-converter", "/tools/middles-finder"].includes(href)) return "props";
+  if (["/monte-carlo", "/strategy-builder", "/elo-ratings", "/dfs-optimizer"].includes(href)) return "modeling";
+  if (["/stats", "/performance", "/results", "/clv-tracker", "/backtesting"].includes(href)) return "analytics";
+  return "bankroll";
+}
+
 export default function ToolsHub() {
   const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState<ToolCategory>("all");
   const visibleTools = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return tools;
-    return tools.filter(tool =>
-      `${tool.label} ${tool.desc}`.toLowerCase().includes(query)
-    );
-  }, [search]);
+    return tools.filter(tool => {
+      const matchesCategory =
+        activeCategory === "all" || getToolCategory(tool.href) === activeCategory;
+      const matchesSearch =
+        !query || `${tool.label} ${tool.desc} ${getToolCategory(tool.href)}`.toLowerCase().includes(query);
+      return matchesCategory && matchesSearch;
+    });
+  }, [search, activeCategory]);
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-16">
@@ -248,9 +292,31 @@ export default function ToolsHub() {
                 className="w-full rounded-xl border border-white/10 bg-black/40 py-3 pl-11 pr-4 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-[#39ff14]/50 focus:ring-2 focus:ring-[#39ff14]/10"
               />
             </div>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2" role="group" aria-label="Filter tools by category">
+              {categories.map(item => {
+                const active = activeCategory === item.id;
+                const count = item.id === "all"
+                  ? tools.length
+                  : tools.filter(tool => getToolCategory(tool.href) === item.id).length;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setActiveCategory(item.id)}
+                    className={`rounded-full border px-3.5 py-2 text-xs font-semibold transition-all ${active
+                      ? "border-[#39ff14]/50 bg-[#39ff14]/10 text-[#39ff14] shadow-[0_0_18px_rgba(57,255,20,0.08)]"
+                      : "border-white/10 bg-white/[0.03] text-white/55 hover:border-white/25 hover:text-white/85"}`}
+                  >
+                    {item.label}
+                    <span className="ml-2 text-[10px] opacity-60">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
             <div className="mt-4 flex items-center justify-center gap-2 text-xs text-white/40">
               <Sparkles className="w-3.5 h-3.5 text-[#39ff14]" />
-              {visibleTools.length} tools available · Search by name or what you want to calculate
+              Showing {visibleTools.length} of {tools.length} tools · Filter by workflow or search by outcome
             </div>
           </motion.div>
 
@@ -311,7 +377,7 @@ export default function ToolsHub() {
               <Search className="mx-auto mb-3 h-7 w-7 text-white/30" />
               <p className="font-semibold text-white">No matching tools</p>
               <p className="mt-1 text-sm text-white/45">Try another search term or clear your search.</p>
-              <button onClick={() => setSearch("")} className="mt-4 rounded-lg border border-[#39ff14]/30 px-4 py-2 text-sm text-[#39ff14] hover:bg-[#39ff14]/10">Clear search</button>
+              <button onClick={() => { setSearch(""); setActiveCategory("all"); }} className="mt-4 rounded-lg border border-[#39ff14]/30 px-4 py-2 text-sm text-[#39ff14] hover:bg-[#39ff14]/10">Reset filters</button>
             </div>
           )}
         </div>

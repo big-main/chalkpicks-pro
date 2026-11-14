@@ -30,6 +30,7 @@ import { apiReference } from "@scalar/express-api-reference";
 import compression from "compression";
 import { getSitemapXml } from "./sitemap";
 import { registerIndexNowKeyRoute } from "./indexnow";
+import { registerOAuthRoutes } from "./oauth";
 import { canonicalDomainRedirect } from "../middleware/canonicalDomain";
 
 export async function createApp({ serverless = false } = {}) {
@@ -49,6 +50,7 @@ export async function createApp({ serverless = false } = {}) {
 
   // Normalize aliases to the selected .pro site without redirecting its apex.
   app.use(canonicalDomainRedirect);
+  registerOAuthRoutes(app);
   // Register webhooks BEFORE body parsers (needs raw body)
   registerStripeWebhook(app);
   registerPayPalWebhook(app);

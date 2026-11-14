@@ -28,6 +28,28 @@ async function findUser(condition: SQL) {
 export const getUserById = (id: number) => findUser(eq(users.id, id));
 export const getUserByEmail = (email: string) =>
   findUser(eq(users.email, email));
+export const getUserByOpenId = (openId: string) =>
+  findUser(eq(users.openId, openId));
+
+export async function createOAuthUser(data: {
+  openId: string;
+  name: string;
+  email: string | null;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database unavailable");
+  await db
+    .insert(users)
+    .values({
+      ...data,
+      loginMethod: "google",
+      subscriptionTier: "free",
+      lastSignedIn: new Date(),
+    });
+  const user = await getUserByOpenId(data.openId);
+  if (!user) throw new Error("User not created");
+  return user;
+}
 
 export async function createUser(data: {
   name: string;

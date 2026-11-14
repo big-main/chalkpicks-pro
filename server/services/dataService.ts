@@ -10,6 +10,7 @@
  */
 
 import { oddsApiCache } from "./oddsApiCache";
+import { hasSharpApiKey, sharpApiJson } from "./sharpApiClient";
 
 // ─── In-Memory Cache ────────────────────────────────────────────────────────
 
@@ -166,25 +167,7 @@ export interface CorrelationPair {
   recommendation: "strong_corr" | "moderate_corr" | "negative_corr" | "neutral";
 }
 
-// ─── SharpAPI (Sharp plan: 1,000 req/min, 25 books, +EV/arb/low-hold/game-state) ─
-// Supports key rotation: SHARPAPI_KEY, SHARPAPI_KEY_2, SHARPAPI_KEY_3
-const SHARPAPI_KEYS = [
-  process.env.SHARPAPI_KEY || "",
-  process.env.SHARPAPI_KEY_2 || "",
-  process.env.SHARPAPI_KEY_3 || "",
-].filter(Boolean);
-let _sharpKeyIdx = 0;
-function getSharpKey(): string {
-  return SHARPAPI_KEYS[_sharpKeyIdx % Math.max(SHARPAPI_KEYS.length, 1)] ?? "";
-}
-function rotateSharpKey(): void {
-  if (SHARPAPI_KEYS.length > 1)
-    _sharpKeyIdx = (_sharpKeyIdx + 1) % SHARPAPI_KEYS.length;
-}
-// Legacy compat
-const SHARPAPI_KEY = process.env.SHARPAPI_KEY || "";
-const SHARPAPI_BASE = "https://api.sharpapi.io/api/v1";
-
+// ─── SharpAPI — shared credential failover for REST and SSE ────────────────
 // Map ChalkPicks sport keys → SharpAPI league slugs
 const SPORT_SHARPAPI_MAP: Record<string, string> = {
   nfl: "nfl",
@@ -199,29 +182,14 @@ const SPORT_SHARPAPI_MAP: Record<string, string> = {
 
 /** Fetch odds from SharpAPI Sharp plan and normalize to OddsEvent[]. */
 async function fetchOddsFromSharpApi(sport: string): Promise<OddsEvent[]> {
-  const key = getSharpKey();
-  if (!key) return [];
+  if (!hasSharpApiKey()) return [];
   const league = SPORT_SHARPAPI_MAP[sport.toLowerCase()];
   if (!league) return [];
 
   try {
-    const url = `${SHARPAPI_BASE}/odds?league=${league}&market=main&limit=200`;
-    const res = await fetch(url, {
-      headers: { "X-API-Key": key },
-      signal: AbortSignal.timeout(10_000),
-    });
-
-    if (!res.ok) {
-      if (res.status === 429) {
-        console.warn(`[SharpAPI] Rate limited for ${sport} — rotating key`);
-        rotateSharpKey();
-      } else {
-        console.warn(`[SharpAPI] ${res.status} for ${sport}`);
-      }
-      return [];
-    }
-
-    const json = await res.json();
+    const json = await sharpApiJson(
+      `/odds?league=${league}&market=main&limit=200`
+    );
     const rows = json.data || [];
     if (rows.length === 0) return [];
 
@@ -380,53 +348,39 @@ export async function fetchSharpEVOpportunities(opts?: {
   limit?: number;
   minEV?: number;
 }): Promise<SharpEVOpportunity[]> {
-  if (!SHARPAPI_KEY) return [];
-  try {
-    const params = new URLSearchParams();
-    if (opts?.sport)
-      params.set(
-        "league",
-        SPORT_SHARPAPI_MAP[opts.sport.toLowerCase()] || opts.sport
-      );
-    params.set("limit", String(opts?.limit ?? 50));
-    if (opts?.minEV) params.set("min_ev", String(opts.minEV));
-    const res = await fetch(`${SHARPAPI_BASE}/opportunities/ev?${params}`, {
-      headers: { "X-API-Key": SHARPAPI_KEY },
-      signal: AbortSignal.timeout(10_000),
-    });
-    if (!res.ok) {
-      console.warn(`[SharpAPI EV] ${res.status}`);
-      return [];
-    }
-    const json = await res.json();
-    const rows: any[] = json.data || [];
-    return rows.map(r => ({
-      id: r.id,
-      eventName: r.event_name,
-      league: r.league,
-      leagueLabel: r.league_label || r.league?.toUpperCase(),
-      homeTeam: r.home_team,
-      awayTeam: r.away_team,
-      selection: r.display_selection || r.selection,
-      sportsbook: r.sportsbook,
-      oddsAmerican: r.odds_american,
-      oddsDecimal: r.odds_decimal,
-      evPercentage: r.ev_percentage,
-      kellyPercent: r.kelly_percent,
-      fairProbability: r.fair_probability,
-      confidence: r.confidence,
-      isLive: r.is_live,
-      isPlayerProp: r.is_player_prop,
-      marketType: r.market_type,
-      line: r.line ?? null,
-      detectedAt: r.detected_at,
-      arbAvailable: r.arb_available,
-      arbProfit: r.arb_profit,
-    }));
-  } catch (err) {
-    console.warn("[SharpAPI EV] fetch failed:", (err as Error).message);
-    return [];
-  }
+  const params = new URLSearchParams();
+  if (opts?.sport)
+    params.set(
+      "league",
+      SPORT_SHARPAPI_MAP[opts.sport.toLowerCase()] || opts.sport
+    );
+  params.set("limit", String(opts?.limit ?? 50));
+  if (opts?.minEV) params.set("min_ev", String(opts.minEV));
+  const json = await sharpApiJson(`/opportunities/ev?${params}`);
+  const rows: any[] = json.data || [];
+  return rows.map(r => ({
+    id: r.id,
+    eventName: r.event_name,
+    league: r.league,
+    leagueLabel: r.league_label || r.league?.toUpperCase(),
+    homeTeam: r.home_team,
+    awayTeam: r.away_team,
+    selection: r.display_selection || r.selection,
+    sportsbook: r.sportsbook,
+    oddsAmerican: r.odds_american,
+    oddsDecimal: r.odds_decimal,
+    evPercentage: r.ev_percentage,
+    kellyPercent: r.kelly_percent,
+    fairProbability: r.fair_probability,
+    confidence: r.confidence,
+    isLive: r.is_live,
+    isPlayerProp: r.is_player_prop,
+    marketType: r.market_type,
+    line: r.line ?? null,
+    detectedAt: r.detected_at,
+    arbAvailable: r.arb_available,
+    arbProfit: r.arb_profit,
+  }));
 }
 
 /** Fetch arbitrage opportunities from SharpAPI Sharp plan. */
@@ -435,50 +389,33 @@ export async function fetchSharpArbOpportunities(opts?: {
   limit?: number;
   liveOnly?: boolean;
 }): Promise<SharpArbOpportunity[]> {
-  if (!SHARPAPI_KEY) return [];
-  try {
-    const params = new URLSearchParams();
-    if (opts?.sport)
-      params.set(
-        "league",
-        SPORT_SHARPAPI_MAP[opts.sport.toLowerCase()] || opts.sport
-      );
-    params.set("limit", String(opts?.limit ?? 50));
-    if (opts?.liveOnly) params.set("live", "true");
-    const res = await fetch(
-      `${SHARPAPI_BASE}/opportunities/arbitrage?${params}`,
-      {
-        headers: { "X-API-Key": SHARPAPI_KEY },
-        signal: AbortSignal.timeout(10_000),
-      }
+  const params = new URLSearchParams();
+  if (opts?.sport)
+    params.set(
+      "league",
+      SPORT_SHARPAPI_MAP[opts.sport.toLowerCase()] || opts.sport
     );
-    if (!res.ok) {
-      console.warn(`[SharpAPI Arb] ${res.status}`);
-      return [];
-    }
-    const json = await res.json();
-    const rows: any[] = json.data || json.opportunities || [];
-    return rows.map(r => ({
-      id: r.id,
-      eventName: r.event_name,
-      league: r.league,
-      leagueLabel: r.league_label || r.league?.toUpperCase(),
-      isLive: r.is_live,
-      estimatedNetProfitPercent: r.estimated_net_profit_percent,
-      detectedAt: r.detected_at,
-      legs: (r.legs || []).map((l: any) => ({
-        sportsbook: l.sportsbook,
-        selection: l.selection,
-        oddsAmerican: l.odds_american,
-        oddsDecimal: l.odds_decimal,
-        line: l.line ?? null,
-        stakePercent: l.stake_percent,
-      })),
-    }));
-  } catch (err) {
-    console.warn("[SharpAPI Arb] fetch failed:", (err as Error).message);
-    return [];
-  }
+  params.set("limit", String(opts?.limit ?? 50));
+  if (opts?.liveOnly) params.set("live", "true");
+  const json = await sharpApiJson(`/opportunities/arbitrage?${params}`);
+  const rows: any[] = json.data || json.opportunities || [];
+  return rows.map(r => ({
+    id: r.id,
+    eventName: r.event_name,
+    league: r.league,
+    leagueLabel: r.league_label || r.league?.toUpperCase(),
+    isLive: r.is_live,
+    estimatedNetProfitPercent: r.estimated_net_profit_percent,
+    detectedAt: r.detected_at,
+    legs: (r.legs || []).map((l: any) => ({
+      sportsbook: l.sportsbook,
+      selection: l.selection,
+      oddsAmerican: l.odds_american,
+      oddsDecimal: l.odds_decimal,
+      line: l.line ?? null,
+      stakePercent: l.stake_percent,
+    })),
+  }));
 }
 
 /** Fetch low hold lines from SharpAPI Sharp plan. */
@@ -487,87 +424,56 @@ export async function fetchSharpLowHoldLines(opts?: {
   limit?: number;
   maxHold?: number;
 }): Promise<SharpLowHoldLine[]> {
-  if (!SHARPAPI_KEY) return [];
-  try {
-    const params = new URLSearchParams();
-    if (opts?.sport)
-      params.set(
-        "league",
-        SPORT_SHARPAPI_MAP[opts.sport.toLowerCase()] || opts.sport
-      );
-    params.set("limit", String(opts?.limit ?? 50));
-    if (opts?.maxHold) params.set("max_hold", String(opts.maxHold));
-    const res = await fetch(
-      `${SHARPAPI_BASE}/opportunities/low_hold?${params}`,
-      {
-        headers: { "X-API-Key": SHARPAPI_KEY },
-        signal: AbortSignal.timeout(10_000),
-      }
+  const params = new URLSearchParams();
+  if (opts?.sport)
+    params.set(
+      "league",
+      SPORT_SHARPAPI_MAP[opts.sport.toLowerCase()] || opts.sport
     );
-    if (!res.ok) {
-      console.warn(`[SharpAPI LowHold] ${res.status}`);
-      return [];
-    }
-    const json = await res.json();
-    const rows: any[] = json.data || json.opportunities || [];
-    return rows.map(r => ({
-      id: r.id,
-      eventName: r.event_name,
-      league: r.league,
-      leagueLabel: r.league_label || r.league?.toUpperCase(),
-      marketType: r.market_type,
-      line: r.line ?? null,
-      holdPercent: r.hold_percent ?? r.implied_total,
-      isLive: r.is_live,
-      detectedAt: r.detected_at,
-      books: (r.books || r.legs || []).map((b: any) => ({
-        sportsbook: b.sportsbook,
-        selection: b.selection,
-        oddsAmerican: b.odds_american,
-        oddsDecimal: b.odds_decimal,
-      })),
-    }));
-  } catch (err) {
-    console.warn("[SharpAPI LowHold] fetch failed:", (err as Error).message);
-    return [];
-  }
+  params.set("limit", String(opts?.limit ?? 50));
+  if (opts?.maxHold) params.set("max_hold", String(opts.maxHold));
+  const json = await sharpApiJson(`/opportunities/low_hold?${params}`);
+  const rows: any[] = json.data || json.opportunities || [];
+  return rows.map(r => ({
+    id: r.id,
+    eventName: r.event_name,
+    league: r.league,
+    leagueLabel: r.league_label || r.league?.toUpperCase(),
+    marketType: r.market_type,
+    line: r.line ?? null,
+    holdPercent: r.hold_percent ?? r.implied_total,
+    isLive: r.is_live,
+    detectedAt: r.detected_at,
+    books: (r.books || r.legs || []).map((b: any) => ({
+      sportsbook: b.sportsbook,
+      selection: b.selection,
+      oddsAmerican: b.odds_american,
+      oddsDecimal: b.odds_decimal,
+    })),
+  }));
 }
 
 /** Fetch live game state from SharpAPI Sharp plan (Game State add-on). */
 export async function fetchSharpGameState(
   sport?: string
 ): Promise<SharpGameState[]> {
-  if (!SHARPAPI_KEY) return [];
-  try {
-    const url = sport
-      ? `${SHARPAPI_BASE}/gamestate/${SPORT_SHARPAPI_MAP[sport.toLowerCase()] || sport}`
-      : `${SHARPAPI_BASE}/gamestate`;
-    const res = await fetch(url, {
-      headers: { "X-API-Key": SHARPAPI_KEY },
-      signal: AbortSignal.timeout(10_000),
-    });
-    if (!res.ok) {
-      console.warn(`[SharpAPI GameState] ${res.status}`);
-      return [];
-    }
-    const json = await res.json();
-    const rows: any[] = json.data || [];
-    return rows.map(r => ({
-      gameId: r.game_id || r.event_id,
-      sport: r.sport || r.league,
-      homeTeam: r.home_team,
-      awayTeam: r.away_team,
-      homeScore: r.home_score ?? 0,
-      awayScore: r.away_score ?? 0,
-      period: r.period || r.quarter || r.inning || "",
-      clock: r.clock || r.time_remaining || "",
-      isLive: r.is_live ?? true,
-      updatedAt: r.updated_at || new Date().toISOString(),
-    }));
-  } catch (err) {
-    console.warn("[SharpAPI GameState] fetch failed:", (err as Error).message);
-    return [];
-  }
+  const url = sport
+    ? `/gamestate/${SPORT_SHARPAPI_MAP[sport.toLowerCase()] || sport}`
+    : `/gamestate`;
+  const json = await sharpApiJson(url);
+  const rows: any[] = json.data || [];
+  return rows.map(r => ({
+    gameId: r.game_id || r.event_id,
+    sport: r.sport || r.league,
+    homeTeam: r.home_team,
+    awayTeam: r.away_team,
+    homeScore: r.home_score ?? 0,
+    awayScore: r.away_score ?? 0,
+    period: r.period || r.quarter || r.inning || "",
+    clock: r.clock || r.time_remaining || "",
+    isLive: r.is_live ?? true,
+    updatedAt: r.updated_at || new Date().toISOString(),
+  }));
 }
 
 // ─── The Odds API ───────────────────────────────────────────────────────────
@@ -766,8 +672,8 @@ export async function fetchOdds(
   const cached = cache.get<OddsEvent[]>(cacheKey);
   if (cached) return cached;
 
-  // Priority 1: SharpAPI (17,280 req/day free tier — most generous)
-  if (SHARPAPI_KEY) {
+  // Priority 1: SharpAPI, using the configured account limits and entitlements.
+  if (hasSharpApiKey()) {
     const sharpResults = await fetchOddsFromSharpApi(sport);
     if (sharpResults.length > 0) {
       cache.set(cacheKey, sharpResults, TTL.ODDS);

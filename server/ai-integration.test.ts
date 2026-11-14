@@ -18,47 +18,40 @@ describe("AI API Integration", () => {
           `✓ OpenAI API key valid. Found ${response.data.length} models`
         );
       } catch (error: any) {
-        // 429 rate limit or quota exceeded is acceptable in sandbox — key is valid but exhausted
-        if (error.status === 429 || error.code === "insufficient_quota") {
-          console.log(
-            `⚠ OpenAI API key valid but quota exceeded (429). Passing gracefully.`
-          );
-          expect(true).toBe(true);
-        } else if (
-          error.code === "ECONNREFUSED" ||
-          error.code === "ETIMEDOUT" ||
-          error.message?.includes("timeout")
-        ) {
-          console.log(
-            `⚠ OpenAI API unreachable in sandbox. Passing gracefully.`
-          );
-          expect(true).toBe(true);
-        } else {
-          throw new Error(`OpenAI API validation failed: ${error.message}`);
-        }
+        // A provider error is not healthy integration. Do not log error.message:
+        // OpenAI sometimes echoes the rejected credential in that message.
+        throw new Error(
+          `OpenAI /models validation failed: HTTP ${error.status ?? "network"}, ${error.code ?? "request_failed"}`
+        );
       }
     },
     15000
   );
 
-  it.skip("should validate Claude API key via OpenRouter", async () => {
-    // Skipped: OpenRouter endpoint is unreliable in sandbox environment
-    const response = await fetch("https://openrouter.ai/api/v1/models", {
-      signal: AbortSignal.timeout(12000),
-      headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      },
-    });
+  it.skipIf(!process.env.OPENROUTER_API_KEY)(
+    "validates OpenRouter using authenticated key metadata",
+    async () => {
+      // /models is public and cannot prove key validity; /key is authenticated.
+      const response = await fetch("https://openrouter.ai/api/v1/key", {
+        signal: AbortSignal.timeout(12000),
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        },
+      });
 
-    expect(response.ok).toBe(true);
-    const data = await response.json();
-    expect(data.data).toBeDefined();
-    expect(Array.isArray(data.data)).toBe(true);
-    console.log(`✓ OpenRouter API key valid. Found ${data.data.length} models`);
-  }, 15000);
+      expect(response.status, `OpenRouter /key: HTTP ${response.status}`).toBe(
+        200
+      );
+      const data = await response.json();
+      expect(data.data).toBeDefined();
+      expect(typeof data.data.is_free_tier).toBe("boolean");
+    },
+    15000
+  );
 
-  it("should validate Anthropic Claude API key directly", async () => {
-    try {
+  it.skipIf(!process.env.ANTHROPIC_API_KEY)(
+    "should validate Anthropic Claude API key directly",
+    async () => {
       const response = await fetch("https://api.anthropic.com/v1/models", {
         signal: AbortSignal.timeout(10000),
         headers: {
@@ -67,26 +60,13 @@ describe("AI API Integration", () => {
         },
       });
 
-      // Key may be a connector placeholder rewritten at runtime — 401/403 is acceptable in test env
       expect(
-        response.ok || response.status === 401 || response.status === 403
-      ).toBe(true);
-      console.log(`✓ Anthropic Claude API key check: HTTP ${response.status}`);
-    } catch (error: any) {
-      // Timeout or network error is acceptable in sandbox environment
-      if (
-        error.name === "AbortError" ||
-        error.name === "TimeoutError" ||
-        error.code === "ETIMEDOUT" ||
-        error.code === "ECONNREFUSED"
-      ) {
-        console.log(
-          `⚠ Anthropic API unreachable/timeout in sandbox. Passing gracefully.`
-        );
-        expect(true).toBe(true);
-      } else {
-        throw error;
-      }
-    }
-  }, 15000);
+        response.status,
+        `Anthropic /models: HTTP ${response.status}`
+      ).toBe(200);
+      const json = await response.json();
+      expect(Array.isArray(json.data)).toBe(true);
+    },
+    15000
+  );
 });

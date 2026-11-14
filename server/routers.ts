@@ -46,7 +46,6 @@ import { apiKeysRouter } from "./routers/apiKeys";
 import { consensusRouter } from "./routers/consensus";
 import { trackingRouter } from "./routers/tracking";
 import { profileRouter } from "./routers/profile";
-import { railwayRouter } from "./routers/railway";
 import { n8nWebhookRouter } from "./routers/n8nWebhook";
 import { antigravityRouter } from "./routers/antigravity";
 import { strategyRouter } from "./routers/strategy";
@@ -295,7 +294,6 @@ export const appRouter = router({
   consensus: consensusRouter,
   tracking: trackingRouter,
   profile: profileRouter,
-  railway: railwayRouter,
   n8nWebhook: n8nWebhookRouter,
   strategy: strategyRouter,
   pageSpeed: pageSpeedRouter,

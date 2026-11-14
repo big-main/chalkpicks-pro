@@ -7,7 +7,7 @@ describe("Discord & Telegram Secrets Validation", () => {
       const url = process.env.DISCORD_WEBHOOK_URL ?? "";
       expect(url.length).toBeGreaterThan(0);
       // Discord webhooks are either discord.com or discordapp.com URLs
-      expect(url).toMatch(/discord(app)?\.com\/api\/webhooks\//);
+      expect(/discord(app)?\.com\/api\/webhooks\//.test(url)).toBe(true);
     }
   );
 
@@ -16,7 +16,7 @@ describe("Discord & Telegram Secrets Validation", () => {
     () => {
       const url = process.env.DISCORD_STEAM_WEBHOOK_URL ?? "";
       expect(url.length).toBeGreaterThan(0);
-      expect(url).toMatch(/discord(app)?\.com\/api\/webhooks\//);
+      expect(/discord(app)?\.com\/api\/webhooks\//.test(url)).toBe(true);
     }
   );
 
@@ -30,24 +30,28 @@ describe("Discord & Telegram Secrets Validation", () => {
     }
   );
 
-  it.skipIf(!process.env.DISCORD_WEBHOOK_URL)(
-    "can reach Discord webhook URL (live API check)",
-    async () => {
-      const url = process.env.DISCORD_WEBHOOK_URL ?? "";
-      if (!url) return; // skip if not set
-      // GET the webhook info (no auth needed, returns webhook metadata)
-      const res = await fetch(url, {
-        method: "GET",
-        signal: AbortSignal.timeout(12_000),
-      });
-      // Discord returns 200 with webhook info for valid webhooks
-      expect(res.status).toBe(200);
-      const data = (await res.json()) as any;
-      expect(data).toHaveProperty("id");
-      expect(data).toHaveProperty("channel_id");
-    },
-    15_000
-  );
+  for (const name of [
+    "DISCORD_WEBHOOK_URL",
+    "DISCORD_STEAM_WEBHOOK_URL",
+  ] as const) {
+    it.skipIf(!process.env[name])(
+      `can reach ${name} (live API check)`,
+      async () => {
+        const url = process.env[name] ?? "";
+        // GET the webhook info (no auth needed, returns webhook metadata)
+        const res = await fetch(url, {
+          method: "GET",
+          signal: AbortSignal.timeout(12_000),
+        });
+        // Discord returns 200 with webhook info for valid webhooks
+        expect(res.status, `${name}: HTTP ${res.status}`).toBe(200);
+        const data = (await res.json()) as any;
+        expect(data).toHaveProperty("id");
+        expect(data).toHaveProperty("channel_id");
+      },
+      15_000
+    );
+  }
 
   it.skipIf(!process.env.TELEGRAM_BOT_TOKEN)(
     "can reach Telegram bot API (live API check)",

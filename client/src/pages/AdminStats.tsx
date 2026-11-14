@@ -1,8 +1,13 @@
 import { useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import RailwayStatusWidget from "@/components/RailwayStatusWidget";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function AdminStats() {
@@ -23,9 +28,12 @@ export function AdminStats() {
   });
 
   // Fetch user list
-  const { data: usersData } = trpc.admin.getUsers.useQuery({ limit: 100, offset: 0 }, {
-    refetchInterval: 60000, // Refresh every minute
-  });
+  const { data: usersData } = trpc.admin.getUsers.useQuery(
+    { limit: 100, offset: 0 },
+    {
+      refetchInterval: 60000, // Refresh every minute
+    }
+  );
   const users = usersData?.users || [];
 
   if (user === undefined || isLoading) {
@@ -61,65 +69,91 @@ export function AdminStats() {
   const newsletterSubs = stats?.newsletterSubscribers || 0;
   const totalPicksGenerated = stats?.totalPicksGenerated || 0;
 
-  const newSignupsToday = users.filter((u: any) => {
-    const createdAt = new Date(u.createdAt);
-    const today = new Date();
-    return (
-      createdAt.getFullYear() === today.getFullYear() &&
-      createdAt.getMonth() === today.getMonth() &&
-      createdAt.getDate() === today.getDate()
-    );
-  }).length || 0;
+  const newSignupsToday =
+    users.filter((u: any) => {
+      const createdAt = new Date(u.createdAt);
+      const today = new Date();
+      return (
+        createdAt.getFullYear() === today.getFullYear() &&
+        createdAt.getMonth() === today.getMonth() &&
+        createdAt.getDate() === today.getDate()
+      );
+    }).length || 0;
 
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground mt-2">Real-time platform metrics</p>
+          <p className="text-muted-foreground mt-2">
+            Real-time platform metrics
+          </p>
         </div>
 
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Members</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Members
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{totalUsers}</div>
-              <p className="text-xs text-muted-foreground mt-1">All registered users</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Paid Subscribers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-600">{paidSubscribers}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {totalUsers > 0 ? Math.round((paidSubscribers / totalUsers) * 100) : 0}% conversion
+                All registered users
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Picks Today</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Paid Subscribers
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-blue-600">{picksToday}</div>
-              <p className="text-xs text-muted-foreground mt-1">Released today</p>
+              <div className="text-3xl font-bold text-green-600">
+                {paidSubscribers}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {totalUsers > 0
+                  ? Math.round((paidSubscribers / totalUsers) * 100)
+                  : 0}
+                % conversion
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Win Rate</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Picks Today
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-amber-600">{winRate.toFixed(1)}%</div>
-              <p className="text-xs text-muted-foreground mt-1">All-time record</p>
+              <div className="text-3xl font-bold text-blue-600">
+                {picksToday}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Released today
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Win Rate
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-amber-600">
+                {winRate.toFixed(1)}%
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                All-time record
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -128,38 +162,45 @@ export function AdminStats() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">New Signups Today</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                New Signups Today
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{newSignupsToday}</div>
-              <p className="text-xs text-muted-foreground mt-1">Fresh registrations</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Fresh registrations
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Newsletter Subscribers</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Newsletter Subscribers
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{newsletterSubs}</div>
-              <p className="text-xs text-muted-foreground mt-1">Email list size</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Email list size
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Picks Generated</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Picks Generated
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalPicksGenerated}</div>
-              <p className="text-xs text-muted-foreground mt-1">All-time picks</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                All-time picks
+              </p>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Deployment Status */}
-        <div className="mb-8">
-          <RailwayStatusWidget />
         </div>
 
         {/* User List */}
@@ -183,7 +224,9 @@ export function AdminStats() {
                     <tr key={u.id} className="border-b hover:bg-muted/50">
                       <td className="py-2 px-2">{u.email}</td>
                       <td className="py-2 px-2">
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${u.subscriptionTier === "free" ? "bg-gray-100 text-gray-800" : "bg-green-100 text-green-800"}`}>
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${u.subscriptionTier === "free" ? "bg-gray-100 text-gray-800" : "bg-green-100 text-green-800"}`}
+                        >
                           {u.subscriptionTier}
                         </span>
                       </td>

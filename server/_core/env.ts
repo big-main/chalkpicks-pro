@@ -32,10 +32,11 @@ export const ENV = {
   n8nDripWebhookUrl: process.env.N8N_DRIP_WEBHOOK_URL ?? "",
   n8nPicksWebhookUrl: process.env.N8N_PICKS_WEBHOOK_URL ?? "",
   n8nWebhookSecret: process.env.N8N_WEBHOOK_SECRET ?? "",
-  railwayApiToken: process.env.RAILWAY_API_TOKEN ?? "",
   sharpApiKey: process.env.SHARPAPI_KEY ?? "",
   hasOddsApiKey: Boolean(
     process.env.SHARPAPI_KEY ||
+      process.env.SHARPAPI_KEY_2 ||
+      process.env.SHARPAPI_KEY_3 ||
       process.env.ODDS_API_KEY ||
       process.env.ODDS_API_IO_KEY
   ),

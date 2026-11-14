@@ -41,6 +41,7 @@ import {
   Crown,
   Calendar,
   Star,
+  Search,
 } from "lucide-react";
 import {
   Tooltip,
@@ -54,7 +55,6 @@ import PushNotificationBanner from "@/components/PushNotificationBanner";
 import { GameStateWidget } from "@/components/GameStateWidget";
 import { LiveOddsTicker } from "@/components/LiveOddsTicker";
 import ConfidenceBar from "@/components/ConfidenceBar";
-import { motion } from "framer-motion";
 
 const PICK_TYPE_LABELS: Record<string, string> = {
   moneyline: "Moneyline",
@@ -211,11 +211,11 @@ function PickCard({
   // Signal badges
   const signals: { label: string; className: string }[] = [];
   if (pick.confidenceScore >= 85)
-    signals.push({ label: "HIGH ROI", className: "signal-high-roi" });
+    signals.push({ label: "HIGH MODEL CONFIDENCE", className: "signal-high-roi" });
   if (pick.edgeScore >= 7)
-    signals.push({ label: "SHARP", className: "signal-sharp" });
+    signals.push({ label: "HIGH EDGE SCORE", className: "signal-sharp" });
   if (pick.edgeScore >= 5 && pick.confidenceScore >= 75)
-    signals.push({ label: "VALUE", className: "signal-value" });
+    signals.push({ label: "EDGE + CONFIDENCE", className: "signal-value" });
 
   const topPickStyle = isTopPick
     ? {
@@ -1077,6 +1077,7 @@ export default function Picks() {
   const { user } = useAuth();
   const [filters, setFilters] = useState<FilterState>(getStoredFilters);
   const [generateOpen, setGenerateOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const dateRange = useMemo(
     () => getDateRange(filters.datePreset),
@@ -1095,6 +1096,10 @@ export default function Picks() {
     dateFrom: dateRange.dateFrom,
     dateTo: dateRange.dateTo,
     limit: 100,
+  }, {
+    staleTime: 20_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
   });
   const { data: sports } = trpc.picks.sports.useQuery();
   const { data: sportCounts } = trpc.picks.sportCounts.useQuery(undefined, {
@@ -1137,6 +1142,7 @@ export default function Picks() {
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.sport !== "all") count++;
+    if (searchQuery.trim()) count++;
     if (filters.tier !== "all") count++;
     if (filters.pickType !== "all") count++;
     if (filters.minConfidence > 0) count++;
@@ -1145,7 +1151,7 @@ export default function Picks() {
     if (filters.sportsbook !== "all") count++;
     if (filters.datePreset !== "upcoming") count++;
     return count;
-  }, [filters]);
+  }, [filters, searchQuery]);
 
   // Client-side filtering and sorting
   const filteredAndSortedPicks = useMemo(() => {
@@ -1153,6 +1159,21 @@ export default function Picks() {
     let picks = [...picksData.picks];
 
     // Apply client-side filters
+    const query = searchQuery.trim().toLowerCase();
+    if (query) {
+      picks = picks.filter((p: any) =>
+        [
+          p.recommendation,
+          p.awayTeam,
+          p.homeTeam,
+          p.sportKey,
+          p.bookmakerName,
+          PICK_TYPE_LABELS[p.pickType] ?? p.pickType,
+        ]
+          .filter(Boolean)
+          .some(value => String(value).toLowerCase().includes(query))
+      );
+    }
     if (filters.pickType !== "all")
       picks = picks.filter((p: any) => p.pickType === filters.pickType);
     // The Picks board is an action queue, not a results archive.
@@ -1201,7 +1222,7 @@ export default function Picks() {
     });
 
     return picks;
-  }, [picksData?.picks, filters]);
+  }, [picksData?.picks, filters, searchQuery]);
 
   // Top 3 picks by combined confidence + edge score (pinned to top when no active filters)
   const topPickIds = useMemo(() => {
@@ -1261,59 +1282,8 @@ export default function Picks() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      {/* ── PICKS PAGE LOGO HEADER ─────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.88 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full flex items-center justify-center overflow-visible pointer-events-none select-none"
-        style={{ marginTop: "var(--navbar-height)", zIndex: 0 }}
-        aria-hidden="true"
-      >
-        <div
-          style={{
-            position: "relative",
-            width: "min(800px, 100vw)",
-            aspectRatio: "1 / 1",
-          }}
-        >
-          <img
-            src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png"
-            alt=""
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-              opacity: 1,
-            }}
-          />
-          <div
-            className="absolute bottom-0 left-0 right-0 pointer-events-none"
-            style={{
-              height: "45%",
-              background:
-                "linear-gradient(to bottom, transparent 0%, var(--background) 100%)",
-            }}
-          />
-          <div
-            className="absolute inset-y-0 left-0 w-[12%] pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to right, var(--background), transparent)",
-            }}
-          />
-          <div
-            className="absolute inset-y-0 right-0 w-[12%] pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to left, var(--background), transparent)",
-            }}
-          />
-        </div>
-      </motion.div>
-
-      <div className="container pb-12" style={{ marginTop: "-60px" }}>
+      <div className="h-16" aria-hidden="true" />
+      <div className="container pt-4 pb-12">
         {/* Push notification prompt */}
         <PushNotificationBanner />
         {/* Live game scores ticker (SharpAPI Game State) */}
@@ -1360,11 +1330,13 @@ export default function Picks() {
           <div className="mb-4 flex items-center gap-2">
             <button
               onClick={() => {
-                if (filters.sport) {
-                  setFilters(f => ({ ...f, sport: "" }));
-                } else {
-                  setFilters(f => ({ ...f, sport: favorites[0] ?? "" }));
-                }
+                const nextSport =
+                filters.sport !== "all" && favorites.includes(filters.sport)
+                  ? "all"
+                  : (favorites[0] ?? "all");
+              const next = { ...filters, sport: nextSport };
+              setFilters(next);
+              storeFilters(next);
               }}
               className="px-4 py-2 rounded-xl bg-lime-400/10 border border-lime-400/30 hover:bg-lime-400/15 transition-all text-sm font-medium text-lime-400"
             >
@@ -1376,6 +1348,72 @@ export default function Picks() {
             </span>
           </div>
         )}
+
+        <div className="mb-5 grid grid-cols-2 gap-3 xl:grid-cols-4">
+          {[
+            {
+              label: "Active picks",
+              value: picksData?.picks?.filter((pick: any) => pick.result === "pending" || !pick.result).length ?? "—",
+              detail: "Upcoming and actionable",
+            },
+            {
+              label: "Sports covered",
+              value: new Set((picksData?.picks ?? []).filter((pick: any) => pick.result === "pending" || !pick.result).map((pick: any) => pick.sportKey)).size,
+              detail: "In the current board",
+            },
+            {
+              label: "Average confidence",
+              value: (() => {
+                const values = (picksData?.picks ?? []).filter((pick: any) => (pick.result === "pending" || !pick.result) && Number.isFinite(Number(pick.confidenceScore))).map((pick: any) => Number(pick.confidenceScore));
+                return values.length ? `${Math.round(values.reduce((sum: number, value: number) => sum + value, 0) / values.length)}%` : "—";
+              })(),
+              detail: "Model scores, not win probability",
+            },
+            {
+              label: "Average edge score",
+              value: (() => {
+                const values = (picksData?.picks ?? []).filter((pick: any) => (pick.result === "pending" || !pick.result) && Number.isFinite(Number(pick.edgeScore))).map((pick: any) => Number(pick.edgeScore));
+                return values.length ? `${(values.reduce((sum: number, value: number) => sum + value, 0) / values.length).toFixed(1)}/10` : "—";
+              })(),
+              detail: "Only where an edge score is supplied",
+            },
+          ].map(metric => (
+            <Card key={metric.label} className="border-border/70 bg-card/70">
+              <CardContent className="p-4">
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{metric.label}</div>
+                <div className="mt-1 text-2xl font-bold tracking-tight text-foreground tabular-nums">{metric.value}</div>
+                <div className="mt-1 text-xs text-muted-foreground">{metric.detail}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Search the active board */}
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative w-full sm:max-w-md">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={searchQuery}
+              onChange={event => setSearchQuery(event.target.value)}
+              placeholder="Search teams, matchups, picks, sports or books…"
+              aria-label="Search active picks"
+              className="h-11 rounded-xl border-border/70 bg-card/70 pl-10 text-sm"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                aria-label="Clear search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <div className="text-xs text-muted-foreground">
+            Live board refreshes every minute · Settled picks are preserved in Backtesting
+          </div>
+        </div>
 
         {/* Filter & Sort Bar */}
         <FilterBar
@@ -1419,7 +1457,7 @@ export default function Picks() {
           <div className="flex items-center gap-2 mb-3">
             <Crown className="w-4 h-4" style={{ color: "#ffd700" }} />
             <span className="text-xs font-bold" style={{ color: "#ffd700" }}>
-              Today's Top Picks
+              Top Upcoming Picks
             </span>
             <div
               className="flex-1 h-px"

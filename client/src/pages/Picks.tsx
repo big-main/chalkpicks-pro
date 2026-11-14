@@ -1142,7 +1142,6 @@ export default function Picks() {
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.sport !== "all") count++;
-    if (searchQuery.trim()) count++;
     if (filters.tier !== "all") count++;
     if (filters.pickType !== "all") count++;
     if (filters.minConfidence > 0) count++;
@@ -1151,7 +1150,7 @@ export default function Picks() {
     if (filters.sportsbook !== "all") count++;
     if (filters.datePreset !== "upcoming") count++;
     return count;
-  }, [filters, searchQuery]);
+  }, [filters]);
 
   // Client-side filtering and sorting
   const filteredAndSortedPicks = useMemo(() => {
@@ -1358,13 +1357,13 @@ export default function Picks() {
             },
             {
               label: "Sports covered",
-              value: new Set((picksData?.picks ?? []).filter((pick: any) => pick.result === "pending" || !pick.result).map((pick: any) => pick.sportKey)).size,
+              value: isLoading ? "…" : new Set((picksData?.picks ?? []).filter((pick: any) => pick.result === "pending" || !pick.result).map((pick: any) => pick.sportKey)).size,
               detail: "In the current board",
             },
             {
               label: "Average confidence",
               value: (() => {
-                const values = (picksData?.picks ?? []).filter((pick: any) => (pick.result === "pending" || !pick.result) && Number.isFinite(Number(pick.confidenceScore))).map((pick: any) => Number(pick.confidenceScore));
+                const values = (picksData?.picks ?? []).filter((pick: any) => (pick.result === "pending" || !pick.result) && pick.confidenceScore !== null && pick.confidenceScore !== undefined && Number.isFinite(Number(pick.confidenceScore))).map((pick: any) => Number(pick.confidenceScore));
                 return values.length ? `${Math.round(values.reduce((sum: number, value: number) => sum + value, 0) / values.length)}%` : "—";
               })(),
               detail: "Model scores, not win probability",
@@ -1372,7 +1371,7 @@ export default function Picks() {
             {
               label: "Average edge score",
               value: (() => {
-                const values = (picksData?.picks ?? []).filter((pick: any) => (pick.result === "pending" || !pick.result) && Number.isFinite(Number(pick.edgeScore))).map((pick: any) => Number(pick.edgeScore));
+                const values = (picksData?.picks ?? []).filter((pick: any) => (pick.result === "pending" || !pick.result) && pick.edgeScore !== null && pick.edgeScore !== undefined && Number.isFinite(Number(pick.edgeScore))).map((pick: any) => Number(pick.edgeScore));
                 return values.length ? `${(values.reduce((sum: number, value: number) => sum + value, 0) / values.length).toFixed(1)}/10` : "—";
               })(),
               detail: "Only where an edge score is supplied",

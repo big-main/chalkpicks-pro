@@ -29,9 +29,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
-  Legend,
 } from "recharts";
 
 const SPORTS = [
@@ -57,16 +54,16 @@ export default function Stats() {
   const { data: liveGames, isLoading: gamesLoading } =
     trpc.stats.liveGames.useQuery(
       { sportKey: sport },
-      { enabled: hasPremiumAccess }
+      { enabled: hasPremiumAccess, staleTime: 15_000, refetchInterval: 30_000 }
     );
   const { data: players, isLoading: playersLoading } =
     trpc.stats.topPlayers.useQuery(
       { sportKey: sport, limit: 12 },
-      { enabled: hasPremiumAccess }
+      { enabled: hasPremiumAccess, staleTime: 15_000, refetchInterval: 30_000 }
     );
-  const { data: injuries } = trpc.stats.injuryReport.useQuery(
+  const { data: injuries, isLoading: injuriesLoading } = trpc.stats.injuryReport.useQuery(
     { sportKey: sport },
-    { enabled: hasPremiumAccess }
+    { enabled: hasPremiumAccess, staleTime: 15_000, refetchInterval: 30_000 }
   );
 
   if (!hasPremiumAccess) {
@@ -165,20 +162,21 @@ export default function Stats() {
       p.team.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Generate trend data for charts
+  // Use only observable values. Historical odds and totals require time-series
+  // and graded outcomes; do not simulate either from the current live snapshot.
   const teamTrends =
-    liveGames?.slice(0, 6).map((g: any) => ({
-      team: g.homeTeam.split(" ").pop(),
-      avgScore: g.homeScore ?? Math.floor(Math.random() * 30 + 15),
-      overRate: Math.floor(Math.random() * 30 + 45),
-    })) ?? [];
-
-  const oddsMovement = Array.from({ length: 8 }, (_, i) => ({
-    time: `${i * 3}h`,
-    homeML: -200 + Math.floor(Math.random() * 40) - 20,
-    awayML: 168 + Math.floor(Math.random() * 30) - 15,
-    ou: 224.5 + (Math.random() * 2 - 1),
-  }));
+    (liveGames ?? [])
+      .filter(
+        (game: any) =>
+          game.homeScore !== null &&
+          game.homeScore !== undefined &&
+          Number.isFinite(Number(game.homeScore))
+      )
+      .slice(0, 8)
+      .map((game: any) => ({
+        team: String(game.homeTeam ?? "Home").split(" ").pop(),
+        score: Number(game.homeScore),
+      }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -222,22 +220,33 @@ export default function Stats() {
             {[
               {
                 label: "Live Games",
-                value:
-                  liveGames?.filter((g: any) => g.status === "live").length ??
-                  0,
+                value: gamesLoading
+                  ? "…"
+                  : (liveGames?.filter((g: any) => g.status === "live").length ?? 0),
                 sub: "In progress",
               },
               {
-                label: "Players Tracked",
-                value: "2,847",
-                sub: "Across all sports",
+                label: "Players in Feed",
+                value: playersLoading ? "…" : (players?.length ?? 0),
+                sub: "Returned for selected sport",
               },
               {
                 label: "Injury Reports",
-                value: injuries?.length ?? 0,
-                sub: "Active injuries",
+                value: injuriesLoading ? "…" : (injuries?.length ?? 0),
+                sub: "Returned by current feed",
               },
-              { label: "Data Points", value: "1.2M+", sub: "Updated live" },
+              {
+                label: "Games With Scores",
+                value: gamesLoading
+                  ? "…"
+                  : (liveGames?.filter((game: any) =>
+                      game.homeScore !== null &&
+                      game.homeScore !== undefined &&
+                      game.awayScore !== null &&
+                      game.awayScore !== undefined
+                    ).length ?? 0),
+                sub: "Current feed snapshot",
+              },
             ].map(stat => (
               <Card key={stat.label} className="bg-card border-border">
                 <CardContent className="p-4">
@@ -541,133 +550,73 @@ export default function Stats() {
               </div>
             </TabsContent>
 
-            {/* Trends */}
+            {/* Trends and market history */}
             <TabsContent value="trends">
-              <div className="grid lg:grid-cols-2 gap-6">
+              <div className="grid gap-6 lg:grid-cols-2">
                 <Card className="bg-card border-border">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-base">
-                      Team Scoring Trends
-                    </CardTitle>
+                    <CardTitle className="text-base">Live Home-Score Snapshot</CardTitle>
+                    <p className="text-xs text-muted-foreground">Observed scores returned for the selected sport.</p>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <BarChart data={teamTrends}>
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="oklch(0.22 0.015 260)"
-                        />
-                        <XAxis
-                          dataKey="team"
-                          tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }}
-                        />
-                        <YAxis
-                          tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }}
-                        />
-                        <Tooltip
-                          contentStyle={{
-                            background: "oklch(0.12 0.015 260)",
-                            border: "1px solid oklch(0.22 0.015 260)",
-                            borderRadius: "8px",
-                          }}
-                        />
-                        <Bar
-                          dataKey="avgScore"
-                          fill="oklch(0.78 0.18 85)"
-                          radius={[4, 4, 0, 0]}
-                          name="Avg Score"
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
+                    {teamTrends.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={teamTrends}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.22 0.015 260)" />
+                          <XAxis dataKey="team" tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }} />
+                          <YAxis tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }} />
+                          <Tooltip
+                            contentStyle={{
+                              background: "oklch(0.12 0.015 260)",
+                              border: "1px solid oklch(0.22 0.015 260)",
+                              borderRadius: "8px",
+                            }}
+                            formatter={(value: number) => [value, "Home score"]}
+                          />
+                          <Bar dataKey="score" fill="oklch(0.78 0.18 85)" radius={[4, 4, 0, 0]} name="Home score" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="min-h-[250px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/70 bg-secondary/30 px-6 text-center">
+                        <Activity className="h-8 w-8 text-muted-foreground mb-3" />
+                        <p className="font-medium text-foreground">{gamesLoading ? "Loading live scores…" : "No live scores in this feed"}</p>
+                        <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+                          Observed score snapshots appear here when live games return score data for the selected sport.
+                        </p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
-
                 <Card className="bg-card border-border">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-base">
-                      Odds Movement (24h)
-                    </CardTitle>
+                    <CardTitle className="text-base">Historical Odds Movement</CardTitle>
+                    <p className="text-xs text-muted-foreground">Price history requires timestamped sportsbook snapshots.</p>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <LineChart data={oddsMovement}>
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="oklch(0.22 0.015 260)"
-                        />
-                        <XAxis
-                          dataKey="time"
-                          tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }}
-                        />
-                        <YAxis
-                          tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }}
-                        />
-                        <Tooltip
-                          contentStyle={{
-                            background: "oklch(0.12 0.015 260)",
-                            border: "1px solid oklch(0.22 0.015 260)",
-                            borderRadius: "8px",
-                          }}
-                        />
-                        <Legend />
-                        <Line
-                          type="monotone"
-                          dataKey="homeML"
-                          stroke="oklch(0.78 0.18 85)"
-                          strokeWidth={2}
-                          dot={false}
-                          name="Home ML"
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="awayML"
-                          stroke="oklch(0.72 0.19 162)"
-                          strokeWidth={2}
-                          dot={false}
-                          name="Away ML"
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
+                    <div className="min-h-[250px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/70 bg-secondary/30 px-6 text-center">
+                      <TrendingUp className="h-8 w-8 text-muted-foreground mb-3" />
+                      <p className="font-medium text-foreground">No historical price series available</p>
+                      <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+                        This live feed returns a current view, not a complete 24-hour price history. Open Line Movement for available market context.
+                      </p>
+                      <a href="/line-movement" className="mt-4 text-sm font-semibold text-primary hover:underline">Open Line Movement →</a>
+                    </div>
                   </CardContent>
                 </Card>
-
                 <Card className="bg-card border-border lg:col-span-2">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-base">
-                      Over/Under Hit Rate by Team
-                    </CardTitle>
+                    <CardTitle className="text-base">Historical Totals Performance</CardTitle>
+                    <p className="text-xs text-muted-foreground">A graded sample is required before calculating team hit rates.</p>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer width="100%" height={200}>
-                      <BarChart data={teamTrends}>
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="oklch(0.22 0.015 260)"
-                        />
-                        <XAxis
-                          dataKey="team"
-                          tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }}
-                        />
-                        <YAxis
-                          tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }}
-                          domain={[0, 100]}
-                        />
-                        <Tooltip
-                          contentStyle={{
-                            background: "oklch(0.12 0.015 260)",
-                            border: "1px solid oklch(0.22 0.015 260)",
-                            borderRadius: "8px",
-                          }}
-                          formatter={(v: number) => [`${v}%`, "Over Rate"]}
-                        />
-                        <Bar
-                          dataKey="overRate"
-                          fill="oklch(0.72 0.19 162)"
-                          radius={[4, 4, 0, 0]}
-                          name="Over %"
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
+                    <div className="min-h-[190px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/70 bg-secondary/30 px-6 text-center">
+                      <BarChart3 className="h-8 w-8 text-muted-foreground mb-3" />
+                      <p className="font-medium text-foreground">No settled totals sample is loaded here</p>
+                      <p className="mt-2 max-w-lg text-sm text-muted-foreground">
+                        Hit rates need completed games and graded totals. Review verified results or run a backtest instead of relying on a modelled percentage.
+                      </p>
+                      <a href="/backtesting" className="mt-4 text-sm font-semibold text-primary hover:underline">Open Backtesting →</a>
+                    </div>
                   </CardContent>
                 </Card>
               </div>

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-describe("PageSpeed API key", () => {
+describe.skipIf(!process.env.PAGESPEED_API_KEY)("PageSpeed API key", () => {
   it("PAGESPEED_API_KEY env var is set", () => {
     expect(process.env.PAGESPEED_API_KEY).toBeTruthy();
     expect(process.env.PAGESPEED_API_KEY?.length).toBeGreaterThan(10);

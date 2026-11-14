@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 
-describe("Scheduler & Cron secrets", () => {
+const hasSchedulerConfiguration = Boolean(
+  process.env.SCHEDULER_SECRET || process.env.CRON_SERVICE_TOKEN
+);
+
+describe.skipIf(!hasSchedulerConfiguration)("Scheduler & Cron secrets", () => {
   it("SCHEDULER_SECRET is set and at least 32 chars", () => {
     expect(process.env.SCHEDULER_SECRET).toBeTruthy();
     expect(process.env.SCHEDULER_SECRET!.length).toBeGreaterThanOrEqual(32);

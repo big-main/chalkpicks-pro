@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
+import type { RecentSettledPick } from "@/lib/pick-types";
 import { formatSportLabel } from "@/lib/badges";
 import { Link } from "wouter";
 import {
@@ -75,7 +76,7 @@ function NewsCard({
   );
 }
 
-function PickCard({ pick }: { pick: any }) {
+function PickCard({ pick }: { pick: RecentSettledPick }) {
   const isWin = pick.result === "win";
   const isLoss = pick.result === "loss";
   const color = isWin ? "#39ff14" : isLoss ? "#f87171" : "#a78bfa";
@@ -304,8 +305,12 @@ export default function HorizontalScrollTicker() {
       combined.push({ type: "article", data: articles[ai++] });
   }
 
-  const wins = picks.filter(p => p.result === "win").length;
-  const losses = picks.filter(p => p.result === "loss").length;
+  const wins = picks.filter(
+    (p: RecentSettledPick) => p.result === "win"
+  ).length;
+  const losses = picks.filter(
+    (p: RecentSettledPick) => p.result === "loss"
+  ).length;
   const total = wins + losses;
   const winPct = total > 0 ? Math.round((wins / total) * 100) : null;
   const isLoading = combined.length === 0;

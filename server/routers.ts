@@ -1,3 +1,4 @@
+import { pickOrganizerRouter } from "./routers/pickOrganizer";
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import bcrypt from "bcryptjs";
 import { TRPCError } from "@trpc/server";
@@ -85,6 +86,7 @@ async function issueSessionCookie(
 
 export const appRouter = router({
   system: systemRouter,
+  pickOrganizer: pickOrganizerRouter,
   ogImage: ogImageRouter,
   antigravity: antigravityRouter,
   newsletter: newsletterRouter,

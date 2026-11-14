@@ -6,24 +6,30 @@ import { eq, and, gte, lte, inArray, desc } from "drizzle-orm";
 
 export const backtestRouter = router({
   run: proProcedure
-    .input(z.object({
-      name: z.string().min(1).max(128),
-      sportKey: z.string().optional(),
-      pickType: z.string().optional(),
-      minConfidence: z.number().min(0).max(100).optional().default(0),
-      dateFrom: z.string(),
-      dateTo: z.string(),
-      initialBankroll: z.number().optional().default(1000),
-      stakePerBet: z.number().optional().default(100),
-      strategy: z.enum(["kelly", "quarter_kelly", "flat"]).optional().default("flat"),
-    }))
+    .input(
+      z.object({
+        name: z.string().min(1).max(128),
+        sportKey: z.string().optional(),
+        pickType: z.string().optional(),
+        minConfidence: z.number().min(0).max(100).optional().default(0),
+        dateFrom: z.string(),
+        dateTo: z.string(),
+        initialBankroll: z.number().optional().default(1000),
+        stakePerBet: z.number().optional().default(100),
+        strategy: z
+          .enum(["kelly", "quarter_kelly", "flat"])
+          .optional()
+          .default("flat"),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
 
       // ── Quant sidecar for Kelly/quarter-Kelly strategies ──────────────────
       if (input.strategy === "kelly" || input.strategy === "quarter_kelly") {
         try {
-          const QUANT_URL = process.env.QUANT_SIDECAR_URL ?? "http://35.237.81.82:8091";
+          const QUANT_URL =
+            process.env.QUANT_SIDECAR_URL ?? "http://35.237.81.82:8091";
           const resp = await fetch(`${QUANT_URL}/backtest/run`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -38,28 +44,43 @@ export const backtestRouter = router({
             signal: AbortSignal.timeout(15000),
           });
           if (resp.ok) {
-            const quantResult = await resp.json() as any;
+            const quantResult = (await resp.json()) as any;
             // Map bankroll_history (number[]) to chart-friendly objects with cumulativeProfit
-            const bankrollHistory: number[] = quantResult.bankroll_history ?? [];
+            const bankrollHistory: number[] =
+              quantResult.bankroll_history ?? [];
             const startBankroll = bankrollHistory[0] ?? input.initialBankroll;
-            const mappedResults = bankrollHistory.map((bankroll: number, i: number) => ({
-              date: `Bet ${i + 1}`,
-              pick: `Bet ${i + 1}`,
-              confidence: input.minConfidence,
-              result: i === 0 ? "start" : bankroll >= bankrollHistory[i - 1] ? "win" : "loss",
-              profit: i === 0 ? 0 : Math.round((bankroll - bankrollHistory[i - 1]) * 100) / 100,
-              bankroll: Math.round(bankroll * 100) / 100,
-              cumulativeProfit: Math.round((bankroll - startBankroll) * 100) / 100,
-            }));
+            const mappedResults = bankrollHistory.map(
+              (bankroll: number, i: number) => ({
+                date: `Bet ${i + 1}`,
+                pick: `Bet ${i + 1}`,
+                confidence: input.minConfidence,
+                result:
+                  i === 0
+                    ? "start"
+                    : bankroll >= bankrollHistory[i - 1]
+                      ? "win"
+                      : "loss",
+                profit:
+                  i === 0
+                    ? 0
+                    : Math.round((bankroll - bankrollHistory[i - 1]) * 100) /
+                      100,
+                bankroll: Math.round(bankroll * 100) / 100,
+                cumulativeProfit:
+                  Math.round((bankroll - startBankroll) * 100) / 100,
+              })
+            );
             // Map recent_bets for the bets table
-            const recentBets = (quantResult.recent_bets ?? []).map((b: any) => ({
-              date: b.date,
-              odds: b.odds,
-              edge: b.edge,
-              won: b.won,
-              betSize: Math.round((b.bet_size ?? 0) * 100) / 100,
-              bankrollAfter: Math.round((b.bankroll_after ?? 0) * 100) / 100,
-            }));
+            const recentBets = (quantResult.recent_bets ?? []).map(
+              (b: any) => ({
+                date: b.date,
+                odds: b.odds,
+                edge: b.edge,
+                won: b.won,
+                betSize: Math.round((b.bet_size ?? 0) * 100) / 100,
+                bankrollAfter: Math.round((b.bankroll_after ?? 0) * 100) / 100,
+              })
+            );
             const backtestData = {
               id: Date.now(),
               name: input.name,
@@ -73,8 +94,10 @@ export const backtestRouter = router({
               roi: quantResult.roi_pct ?? 0,
               totalProfit: quantResult.profit ?? 0,
               profit: quantResult.profit ?? 0,
-              startingBankroll: quantResult.starting_bankroll ?? input.initialBankroll,
-              endingBankroll: quantResult.ending_bankroll ?? input.initialBankroll,
+              startingBankroll:
+                quantResult.starting_bankroll ?? input.initialBankroll,
+              endingBankroll:
+                quantResult.ending_bankroll ?? input.initialBankroll,
               maxDrawdownPct: quantResult.max_drawdown_pct ?? 0,
               sharpeRatio: quantResult.sharpe_ratio ?? 0,
               avgBetSize: quantResult.avg_bet_size ?? 0,
@@ -111,7 +134,10 @@ export const backtestRouter = router({
           }
         } catch (e) {
           // Quant sidecar unavailable — fall through to the settled-pick ledger
-          console.warn("[backtest] Quant sidecar unavailable, falling back to simulation:", e);
+          console.warn(
+            "[backtest] Quant sidecar unavailable, falling back to the settled-pick ledger:",
+            e
+          );
         }
       }
 
@@ -124,10 +150,16 @@ export const backtestRouter = router({
           inArray(picks.result, ["win", "loss", "push"]),
         ];
         if (input.sportKey) conditions.push(eq(picks.sportKey, input.sportKey));
-        if (input.pickType) conditions.push(eq(picks.pickType, input.pickType as any));
-        if (input.minConfidence > 0) conditions.push(gte(picks.confidenceScore, input.minConfidence));
+        if (input.pickType)
+          conditions.push(eq(picks.pickType, input.pickType as any));
+        if (input.minConfidence > 0)
+          conditions.push(gte(picks.confidenceScore, input.minConfidence));
 
-        const settledPicks = await db.select().from(picks).where(and(...conditions)).orderBy(picks.pickDate);
+        const settledPicks = await db
+          .select()
+          .from(picks)
+          .where(and(...conditions))
+          .orderBy(picks.pickDate);
         const startingBankroll = input.initialBankroll;
         let bankroll = startingBankroll;
         let wins = 0;
@@ -135,14 +167,15 @@ export const backtestRouter = router({
         let pushes = 0;
         let totalProfit = 0;
 
-        const results = settledPicks.map((pick) => {
+        const results = settledPicks.map(pick => {
           const odds = pick.odds ?? -110;
           let profit = 0;
           if (pick.result === "win") {
             wins += 1;
-            profit = odds > 0
-              ? input.stakePerBet * (odds / 100)
-              : input.stakePerBet * (100 / Math.abs(odds));
+            profit =
+              odds > 0
+                ? input.stakePerBet * (odds / 100)
+                : input.stakePerBet * (100 / Math.abs(odds));
           } else if (pick.result === "loss") {
             losses += 1;
             profit = -input.stakePerBet;
@@ -163,9 +196,8 @@ export const backtestRouter = router({
         });
 
         const graded = wins + losses;
-        const roi = graded > 0
-          ? (totalProfit / (graded * input.stakePerBet)) * 100
-          : 0;
+        const roi =
+          graded > 0 ? (totalProfit / (graded * input.stakePerBet)) * 100 : 0;
         let backtestId = Date.now();
         try {
           const [saved] = await db.insert(backtests).values({
@@ -180,21 +212,29 @@ export const backtestRouter = router({
             wins,
             losses,
             pushes,
-            winRate: String(graded > 0 ? Math.round((wins / graded) * 1000) / 10 : 0),
+            winRate: String(
+              graded > 0 ? Math.round((wins / graded) * 1000) / 10 : 0
+            ),
             roi: String(Math.round(roi * 100) / 100),
             totalProfit: String(Math.round(totalProfit * 100) / 100),
             results: results.slice(-50),
           });
           backtestId = (saved as any).insertId ?? backtestId;
         } catch (saveError) {
-          console.warn("[backtest] Historical ledger run could not be saved:", saveError);
+          console.warn(
+            "[backtest] Historical ledger run could not be saved:",
+            saveError
+          );
         }
         return {
           id: backtestId,
           name: input.name,
           sportKey: input.sportKey ?? "all",
           strategy: input.strategy,
-          strategyApplied: input.strategy === "flat" ? "flat" : "flat_fallback_without_quant_sidecar",
+          strategyApplied:
+            input.strategy === "flat"
+              ? "flat"
+              : "flat_fallback_without_quant_sidecar",
           totalPicks: settledPicks.length,
           wins,
           losses,
@@ -206,7 +246,9 @@ export const backtestRouter = router({
           endingBankroll: Math.round(bankroll * 100) / 100,
           results: results.slice(-500),
           createdAt: new Date(),
-          source: settledPicks.length ? "historical_ledger" : "no_historical_data",
+          source: settledPicks.length
+            ? "historical_ledger"
+            : "no_historical_data",
           message: settledPicks.length
             ? undefined
             : "No settled picks matched this sport, market, confidence and date range. Try a wider date range.",
@@ -227,22 +269,26 @@ export const backtestRouter = router({
         results: [],
         createdAt: new Date(),
         source: "no_historical_data",
-        message: "Historical records are unavailable because the database is not connected.",
+        message:
+          "Historical records are unavailable because the database is not connected.",
       };
-
     }),
 
   history: proProcedure
-    .input(z.object({
-      limit: z.number().int().min(1).max(500).optional().default(100),
-      sportKey: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        limit: z.number().int().min(1).max(500).optional().default(100),
+        sportKey: z.string().optional(),
+      })
+    )
     .query(async ({ input }) => {
       const db = await getDb();
       if (!db) return [];
       const conditions = [inArray(picks.result, ["win", "loss", "push"])];
       if (input.sportKey) conditions.push(eq(picks.sportKey, input.sportKey));
-      return db.select().from(picks)
+      return db
+        .select()
+        .from(picks)
         .where(and(...conditions))
         .orderBy(desc(picks.pickDate), desc(picks.createdAt))
         .limit(input.limit);
@@ -251,15 +297,21 @@ export const backtestRouter = router({
   list: proProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) return [];
-    return db.select().from(backtests).where(eq(backtests.userId, ctx.user.id)).orderBy(desc(backtests.createdAt));
+    return db
+      .select()
+      .from(backtests)
+      .where(eq(backtests.userId, ctx.user.id))
+      .orderBy(desc(backtests.createdAt));
   }),
 
   // Public demo backtest
   demo: publicProcedure
-    .input(z.object({
-      sportKey: z.string().optional().default("nfl"),
-      minConfidence: z.number().optional().default(70),
-    }))
+    .input(
+      z.object({
+        sportKey: z.string().optional().default("nfl"),
+        minConfidence: z.number().optional().default(70),
+      })
+    )
     .query(({ input }) => {
       const winRate = 0.68 + (input.minConfidence / 100) * 0.12;
       const totalPicks = 120;
@@ -269,13 +321,31 @@ export const backtestRouter = router({
       const roi = ((wins * 0.909 - losses) / totalPicks) * 100;
 
       const bankrollHistory = Array.from({ length: 12 }, (_, i) => {
-        const monthWins = Math.round((wins / 12) * (0.85 + Math.random() * 0.3));
-        const monthLosses = Math.round((losses / 12) * (0.85 + Math.random() * 0.3));
+        const monthWins = Math.round(
+          (wins / 12) * (0.85 + Math.random() * 0.3)
+        );
+        const monthLosses = Math.round(
+          (losses / 12) * (0.85 + Math.random() * 0.3)
+        );
         const monthProfit = monthWins * 100 * 0.909 - monthLosses * 100;
         return {
-          month: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][i],
+          month: [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ][i],
           profit: Math.round(monthProfit),
-          winRate: Math.round((monthWins / (monthWins + monthLosses)) * 1000) / 10,
+          winRate:
+            Math.round((monthWins / (monthWins + monthLosses)) * 1000) / 10,
           bankroll: Math.round(1000 + monthProfit * (i + 1) * 0.1),
         };
       });
@@ -289,10 +359,12 @@ export const backtestRouter = router({
         pushes,
         winRate: Math.round(winRate * 1000) / 10,
         roi: Math.round(roi * 100) / 100,
-        totalProfit: Math.round((wins * 100 * 0.909 - losses * 100) * 100) / 100,
+        totalProfit:
+          Math.round((wins * 100 * 0.909 - losses * 100) * 100) / 100,
         bankrollHistory,
         source: "illustrative_demo",
-        message: "Illustrative demo data only. These figures are not actual ChalkPicks results.",
+        message:
+          "Illustrative demo data only. These figures are not actual ChalkPicks results.",
         confidenceBreakdown: [
           { range: "60-70%", picks: 30, winRate: 62.5, roi: 5.2 },
           { range: "70-80%", picks: 45, winRate: 71.4, roi: 14.8 },

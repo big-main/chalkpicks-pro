@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import type { RecentSettledPick } from "@/lib/pick-types";
 import { formatSportLabel } from "@/lib/badges";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
@@ -437,74 +438,76 @@ export default function Performance() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(recent?.picks ?? []).map((pick, i) => (
-                    <tr
-                      key={pick.id ?? i}
-                      className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]"
-                      style={{
-                        background:
-                          pick.result === "win"
-                            ? "rgba(57,255,20,0.02)"
-                            : pick.result === "loss"
-                              ? "rgba(255,59,59,0.02)"
-                              : "transparent",
-                      }}
-                    >
-                      <td className="px-3 py-3">
-                        <span className="text-base mr-1">
-                          {SPORT_ICONS[
-                            formatSportLabel(pick.sportKey)?.toUpperCase()
-                          ] ?? "🎯"}
-                        </span>
-                        <span className="text-xs text-white/40">
-                          {formatSportLabel(pick.sportKey)}
-                        </span>
-                      </td>
-                      <td className="px-3 py-3 text-white/70">
-                        {pick.awayTeam && pick.homeTeam
-                          ? `${pick.awayTeam} @ ${pick.homeTeam}`
-                          : "—"}
-                      </td>
-                      <td className="px-3 py-3 font-semibold text-white">
-                        {pick.recommendation}
-                      </td>
-                      <td
-                        className="px-3 py-3 data-table"
+                  {(recent?.picks ?? []).map(
+                    (pick: RecentSettledPick, i: number) => (
+                      <tr
+                        key={pick.id ?? i}
+                        className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]"
                         style={{
-                          color:
-                            (pick.odds ?? 0) > 0
-                              ? "var(--accent-mint)"
-                              : "rgba(255,255,255,0.5)",
+                          background:
+                            pick.result === "win"
+                              ? "rgba(57,255,20,0.02)"
+                              : pick.result === "loss"
+                                ? "rgba(255,59,59,0.02)"
+                                : "transparent",
                         }}
                       >
-                        {(pick.odds ?? 0) > 0 ? `+${pick.odds}` : pick.odds}
-                      </td>
-                      <td className="px-3 py-3">
-                        <div className="flex items-center gap-2">
-                          <ConfidenceBar
-                            score={pick.confidenceScore ?? 0}
-                            showLabel={false}
-                            height="h-1.5"
-                            className="w-10"
-                          />
-                          <span
-                            className="data-table text-xs font-bold"
-                            style={{
-                              color:
-                                (pick.confidenceScore ?? 0) >= 80
-                                  ? "var(--accent-cyan)"
-                                  : "#f0b800",
-                            }}
-                          >
-                            {pick.confidenceScore}%
+                        <td className="px-3 py-3">
+                          <span className="text-base mr-1">
+                            {SPORT_ICONS[
+                              formatSportLabel(pick.sportKey)?.toUpperCase()
+                            ] ?? "🎯"}
                           </span>
-                        </div>
-                      </td>
-                      <td className="px-3 py-3">
-                        <ResultBadge result={pick.result ?? "pending"} />
-                      </td>
-                    </tr>
-                  ))}
+                          <span className="text-xs text-white/40">
+                            {formatSportLabel(pick.sportKey)}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3 text-white/70">
+                          {pick.awayTeam && pick.homeTeam
+                            ? `${pick.awayTeam} @ ${pick.homeTeam}`
+                            : "—"}
+                        </td>
+                        <td className="px-3 py-3 font-semibold text-white">
+                          {pick.recommendation}
+                        </td>
+                        <td
+                          className="px-3 py-3 data-table"
+                          style={{
+                            color:
+                              (pick.odds ?? 0) > 0
+                                ? "var(--accent-mint)"
+                                : "rgba(255,255,255,0.5)",
+                          }}
+                        >
+                          {(pick.odds ?? 0) > 0 ? `+${pick.odds}` : pick.odds}
+                        </td>
+                        <td className="px-3 py-3">
+                          <div className="flex items-center gap-2">
+                            <ConfidenceBar
+                              score={pick.confidenceScore ?? 0}
+                              showLabel={false}
+                              height="h-1.5"
+                              className="w-10"
+                            />
+                            <span
+                              className="data-table text-xs font-bold"
+                              style={{
+                                color:
+                                  (pick.confidenceScore ?? 0) >= 80
+                                    ? "var(--accent-cyan)"
+                                    : "#f0b800",
+                              }}
+                            >
+                              {pick.confidenceScore}%
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-3 py-3">
+                          <ResultBadge result={pick.result ?? "pending"} />
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
               {(recent?.picks ?? []).length === 0 && (

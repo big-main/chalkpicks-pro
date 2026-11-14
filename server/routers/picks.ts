@@ -1,3 +1,5 @@
+import { games as organizerGames } from "../../drizzle/schema";
+import { getTableColumns } from "drizzle-orm";
 import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import { sendEVAlert } from "../pushSender";
 import { z } from "zod/v4";
@@ -64,8 +66,12 @@ export const picksRouter = router({
 
       const [pickList, countResult] = await Promise.all([
         db
-          .select()
+          .select({
+            ...getTableColumns(picks),
+            gameTime: organizerGames.gameTime,
+          })
           .from(picks)
+          .leftJoin(organizerGames, eq(picks.gameId, organizerGames.id))
           .where(and(...conditions))
           .orderBy(
             desc(picks.isFeatured),
@@ -118,7 +124,13 @@ export const picksRouter = router({
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError({ code: "NOT_FOUND" });
+      if (!db) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            "Pick records are temporarily unavailable because the database is disconnected.",
+        });
+      }
       const result = await db
         .select()
         .from(picks)
@@ -589,19 +601,7 @@ export const picksRouter = router({
 
   sportCounts: publicProcedure.query(async () => {
     const db = await getDb();
-    if (!db) {
-      return {
-        nfl: 4,
-        nba: 3,
-        mlb: 5,
-        nhl: 2,
-        ncaaf: 2,
-        ncaab: 2,
-        soccer: 1,
-        tennis: 1,
-        mma: 1,
-      } as Record<string, number>;
-    }
+    if (!db) return {} as Record<string, number>;
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const rows = await db

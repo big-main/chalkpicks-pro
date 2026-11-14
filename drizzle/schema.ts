@@ -1080,3 +1080,29 @@ export const oddsApiQuotaLog = mysqlTable(
   table => [index("idx_quota_recorded_at").on(table.recordedAt)]
 );
 export type OddsApiQuotaLog = typeof oddsApiQuotaLog.$inferSelect;
+
+// User planning records only. Never sportsbook orders or platform pick-ledger edits.
+export const pickOrganizerPlans = mysqlTable(
+  "pick_organizer_plans",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("userId").notNull(),
+    title: varchar("title", { length: 120 }).notNull(),
+    kind: mysqlEnum("kind", ["pick", "parlay", "trade"]).notNull(),
+    status: mysqlEnum("status", ["draft", "ready", "archived"])
+      .default("draft")
+      .notNull(),
+    sport: varchar("sport", { length: 32 }).notNull(),
+    eventAt: timestamp("eventAt"),
+    stake: decimal("stake", { precision: 12, scale: 2 }).notNull(),
+    notes: text("notes").notNull(),
+    legs: json("legs")
+      .$type<import("../shared/pickOrganizer").OrganizerPlanInput["legs"]>()
+      .notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [
+    index("idx_organizer_user_updated").on(table.userId, table.updatedAt),
+  ]
+);

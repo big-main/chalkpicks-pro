@@ -1,4 +1,11 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import {
+  lazy,
+  Suspense,
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+} from "react";
 import { formatSportLabel } from "@/lib/badges";
 import { getSportBadgeClass, getTierBadgeClass } from "@/lib/badges";
 import { trpc } from "@/lib/trpc";
@@ -56,6 +63,18 @@ import { LiveOddsTicker } from "@/components/LiveOddsTicker";
 import ConfidenceBar from "@/components/ConfidenceBar";
 import { motion } from "framer-motion";
 
+import {
+  DEFAULT_FILTERS,
+  filterAndSortPickBoard,
+  getPickBoardDateRange,
+  sanitizePickBoardFilters,
+  type DatePreset,
+  type FilterState,
+  type SortOption,
+} from "@shared/pickBoardFilters";
+
+const PickOrganizer = lazy(() => import("@/components/PickOrganizer"));
+
 const PICK_TYPE_LABELS: Record<string, string> = {
   moneyline: "Moneyline",
   spread: "Spread",
@@ -72,9 +91,9 @@ const SORT_OPTIONS = [
   { value: "newest", label: "Newest First", icon: "🕐" },
   { value: "oldest", label: "Oldest First", icon: "🕐" },
   { value: "odds_best", label: "Best Odds", icon: "💰" },
+  { value: "game_time_asc", label: "Game Start: Soonest", icon: "🕐" },
+  { value: "game_time_desc", label: "Game Start: Latest", icon: "🕐" },
 ];
-
-type SortOption = (typeof SORT_OPTIONS)[number]["value"];
 
 const SPORTSBOOKS = [
   { value: "all", label: "All Books" },
@@ -88,73 +107,28 @@ const SPORTSBOOKS = [
   { value: "Barstool", label: "Barstool" },
 ];
 
-type DatePreset = "today" | "upcoming";
-
-interface FilterState {
-  sport: string;
-  tier: string;
-  pickType: string;
-  result: string;
-  minConfidence: number;
-  minEdge: number;
-  sortBy: SortOption;
-  sportsbook: string;
-  datePreset: DatePreset;
-}
-const DEFAULT_FILTERS: FilterState = {
-  sport: "all",
-  tier: "all",
-  pickType: "all",
-  result: "pending",
-  minConfidence: 0,
-  minEdge: 0,
-  sortBy: "confidence_desc",
-  sportsbook: "all",
-  datePreset: "upcoming",
-};
-
 const DATE_PRESETS: { value: DatePreset; label: string; icon: string }[] = [
   { value: "today", label: "Today", icon: "📅" },
+  { value: "tomorrow", label: "Tomorrow", icon: "📅" },
+  { value: "next7", label: "Next 7 Days", icon: "🗓️" },
   { value: "upcoming", label: "Today + Next 14 Days", icon: "🗓️" },
+  { value: "custom", label: "Custom Range", icon: "📅" },
 ];
-
-function getDateRange(preset: DatePreset): {
-  dateFrom?: string;
-  dateTo?: string;
-} {
-  // Use local calendar dates so the board follows the bettor's timezone.
-  const today = new Date();
-  const fmt = (d: Date) => {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-  if (preset === "today") return { dateFrom: fmt(today), dateTo: fmt(today) };
-  const end = new Date(today);
-  end.setDate(end.getDate() + 14);
-  return { dateFrom: fmt(today), dateTo: fmt(end) };
-}
 
 function getStoredFilters(): FilterState {
   try {
     const stored = localStorage.getItem("chalkpicks_pick_filters");
-    if (stored) {
-      const parsed = JSON.parse(stored) as Partial<FilterState>;
-      return {
-        ...DEFAULT_FILTERS,
-        ...parsed,
-        datePreset: parsed.datePreset === "today" ? "today" : "upcoming",
-        result: "pending",
-      };
-    }
+    if (stored) return sanitizePickBoardFilters(JSON.parse(stored));
   } catch {}
-  return DEFAULT_FILTERS;
+  return { ...DEFAULT_FILTERS };
 }
 
 function storeFilters(filters: FilterState) {
   try {
-    localStorage.setItem("chalkpicks_pick_filters", JSON.stringify(filters));
+    localStorage.setItem(
+      "chalkpicks_pick_filters",
+      JSON.stringify(sanitizePickBoardFilters(filters))
+    );
   } catch {}
 }
 
@@ -543,7 +517,10 @@ function FilterBar({
 }) {
   const [expanded, setExpanded] = useState(false);
 
-  const updateFilter = (key: keyof FilterState, value: any) => {
+  const updateFilter = <K extends keyof FilterState>(
+    key: K,
+    value: FilterState[K]
+  ) => {
     const next = { ...filters, [key]: value };
     setFilters(next);
     storeFilters(next);
@@ -663,6 +640,24 @@ function FilterBar({
         </div>
       </TooltipProvider>
 
+      <div className="w-full sm:max-w-md">
+        <Label
+          htmlFor="pick-board-search"
+          className="text-xs text-muted-foreground mb-1 block"
+        >
+          Search teams or recommendations
+        </Label>
+        <Input
+          id="pick-board-search"
+          type="search"
+          placeholder="Team name, player or recommendation..."
+          value={filters.searchQuery}
+          maxLength={200}
+          onChange={e => updateFilter("searchQuery", e.target.value)}
+          className="h-9 text-sm"
+        />
+      </div>
+
       {/* Date Preset Row */}
       <div className="flex items-center gap-2 flex-wrap">
         <Calendar className="w-3.5 h-3.5 text-white/40 shrink-0" />
@@ -672,6 +667,7 @@ function FilterBar({
             <button
               key={preset.value}
               onClick={() => updateFilter("datePreset", preset.value)}
+              aria-pressed={isActive}
               className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all border ${
                 isActive
                   ? "bg-blue-500/20 border-blue-400 text-blue-300"
@@ -684,16 +680,66 @@ function FilterBar({
           );
         })}
       </div>
+      {filters.datePreset === "custom" && (
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="min-w-0 w-full sm:w-auto">
+            <Label
+              htmlFor="pick-board-date-from"
+              className="text-xs text-muted-foreground mb-1 block"
+            >
+              From date
+            </Label>
+            <Input
+              id="pick-board-date-from"
+              type="date"
+              value={filters.customDateFrom}
+              max={filters.customDateTo || undefined}
+              onChange={e => updateFilter("customDateFrom", e.target.value)}
+              aria-describedby="pick-board-date-help"
+              aria-invalid={!getPickBoardDateRange(filters)}
+              className="h-9 text-sm w-full sm:w-44"
+            />
+          </div>
+          <div className="min-w-0 w-full sm:w-auto">
+            <Label
+              htmlFor="pick-board-date-to"
+              className="text-xs text-muted-foreground mb-1 block"
+            >
+              To date
+            </Label>
+            <Input
+              id="pick-board-date-to"
+              type="date"
+              value={filters.customDateTo}
+              min={filters.customDateFrom || undefined}
+              onChange={e => updateFilter("customDateTo", e.target.value)}
+              aria-describedby="pick-board-date-help"
+              aria-invalid={!getPickBoardDateRange(filters)}
+              className="h-9 text-sm w-full sm:w-44"
+            />
+          </div>
+          <p
+            id="pick-board-date-help"
+            role="status"
+            className="w-full text-xs text-muted-foreground"
+          >
+            {getPickBoardDateRange(filters)
+              ? "Both dates are included. Dates use your local timezone."
+              : "Choose both dates, with the end date on or after the start date."}
+          </p>
+        </div>
+      )}
 
       {/* Secondary controls row — sort, tier, sportsbook, advanced */}
       <div className="flex items-center gap-3 flex-wrap">
         {/* Sort dropdown */}
         <Select
           value={filters.sortBy}
-          onValueChange={v => updateFilter("sortBy", v)}
+          onValueChange={v => updateFilter("sortBy", v as SortOption)}
         >
           <SelectTrigger
-            className="w-52 h-9 text-xs"
+            aria-label="Sort picks"
+            className="w-full sm:w-52 h-9 text-xs"
             style={{
               background: "rgba(0,255,135,0.04)",
               border: "1px solid rgba(0,255,135,0.15)",
@@ -721,7 +767,10 @@ function FilterBar({
           value={filters.sportsbook}
           onValueChange={v => updateFilter("sportsbook", v)}
         >
-          <SelectTrigger className="w-40 h-9 text-xs">
+          <SelectTrigger
+            aria-label="Filter by sportsbook"
+            className="w-40 h-9 text-xs"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -738,7 +787,10 @@ function FilterBar({
           value={filters.tier}
           onValueChange={v => updateFilter("tier", v)}
         >
-          <SelectTrigger className="w-36 h-9 text-xs">
+          <SelectTrigger
+            aria-label="Filter by pick tier"
+            className="w-36 h-9 text-xs"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -754,6 +806,8 @@ function FilterBar({
           size="sm"
           className="h-9 gap-2 relative"
           onClick={() => setExpanded(!expanded)}
+          aria-expanded={expanded}
+          aria-controls="pick-board-advanced-filters"
           style={
             expanded
               ? {
@@ -787,10 +841,18 @@ function FilterBar({
           </Button>
         )}
       </div>
+      {(filters.sortBy === "game_time_asc" ||
+        filters.sortBy === "game_time_desc") && (
+        <p className="text-xs text-muted-foreground">
+          Game start uses the scheduled time when available, otherwise the pick
+          date. Dates use your local timezone.
+        </p>
+      )}
 
       {/* Expanded advanced filters */}
       {expanded && (
         <Card
+          id="pick-board-advanced-filters"
           className="border-border"
           style={{
             background: "rgba(0,255,135,0.02)",
@@ -808,7 +870,10 @@ function FilterBar({
                   value={filters.pickType}
                   onValueChange={v => updateFilter("pickType", v)}
                 >
-                  <SelectTrigger className="h-8 text-xs">
+                  <SelectTrigger
+                    aria-label="Filter by bet type"
+                    className="h-8 text-xs"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -824,9 +889,16 @@ function FilterBar({
 
               {/* Settled results live in Backtesting; this board stays focused on actionable bets. */}
               <div className="rounded-lg border border-emerald-400/20 bg-emerald-400/5 p-3">
-                <p className="text-xs font-semibold text-emerald-300">Active bets only</p>
-                <p className="mt-1 text-xs text-muted-foreground">Settled picks are kept in Backtesting for historical analysis.</p>
-                <Link href="/backtesting" className="mt-2 inline-flex text-xs font-semibold text-emerald-300 hover:text-emerald-200">
+                <p className="text-xs font-semibold text-emerald-300">
+                  Active bets only
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Settled picks are kept in Backtesting for historical analysis.
+                </p>
+                <Link
+                  href="/backtesting"
+                  className="mt-2 inline-flex text-xs font-semibold text-emerald-300 hover:text-emerald-200"
+                >
                   Open Backtesting →
                 </Link>
               </div>
@@ -1076,26 +1148,30 @@ function PushNotificationButton({ isPremiumUser }: { isPremiumUser: boolean }) {
 export default function Picks() {
   const { user } = useAuth();
   const [filters, setFilters] = useState<FilterState>(getStoredFilters);
+  const [organizerOpen, setOrganizerOpen] = useState(false);
   const [generateOpen, setGenerateOpen] = useState(false);
 
   const dateRange = useMemo(
-    () => getDateRange(filters.datePreset),
-    [filters.datePreset]
+    () => getPickBoardDateRange(filters),
+    [filters.datePreset, filters.customDateFrom, filters.customDateTo]
   );
   const {
     data: picksData,
     isLoading,
     refetch,
-  } = trpc.picks.list.useQuery({
-    sportKey: filters.sport === "all" ? undefined : filters.sport,
-    tier:
-      filters.tier === "all"
-        ? undefined
-        : (filters.tier as "free" | "premium" | "all"),
-    dateFrom: dateRange.dateFrom,
-    dateTo: dateRange.dateTo,
-    limit: 100,
-  });
+  } = trpc.picks.list.useQuery(
+    {
+      sportKey: filters.sport === "all" ? undefined : filters.sport,
+      tier:
+        filters.tier === "all"
+          ? undefined
+          : (filters.tier as "free" | "premium" | "all"),
+      dateFrom: dateRange?.dateFrom,
+      dateTo: dateRange?.dateTo,
+      limit: 100,
+    },
+    { enabled: dateRange !== null }
+  );
   const { data: sports } = trpc.picks.sports.useQuery();
   const { data: sportCounts } = trpc.picks.sportCounts.useQuery(undefined, {
     staleTime: 60_000,
@@ -1127,11 +1203,16 @@ export default function Picks() {
     ];
   }, [sports, favorites]);
 
-  const subscriptionIsCurrent = !user?.subscriptionExpiresAt ||
+  const subscriptionIsCurrent =
+    !user?.subscriptionExpiresAt ||
     new Date(String(user.subscriptionExpiresAt)).getTime() > Date.now();
-  const isPremiumUser = user?.role === "admin" || !!(
-    user?.subscriptionTier && user.subscriptionTier !== "free" && subscriptionIsCurrent
-  );
+  const isPremiumUser =
+    user?.role === "admin" ||
+    !!(
+      user?.subscriptionTier &&
+      user.subscriptionTier !== "free" &&
+      subscriptionIsCurrent
+    );
 
   // Count active filters (beyond defaults)
   const activeFilterCount = useMemo(() => {
@@ -1144,64 +1225,15 @@ export default function Picks() {
     if (filters.sortBy !== "confidence_desc") count++;
     if (filters.sportsbook !== "all") count++;
     if (filters.datePreset !== "upcoming") count++;
+    if (filters.searchQuery.trim()) count++;
     return count;
   }, [filters]);
 
   // Client-side filtering and sorting
-  const filteredAndSortedPicks = useMemo(() => {
-    if (!picksData?.picks) return [];
-    let picks = [...picksData.picks];
-
-    // Apply client-side filters
-    if (filters.pickType !== "all")
-      picks = picks.filter((p: any) => p.pickType === filters.pickType);
-    // The Picks board is an action queue, not a results archive.
-    picks = picks.filter((p: any) => p.result === "pending" || !p.result);
-    if (filters.minConfidence > 0)
-      picks = picks.filter(
-        (p: any) => (p.confidenceScore || 0) >= filters.minConfidence
-      );
-    if (filters.minEdge > 0)
-      picks = picks.filter((p: any) => (p.edgeScore || 0) >= filters.minEdge);
-    if (filters.sportsbook !== "all")
-      picks = picks.filter(
-        (p: any) =>
-          p.bookmakerName
-            ?.toLowerCase()
-            .includes(filters.sportsbook.toLowerCase()) ||
-          p.aiAnalysis?.toLowerCase().includes(filters.sportsbook.toLowerCase())
-      );
-
-    // Sort
-    picks.sort((a: any, b: any) => {
-      switch (filters.sortBy) {
-        case "confidence_desc":
-          return (b.confidenceScore || 0) - (a.confidenceScore || 0);
-        case "confidence_asc":
-          return (a.confidenceScore || 0) - (b.confidenceScore || 0);
-        case "edge_desc":
-          return (b.edgeScore || 0) - (a.edgeScore || 0);
-        case "edge_asc":
-          return (a.edgeScore || 0) - (b.edgeScore || 0);
-        case "newest":
-          return (
-            new Date(b.createdAt || 0).getTime() -
-            new Date(a.createdAt || 0).getTime()
-          );
-        case "oldest":
-          return (
-            new Date(a.createdAt || 0).getTime() -
-            new Date(b.createdAt || 0).getTime()
-          );
-        case "odds_best":
-          return (b.odds || 0) - (a.odds || 0);
-        default:
-          return 0;
-      }
-    });
-
-    return picks;
-  }, [picksData?.picks, filters]);
+  const filteredAndSortedPicks = useMemo(
+    () => filterAndSortPickBoard(picksData?.picks ?? [], filters),
+    [picksData?.picks, filters]
+  );
 
   // Top 3 picks by combined confidence + edge score (pinned to top when no active filters)
   const topPickIds = useMemo(() => {
@@ -1340,6 +1372,7 @@ export default function Picks() {
               onClick={() => refetch()}
               variant="outline"
               size="sm"
+              disabled={!dateRange}
               className="h-9 gap-2"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Refresh
@@ -1360,11 +1393,14 @@ export default function Picks() {
           <div className="mb-4 flex items-center gap-2">
             <button
               onClick={() => {
-                if (filters.sport) {
-                  setFilters(f => ({ ...f, sport: "" }));
-                } else {
-                  setFilters(f => ({ ...f, sport: favorites[0] ?? "" }));
-                }
+                const next = {
+                  ...filters,
+                  sport: favorites.includes(filters.sport)
+                    ? "all"
+                    : (favorites[0] ?? "all"),
+                };
+                setFilters(next);
+                storeFilters(next);
               }}
               className="px-4 py-2 rounded-xl bg-lime-400/10 border border-lime-400/30 hover:bg-lime-400/15 transition-all text-sm font-medium text-lime-400"
             >
@@ -1377,6 +1413,37 @@ export default function Picks() {
           </div>
         )}
 
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <p className="text-sm text-white/55">
+            Filter the board, then organize selections into private plans.
+          </p>
+          <Button
+            variant={organizerOpen ? "default" : "outline"}
+            aria-expanded={organizerOpen}
+            aria-controls="my-organizer"
+            onClick={() => setOrganizerOpen(open => !open)}
+          >
+            {organizerOpen
+              ? "Hide My Picks & Plans"
+              : "My Picks, Parlays & Trade Plans"}
+          </Button>
+        </div>
+        {organizerOpen && (
+          <div className="mb-6">
+            <Suspense
+              fallback={
+                <div
+                  className="h-48 rounded-2xl border border-white/10 p-6 text-white/50"
+                  role="status"
+                >
+                  Loading your organizer…
+                </div>
+              }
+            >
+              <PickOrganizer picks={filteredAndSortedPicks} />
+            </Suspense>
+          </div>
+        )}
         {/* Filter & Sort Bar */}
         <FilterBar
           filters={filters}
@@ -1391,7 +1458,7 @@ export default function Picks() {
 
         {/* Results count */}
         {!isLoading && picksData?.picks && (
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
             <p className="text-xs text-muted-foreground">
               Showing{" "}
               <span className="text-primary font-bold">
@@ -1462,7 +1529,10 @@ export default function Picks() {
           <Card className="bg-card border-border p-8 text-center">
             <Filter className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-muted-foreground text-sm mb-3">
-              {picksData?.message || "No active picks match your current filters."}
+              {!dateRange
+                ? "Choose a valid custom date range to show picks."
+                : picksData?.message ||
+                  "No active picks match your current filters."}
             </p>
             <Button
               variant="outline"

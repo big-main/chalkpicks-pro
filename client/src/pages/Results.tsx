@@ -7,6 +7,7 @@ import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/schema-jsonld";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
+import type { ArchivePick } from "@/lib/pick-types";
 import {
   CheckCircle2,
   XCircle,
@@ -322,11 +323,17 @@ export default function Results() {
         ) : (
           <div className="space-y-3">
             {days.map(({ date, picks: dayPicks }) => {
-              const wins = dayPicks.filter(p => p.result === "win").length;
-              const losses = dayPicks.filter(p => p.result === "loss").length;
-              const pushes = dayPicks.filter(p => p.result === "push").length;
+              const wins = dayPicks.filter(
+                (p: ArchivePick) => p.result === "win"
+              ).length;
+              const losses = dayPicks.filter(
+                (p: ArchivePick) => p.result === "loss"
+              ).length;
+              const pushes = dayPicks.filter(
+                (p: ArchivePick) => p.result === "push"
+              ).length;
               const pending = dayPicks.filter(
-                p => p.result === "pending"
+                (p: ArchivePick) => p.result === "pending"
               ).length;
               const isExpanded = expandedDays.has(date);
 
@@ -365,7 +372,7 @@ export default function Results() {
                   {/* Day picks */}
                   {isExpanded && (
                     <div className="border-t border-slate-700/50 divide-y divide-slate-700/30">
-                      {dayPicks.map(pick => (
+                      {dayPicks.map((pick: ArchivePick) => (
                         <div
                           key={pick.id}
                           className="flex items-center justify-between px-4 py-3 hover:bg-slate-800/20 transition-colors"

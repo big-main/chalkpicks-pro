@@ -183,6 +183,13 @@
       "when": 1785459778683,
       "tag": "0025_chubby_epoch",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1794627339282,
+      "tag": "0026_youthful_rhino",
+      "breakpoints": true
     }
   ]
 }

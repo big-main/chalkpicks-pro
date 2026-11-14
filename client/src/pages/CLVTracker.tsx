@@ -235,7 +235,6 @@ function CLVTrackerContent() {
             </CardContent>
           </Card>
         )}
-      </div>
     </div>
   );
 }

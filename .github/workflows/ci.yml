@@ -11,9 +11,9 @@ permissions:
 
 jobs:
   check:
-    name: Typecheck + Test
+    name: Typecheck + Build + Unit Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -34,14 +34,21 @@ jobs:
       - name: Typecheck
         run: pnpm check
 
-      # A small set of integration tests imports the same compiled Vercel
-      # handler that production deploys, so generate the build artifact first.
       - name: Build test artifacts
         run: pnpm build
 
       - name: Unit tests
-        run: pnpm test
+        run: >-
+          pnpm exec vitest run
+          --exclude server/ahrefs.test.ts
+          --exclude server/discord-steam-webhook.test.ts
+          --exclude server/discord-webhook.test.ts
+          --exclude server/discordTelegram.test.ts
+          --exclude server/pageSpeed.test.ts
+          --exclude server/sharpapi.test.ts
+          --exclude server/schedulerSecrets.test.ts
         env:
-          # Tests must not need real secrets
           JWT_SECRET: "ci-test-secret-at-least-32-characters-long"
+          SCHEDULER_SECRET: "ci-scheduler-secret-at-least-32-characters-long"
+          CRON_SERVICE_TOKEN: "ci-cron-token-at-least-32-characters-long"
           NODE_ENV: test

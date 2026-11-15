@@ -15,6 +15,7 @@ import {
 } from "../services/espnService";
 import { getDb } from "../db";
 import { getInjuries } from "../services/globalDataSite";
+import { checkSportsProviders, getCollegeFootballGames, getNbaGames } from "../services/additionalSportsProviders";
 import { sql } from "drizzle-orm";
 
 // ─── Real-time stats router using ESPN public API ────────────────────────────
@@ -91,6 +92,25 @@ export const statsRouter = router({
     .query(() => {
       // No synthetic line histories. Return empty until timestamped book snapshots exist.
       return [];
+    }),
+
+  providerHealth: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user?.role !== "admin") throw new Error("Admin access required");
+    return checkSportsProviders();
+  }),
+
+  collegeFootballGames: protectedProcedure
+    .input(z.object({ year: z.number().int().min(2000).max(2100), week: z.number().int().min(1).max(20).optional(), seasonType: z.enum(["regular", "postseason", "both"]).optional() }))
+    .query(async ({ input, ctx }) => {
+      if (ctx.user?.role !== "admin") throw new Error("Admin access required");
+      return getCollegeFootballGames(input);
+    }),
+
+  nbaProviderGames: protectedProcedure
+    .input(z.object({ date: z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/) }))
+    .query(async ({ input, ctx }) => {
+      if (ctx.user?.role !== "admin") throw new Error("Admin access required");
+      return getNbaGames(input.date);
     }),
 
   // Platform stats — real DB-backed data from picks + pick_ledger

@@ -37,6 +37,7 @@ export interface PlayerStats {
 
 export interface InjuryReport {
   playerName: string;
+  source?: string;
   team: string;
   status: "Out" | "Doubtful" | "Questionable" | "Probable" | "Day-to-Day";
   description: string;
@@ -61,12 +62,21 @@ const API_SPORTS_HOSTS: Record<string, string> = {
   nhl: "v1.hockey.api-sports.io",
 };
 
-const CURRENT_SEASONS: Record<string, string> = {
-  nfl: "2025",
-  nba: "2025-2026",
-  mlb: "2026",
-  nhl: "2025-2026",
-};
+/** Resolve API-Sports season identifiers at runtime. */
+function getCurrentSeason(sport: string, now = new Date()): string | null {
+  const year = now.getUTCFullYear();
+  const month = now.getUTCMonth() + 1;
+  switch (sport.toLowerCase()) {
+    case "nfl": return String(month >= 7 ? year : year - 1);
+    case "nba":
+    case "nhl": {
+      const startYear = month >= 9 ? year : year - 1;
+      return String(startYear) + "-" + String(startYear + 1);
+    }
+    case "mlb": return String(year);
+    default: return null;
+  }
+}
 
 const LEAGUE_IDS: Record<string, number> = {
   nfl: 1,
@@ -235,7 +245,7 @@ export async function getTodayScores(sport: string = "nfl"): Promise<GameScore[]
 }
 
 export async function getInjuries(sport: string = "nfl"): Promise<InjuryReport[]> {
-  const season = CURRENT_SEASONS[sport.toLowerCase()];
+  const season = getCurrentSeason(sport);
   const leagueId = LEAGUE_IDS[sport.toLowerCase()];
   if (!season || !leagueId) return [];
 

@@ -24,6 +24,7 @@ import {
   Megaphone,
   Gauge,
   Database,
+  Radio,
 } from "lucide-react";
 import { useState as useLocalState } from "react";
 import { toast } from "sonner";
@@ -58,6 +59,7 @@ export default function AdminPanel() {
     | "performance"
     | "directories"
     | "cache"
+    | "news"
   >("overview");
   const [psUrl, setPsUrl] = useState("https://www.chalkpicks.pro");
   const [psResult, setPsResult] = useState<null | {
@@ -85,6 +87,17 @@ export default function AdminPanel() {
     limit: 5,
     tier: "all",
   });
+  const [newsSport, setNewsSport] = useState<
+    "all" | "nfl" | "nba" | "mlb" | "nhl"
+  >("all");
+  const {
+    data: newsRadar,
+    isLoading: newsLoading,
+    refetch: refetchNews,
+  } = trpc.newsRadar.latest.useQuery(
+    { sport: newsSport },
+    { enabled: activeTab === "news", staleTime: 5 * 60_000 }
+  );
 
   // Fetch real users from DB
   const {
@@ -191,6 +204,7 @@ export default function AdminPanel() {
     { id: "performance", label: "PageSpeed", icon: Gauge },
     { id: "directories", label: "Directories", icon: Eye },
     { id: "cache", label: "API Cache", icon: Database },
+    { id: "news", label: "News Radar", icon: Radio },
   ] as const;
 
   return (
@@ -615,6 +629,147 @@ export default function AdminPanel() {
                 </p>
               )}
             </div>
+          </div>
+        )}
+
+        {/* News Radar Tab */}
+        {activeTab === "news" && (
+          <div style={cardStyle}>
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+              <div>
+                <h3
+                  style={{
+                    fontWeight: 700,
+                    color: "#39ff14",
+                    textTransform: "uppercase",
+                    fontSize: "0.85rem",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  <Radio className="w-4 h-4 inline mr-2" />
+                  Breaking Sports News Radar
+                </h3>
+                <p
+                  className="text-xs mt-1"
+                  style={{ color: "rgba(180,180,210,0.65)" }}
+                >
+                  Cached ESPN headlines for editorial review. Nothing is
+                  auto-published.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <select
+                  value={newsSport}
+                  onChange={e =>
+                    setNewsSport(e.target.value as typeof newsSport)
+                  }
+                  className="px-3 py-2 text-xs"
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(57,255,20,0.25)",
+                    borderRadius: "6px",
+                    color: "white",
+                  }}
+                >
+                  <option value="all">All sports</option>
+                  <option value="nfl">NFL</option>
+                  <option value="nba">NBA</option>
+                  <option value="mlb">MLB</option>
+                  <option value="nhl">NHL</option>
+                </select>
+                <button
+                  onClick={() => refetchNews()}
+                  className="p-2 rounded"
+                  style={{
+                    background: "rgba(57,255,20,0.1)",
+                    border: "1px solid rgba(57,255,20,0.25)",
+                    color: "#39ff14",
+                  }}
+                  title="Refresh news"
+                >
+                  <RefreshCw
+                    className={`w-4 h-4 ${newsLoading ? "animate-spin" : ""}`}
+                  />
+                </button>
+              </div>
+            </div>
+
+            {newsLoading ? (
+              <div
+                className="py-10 text-center text-sm"
+                style={{ color: "rgba(180,180,210,0.65)" }}
+              >
+                Loading verified source headlines…
+              </div>
+            ) : newsRadar?.items?.length ? (
+              <div className="space-y-3">
+                {newsRadar.items.map(item => (
+                  <article
+                    key={`${item.sport}-${item.id}`}
+                    className="p-4"
+                    style={{
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.07)",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                      <span
+                        className="text-xs font-bold uppercase"
+                        style={{ color: "#a855f7" }}
+                      >
+                        {item.sport}
+                      </span>
+                      <time
+                        className="text-xs"
+                        style={{ color: "rgba(180,180,210,0.6)" }}
+                      >
+                        {new Date(item.published).toLocaleString()}
+                      </time>
+                    </div>
+                    <h4
+                      className="font-semibold text-sm"
+                      style={{ color: "white" }}
+                    >
+                      {item.headline}
+                    </h4>
+                    {item.description && (
+                      <p
+                        className="text-xs mt-2"
+                        style={{ color: "rgba(200,200,220,0.72)" }}
+                      >
+                        {item.description}
+                      </p>
+                    )}
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block mt-3 text-xs font-semibold"
+                      style={{ color: "#39ff14" }}
+                    >
+                      Open source article ↗
+                    </a>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div
+                className="py-10 text-center text-sm"
+                style={{ color: "rgba(180,180,210,0.65)" }}
+              >
+                No headlines are available for this sport right now.
+              </div>
+            )}
+            <p
+              className="text-[11px] mt-5"
+              style={{ color: "rgba(180,180,210,0.5)" }}
+            >
+              Source: {newsRadar?.source ?? "ESPN"} · Last checked:{" "}
+              {newsRadar?.fetchedAt
+                ? new Date(newsRadar.fetchedAt).toLocaleString()
+                : "—"}
+            </p>
           </div>
         )}
 

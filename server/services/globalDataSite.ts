@@ -15,7 +15,7 @@
  *       If not set, falls back to ESPN-only data (still works).
  */
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────
 
 export interface GameScore {
   gameId: string;
@@ -100,7 +100,7 @@ function checkRateLimit(): boolean {
   return dailyRequestCount < DAILY_LIMIT;
 }
 
-// ─── In-Memory Cache ────────────────────────────────────────────────────────
+// ─── In-Memory Cache ───────────────────────────────────────────────────────
 
 const cache = new Map<string, { data: unknown; expires: number }>();
 
@@ -123,7 +123,7 @@ function setCache(key: string, data: unknown, ttlMs: number): void {
   cache.set(key, { data, expires: Date.now() + ttlMs });
 }
 
-// ─── Core Request ───────────────────────────────────────────────────────────
+// ─── Core Request ────────────────────────────────────────────────────────
 
 async function apiSportsRequest<T>(
   sport: string,
@@ -164,7 +164,7 @@ async function apiSportsRequest<T>(
 
     const json = (await response.json()) as { response?: T; errors?: unknown };
     if (json.errors && Object.keys(json.errors as object).length > 0) {
-      console.error(`[SportsData] API error:`, json.errors);
+      console.error("[SportsData] API error:", json.errors);
       return null;
     }
 
@@ -211,7 +211,7 @@ async function espnRequest<T>(sport: string, endpoint: string): Promise<T | null
   }
 }
 
-// ─── Public API ─────────────────────────────────────────────────────────────
+// ─── Public API ────────────────────────────────────────────────────────────
 
 export async function areGamesInProgress(sport: string = "nfl"): Promise<boolean> {
   const scores = await getTodayScores(sport);
@@ -279,7 +279,7 @@ export async function getInjuries(sport: string = "nfl"): Promise<InjuryReport[]
 }
 
 export async function getStandings(sport: string = "nfl"): Promise<TeamStanding[]> {
-  const season = CURRENT_SEASONS[sport.toLowerCase()];
+  const season = getCurrentSeason(sport);
   const leagueId = LEAGUE_IDS[sport.toLowerCase()];
   if (!season || !leagueId) return [];
 
@@ -348,7 +348,7 @@ export function getRemainingRequests(): { used: number; remaining: number; limit
   return { used: dailyRequestCount, remaining: DAILY_LIMIT - dailyRequestCount, limit: DAILY_LIMIT };
 }
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// ─── Helpers ───────────────────────────────────────────────────────────────
 
 function mapInjuryStatus(status: string): InjuryReport["status"] {
   const s = status.toLowerCase();

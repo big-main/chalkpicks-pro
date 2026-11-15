@@ -19,13 +19,13 @@ The repository currently uses **MySQL + Drizzle**, not Supabase/PostgreSQL. Do n
 | The Odds API | Bookmaker odds and scores | Existing |
 | odds-api.io | Secondary odds feed | Existing |
 | SharpAPI | Odds, EV and market tools | Existing; plan/credential gates apply |
-| CollegeFootballData | College football play-by-play, stats, ratings, historical lines | Candidate |
-| BALLDONTLIE | NBA stats | Candidate; verify plan limits |
+| CollegeFootballData | College football schedules, results, play-by-play, stats, ratings and historical lines | Adapter implemented; key required |
+| BALLDONTLIE | NBA teams, games, player stats by plan | Teams/games adapter implemented; key required; player game stats are plan-gated |
 | PandaScore | Esports schedules/results/stats | Candidate |
 | API-Tennis | Tennis fixtures/results/rankings | Candidate |
 | TheSportsDB | Metadata/branding supplement | Candidate only |
 
-## Canonical data contract
+## Implemented provider adapters (Phase 2)\n\n- `server/services/additionalSportsProviders.ts` implements CollegeFootballData game retrieval (`CFBD_API_KEY`, Bearer authentication) and BALLDONTLIE NBA game retrieval (`BALLDONTLIE_API_KEY`, Authorization header).\n- Responses are cached in-process (10 minutes for CFBD games, 2 minutes for NBA games).\n- `stats.providerHealth` performs server-side connection checks and is restricted to administrators.\n- `stats.collegeFootballGames` and `stats.nbaProviderGames` expose protected admin-only retrieval endpoints.\n- `/admin/data-intelligence` displays actual provider connection checks. A provider is not considered healthy until its live API check succeeds.\n- Credentials must be added to Vercel/Railway environment variables after rotation; no credential values belong in GitHub.\n\n## Canonical data contract
 Each normalized record should carry provider, providerRecordId, sport/league, event/team/player identity, sourceUpdatedAt (if supplied), fetchedAt, validFrom/validTo for point-in-time replay, verificationStatus, and a raw-payload reference/hash subject to provider terms. Never overwrite point-in-time odds/injury snapshots.
 
 ## Validation and source selection

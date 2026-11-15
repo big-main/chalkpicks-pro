@@ -42,4 +42,18 @@ describe("additional sports providers", () => {
     ]);
     fetchSpy.mockRestore();
   });
+
+  it.skipIf(!process.env.CFBD_API_KEY || !process.env.BALLDONTLIE_API_KEY)(
+    "accepts the configured provider credentials",
+    async () => {
+      const result = await checkSportsProviders();
+      expect(result).toHaveLength(2);
+      expect(result.map(provider => provider.status)).toEqual([
+        "healthy",
+        "healthy",
+      ]);
+      expect(result.every(provider => provider.latencyMs !== null)).toBe(true);
+    },
+    30_000
+  );
 });

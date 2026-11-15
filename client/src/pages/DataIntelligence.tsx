@@ -27,6 +27,16 @@ export default function DataIntelligence() {
     refetchInterval: 60_000,
     retry: false,
   });
+  const providerYear = new Date().getUTCFullYear();
+  const providerDate = new Date().toISOString().slice(0, 10);
+  const collegeGames = trpc.stats.collegeFootballGames.useQuery(
+    { year: providerYear },
+    { enabled: me?.role === "admin", staleTime: 10 * 60_000, retry: false }
+  );
+  const nbaGames = trpc.stats.nbaProviderGames.useQuery(
+    { date: providerDate },
+    { enabled: me?.role === "admin", staleTime: 2 * 60_000, retry: false }
+  );
 
   useEffect(() => {
     if (me !== undefined && (!me || me.role !== "admin")) setLocation("/");
@@ -62,8 +72,16 @@ export default function DataIntelligence() {
           </div>
           <Button
             variant="outline"
-            onClick={() => health.refetch()}
-            disabled={health.isFetching}
+            onClick={() => {
+              void health.refetch();
+              void collegeGames.refetch();
+              void nbaGames.refetch();
+            }}
+            disabled={
+              health.isFetching ||
+              collegeGames.isFetching ||
+              nbaGames.isFetching
+            }
             className="border-slate-300 bg-white text-slate-800"
           >
             <RefreshCw
@@ -160,6 +178,27 @@ export default function DataIntelligence() {
           </CardContent>
         </Card>
 
+        <section className="grid gap-4 md:grid-cols-2">
+          <SnapshotCard
+            title="College football games"
+            detail={`CFBD · ${providerYear} season`}
+            loading={collegeGames.isLoading || collegeGames.isFetching}
+            error={collegeGames.error?.message}
+            count={
+              collegeGames.data?.available
+                ? collegeGames.data.data.length
+                : null
+            }
+          />
+          <SnapshotCard
+            title="NBA games today"
+            detail={`BALLDONTLIE · ${providerDate}`}
+            loading={nbaGames.isLoading || nbaGames.isFetching}
+            error={nbaGames.error?.message}
+            count={nbaGames.data?.available ? nbaGames.data.data.length : null}
+          />
+        </section>
+
         <Card className="border-[#e4dfd3] bg-white shadow-sm">
           <CardHeader>
             <CardTitle className="text-lg">Connected capabilities</CardTitle>
@@ -188,6 +227,34 @@ export default function DataIntelligence() {
         </Card>
       </div>
     </main>
+  );
+}
+
+function SnapshotCard({
+  title,
+  detail,
+  count,
+  loading,
+  error,
+}: {
+  title: string;
+  detail: string;
+  count: number | null;
+  loading: boolean;
+  error?: string;
+}) {
+  return (
+    <Card className="border-[#e4dfd3] bg-white shadow-sm">
+      <CardContent className="p-5">
+        <p className="text-sm text-slate-500">{title}</p>
+        <p className="mt-1 text-3xl font-bold">
+          {loading ? "…" : error || count === null ? "Unavailable" : count}
+        </p>
+        <p className="mt-1 text-xs text-slate-400">
+          {error ? "Provider request failed; no fallback data shown." : detail}
+        </p>
+      </CardContent>
+    </Card>
   );
 }
 

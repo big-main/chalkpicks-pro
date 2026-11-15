@@ -70,7 +70,7 @@ function getCurrentSeason(sport: string, now = new Date()): string | null {
     case "nfl": return String(month >= 7 ? year : year - 1);
     case "nba":
     case "nhl": {
-      const startYear = month >= 9 ? year : year - 1;
+      const startYear = month >= 10 ? year : year - 1;
       return String(startYear) + "-" + String(startYear + 1);
     }
     case "mlb": return String(year);
@@ -256,6 +256,7 @@ export async function getInjuries(sport: string = "nfl"): Promise<InjuryReport[]
 
   if (data && Array.isArray(data)) {
     return data.map((injury: any) => ({
+      source: "API-Sports",
       playerName: injury.player?.name ?? "Unknown",
       team: injury.team?.name ?? "",
       status: mapInjuryStatus(injury.player?.status ?? ""),
@@ -268,6 +269,7 @@ export async function getInjuries(sport: string = "nfl"): Promise<InjuryReport[]
   const espnData = await espnRequest<any>(sport, "injuries");
   if (!espnData?.items) return [];
   return espnData.items.slice(0, 50).map((item: any) => ({
+    source: "ESPN",
     playerName: item.athlete?.displayName ?? "Unknown",
     team: item.team?.displayName ?? "",
     status: mapInjuryStatus(item.status ?? ""),

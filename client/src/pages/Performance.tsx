@@ -268,7 +268,7 @@ export default function Performance() {
                   tick={{ fontSize: 11 }}
                 />
                 <YAxis
-                  domain={[80, 100]}
+                  domain={[0, 100]}
                   stroke="rgba(255,255,255,0.3)"
                   tick={{ fontSize: 11 }}
                   tickFormatter={(v: number) => `${v}%`}

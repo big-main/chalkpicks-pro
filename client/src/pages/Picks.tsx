@@ -185,11 +185,11 @@ function PickCard({
   // Signal badges
   const signals: { label: string; className: string }[] = [];
   if (pick.confidenceScore >= 85)
-    signals.push({ label: "HIGH ROI", className: "signal-high-roi" });
+    signals.push({ label: "HIGH MODEL CONFIDENCE", className: "signal-high-roi" });
   if (pick.edgeScore >= 7)
-    signals.push({ label: "SHARP", className: "signal-sharp" });
+    signals.push({ label: "HIGH EDGE SCORE", className: "signal-sharp" });
   if (pick.edgeScore >= 5 && pick.confidenceScore >= 75)
-    signals.push({ label: "VALUE", className: "signal-value" });
+    signals.push({ label: "EDGE + CONFIDENCE", className: "signal-value" });
 
   const topPickStyle = isTopPick
     ? {
@@ -1158,6 +1158,8 @@ export default function Picks() {
   const {
     data: picksData,
     isLoading,
+    isFetching,
+    dataUpdatedAt,
     refetch,
   } = trpc.picks.list.useQuery(
     {
@@ -1170,7 +1172,12 @@ export default function Picks() {
       dateTo: dateRange?.dateTo,
       limit: 100,
     },
-    { enabled: dateRange !== null }
+    {
+      enabled: dateRange !== null,
+      staleTime: 20_000,
+      refetchInterval: 60_000,
+      refetchOnWindowFocus: true,
+    }
   );
   const { data: sports } = trpc.picks.sports.useQuery();
   const { data: sportCounts } = trpc.picks.sportCounts.useQuery(undefined, {
@@ -1293,59 +1300,8 @@ export default function Picks() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      {/* ── PICKS PAGE LOGO HEADER ─────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.88 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full flex items-center justify-center overflow-visible pointer-events-none select-none"
-        style={{ marginTop: "var(--navbar-height)", zIndex: 0 }}
-        aria-hidden="true"
-      >
-        <div
-          style={{
-            position: "relative",
-            width: "min(800px, 100vw)",
-            aspectRatio: "1 / 1",
-          }}
-        >
-          <img
-            src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663518369468/UFErFNbZfWFixyyI.png"
-            alt=""
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-              opacity: 1,
-            }}
-          />
-          <div
-            className="absolute bottom-0 left-0 right-0 pointer-events-none"
-            style={{
-              height: "45%",
-              background:
-                "linear-gradient(to bottom, transparent 0%, var(--background) 100%)",
-            }}
-          />
-          <div
-            className="absolute inset-y-0 left-0 w-[12%] pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to right, var(--background), transparent)",
-            }}
-          />
-          <div
-            className="absolute inset-y-0 right-0 w-[12%] pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to left, var(--background), transparent)",
-            }}
-          />
-        </div>
-      </motion.div>
-
-      <div className="container pb-12" style={{ marginTop: "-60px" }}>
+      <div className="h-16" aria-hidden="true" />
+      <div className="container pt-4 pb-12">
         {/* Push notification prompt */}
         <PushNotificationBanner />
         {/* Live game scores ticker (SharpAPI Game State) */}
@@ -1386,6 +1342,64 @@ export default function Picks() {
               </Button>
             )}
           </div>
+        </div>
+
+        {/* Live board overview */}
+        <div className="mb-5 grid grid-cols-2 gap-3 xl:grid-cols-4">
+          {[
+            {
+              label: "Active picks",
+              value: isLoading ? "…" : (picksData?.picks ?? []).filter((pick: any) => pick.result === "pending" || !pick.result).length,
+              detail: "Upcoming and actionable",
+            },
+            {
+              label: "Sports covered",
+              value: isLoading ? "…" : new Set((picksData?.picks ?? []).filter((pick: any) => pick.result === "pending" || !pick.result).map((pick: any) => pick.sportKey)).size,
+              detail: "Across this board",
+            },
+            {
+              label: "Average confidence",
+              value: (() => {
+                const values = (picksData?.picks ?? []).filter((pick: any) =>
+                  (pick.result === "pending" || !pick.result) &&
+                  pick.confidenceScore !== null &&
+                  pick.confidenceScore !== undefined &&
+                  Number.isFinite(Number(pick.confidenceScore))
+                ).map((pick: any) => Number(pick.confidenceScore));
+                return isLoading ? "…" : values.length
+                  ? `${Math.round(values.reduce((sum: number, value: number) => sum + value, 0) / values.length)}%`
+                  : "—";
+              })(),
+              detail: "Model score, not win probability",
+            },
+            {
+              label: "Average edge score",
+              value: (() => {
+                const values = (picksData?.picks ?? []).filter((pick: any) =>
+                  (pick.result === "pending" || !pick.result) &&
+                  pick.edgeScore !== null &&
+                  pick.edgeScore !== undefined &&
+                  Number.isFinite(Number(pick.edgeScore))
+                ).map((pick: any) => Number(pick.edgeScore));
+                return isLoading ? "…" : values.length
+                  ? `${(values.reduce((sum: number, value: number) => sum + value, 0) / values.length).toFixed(1)}/10`
+                  : "—";
+              })(),
+              detail: "Only picks with an edge score",
+            },
+          ].map(metric => (
+            <Card key={metric.label} className="border-border/70 bg-card/70">
+              <CardContent className="p-4">
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{metric.label}</div>
+                <div className="mt-1 text-2xl font-bold tracking-tight text-foreground tabular-nums">{metric.value}</div>
+                <div className="mt-1 text-xs text-muted-foreground">{metric.detail}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="mb-4 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span>{isFetching ? "Updating live board…" : "Live board"} · Updated {dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "when data loads"}</span>
+          <span>Settled picks are preserved in Backtesting</span>
         </div>
 
         {/* My Sports Quick Filter */}
@@ -1486,7 +1500,7 @@ export default function Picks() {
           <div className="flex items-center gap-2 mb-3">
             <Crown className="w-4 h-4" style={{ color: "#ffd700" }} />
             <span className="text-xs font-bold" style={{ color: "#ffd700" }}>
-              Today's Top Picks
+              Top Upcoming Picks
             </span>
             <div
               className="flex-1 h-px"

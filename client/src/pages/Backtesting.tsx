@@ -5,13 +5,35 @@ import { Paywall } from "@/components/Paywall";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { BarChart3, Play, TrendingUp, TrendingDown, Target, DollarSign, Activity, AlertTriangle, Zap } from "lucide-react";
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart3,
+  Play,
+  TrendingUp,
+  TrendingDown,
+  Target,
+  DollarSign,
+  Activity,
+  AlertTriangle,
+  Zap,
+} from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
 import { toast } from "sonner";
@@ -52,12 +74,20 @@ export default function Backtesting() {
   const [minConfidence, setMinConfidence] = useState([70]);
   const [bankroll, setBankroll] = useState([10000]);
   const [stakePerBet, setStakePerBet] = useState([100]);
-  const [strategy, setStrategy] = useState<"kelly" | "quarter_kelly" | "flat">("kelly");
+  const [strategy, setStrategy] = useState<"kelly" | "quarter_kelly" | "flat">(
+    "kelly"
+  );
   const [results, setResults] = useState<any>(null);
   const [isRunning, setIsRunning] = useState(false);
 
   if (!hasProAccess) {
-    return <Paywall tier="monthly" title="Backtesting Engine" description="Test strategies against settled ChalkPicks picks. Kelly sizing is used when the quant service is online; the ledger fallback uses flat stakes." />;
+    return (
+      <Paywall
+        tier="monthly"
+        title="Backtesting Engine"
+        description="Test strategies against settled ChalkPicks picks. Kelly sizing is used when the quant service is online; the ledger fallback uses flat stakes."
+      />
+    );
   }
 
   const runBacktest = async () => {
@@ -81,9 +111,14 @@ export default function Backtesting() {
       });
       setResults(result);
       const source = (result as any).source;
-      if (source === "quant_sidecar") toast.success("⚡ Quant sidecar backtest complete!");
-      else if (source === "historical_ledger") toast.success("Backtest complete using settled ChalkPicks records.");
-      else toast.info((result as any).message || "No settled picks matched those filters.");
+      if (source === "quant_sidecar")
+        toast.success("⚡ Quant sidecar backtest complete!");
+      else if (source === "historical_ledger")
+        toast.success("Backtest complete using settled ChalkPicks records.");
+      else
+        toast.info(
+          (result as any).message || "No settled picks matched those filters."
+        );
     } catch (error: any) {
       toast.error(error?.message ?? "Backtest failed");
       console.error(error);
@@ -94,7 +129,10 @@ export default function Backtesting() {
 
   const isQuantResult = results?.source === "quant_sidecar";
   const winRateDisplay = results
-    ? (isQuantResult ? Number(results.winRate) * 100 : Number(results.winRate)).toFixed(1)
+    ? (isQuantResult
+        ? Number(results.winRate) * 100
+        : Number(results.winRate)
+      ).toFixed(1)
     : null;
 
   return (
@@ -114,7 +152,9 @@ export default function Backtesting() {
               )}
             </div>
             <p className="text-muted-foreground">
-              Evaluate settled picks, bankroll paths and drawdowns. Kelly sizing is used when the quant service is available; otherwise the ledger fallback is flat-stake.
+              Evaluate settled picks, bankroll paths and drawdowns. Kelly sizing
+              is used when the quant service is available; otherwise the ledger
+              fallback is flat-stake.
             </p>
           </div>
 
@@ -128,10 +168,14 @@ export default function Backtesting() {
                 <div>
                   <Label>Sport</Label>
                   <Select value={sport} onValueChange={setSport}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       {SPORTS.map(s => (
-                        <SelectItem key={s.key} value={s.key}>{s.name}</SelectItem>
+                        <SelectItem key={s.key} value={s.key}>
+                          {s.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -140,10 +184,14 @@ export default function Backtesting() {
                 <div>
                   <Label>Pick Type</Label>
                   <Select value={pickType} onValueChange={setPickType}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       {PICK_TYPES.map(t => (
-                        <SelectItem key={t.key} value={t.key}>{t.name}</SelectItem>
+                        <SelectItem key={t.key} value={t.key}>
+                          {t.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -151,48 +199,89 @@ export default function Backtesting() {
 
                 <div>
                   <Label>From Date</Label>
-                  <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+                  <Input
+                    type="date"
+                    value={dateFrom}
+                    onChange={e => setDateFrom(e.target.value)}
+                  />
                 </div>
 
                 <div>
                   <Label>To Date</Label>
-                  <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+                  <Input
+                    type="date"
+                    value={dateTo}
+                    onChange={e => setDateTo(e.target.value)}
+                  />
                 </div>
 
                 <div>
                   <Label>Min Confidence: {minConfidence[0]}%</Label>
-                  <Slider value={minConfidence} onValueChange={setMinConfidence} min={50} max={95} step={5} />
+                  <Slider
+                    value={minConfidence}
+                    onValueChange={setMinConfidence}
+                    min={50}
+                    max={95}
+                    step={5}
+                  />
                 </div>
 
-                <div>
-                </div>
+                <div></div>
 
                 <div>
                   <Label className="mb-2 block">Betting Strategy</Label>
-                  <Select value={strategy} onValueChange={(v) => setStrategy(v as typeof strategy)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                  <Select
+                    value={strategy}
+                    onValueChange={v => setStrategy(v as typeof strategy)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="kelly">Full Kelly ⚡</SelectItem>
-                      <SelectItem value="quarter_kelly">Quarter Kelly ⚡</SelectItem>
+                      <SelectItem value="quarter_kelly">
+                        Quarter Kelly ⚡
+                      </SelectItem>
                       <SelectItem value="flat">Flat Betting</SelectItem>
                     </SelectContent>
                   </Select>
                   {(strategy === "kelly" || strategy === "quarter_kelly") && (
-                    <p className="text-xs text-emerald-400 mt-1">⚡ Real Kelly sizing via Python quant sidecar</p>
+                    <p className="text-xs text-emerald-400 mt-1">
+                      ⚡ Real Kelly sizing via Python quant sidecar
+                    </p>
                   )}
                 </div>
 
                 <div>
-                  <Label>Starting Bankroll: ${bankroll[0].toLocaleString()}</Label>
-                  <Slider value={bankroll} onValueChange={setBankroll} min={1000} max={50000} step={1000} />
+                  <Label>
+                    Starting Bankroll: ${bankroll[0].toLocaleString()}
+                  </Label>
+                  <Slider
+                    value={bankroll}
+                    onValueChange={setBankroll}
+                    min={1000}
+                    max={50000}
+                    step={1000}
+                  />
                 </div>
 
                 <div>
                   <Label>Flat Stake: ${stakePerBet[0]}</Label>
-                  <Slider value={stakePerBet} onValueChange={setStakePerBet} min={10} max={1000} step={10} />
+                  <Slider
+                    value={stakePerBet}
+                    onValueChange={setStakePerBet}
+                    min={10}
+                    max={1000}
+                    step={10}
+                  />
                 </div>
 
-                <Button onClick={runBacktest} className="w-full" size="lg" disabled={isRunning}>
+                <Button
+                  onClick={runBacktest}
+                  className="w-full"
+                  size="lg"
+                  disabled={isRunning}
+                >
                   <Play className="w-4 h-4 mr-2" />
                   {isRunning ? "Running..." : "Run Backtest"}
                 </Button>
@@ -205,8 +294,13 @@ export default function Backtesting() {
                 <Card className="border-dashed">
                   <CardContent className="pt-12 pb-12 text-center text-muted-foreground">
                     <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                    <p className="text-lg font-medium mb-1">Configure and run a backtest</p>
-                    <p className="text-sm">Kelly/Quarter-Kelly strategies use the live Python quant sidecar with Elo ratings</p>
+                    <p className="text-lg font-medium mb-1">
+                      Configure and run a backtest
+                    </p>
+                    <p className="text-sm">
+                      Kelly/Quarter-Kelly strategies use the live Python quant
+                      sidecar with Elo ratings
+                    </p>
                   </CardContent>
                 </Card>
               )}
@@ -215,7 +309,9 @@ export default function Backtesting() {
                 <Card>
                   <CardContent className="pt-12 pb-12 text-center">
                     <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                    <p className="text-muted-foreground">Running quant backtest...</p>
+                    <p className="text-muted-foreground">
+                      Running quant backtest...
+                    </p>
                   </CardContent>
                 </Card>
               )}
@@ -224,17 +320,26 @@ export default function Backtesting() {
                 <>
                   {results.source === "no_historical_data" && (
                     <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-                      <div className="font-semibold">No settled picks matched this backtest</div>
+                      <div className="font-semibold">
+                        No settled picks matched this backtest
+                      </div>
                       <p className="mt-1 text-xs leading-relaxed text-amber-100/75">
-                        Widen the date range or adjust the sport, market and confidence filters. No results have been invented to fill the report.
+                        Widen the date range or adjust the sport, market and
+                        confidence filters. No results have been invented to
+                        fill the report.
                       </p>
                     </div>
                   )}
-                  {results.strategyApplied === "flat_fallback_without_quant_sidecar" && (
+                  {results.strategyApplied ===
+                    "flat_fallback_without_quant_sidecar" && (
                     <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-                      <div className="font-semibold">Quant engine unavailable — flat-stake fallback used</div>
+                      <div className="font-semibold">
+                        Quant engine unavailable — flat-stake fallback used
+                      </div>
                       <p className="mt-1 text-xs leading-relaxed text-amber-100/75">
-                        This run uses settled ChalkPicks ledger entries with flat stakes. Full Kelly or Quarter Kelly was not applied.
+                        This run uses settled ChalkPicks ledger entries with
+                        flat stakes. Full Kelly or Quarter Kelly was not
+                        applied.
                       </p>
                     </div>
                   )}
@@ -245,8 +350,12 @@ export default function Backtesting() {
                         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                           <Target className="w-4 h-4" /> Total Bets
                         </div>
-                        <div className="text-3xl font-bold">{results.totalPicks}</div>
-                        <div className="text-xs text-muted-foreground mt-1">{results.wins}W / {results.losses}L</div>
+                        <div className="text-3xl font-bold">
+                          {results.totalPicks}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {results.wins}W / {results.losses}L
+                        </div>
                       </CardContent>
                     </Card>
                     <Card>
@@ -254,7 +363,9 @@ export default function Backtesting() {
                         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                           <Activity className="w-4 h-4" /> Win Rate
                         </div>
-                        <div className={`text-3xl font-bold ${Number(winRateDisplay) >= 52 ? "text-emerald-400" : "text-red-400"}`}>
+                        <div
+                          className={`text-3xl font-bold ${Number(winRateDisplay) >= 52 ? "text-emerald-400" : "text-red-400"}`}
+                        >
                           {winRateDisplay}%
                         </div>
                       </CardContent>
@@ -264,7 +375,9 @@ export default function Backtesting() {
                         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                           <TrendingUp className="w-4 h-4" /> ROI
                         </div>
-                        <div className={`text-3xl font-bold ${results.roi > 0 ? "text-emerald-400" : "text-red-400"}`}>
+                        <div
+                          className={`text-3xl font-bold ${results.roi > 0 ? "text-emerald-400" : "text-red-400"}`}
+                        >
                           {results.roi?.toFixed(1)}%
                         </div>
                       </CardContent>
@@ -274,8 +387,13 @@ export default function Backtesting() {
                         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                           <DollarSign className="w-4 h-4" /> Net P&L
                         </div>
-                        <div className={`text-3xl font-bold ${(results.totalProfit ?? results.profit ?? 0) > 0 ? "text-emerald-400" : "text-red-400"}`}>
-                          ${(results.totalProfit ?? results.profit ?? 0).toFixed(0)}
+                        <div
+                          className={`text-3xl font-bold ${(results.totalProfit ?? results.profit ?? 0) > 0 ? "text-emerald-400" : "text-red-400"}`}
+                        >
+                          $
+                          {(results.totalProfit ?? results.profit ?? 0).toFixed(
+                            0
+                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -286,14 +404,22 @@ export default function Backtesting() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <Card className="border-emerald-500/20">
                         <CardContent className="pt-6">
-                          <div className="text-sm text-muted-foreground mb-1">Starting Bankroll</div>
-                          <div className="text-xl font-bold">${results.startingBankroll?.toLocaleString()}</div>
+                          <div className="text-sm text-muted-foreground mb-1">
+                            Starting Bankroll
+                          </div>
+                          <div className="text-xl font-bold">
+                            ${results.startingBankroll?.toLocaleString()}
+                          </div>
                         </CardContent>
                       </Card>
                       <Card className="border-emerald-500/20">
                         <CardContent className="pt-6">
-                          <div className="text-sm text-muted-foreground mb-1">Ending Bankroll</div>
-                          <div className={`text-xl font-bold ${results.endingBankroll >= results.startingBankroll ? "text-emerald-400" : "text-red-400"}`}>
+                          <div className="text-sm text-muted-foreground mb-1">
+                            Ending Bankroll
+                          </div>
+                          <div
+                            className={`text-xl font-bold ${results.endingBankroll >= results.startingBankroll ? "text-emerald-400" : "text-red-400"}`}
+                          >
                             ${results.endingBankroll?.toLocaleString()}
                           </div>
                         </CardContent>
@@ -303,13 +429,19 @@ export default function Backtesting() {
                           <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
                             <AlertTriangle className="w-3 h-3" /> Max Drawdown
                           </div>
-                          <div className="text-xl font-bold text-orange-400">{results.maxDrawdownPct?.toFixed(1)}%</div>
+                          <div className="text-xl font-bold text-orange-400">
+                            {results.maxDrawdownPct?.toFixed(1)}%
+                          </div>
                         </CardContent>
                       </Card>
                       <Card className="border-blue-500/20">
                         <CardContent className="pt-6">
-                          <div className="text-sm text-muted-foreground mb-1">Sharpe Ratio</div>
-                          <div className={`text-xl font-bold ${results.sharpeRatio > 0 ? "text-blue-400" : "text-red-400"}`}>
+                          <div className="text-sm text-muted-foreground mb-1">
+                            Sharpe Ratio
+                          </div>
+                          <div
+                            className={`text-xl font-bold ${results.sharpeRatio > 0 ? "text-blue-400" : "text-red-400"}`}
+                          >
                             {results.sharpeRatio?.toFixed(2)}
                           </div>
                         </CardContent>
@@ -324,22 +456,47 @@ export default function Backtesting() {
                         <CardTitle className="flex items-center gap-2">
                           <TrendingUp className="w-5 h-5" />
                           Bankroll Curve
-                          {isQuantResult && <Badge variant="outline" className="text-emerald-400 border-emerald-500/30 text-xs">Live Quant Data</Badge>}
+                          {isQuantResult && (
+                            <Badge
+                              variant="outline"
+                              className="text-emerald-400 border-emerald-500/30 text-xs"
+                            >
+                              Live Quant Data
+                            </Badge>
+                          )}
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <ResponsiveContainer width="100%" height={300}>
                           <AreaChart data={results.results}>
-                            <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                            <XAxis dataKey="date" tick={{ fontSize: 11 }} interval={Math.floor(results.results.length / 8)} />
-                            <YAxis tickFormatter={(v) => `$${v.toLocaleString()}`} tick={{ fontSize: 11 }} />
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              opacity={0.3}
+                            />
+                            <XAxis
+                              dataKey="date"
+                              tick={{ fontSize: 11 }}
+                              interval={Math.floor(results.results.length / 8)}
+                            />
+                            <YAxis
+                              tickFormatter={v => `$${v.toLocaleString()}`}
+                              tick={{ fontSize: 11 }}
+                            />
                             <Tooltip
                               formatter={(value: any, name: string) => [
-                                name === "bankroll" ? `$${Number(value).toLocaleString()}` : `$${Number(value).toFixed(2)}`,
-                                name === "bankroll" ? "Bankroll" : "Cumulative P&L"
+                                name === "bankroll"
+                                  ? `$${Number(value).toLocaleString()}`
+                                  : `$${Number(value).toFixed(2)}`,
+                                name === "bankroll"
+                                  ? "Bankroll"
+                                  : "Cumulative P&L",
                               ]}
                             />
-                            <ReferenceLine y={results.startingBankroll ?? bankroll[0]} stroke="#666" strokeDasharray="4 4" />
+                            <ReferenceLine
+                              y={results.startingBankroll ?? bankroll[0]}
+                              stroke="#666"
+                              strokeDasharray="4 4"
+                            />
                             <Area
                               type="monotone"
                               dataKey="bankroll"
@@ -355,54 +512,78 @@ export default function Backtesting() {
                   )}
 
                   {/* Recent Bets Table (quant sidecar only) */}
-                  {isQuantResult && results.recentBets && results.recentBets.length > 0 && (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Activity className="w-5 h-5" />
-                          Recent Bets
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-sm">
-                            <thead>
-                              <tr className="border-b border-border text-muted-foreground">
-                                <th className="text-left py-2 pr-4">Date</th>
-                                <th className="text-right py-2 pr-4">Odds</th>
-                                <th className="text-right py-2 pr-4">Edge</th>
-                                <th className="text-right py-2 pr-4">Bet Size</th>
-                                <th className="text-right py-2 pr-4">Bankroll After</th>
-                                <th className="text-right py-2">Result</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {results.recentBets.slice(0, 15).map((bet: any, i: number) => (
-                                <tr key={i} className="border-b border-border/50 hover:bg-muted/30">
-                                  <td className="py-2 pr-4 text-muted-foreground">{bet.date}</td>
-                                  <td className="py-2 pr-4 text-right font-mono">{bet.odds > 0 ? `+${bet.odds}` : bet.odds}</td>
-                                  <td className="py-2 pr-4 text-right text-blue-400">+{bet.edge?.toFixed(1)}%</td>
-                                  <td className="py-2 pr-4 text-right">${bet.betSize?.toFixed(0)}</td>
-                                  <td className="py-2 pr-4 text-right">${bet.bankrollAfter?.toLocaleString()}</td>
-                                  <td className="py-2 text-right">
-                                    {bet.won ? (
-                                      <span className="text-emerald-400 flex items-center justify-end gap-1">
-                                        <TrendingUp className="w-3 h-3" /> W
-                                      </span>
-                                    ) : (
-                                      <span className="text-red-400 flex items-center justify-end gap-1">
-                                        <TrendingDown className="w-3 h-3" /> L
-                                      </span>
-                                    )}
-                                  </td>
+                  {isQuantResult &&
+                    results.recentBets &&
+                    results.recentBets.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <Activity className="w-5 h-5" />
+                            Recent Bets
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b border-border text-muted-foreground">
+                                  <th className="text-left py-2 pr-4">Date</th>
+                                  <th className="text-right py-2 pr-4">Odds</th>
+                                  <th className="text-right py-2 pr-4">Edge</th>
+                                  <th className="text-right py-2 pr-4">
+                                    Bet Size
+                                  </th>
+                                  <th className="text-right py-2 pr-4">
+                                    Bankroll After
+                                  </th>
+                                  <th className="text-right py-2">Result</th>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
+                              </thead>
+                              <tbody>
+                                {results.recentBets
+                                  .slice(0, 15)
+                                  .map((bet: any, i: number) => (
+                                    <tr
+                                      key={i}
+                                      className="border-b border-border/50 hover:bg-muted/30"
+                                    >
+                                      <td className="py-2 pr-4 text-muted-foreground">
+                                        {bet.date}
+                                      </td>
+                                      <td className="py-2 pr-4 text-right font-mono">
+                                        {bet.odds > 0
+                                          ? `+${bet.odds}`
+                                          : bet.odds}
+                                      </td>
+                                      <td className="py-2 pr-4 text-right text-blue-400">
+                                        +{bet.edge?.toFixed(1)}%
+                                      </td>
+                                      <td className="py-2 pr-4 text-right">
+                                        ${bet.betSize?.toFixed(0)}
+                                      </td>
+                                      <td className="py-2 pr-4 text-right">
+                                        ${bet.bankrollAfter?.toLocaleString()}
+                                      </td>
+                                      <td className="py-2 text-right">
+                                        {bet.won ? (
+                                          <span className="text-emerald-400 flex items-center justify-end gap-1">
+                                            <TrendingUp className="w-3 h-3" /> W
+                                          </span>
+                                        ) : (
+                                          <span className="text-red-400 flex items-center justify-end gap-1">
+                                            <TrendingDown className="w-3 h-3" />{" "}
+                                            L
+                                          </span>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
                 </>
               )}
             </div>
@@ -416,7 +597,8 @@ export default function Backtesting() {
                     <Activity className="w-5 h-5" /> Settled Picks Archive
                   </CardTitle>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Historical wins, losses, and pushes live here—not on the active Picks board.
+                    Historical wins, losses, and pushes live here—not on the
+                    active Picks board.
                   </p>
                 </div>
                 <Badge variant="outline">{historicalPicks.length} shown</Badge>
@@ -424,10 +606,13 @@ export default function Backtesting() {
             </CardHeader>
             <CardContent>
               {isHistoryLoading ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">Loading settled picks…</p>
+                <p className="py-6 text-center text-sm text-muted-foreground">
+                  Loading settled picks…
+                </p>
               ) : historicalPicks.length === 0 ? (
                 <p className="py-8 text-center text-sm text-muted-foreground">
-                  No settled picks have been recorded yet. Once picks are graded, they’ll appear here for review and backtesting.
+                  No settled picks have been recorded yet. Once picks are
+                  graded, they’ll appear here for review and backtesting.
                 </p>
               ) : (
                 <div className="overflow-x-auto">
@@ -446,18 +631,41 @@ export default function Backtesting() {
                     <tbody>
                       {historicalPicks.map((pick: any) => (
                         <tr key={pick.id} className="border-b border-border/50">
-                          <td className="py-3 pr-4 text-muted-foreground">{pick.pickDate}</td>
-                          <td className="py-3 pr-4 uppercase">{pick.sportKey}</td>
-                          <td className="py-3 pr-4">{pick.awayTeam || "—"} @ {pick.homeTeam || "—"}</td>
-                          <td className="py-3 pr-4 font-medium">{pick.recommendation}</td>
-                          <td className="py-3 pr-4 text-right font-mono">{pick.odds == null ? "—" : pick.odds > 0 ? `+${pick.odds}` : pick.odds}</td>
-                          <td className="py-3 pr-4 text-right">{pick.confidenceScore}%</td>
+                          <td className="py-3 pr-4 text-muted-foreground">
+                            {pick.pickDate}
+                          </td>
+                          <td className="py-3 pr-4 uppercase">
+                            {pick.sportKey}
+                          </td>
+                          <td className="py-3 pr-4">
+                            {pick.awayTeam || "—"} @ {pick.homeTeam || "—"}
+                          </td>
+                          <td className="py-3 pr-4 font-medium">
+                            {pick.recommendation}
+                          </td>
+                          <td className="py-3 pr-4 text-right font-mono">
+                            {pick.odds === null || pick.odds === undefined
+                              ? "—"
+                              : pick.odds > 0
+                                ? `+${pick.odds}`
+                                : pick.odds}
+                          </td>
+                          <td className="py-3 pr-4 text-right">
+                            {pick.confidenceScore}%
+                          </td>
                           <td className="py-3 text-right">
-                            <Badge variant="outline" className={
-                              pick.result === "win" ? "border-emerald-500/40 text-emerald-400" :
-                              pick.result === "loss" ? "border-red-500/40 text-red-400" :
-                              "border-muted-foreground/30 text-muted-foreground"
-                            }>{String(pick.result).toUpperCase()}</Badge>
+                            <Badge
+                              variant="outline"
+                              className={
+                                pick.result === "win"
+                                  ? "border-emerald-500/40 text-emerald-400"
+                                  : pick.result === "loss"
+                                    ? "border-red-500/40 text-red-400"
+                                    : "border-muted-foreground/30 text-muted-foreground"
+                              }
+                            >
+                              {String(pick.result).toUpperCase()}
+                            </Badge>
                           </td>
                         </tr>
                       ))}

@@ -12,11 +12,9 @@ import {
   BarChart3,
   Settings,
   Eye,
-  Ban,
   CheckCircle2,
   AlertCircle,
   Crown,
-  Calendar,
   Search,
   RefreshCw,
   Bell,
@@ -80,9 +78,6 @@ export default function AdminPanel() {
   const PAGE_SIZE = 25;
 
   // Fetch platform stats
-  const { data: leaderboardData } = trpc.leaderboard.list.useQuery({
-    limit: 10,
-  });
   const { data: picksData } = trpc.picks.list.useQuery({
     limit: 5,
     tier: "all",

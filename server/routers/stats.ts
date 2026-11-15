@@ -1,9 +1,4 @@
-import {
-  protectedProcedure,
-  publicProcedure,
-  router,
-  premiumProcedure,
-} from "../_core/trpc";
+import { adminProcedure, publicProcedure, router } from "../_core/trpc";
 import { z } from "zod/v4";
 import {
   getLiveScores,
@@ -11,10 +6,14 @@ import {
   getAllSportsNews,
   getTopAthletes,
   type LiveGame,
-  type NewsItem,
 } from "../services/espnService";
 import { getDb } from "../db";
 import { getInjuries } from "../services/globalDataSite";
+import {
+  checkSportsProviders,
+  getCollegeFootballGames,
+  getNbaGames,
+} from "../services/additionalSportsProviders";
 import { sql } from "drizzle-orm";
 
 // ─── Real-time stats router using ESPN public API ────────────────────────────
@@ -92,6 +91,22 @@ export const statsRouter = router({
       // No synthetic line histories. Return empty until timestamped book snapshots exist.
       return [];
     }),
+
+  providerHealth: adminProcedure.query(() => checkSportsProviders()),
+
+  collegeFootballGames: adminProcedure
+    .input(
+      z.object({
+        year: z.number().int().min(2000).max(2100),
+        week: z.number().int().min(1).max(20).optional(),
+        seasonType: z.enum(["regular", "postseason", "both"]).optional(),
+      })
+    )
+    .query(({ input }) => getCollegeFootballGames(input)),
+
+  nbaProviderGames: adminProcedure
+    .input(z.object({ date: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) }))
+    .query(({ input }) => getNbaGames(input.date)),
 
   // Platform stats — real DB-backed data from picks + pick_ledger
   platformStats: publicProcedure.query(async () => {

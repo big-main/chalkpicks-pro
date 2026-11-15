@@ -72,6 +72,7 @@ const UserProfile = lazy(() => import("@/pages/UserProfile"));
 const Sportsbooks = lazy(() => import("@/pages/Sportsbooks"));
 const Sponsors = lazy(() => import("@/pages/Sponsors"));
 const AdminPanel = lazy(() => import("@/pages/AdminPanel"));
+const DataIntelligence = lazy(() => import("@/pages/DataIntelligence"));
 const AdminStats = lazy(() =>
   import("@/pages/AdminStats").then(m => ({ default: m.AdminStats }))
 );
@@ -226,6 +227,10 @@ function Router() {
               <Route path="/sportsbooks" component={Sportsbooks} />
               <Route path="/sponsors" component={Sponsors} />
               <Route path="/admin" component={AdminPanel} />
+              <Route
+                path="/admin/data-intelligence"
+                component={DataIntelligence}
+              />
               <Route path="/admin/stats" component={AdminStats} />
               <Route path="/credits" component={CreditDashboard} />
               <Route path="/prop-builder" component={PropBuilder} />

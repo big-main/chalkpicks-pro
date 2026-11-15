@@ -107,7 +107,7 @@ export const statsRouter = router({
     }),
 
   nbaProviderGames: protectedProcedure
-    .input(z.object({ date: z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/) }))
+    .input(z.object({ date: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) }))
     .query(async ({ input, ctx }) => {
       if (ctx.user?.role !== "admin") throw new Error("Admin access required");
       return getNbaGames(input.date);

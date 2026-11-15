@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   Users,
   BarChart3,
+  Database,
 } from "lucide-react";
 import {
   BarChart,
@@ -34,6 +35,7 @@ import {
 const SPORTS = [
   { key: "nfl", name: "NFL", icon: "🏈" },
   { key: "nba", name: "NBA", icon: "🏀" },
+  { key: "ncaaf", name: "NCAAF", icon: "🏟️" },
   { key: "mlb", name: "MLB", icon: "⚾" },
   { key: "nhl", name: "NHL", icon: "🏒" },
   { key: "soccer", name: "Soccer", icon: "⚽" },
@@ -43,6 +45,10 @@ export default function Stats() {
   const { data: subscription } = trpc.subscription.mySubscription.useQuery();
   const [sport, setSport] = useState("nfl");
   const [search, setSearch] = useState("");
+  const [providerSearch, setProviderSearch] = useState("");
+  const [providerSort, setProviderSort] = useState<
+    "start_asc" | "start_desc" | "matchup" | "status"
+  >("start_asc");
 
   const hasPremiumAccess =
     subscription?.isActive &&
@@ -50,6 +56,26 @@ export default function Stats() {
       subscription?.tier === "monthly" ||
       subscription?.tier === "yearly");
   const { data: platformStats } = trpc.stats.platformStats.useQuery();
+  const providerYear = new Date().getUTCFullYear();
+  const providerDate = new Date().toISOString().slice(0, 10);
+  const { data: cfbdGames, isLoading: cfbdLoading } =
+    trpc.stats.collegeFootballGames.useQuery(
+      { year: providerYear },
+      {
+        enabled: hasPremiumAccess && sport === "ncaaf",
+        staleTime: 10 * 60_000,
+        retry: false,
+      }
+    );
+  const { data: nbaProviderGames, isLoading: nbaProviderLoading } =
+    trpc.stats.nbaProviderGames.useQuery(
+      { date: providerDate },
+      {
+        enabled: hasPremiumAccess && sport === "nba",
+        staleTime: 2 * 60_000,
+        retry: false,
+      }
+    );
 
   const { data: liveGames, isLoading: gamesLoading } =
     trpc.stats.liveGames.useQuery(
@@ -61,10 +87,11 @@ export default function Stats() {
       { sportKey: sport, limit: 12 },
       { enabled: hasPremiumAccess, staleTime: 15_000, refetchInterval: 30_000 }
     );
-  const { data: injuries, isLoading: injuriesLoading } = trpc.stats.injuryReport.useQuery(
-    { sportKey: sport },
-    { enabled: hasPremiumAccess, staleTime: 15_000, refetchInterval: 30_000 }
-  );
+  const { data: injuries, isLoading: injuriesLoading } =
+    trpc.stats.injuryReport.useQuery(
+      { sportKey: sport },
+      { enabled: hasPremiumAccess, staleTime: 15_000, refetchInterval: 30_000 }
+    );
 
   if (!hasPremiumAccess) {
     return (
@@ -162,21 +189,50 @@ export default function Stats() {
       p.team.toLowerCase().includes(search.toLowerCase())
   );
 
+  const providerGames =
+    sport === "ncaaf"
+      ? (cfbdGames?.data ?? [])
+      : sport === "nba"
+        ? (nbaProviderGames?.data ?? [])
+        : [];
+  const filteredProviderGames = providerGames
+    .filter((game: any) => {
+      const query = providerSearch.trim().toLowerCase();
+      return (
+        !query ||
+        `${game.awayTeam} ${game.homeTeam} ${game.status}`
+          .toLowerCase()
+          .includes(query)
+      );
+    })
+    .sort((a: any, b: any) => {
+      if (providerSort === "matchup") {
+        return `${a.awayTeam} ${a.homeTeam}`.localeCompare(
+          `${b.awayTeam} ${b.homeTeam}`
+        );
+      }
+      if (providerSort === "status") return a.status.localeCompare(b.status);
+      const left = a.startTime ? new Date(a.startTime).getTime() : 0;
+      const right = b.startTime ? new Date(b.startTime).getTime() : 0;
+      return providerSort === "start_desc" ? right - left : left - right;
+    });
+
   // Use only observable values. Historical odds and totals require time-series
   // and graded outcomes; do not simulate either from the current live snapshot.
-  const teamTrends =
-    (liveGames ?? [])
-      .filter(
-        (game: any) =>
-          game.homeScore !== null &&
-          game.homeScore !== undefined &&
-          Number.isFinite(Number(game.homeScore))
-      )
-      .slice(0, 8)
-      .map((game: any) => ({
-        team: String(game.homeTeam ?? "Home").split(" ").pop(),
-        score: Number(game.homeScore),
-      }));
+  const teamTrends = (liveGames ?? [])
+    .filter(
+      (game: any) =>
+        game.homeScore !== null &&
+        game.homeScore !== undefined &&
+        Number.isFinite(Number(game.homeScore))
+    )
+    .slice(0, 8)
+    .map((game: any) => ({
+      team: String(game.homeTeam ?? "Home")
+        .split(" ")
+        .pop(),
+      score: Number(game.homeScore),
+    }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -222,7 +278,8 @@ export default function Stats() {
                 label: "Live Games",
                 value: gamesLoading
                   ? "…"
-                  : (liveGames?.filter((g: any) => g.status === "live").length ?? 0),
+                  : (liveGames?.filter((g: any) => g.status === "live")
+                      .length ?? 0),
                 sub: "In progress",
               },
               {
@@ -239,11 +296,12 @@ export default function Stats() {
                 label: "Games With Scores",
                 value: gamesLoading
                   ? "…"
-                  : (liveGames?.filter((game: any) =>
-                      game.homeScore !== null &&
-                      game.homeScore !== undefined &&
-                      game.awayScore !== null &&
-                      game.awayScore !== undefined
+                  : (liveGames?.filter(
+                      (game: any) =>
+                        game.homeScore !== null &&
+                        game.homeScore !== undefined &&
+                        game.awayScore !== null &&
+                        game.awayScore !== undefined
                     ).length ?? 0),
                 sub: "Current feed snapshot",
               },
@@ -290,6 +348,14 @@ export default function Stats() {
               >
                 <BarChart3 className="w-3.5 h-3.5 mr-1.5" /> Trends
               </TabsTrigger>
+              {(sport === "nba" || sport === "ncaaf") && (
+                <TabsTrigger
+                  value="provider"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Database className="w-3.5 h-3.5 mr-1.5" /> Provider Data
+                </TabsTrigger>
+              )}
             </TabsList>
 
             {/* Players */}
@@ -550,21 +616,124 @@ export default function Stats() {
               </div>
             </TabsContent>
 
+            {(sport === "nba" || sport === "ncaaf") && (
+              <TabsContent value="provider">
+                <Card className="bg-card border-border">
+                  <CardHeader>
+                    <CardTitle className="text-base">
+                      {sport === "nba" ? "NBA" : "NCAAF"} provider game feed
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      Source-verified records with no synthetic scores or
+                      fallback rows.
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col gap-3 mb-4 sm:flex-row">
+                      <Input
+                        value={providerSearch}
+                        onChange={event =>
+                          setProviderSearch(event.target.value)
+                        }
+                        placeholder="Search team or status..."
+                        className="h-9 sm:max-w-sm"
+                      />
+                      <Select
+                        value={providerSort}
+                        onValueChange={value =>
+                          setProviderSort(value as typeof providerSort)
+                        }
+                      >
+                        <SelectTrigger className="h-9 sm:w-48">
+                          <SelectValue placeholder="Sort games" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="start_asc">
+                            Start time: earliest
+                          </SelectItem>
+                          <SelectItem value="start_desc">
+                            Start time: latest
+                          </SelectItem>
+                          <SelectItem value="matchup">Matchup: A–Z</SelectItem>
+                          <SelectItem value="status">Status: A–Z</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {(sport === "ncaaf" ? cfbdLoading : nbaProviderLoading) ? (
+                      <div className="py-10 text-center text-sm text-muted-foreground">
+                        Loading provider games…
+                      </div>
+                    ) : filteredProviderGames.length > 0 ? (
+                      <div className="space-y-2">
+                        {filteredProviderGames.slice(0, 50).map((game: any) => (
+                          <div
+                            key={`${game.provider}-${game.id}`}
+                            className="flex flex-col gap-2 rounded-lg border border-border/70 bg-secondary/20 p-3 sm:flex-row sm:items-center sm:justify-between"
+                          >
+                            <div>
+                              <div className="font-medium text-sm text-foreground">
+                                {game.awayTeam} @ {game.homeTeam}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {game.startTime
+                                  ? new Date(game.startTime).toLocaleString()
+                                  : "Time unavailable"}{" "}
+                                · {game.provider}
+                              </div>
+                            </div>
+                            <div className="text-right text-xs text-muted-foreground">
+                              <div className="capitalize">{game.status}</div>
+                              <div>
+                                {game.awayScore ?? "—"} -{" "}
+                                {game.homeScore ?? "—"}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-10 text-center text-sm text-muted-foreground">
+                        No provider games match the current filter.
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            )}
+
             {/* Trends and market history */}
             <TabsContent value="trends">
               <div className="grid gap-6 lg:grid-cols-2">
                 <Card className="bg-card border-border">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Live Home-Score Snapshot</CardTitle>
-                    <p className="text-xs text-muted-foreground">Observed scores returned for the selected sport.</p>
+                    <CardTitle className="text-base">
+                      Live Home-Score Snapshot
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      Observed scores returned for the selected sport.
+                    </p>
                   </CardHeader>
                   <CardContent>
                     {teamTrends.length > 0 ? (
                       <ResponsiveContainer width="100%" height={250}>
                         <BarChart data={teamTrends}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.22 0.015 260)" />
-                          <XAxis dataKey="team" tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }} />
-                          <YAxis tick={{ fill: "oklch(0.55 0.02 260)", fontSize: 11 }} />
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            stroke="oklch(0.22 0.015 260)"
+                          />
+                          <XAxis
+                            dataKey="team"
+                            tick={{
+                              fill: "oklch(0.55 0.02 260)",
+                              fontSize: 11,
+                            }}
+                          />
+                          <YAxis
+                            tick={{
+                              fill: "oklch(0.55 0.02 260)",
+                              fontSize: 11,
+                            }}
+                          />
                           <Tooltip
                             contentStyle={{
                               background: "oklch(0.12 0.015 260)",
@@ -573,15 +742,25 @@ export default function Stats() {
                             }}
                             formatter={(value: number) => [value, "Home score"]}
                           />
-                          <Bar dataKey="score" fill="oklch(0.78 0.18 85)" radius={[4, 4, 0, 0]} name="Home score" />
+                          <Bar
+                            dataKey="score"
+                            fill="oklch(0.78 0.18 85)"
+                            radius={[4, 4, 0, 0]}
+                            name="Home score"
+                          />
                         </BarChart>
                       </ResponsiveContainer>
                     ) : (
                       <div className="min-h-[250px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/70 bg-secondary/30 px-6 text-center">
                         <Activity className="h-8 w-8 text-muted-foreground mb-3" />
-                        <p className="font-medium text-foreground">{gamesLoading ? "Loading live scores…" : "No live scores in this feed"}</p>
+                        <p className="font-medium text-foreground">
+                          {gamesLoading
+                            ? "Loading live scores…"
+                            : "No live scores in this feed"}
+                        </p>
                         <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                          Observed score snapshots appear here when live games return score data for the selected sport.
+                          Observed score snapshots appear here when live games
+                          return score data for the selected sport.
                         </p>
                       </div>
                     )}
@@ -589,33 +768,60 @@ export default function Stats() {
                 </Card>
                 <Card className="bg-card border-border">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Historical Odds Movement</CardTitle>
-                    <p className="text-xs text-muted-foreground">Price history requires timestamped sportsbook snapshots.</p>
+                    <CardTitle className="text-base">
+                      Historical Odds Movement
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      Price history requires timestamped sportsbook snapshots.
+                    </p>
                   </CardHeader>
                   <CardContent>
                     <div className="min-h-[250px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/70 bg-secondary/30 px-6 text-center">
                       <TrendingUp className="h-8 w-8 text-muted-foreground mb-3" />
-                      <p className="font-medium text-foreground">No historical price series available</p>
-                      <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                        This live feed returns a current view, not a complete 24-hour price history. Open Line Movement for available market context.
+                      <p className="font-medium text-foreground">
+                        No historical price series available
                       </p>
-                      <a href="/line-movement" className="mt-4 text-sm font-semibold text-primary hover:underline">Open Line Movement →</a>
+                      <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+                        This live feed returns a current view, not a complete
+                        24-hour price history. Open Line Movement for available
+                        market context.
+                      </p>
+                      <a
+                        href="/line-movement"
+                        className="mt-4 text-sm font-semibold text-primary hover:underline"
+                      >
+                        Open Line Movement →
+                      </a>
                     </div>
                   </CardContent>
                 </Card>
                 <Card className="bg-card border-border lg:col-span-2">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Historical Totals Performance</CardTitle>
-                    <p className="text-xs text-muted-foreground">A graded sample is required before calculating team hit rates.</p>
+                    <CardTitle className="text-base">
+                      Historical Totals Performance
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      A graded sample is required before calculating team hit
+                      rates.
+                    </p>
                   </CardHeader>
                   <CardContent>
                     <div className="min-h-[190px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/70 bg-secondary/30 px-6 text-center">
                       <BarChart3 className="h-8 w-8 text-muted-foreground mb-3" />
-                      <p className="font-medium text-foreground">No settled totals sample is loaded here</p>
-                      <p className="mt-2 max-w-lg text-sm text-muted-foreground">
-                        Hit rates need completed games and graded totals. Review verified results or run a backtest instead of relying on a modelled percentage.
+                      <p className="font-medium text-foreground">
+                        No settled totals sample is loaded here
                       </p>
-                      <a href="/backtesting" className="mt-4 text-sm font-semibold text-primary hover:underline">Open Backtesting →</a>
+                      <p className="mt-2 max-w-lg text-sm text-muted-foreground">
+                        Hit rates need completed games and graded totals. Review
+                        verified results or run a backtest instead of relying on
+                        a modelled percentage.
+                      </p>
+                      <a
+                        href="/backtesting"
+                        className="mt-4 text-sm font-semibold text-primary hover:underline"
+                      >
+                        Open Backtesting →
+                      </a>
                     </div>
                   </CardContent>
                 </Card>

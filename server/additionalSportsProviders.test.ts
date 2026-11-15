@@ -43,6 +43,65 @@ describe("additional sports providers", () => {
     fetchSpy.mockRestore();
   });
 
+  it("normalizes CFBD and BALLDONTLIE records into the shared game contract", async () => {
+    vi.stubEnv("CFBD_API_KEY", "test-cfbd-key");
+    vi.stubEnv("BALLDONTLIE_API_KEY", "test-bdl-key");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => [
+          {
+            id: 42,
+            start_date: "2099-09-01T19:00:00Z",
+            completed: false,
+            away_team: "Away U",
+            home_team: "Home U",
+            away_score: null,
+            home_score: null,
+            venue: "Test Stadium",
+          },
+        ],
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [
+            {
+              id: 7,
+              date: "2099-09-02T00:00:00Z",
+              status: "Final",
+              visitor_team: { full_name: "Away NBA" },
+              home_team: { full_name: "Home NBA" },
+              visitor_team_score: 101,
+              home_team_score: 99,
+            },
+          ],
+        }),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const [cfbd, nba] = await Promise.all([
+      getCollegeFootballGames({ year: 2099 }),
+      getNbaGames("2099-09-02"),
+    ]);
+    expect(cfbd.data[0]).toMatchObject({
+      provider: "CollegeFootballData",
+      sport: "ncaaf",
+      awayTeam: "Away U",
+      homeTeam: "Home U",
+    });
+    expect(nba.data[0]).toMatchObject({
+      provider: "BALLDONTLIE",
+      sport: "nba",
+      awayTeam: "Away NBA",
+      homeTeam: "Home NBA",
+      awayScore: 101,
+      homeScore: 99,
+    });
+    vi.unstubAllGlobals();
+  });
+
   it.skipIf(!process.env.CFBD_API_KEY || !process.env.BALLDONTLIE_API_KEY)(
     "accepts the configured provider credentials",
     async () => {

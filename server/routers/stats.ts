@@ -1,4 +1,9 @@
-import { adminProcedure, publicProcedure, router } from "../_core/trpc";
+import {
+  adminProcedure,
+  premiumProcedure,
+  publicProcedure,
+  router,
+} from "../_core/trpc";
 import { z } from "zod/v4";
 import {
   getLiveScores,
@@ -94,7 +99,7 @@ export const statsRouter = router({
 
   providerHealth: adminProcedure.query(() => checkSportsProviders()),
 
-  collegeFootballGames: adminProcedure
+  collegeFootballGames: premiumProcedure
     .input(
       z.object({
         year: z.number().int().min(2000).max(2100),
@@ -104,7 +109,7 @@ export const statsRouter = router({
     )
     .query(({ input }) => getCollegeFootballGames(input)),
 
-  nbaProviderGames: adminProcedure
+  nbaProviderGames: premiumProcedure
     .input(z.object({ date: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) }))
     .query(({ input }) => getNbaGames(input.date)),
 

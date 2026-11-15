@@ -14,6 +14,7 @@ import {
   type NewsItem,
 } from "../services/espnService";
 import { getDb } from "../db";
+import { getInjuries } from "../services/globalDataSite";
 import { sql } from "drizzle-orm";
 
 // ─── Real-time stats router using ESPN public API ────────────────────────────
@@ -70,88 +71,26 @@ export const statsRouter = router({
   injuryReport: publicProcedure
     .input(z.object({ sportKey: z.string().optional().default("nfl") }))
     .query(async ({ input }) => {
-      // ESPN doesn't have a clean public injury endpoint, use curated data
-      const injuries: Record<string, any[]> = {
-        nfl: [
-          {
-            player: "Christian McCaffrey",
-            team: "SF 49ers",
-            position: "RB",
-            status: "Questionable",
-            injury: "Knee",
-            updatedAt: "2 hours ago",
-          },
-          {
-            player: "Davante Adams",
-            team: "Las Vegas Raiders",
-            position: "WR",
-            status: "Out",
-            injury: "Hamstring",
-            updatedAt: "1 day ago",
-          },
-          {
-            player: "Dak Prescott",
-            team: "Dallas Cowboys",
-            position: "QB",
-            status: "Probable",
-            injury: "Thumb",
-            updatedAt: "3 hours ago",
-          },
-        ],
-        nba: [
-          {
-            player: "Joel Embiid",
-            team: "Philadelphia 76ers",
-            position: "C",
-            status: "Out",
-            injury: "Knee",
-            updatedAt: "6 hours ago",
-          },
-          {
-            player: "Kawhi Leonard",
-            team: "LA Clippers",
-            position: "SF",
-            status: "Out",
-            injury: "ACL",
-            updatedAt: "2 days ago",
-          },
-        ],
-        mlb: [
-          {
-            player: "Gerrit Cole",
-            team: "New York Yankees",
-            position: "SP",
-            status: "Probable",
-            injury: "Elbow",
-            updatedAt: "1 hour ago",
-          },
-        ],
-        nhl: [
-          {
-            player: "Sidney Crosby",
-            team: "Pittsburgh Penguins",
-            position: "C",
-            status: "Questionable",
-            injury: "Upper Body",
-            updatedAt: "4 hours ago",
-          },
-        ],
-      };
-      return injuries[input.sportKey] ?? [];
+      // Provider-sourced only. Empty means unavailable; never use sample players.
+      const injuries = await getInjuries(input.sportKey);
+      const fetchedAt = new Date().toISOString();
+      return injuries.map(injury => ({
+        player: injury.playerName,
+        team: injury.team,
+        status: injury.status,
+        injury: injury.description,
+        sport: injury.sport,
+        source: injury.source ?? "provider",
+        fetchedAt,
+        verificationStatus: "provider_reported" as const,
+      }));
     }),
 
   oddsMovement: publicProcedure
     .input(z.object({ gameId: z.string() }))
-    .query(({ input }) => {
-      // Odds movement data — would integrate with The Odds API in production
-      const hours = Array.from({ length: 24 }, (_, i) => i);
-      return hours.map(h => ({
-        time: `${h}:00`,
-        homeML: -200 + Math.floor(Math.random() * 40) - 20,
-        awayML: 168 + Math.floor(Math.random() * 30) - 15,
-        spread: -3.5 + (Math.random() * 0.5 - 0.25),
-        ou: 224.5 + (Math.random() * 2 - 1),
-      }));
+    .query(() => {
+      // No synthetic line histories. Return empty until timestamped book snapshots exist.
+      return [];
     }),
 
   // Platform stats — real DB-backed data from picks + pick_ledger

@@ -179,7 +179,7 @@ def frame_screenshot(screenshot_path: Path, device_key: str) -> Image.Image:
     font_sub = load_font(34)
 
     draw2.text((out_w // 2, caption_y + 30), caption, font=font_title, fill=TEXT_COLOR, anchor="mt")
-    draw2.text((out_w // 2, caption_y + 100), "chalkpicks.live", font=font_sub, fill=ACCENT + (200,), anchor="mt")
+    draw2.text((out_w // 2, caption_y + 100), "chalkpicks.pro", font=font_sub, fill=ACCENT + (200,), anchor="mt")
 
     return canvas.convert("RGB")
 

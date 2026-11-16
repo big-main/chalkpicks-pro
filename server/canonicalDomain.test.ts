@@ -52,6 +52,20 @@ describe("ChalkPicks .pro canonical domain", () => {
       expect(text).not.toContain("https://chalkpicks.live");
     }
   });
+  it("uses .pro in mobile links and generated screenshot branding", () => {
+    const ios = readFileSync(
+      new URL("../ios/App/App/Info.plist", import.meta.url),
+      "utf8"
+    );
+    const screenshots = readFileSync(
+      new URL("../scripts/generate-screenshots.py", import.meta.url),
+      "utf8"
+    );
+    expect(ios).toContain("applinks:chalkpicks.pro");
+    expect(ios).not.toContain("applinks:chalkpicks.live");
+    expect(screenshots).toContain('"chalkpicks.pro"');
+    expect(screenshots).not.toContain('"chalkpicks.live"');
+  });
   it("uses the canonical domain for notification links", () => {
     const source = readFileSync(
       new URL("./notificationService.ts", import.meta.url),
@@ -60,6 +74,14 @@ describe("ChalkPicks .pro canonical domain", () => {
     expect(source).toContain("const APP_URL = SITE_URL");
     expect(source).not.toContain("process.env.APP_URL");
   });
+  it.skipIf(!process.env.APP_URL)(
+    "serves health from the configured APP_URL",
+    async () => {
+      const response = await fetch(`${process.env.APP_URL}/health`);
+      expect(response.ok).toBe(true);
+      expect((await response.json()).status).toBe("ok");
+    }
+  );
   it("enables the tested backend deployment path", () => {
     const config = JSON.parse(
       readFileSync(new URL("../vercel.json", import.meta.url), "utf8")

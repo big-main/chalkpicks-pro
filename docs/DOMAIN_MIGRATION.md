@@ -2,52 +2,34 @@
 
 ## Status
 
-| Step                                                    | Status                 |
-| ------------------------------------------------------- | ---------------------- |
-| Code references updated (462 occurrences in 100+ files) | ✅ Complete            |
-| Checkpoint deployed to Manus hosting                    | ✅ Complete            |
-| Add chalkpicks.pro in Manus Management UI               | ⏳ You (manual)        |
-| Transfer DNS to Cloudflare                              | ⏳ You (manual)        |
-| Point CNAME records at Manus                            | ⏳ You (manual)        |
-| SSL auto-provision                                      | ⏳ Automatic after DNS |
-| Update Stripe webhook URL                               | ⏳ You (manual)        |
-| Keep chalkpicks.live as 301 redirect                    | ⏳ Optional            |
+| Step                                                    | Status            |
+| ------------------------------------------------------- | ----------------- |
+| Code references updated (462 occurrences in 100+ files) | ✅ Complete       |
+| Checkpoint deployed to Manus hosting                    | ✅ Complete       |
+| Add chalkpicks.pro in Manus Management UI               | ✅ Verified       |
+| Transfer DNS to Cloudflare                              | ✅ HTTPS verified |
+| Point CNAME records at Manus                            | ✅ HTTPS verified |
+| SSL auto-provision                                      | ✅ Active         |
+| Update Stripe webhook URL                               | ⏳ You (manual)   |
+| Keep chalkpicks.live as 301 redirect                    | ⚠️ Legacy only    |
 
 ---
 
-## Step 1: Add Domain in Manus Management UI
+## Step 1: Verify the Published Domain
 
-1. Open the ChalkPicks project in Manus
-2. Click the Management UI (right panel) → **Settings** → **Domains**
-3. Click **Add Domain**
-4. Enter: `chalkpicks.pro`
-5. Click **Add Domain** again
-6. Enter: `www.chalkpicks.pro`
-7. Note the **CNAME target** shown (likely `chalkpicks-xui7hd5r.manus.space`)
+The published project has `chalkpicks.pro` and `www.chalkpicks.pro` attached. The apex is canonical; `www` redirects to the apex while preserving paths and queries.
 
 ---
 
-## Step 2: Transfer DNS to Cloudflare (Free)
+## Step 2: DNS and SSL
 
-1. Go to https://dash.cloudflare.com → **Add a Site** → enter `chalkpicks.pro`
-2. Select the **Free** plan
-3. Cloudflare will show you two nameservers (e.g., `ada.ns.cloudflare.com`, `bob.ns.cloudflare.com`)
-4. Go to Railway dashboard → **Settings** → **Domains** → `chalkpicks.pro` → **DNS Settings**
-5. Change the nameservers to the Cloudflare ones
-6. Wait 5-60 minutes for propagation
+DNS and HTTPS for the attached `.pro` hosts are verified. Do not change the working records unless the domain provider explicitly requests a DNS validation update.
 
 ---
 
-## Step 3: Configure DNS Records in Cloudflare
+## Step 3: Legacy `.live` Handling
 
-Once nameservers are active, add these records:
-
-| Type  | Name       | Target                            | Proxy          |
-| ----- | ---------- | --------------------------------- | -------------- |
-| CNAME | `@` (root) | `chalkpicks-xui7hd5r.manus.space` | OFF (DNS only) |
-| CNAME | `www`      | `chalkpicks-xui7hd5r.manus.space` | OFF (DNS only) |
-
-**Important:** Set proxy to OFF (grey cloud) — Manus handles SSL itself.
+`.live` is retired and must not be used for previews, marketing, OAuth callbacks, webhooks, or generated links. If its DNS remains available, forward both `chalkpicks.live/*` and `www.chalkpicks.live/*` to the equivalent `https://chalkpicks.pro/*` path. If it is unavailable, use `.pro` directly.
 
 ---
 
@@ -60,21 +42,7 @@ Once nameservers are active, add these records:
 
 ---
 
-## Step 5: Keep chalkpicks.live as Redirect (Optional but Recommended)
-
-Since chalkpicks.live already has some SEO equity and backlinks:
-
-1. Keep the domain active
-2. In Cloudflare (or wherever .live DNS is managed), add a Page Rule:
-   - URL: `*chalkpicks.live/*`
-   - Setting: Forwarding URL → 301 Permanent Redirect
-   - Destination: `https://chalkpicks.pro/$2`
-
-This preserves any existing Google rankings and link juice.
-
----
-
-## Step 6: Verify Everything Works
+## Step 5: Verify Everything Works
 
 After DNS propagates (5-60 min):
 

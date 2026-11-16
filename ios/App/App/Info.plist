@@ -63,10 +63,10 @@
 	<key>NSUserNotificationUsageDescription</key>
 	<string>ChalkPicks sends you daily pick alerts and result notifications.</string>
 	<!-- Associated domains for Universal Links -->
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>applinks:chalkpicks.live</string>
-		<string>applinks:www.chalkpicks.live</string>
-	</array>
+		<key>com.apple.developer.associated-domains</key>
+		<array>
+			<string>applinks:chalkpicks.pro</string>
+			<string>applinks:www.chalkpicks.pro</string>
+		</array>
 </dict>
 </plist>

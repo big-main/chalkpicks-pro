@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import { Paywall } from "@/components/Paywall";
@@ -49,6 +49,12 @@ export default function Stats() {
   const [providerSort, setProviderSort] = useState<
     "start_asc" | "start_desc" | "matchup" | "status"
   >("start_asc");
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const hasPremiumAccess =
     subscription?.isActive &&
@@ -195,6 +201,11 @@ export default function Stats() {
       : sport === "nba"
         ? (nbaProviderGames?.data ?? [])
         : [];
+  const activeProviderFeed = sport === "ncaaf" ? cfbdGames : nbaProviderGames;
+  const providerFeedIsStale = Boolean(
+    activeProviderFeed?.available &&
+      Date.parse(activeProviderFeed.freshUntil) <= now
+  );
   const filteredProviderGames = providerGames
     .filter((game: any) => {
       const query = providerSearch.trim().toLowerCase();
@@ -627,6 +638,31 @@ export default function Stats() {
                       Source-verified records with no synthetic scores or
                       fallback rows.
                     </p>
+                    {activeProviderFeed?.available && (
+                      <div
+                        className={`mt-3 rounded-lg border px-3 py-2 text-xs ${
+                          providerFeedIsStale
+                            ? "border-amber-500/40 bg-amber-500/10 text-amber-200"
+                            : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+                        }`}
+                      >
+                        <span className="font-semibold">
+                          {providerFeedIsStale
+                            ? "Stale snapshot"
+                            : "Fresh snapshot"}
+                        </span>
+                        {" · "}
+                        Retrieved{" "}
+                        {new Date(
+                          activeProviderFeed.fetchedAt
+                        ).toLocaleTimeString()}
+                        {" · "}
+                        Cache freshness window ends{" "}
+                        {new Date(
+                          activeProviderFeed.freshUntil
+                        ).toLocaleTimeString()}
+                      </div>
+                    )}
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-col gap-3 mb-4 sm:flex-row">
@@ -662,6 +698,11 @@ export default function Stats() {
                     {(sport === "ncaaf" ? cfbdLoading : nbaProviderLoading) ? (
                       <div className="py-10 text-center text-sm text-muted-foreground">
                         Loading provider games…
+                      </div>
+                    ) : !activeProviderFeed?.available ? (
+                      <div className="py-10 text-center text-sm text-muted-foreground">
+                        {activeProviderFeed?.reason ??
+                          "This provider is unavailable. No synthetic games are shown."}
                       </div>
                     ) : filteredProviderGames.length > 0 ? (
                       <div className="space-y-2">

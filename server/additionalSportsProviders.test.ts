@@ -91,6 +91,13 @@ describe("additional sports providers", () => {
       awayTeam: "Away U",
       homeTeam: "Home U",
     });
+    expect(cfbd).toMatchObject({
+      available: true,
+      cacheTtlMs: 10 * 60 * 1000,
+    });
+    expect(Date.parse(cfbd.freshUntil)).toBeGreaterThan(
+      Date.parse(cfbd.fetchedAt)
+    );
     expect(nba.data[0]).toMatchObject({
       provider: "BALLDONTLIE",
       sport: "nba",
@@ -99,6 +106,13 @@ describe("additional sports providers", () => {
       awayScore: 101,
       homeScore: 99,
     });
+    expect(nba).toMatchObject({
+      available: true,
+      cacheTtlMs: 2 * 60 * 1000,
+    });
+    expect(Date.parse(nba.freshUntil)).toBeGreaterThan(
+      Date.parse(nba.fetchedAt)
+    );
     vi.unstubAllGlobals();
   });
 

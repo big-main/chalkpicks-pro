@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useLocation } from "wouter";
 import {
   Activity,
@@ -189,6 +189,16 @@ export default function DataIntelligence() {
                 ? collegeGames.data.data.length
                 : null
             }
+            fetchedAt={
+              collegeGames.data?.available
+                ? collegeGames.data.fetchedAt
+                : undefined
+            }
+            freshUntil={
+              collegeGames.data?.available
+                ? collegeGames.data.freshUntil
+                : undefined
+            }
           />
           <SnapshotCard
             title="NBA games today"
@@ -196,6 +206,12 @@ export default function DataIntelligence() {
             loading={nbaGames.isLoading || nbaGames.isFetching}
             error={nbaGames.error?.message}
             count={nbaGames.data?.available ? nbaGames.data.data.length : null}
+            fetchedAt={
+              nbaGames.data?.available ? nbaGames.data.fetchedAt : undefined
+            }
+            freshUntil={
+              nbaGames.data?.available ? nbaGames.data.freshUntil : undefined
+            }
           />
         </section>
 
@@ -236,13 +252,23 @@ function SnapshotCard({
   count,
   loading,
   error,
+  fetchedAt,
+  freshUntil,
 }: {
   title: string;
   detail: string;
   count: number | null;
   loading: boolean;
   error?: string;
+  fetchedAt?: string;
+  freshUntil?: string;
 }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const isStale = Boolean(freshUntil && Date.parse(freshUntil) <= now);
   return (
     <Card className="border-[#e4dfd3] bg-white shadow-sm">
       <CardContent className="p-5">
@@ -253,6 +279,14 @@ function SnapshotCard({
         <p className="mt-1 text-xs text-slate-400">
           {error ? "Provider request failed; no fallback data shown." : detail}
         </p>
+        {fetchedAt && (
+          <p
+            className={`mt-2 text-xs ${isStale ? "text-amber-700" : "text-emerald-700"}`}
+          >
+            {isStale ? "Stale snapshot" : "Fresh snapshot"} · retrieved{" "}
+            {new Date(fetchedAt).toLocaleTimeString()}
+          </p>
+        )}
       </CardContent>
     </Card>
   );

@@ -24,6 +24,12 @@ export type ProviderGame = {
   venue: string | null;
 };
 
+export type ProviderFeedMeta = {
+  fetchedAt: string;
+  freshUntil: string;
+  cacheTtlMs: number;
+};
+
 type CacheEntry = { expiresAt: number; value: unknown };
 const responseCache = new Map<string, CacheEntry>();
 const CACHE_TTL_MS = 5 * 60 * 1000;
@@ -81,7 +87,7 @@ export async function getCollegeFootballGames(input: {
   return {
     available: true as const,
     provider: "CollegeFootballData",
-    fetchedAt: new Date().toISOString(),
+    ...feedMeta(10 * 60 * 1000),
     data: data.map(normalizeCfbdGame),
   };
 }
@@ -109,9 +115,18 @@ export async function getNbaGames(date: string) {
   return {
     available: true as const,
     provider: "BALLDONTLIE",
-    fetchedAt: new Date().toISOString(),
+    ...feedMeta(2 * 60 * 1000),
     data: (result.data ?? []).map(normalizeNbaGame),
     pagination: result.meta ?? null,
+  };
+}
+
+function feedMeta(cacheTtlMs: number): ProviderFeedMeta {
+  const fetchedAt = new Date();
+  return {
+    fetchedAt: fetchedAt.toISOString(),
+    freshUntil: new Date(fetchedAt.getTime() + cacheTtlMs).toISOString(),
+    cacheTtlMs,
   };
 }
 

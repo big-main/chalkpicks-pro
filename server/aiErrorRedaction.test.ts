@@ -7,13 +7,13 @@ describe("AI provider error redaction", () => {
       providerErrorCode({
         status: 401,
         code: "invalid_api_key",
-        message: "Incorrect API key provided: sk_live_secret_value",
+        message: "Incorrect API key provided: provider-token-placeholder",
       })
     ).toBe("401:invalid_api_key");
   });
 
   it("does not serialize arbitrary error messages", () => {
-    expect(providerErrorCode(new Error("sk_live_secret_value"))).toBe(
+    expect(providerErrorCode(new Error("provider-token-placeholder"))).toBe(
       "request_failed"
     );
     expect(providerErrorCode(null)).toBe("request_failed");

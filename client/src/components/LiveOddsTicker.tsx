@@ -2,13 +2,16 @@
  * LiveOddsTicker — Real-time scrolling odds ticker powered by SharpAPI SSE stream.
  * Features: interactive click → game detail, sport filter tabs, premium gate with blur.
  */
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useOddsStream, StreamOddsRow } from "@/hooks/useOddsStream";
 import { formatSportLabel } from "@/lib/badges";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { Lock } from "lucide-react";
-import { useLocation } from "wouter";
+import { Lock, Search, SlidersHorizontal } from "lucide-react";
+import {
+  filterAndSortLiveOdds,
+  type LiveOddsSort,
+} from "@shared/liveOddsFilters";
 
 interface LiveOddsTickerProps {
   className?: string;
@@ -198,6 +201,11 @@ export function LiveOddsTicker({
 }: LiveOddsTickerProps) {
   const [selectedSport, setSelectedSport] = useState("");
   const [selectedRow, setSelectedRow] = useState<StreamOddsRow | null>(null);
+  const [search, setSearch] = useState("");
+  const [selectedBook, setSelectedBook] = useState("all");
+  const [selectedMarket, setSelectedMarket] = useState("all");
+  const [movementOnly, setMovementOnly] = useState(false);
+  const [sort, setSort] = useState<LiveOddsSort>("latest");
   const { user } = useAuth();
   const { data: subscription } = trpc.subscription.mySubscription.useQuery(
     undefined,
@@ -218,24 +226,44 @@ export function LiveOddsTicker({
     maxRows: maxItems,
   });
 
-  // Filter by sport if selected
-  const filteredRows = selectedSport
-    ? rows.filter(r =>
-        r.league.toLowerCase().includes(selectedSport.toLowerCase())
-      )
-    : rows;
+  const filteredRows = useMemo(() => {
+    const sportRows = selectedSport
+      ? rows.filter(r =>
+          r.league.toLowerCase().includes(selectedSport.toLowerCase())
+        )
+      : rows;
+    return filterAndSortLiveOdds(sportRows, {
+      search,
+      sportsbook: selectedBook,
+      market: selectedMarket,
+      movementOnly,
+      sort,
+    });
+  }, [
+    movementOnly,
+    rows,
+    search,
+    selectedBook,
+    selectedMarket,
+    selectedSport,
+    sort,
+  ]);
 
-  // Prioritize rows with movement
-  const recentRows = filteredRows
-    .filter(
-      r =>
-        r.direction !== "stable" ||
-        Date.now() - new Date(r.timestamp).getTime() < 60_000
-    )
-    .slice(0, maxItems);
-
-  const displayRows =
-    recentRows.length > 0 ? recentRows : filteredRows.slice(0, 15);
+  const displayRows = filteredRows.slice(0, maxItems);
+  const sportsbooks = useMemo(
+    () =>
+      Array.from(
+        new Set(rows.map(row => row.sportsbook).filter(Boolean))
+      ).sort(),
+    [rows]
+  );
+  const markets = useMemo(
+    () =>
+      Array.from(
+        new Set(rows.map(row => row.marketType).filter(Boolean))
+      ).sort(),
+    [rows]
+  );
 
   // Premium gate: show blurred preview for free users
   if (!isPremium) {
@@ -346,6 +374,67 @@ export function LiveOddsTicker({
             {tab.label}
           </button>
         ))}
+      </div>
+
+      {/* Advanced live filters */}
+      <div className="mb-2 flex flex-wrap items-center gap-2">
+        <label className="relative min-w-[170px] flex-1 sm:flex-none">
+          <Search className="pointer-events-none absolute left-2 top-1.5 h-3.5 w-3.5 text-muted-foreground" />
+          <input
+            value={search}
+            onChange={event => setSearch(event.target.value)}
+            placeholder="Search teams or markets"
+            aria-label="Search live odds"
+            className="h-7 w-full rounded-md border border-border/60 bg-background/50 pl-7 pr-2 text-[10px] text-foreground outline-none focus:border-primary/60"
+          />
+        </label>
+        <select
+          value={selectedBook}
+          onChange={event => setSelectedBook(event.target.value)}
+          aria-label="Filter live odds by sportsbook"
+          className="h-7 rounded-md border border-border/60 bg-background/50 px-2 text-[10px] text-foreground"
+        >
+          <option value="all">All books</option>
+          {sportsbooks.map(book => (
+            <option key={book} value={book}>
+              {book}
+            </option>
+          ))}
+        </select>
+        <select
+          value={selectedMarket}
+          onChange={event => setSelectedMarket(event.target.value)}
+          aria-label="Filter live odds by market"
+          className="h-7 rounded-md border border-border/60 bg-background/50 px-2 text-[10px] text-foreground"
+        >
+          <option value="all">All markets</option>
+          {markets.map(market => (
+            <option key={market} value={market}>
+              {market.replace(/_/g, " ")}
+            </option>
+          ))}
+        </select>
+        <select
+          value={sort}
+          onChange={event => setSort(event.target.value as LiveOddsSort)}
+          aria-label="Sort live odds"
+          className="h-7 rounded-md border border-border/60 bg-background/50 px-2 text-[10px] text-foreground"
+        >
+          <option value="latest">Latest update</option>
+          <option value="odds_desc">Highest odds</option>
+          <option value="odds_asc">Lowest odds</option>
+          <option value="line_desc">Highest line</option>
+          <option value="line_asc">Lowest line</option>
+          <option value="team">Team A–Z</option>
+        </select>
+        <button
+          type="button"
+          onClick={() => setMovementOnly(value => !value)}
+          aria-pressed={movementOnly}
+          className={`inline-flex h-7 items-center gap-1 rounded-md border px-2 text-[10px] transition-colors ${movementOnly ? "border-primary/60 bg-primary/15 text-primary" : "border-border/60 text-muted-foreground hover:text-foreground"}`}
+        >
+          <SlidersHorizontal className="h-3 w-3" /> Movement only
+        </button>
       </div>
 
       {/* Scrolling ticker */}

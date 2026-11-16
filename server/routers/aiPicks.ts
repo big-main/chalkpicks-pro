@@ -7,6 +7,16 @@ import {
   calculateExpectedValue,
 } from "../services/aiService";
 
+export function providerErrorCode(error: unknown): string {
+  if (!error || typeof error !== "object") return "request_failed";
+  const details = error as Record<string, unknown>;
+  return (
+    [details.status, details.code, details.type]
+      .filter(value => typeof value === "string" || typeof value === "number")
+      .join(":") || "request_failed"
+  );
+}
+
 export const aiPicksRouter = router({
   /**
    * Generate AI-powered pick analysis
@@ -29,11 +39,11 @@ export const aiPicksRouter = router({
           success: true,
           data: analysis,
         };
-      } catch (error: any) {
-        console.error("Error generating pick:", error);
+      } catch (error: unknown) {
+        console.error("Error generating pick", providerErrorCode(error));
         return {
           success: false,
-          error: error.message || "Failed to generate pick",
+          error: "Failed to generate pick",
         };
       }
     }),
@@ -55,11 +65,11 @@ export const aiPicksRouter = router({
           success: true,
           insights,
         };
-      } catch (error: any) {
-        console.error("Error generating insights:", error);
+      } catch (error: unknown) {
+        console.error("Error generating insights", providerErrorCode(error));
         return {
           success: false,
-          error: error.message || "Failed to generate insights",
+          error: "Failed to generate insights",
         };
       }
     }),
@@ -87,11 +97,11 @@ export const aiPicksRouter = router({
           success: true,
           data: analysis,
         };
-      } catch (error: any) {
-        console.error("Error analyzing steam:", error);
+      } catch (error: unknown) {
+        console.error("Error analyzing steam", providerErrorCode(error));
         return {
           success: false,
-          error: error.message || "Failed to analyze steam move",
+          error: "Failed to analyze steam move",
         };
       }
     }),
@@ -119,11 +129,11 @@ export const aiPicksRouter = router({
           success: true,
           data: result,
         };
-      } catch (error: any) {
-        console.error("Error calculating EV:", error);
+      } catch (error: unknown) {
+        console.error("Error calculating EV", providerErrorCode(error));
         return {
           success: false,
-          error: error.message || "Failed to calculate EV",
+          error: "Failed to calculate EV",
         };
       }
     }),

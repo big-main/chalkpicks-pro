@@ -1081,6 +1081,26 @@ export const oddsApiQuotaLog = mysqlTable(
 );
 export type OddsApiQuotaLog = typeof oddsApiQuotaLog.$inferSelect;
 
+// User-owned live odds filter presets. Browser storage remains the anonymous fallback.
+export const liveOddsPresets = mysqlTable(
+  "live_odds_presets",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("userId").notNull(),
+    name: varchar("name", { length: 80 }).notNull(),
+    config: json("config").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [
+    index("idx_live_odds_presets_user_updated").on(
+      table.userId,
+      table.updatedAt
+    ),
+  ]
+);
+export type LiveOddsPreset = typeof liveOddsPresets.$inferSelect;
+
 // User planning records only. Never sportsbook orders or platform pick-ledger edits.
 export const pickOrganizerPlans = mysqlTable(
   "pick_organizer_plans",

@@ -36,6 +36,7 @@ const SPORT_TABS = [
 ];
 const ODDS_PRESETS_STORAGE_KEY = "chalkpicks:live-odds-presets:v1";
 type OddsPreset = {
+  id?: number;
   name: string;
   selectedSport: string;
   search: string;
@@ -266,6 +267,17 @@ export function LiveOddsTicker({
     (subscription?.tier === "daily" ||
       subscription?.tier === "monthly" ||
       subscription?.tier === "yearly");
+  const { data: remotePresets } = trpc.liveOddsPresets.list.useQuery(
+    undefined,
+    { enabled: Boolean(user && isPremium) }
+  );
+  const trpcUtils = trpc.useUtils();
+  const saveRemotePreset = trpc.liveOddsPresets.save.useMutation({
+    onSuccess: () => trpcUtils.liveOddsPresets.list.invalidate(),
+  });
+  const removeRemotePreset = trpc.liveOddsPresets.remove.useMutation({
+    onSuccess: () => trpcUtils.liveOddsPresets.list.invalidate(),
+  });
 
   const { rows, connected, error } = useOddsStream({
     enabled: true,
@@ -342,6 +354,13 @@ export function LiveOddsTicker({
     movementOnly,
     sort,
   };
+  const availablePresets: OddsPreset[] = remotePresets
+    ? remotePresets.map(record => ({
+        id: record.id,
+        name: record.name,
+        ...(record.config as Omit<OddsPreset, "id" | "name">),
+      }))
+    : presets;
   const savePreset = () => {
     const name = presetName.trim().slice(0, 40);
     if (!name) return;
@@ -354,14 +373,26 @@ export function LiveOddsTicker({
     setPresets(next);
     setPresetName("");
     localStorage.setItem(ODDS_PRESETS_STORAGE_KEY, JSON.stringify(next));
+    if (remotePresets) {
+      const existing = availablePresets.find(
+        preset => preset.name.toLowerCase() === name.toLowerCase()
+      );
+      saveRemotePreset.mutate({
+        id: existing?.id,
+        name,
+        config: currentPreset,
+      });
+    }
   };
   const deletePreset = (name: string) => {
-    const next = presets.filter(preset => preset.name !== name);
+    const next = availablePresets.filter(preset => preset.name !== name);
     setPresets(next);
     localStorage.setItem(ODDS_PRESETS_STORAGE_KEY, JSON.stringify(next));
+    const remote = availablePresets.find(preset => preset.name === name);
+    if (remote?.id) removeRemotePreset.mutate({ id: remote.id });
   };
   const applyPreset = (name: string) => {
-    const preset = presets.find(item => item.name === name);
+    const preset = availablePresets.find(item => item.name === name);
     if (!preset) return;
     setSelectedSport(preset.selectedSport);
     setSearch(preset.search);
@@ -557,7 +588,7 @@ export function LiveOddsTicker({
           className="h-7 max-w-[150px] rounded-md border border-border/60 bg-background/50 px-2 text-[10px] text-foreground"
         >
           <option value="">Saved presets</option>
-          {presets.map(preset => (
+          {availablePresets.map(preset => (
             <option key={preset.name} value={preset.name}>
               {preset.name}
             </option>
@@ -582,12 +613,14 @@ export function LiveOddsTicker({
         >
           <Save className="h-3 w-3" /> Save
         </button>
-        {presets.length > 0 && (
+        {availablePresets.length > 0 && (
           <button
             type="button"
-            onClick={() => deletePreset(presets[presets.length - 1].name)}
-            title={`Delete ${presets[presets.length - 1].name}`}
-            aria-label={`Delete ${presets[presets.length - 1].name}`}
+            onClick={() =>
+              deletePreset(availablePresets[availablePresets.length - 1].name)
+            }
+            title={`Delete ${availablePresets[availablePresets.length - 1].name}`}
+            aria-label={`Delete ${availablePresets[availablePresets.length - 1].name}`}
             className="inline-flex h-7 items-center rounded-md border border-border/60 px-2 text-[10px] text-muted-foreground hover:text-red-400"
           >
             <Trash2 className="h-3 w-3" />

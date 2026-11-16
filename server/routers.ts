@@ -53,6 +53,7 @@ import { pageSpeedRouter } from "./routers/pageSpeed";
 import { directoryTrackerRouter } from "./routers/directoryTracker";
 import { heartbeatRouter } from "./routers/heartbeat";
 import { newsRadarRouter } from "./routers/newsRadar";
+import { liveOddsPresetsRouter } from "./routers/liveOddsPresets";
 // leaderboardPayouts and draftKings routers disabled — schema not yet migrated
 // import { leaderboardPayoutsRouter } from "./routers/leaderboardPayouts";
 // import { draftKingsRouter } from "./routers/draftkings";
@@ -87,6 +88,7 @@ async function issueSessionCookie(
 export const appRouter = router({
   system: systemRouter,
   pickOrganizer: pickOrganizerRouter,
+  liveOddsPresets: liveOddsPresetsRouter,
   ogImage: ogImageRouter,
   antigravity: antigravityRouter,
   newsletter: newsletterRouter,

@@ -16,6 +16,10 @@ function request(hostname: string, originalUrl = "/picks?league=nfl") {
 }
 
 describe("ChalkPicks .pro canonical domain", () => {
+  it("uses the .pro apex as the configured application URL", () => {
+    expect(process.env.APP_URL).toBe("https://chalkpicks.pro");
+  });
+
   it("does not redirect the active apex domain", () => {
     const { redirect, next } = request("chalkpicks.pro");
     expect(redirect).not.toHaveBeenCalled();
@@ -80,7 +84,8 @@ describe("ChalkPicks .pro canonical domain", () => {
       const response = await fetch(`${process.env.APP_URL}/health`);
       expect(response.ok).toBe(true);
       expect((await response.json()).status).toBe("ok");
-    }
+    },
+    15_000
   );
   it("enables the tested backend deployment path", () => {
     const config = JSON.parse(

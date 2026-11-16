@@ -94,6 +94,7 @@ describe("additional sports providers", () => {
     expect(cfbd).toMatchObject({
       available: true,
       cacheTtlMs: 10 * 60 * 1000,
+      sourceUrl: "https://api.collegefootballdata.com/games",
     });
     expect(Date.parse(cfbd.freshUntil)).toBeGreaterThan(
       Date.parse(cfbd.fetchedAt)
@@ -109,6 +110,7 @@ describe("additional sports providers", () => {
     expect(nba).toMatchObject({
       available: true,
       cacheTtlMs: 2 * 60 * 1000,
+      sourceUrl: "https://api.balldontlie.io/v1/games",
     });
     expect(Date.parse(nba.freshUntil)).toBeGreaterThan(
       Date.parse(nba.fetchedAt)

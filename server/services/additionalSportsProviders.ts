@@ -28,6 +28,7 @@ export type ProviderFeedMeta = {
   fetchedAt: string;
   freshUntil: string;
   cacheTtlMs: number;
+  sourceUrl: string;
 };
 
 type CacheEntry = { expiresAt: number; value: unknown };
@@ -87,7 +88,7 @@ export async function getCollegeFootballGames(input: {
   return {
     available: true as const,
     provider: "CollegeFootballData",
-    ...feedMeta(10 * 60 * 1000),
+    ...feedMeta(10 * 60 * 1000, "https://api.collegefootballdata.com/games"),
     data: data.map(normalizeCfbdGame),
   };
 }
@@ -115,18 +116,19 @@ export async function getNbaGames(date: string) {
   return {
     available: true as const,
     provider: "BALLDONTLIE",
-    ...feedMeta(2 * 60 * 1000),
+    ...feedMeta(2 * 60 * 1000, "https://api.balldontlie.io/v1/games"),
     data: (result.data ?? []).map(normalizeNbaGame),
     pagination: result.meta ?? null,
   };
 }
 
-function feedMeta(cacheTtlMs: number): ProviderFeedMeta {
+function feedMeta(cacheTtlMs: number, sourceUrl: string): ProviderFeedMeta {
   const fetchedAt = new Date();
   return {
     fetchedAt: fetchedAt.toISOString(),
     freshUntil: new Date(fetchedAt.getTime() + cacheTtlMs).toISOString(),
     cacheTtlMs,
+    sourceUrl,
   };
 }
 

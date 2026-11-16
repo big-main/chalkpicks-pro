@@ -18,6 +18,11 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function DataIntelligence() {
   const [, setLocation] = useLocation();
@@ -199,6 +204,11 @@ export default function DataIntelligence() {
                 ? collegeGames.data.freshUntil
                 : undefined
             }
+            sourceUrl={
+              collegeGames.data?.available
+                ? collegeGames.data.sourceUrl
+                : undefined
+            }
           />
           <SnapshotCard
             title="NBA games today"
@@ -211,6 +221,9 @@ export default function DataIntelligence() {
             }
             freshUntil={
               nbaGames.data?.available ? nbaGames.data.freshUntil : undefined
+            }
+            sourceUrl={
+              nbaGames.data?.available ? nbaGames.data.sourceUrl : undefined
             }
           />
         </section>
@@ -254,6 +267,7 @@ function SnapshotCard({
   error,
   fetchedAt,
   freshUntil,
+  sourceUrl,
 }: {
   title: string;
   detail: string;
@@ -262,6 +276,7 @@ function SnapshotCard({
   error?: string;
   fetchedAt?: string;
   freshUntil?: string;
+  sourceUrl?: string;
 }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -280,12 +295,25 @@ function SnapshotCard({
           {error ? "Provider request failed; no fallback data shown." : detail}
         </p>
         {fetchedAt && (
-          <p
-            className={`mt-2 text-xs ${isStale ? "text-amber-700" : "text-emerald-700"}`}
-          >
-            {isStale ? "Stale snapshot" : "Fresh snapshot"} · retrieved{" "}
-            {new Date(fetchedAt).toLocaleTimeString()}
-          </p>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p
+                tabIndex={0}
+                className={`mt-2 cursor-help text-xs ${isStale ? "text-amber-700" : "text-emerald-700"}`}
+              >
+                {isStale ? "Stale snapshot" : "Fresh snapshot"} · retrieved{" "}
+                {new Date(fetchedAt).toLocaleTimeString()}
+              </p>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-sm space-y-1">
+              <p className="font-semibold">Provider snapshot details</p>
+              <p>Last update: {new Date(fetchedAt).toISOString()}</p>
+              {freshUntil && (
+                <p>Fresh until: {new Date(freshUntil).toISOString()}</p>
+              )}
+              {sourceUrl && <p className="break-all">Source: {sourceUrl}</p>}
+            </TooltipContent>
+          </Tooltip>
         )}
       </CardContent>
     </Card>

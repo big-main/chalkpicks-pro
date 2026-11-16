@@ -14,6 +14,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Tooltip as InfoTooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Activity,
   Search,
   TrendingUp,
@@ -639,29 +644,59 @@ export default function Stats() {
                       fallback rows.
                     </p>
                     {activeProviderFeed?.available && (
-                      <div
-                        className={`mt-3 rounded-lg border px-3 py-2 text-xs ${
-                          providerFeedIsStale
-                            ? "border-amber-500/40 bg-amber-500/10 text-amber-200"
-                            : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
-                        }`}
-                      >
-                        <span className="font-semibold">
-                          {providerFeedIsStale
-                            ? "Stale snapshot"
-                            : "Fresh snapshot"}
-                        </span>
-                        {" · "}
-                        Retrieved{" "}
-                        {new Date(
-                          activeProviderFeed.fetchedAt
-                        ).toLocaleTimeString()}
-                        {" · "}
-                        Cache freshness window ends{" "}
-                        {new Date(
-                          activeProviderFeed.freshUntil
-                        ).toLocaleTimeString()}
-                      </div>
+                      <InfoTooltip>
+                        <TooltipTrigger asChild>
+                          <div
+                            tabIndex={0}
+                            className={`mt-3 cursor-help rounded-lg border px-3 py-2 text-xs ${
+                              providerFeedIsStale
+                                ? "border-amber-500/40 bg-amber-500/10 text-amber-200"
+                                : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+                            }`}
+                          >
+                            <span className="font-semibold">
+                              {providerFeedIsStale
+                                ? "Stale snapshot"
+                                : "Fresh snapshot"}
+                            </span>
+                            {" · "}
+                            Retrieved{" "}
+                            {new Date(
+                              activeProviderFeed.fetchedAt
+                            ).toLocaleTimeString()}
+                            {" · "}
+                            Cache freshness window ends{" "}
+                            {new Date(
+                              activeProviderFeed.freshUntil
+                            ).toLocaleTimeString()}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-sm space-y-1">
+                          <p className="font-semibold">
+                            {activeProviderFeed.provider} source details
+                          </p>
+                          <p>
+                            Last update:{" "}
+                            {new Date(
+                              activeProviderFeed.fetchedAt
+                            ).toISOString()}
+                          </p>
+                          <p>
+                            Fresh until:{" "}
+                            {new Date(
+                              activeProviderFeed.freshUntil
+                            ).toISOString()}
+                          </p>
+                          <p>
+                            Cache window:{" "}
+                            {Math.round(activeProviderFeed.cacheTtlMs / 60_000)}{" "}
+                            minutes
+                          </p>
+                          <p className="break-all">
+                            Source: {activeProviderFeed.sourceUrl}
+                          </p>
+                        </TooltipContent>
+                      </InfoTooltip>
                     )}
                   </CardHeader>
                   <CardContent>

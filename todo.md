@@ -1139,9 +1139,9 @@
 
 - [x] Add global back button to all sub-pages (not homepage/dashboard root)
 - [x] Identify and implement next high-impact items for traffic/revenue (newsletter, LiveDataStreamer fix, Instagram 4x daily)
-- [x] Build weekly newsletter Heartbeat job (aggregate stats + top picks + CTA email) — task_uid: cctvFpG8sNiXvBgM2VFvJ2, Sundays 4PM UTC
+- [x] Build weekly newsletter Heartbeat job (aggregate stats + top picks + CTA email) — taREDACTED_SECRET: cctvFpG8sNiXvBgM2VFvJ2, Sundays 4PM UTC
 - [x] Fix LiveDataStreamer ESPN API timeout errors (AbortController 8s timeout, error throttling 5min, polling 30s/60s/120s)
-- [x] Wire Instagram social automation to Heartbeat scheduler (AGENT cron 4x daily at 15:00/19:00/00:00/04:00 UTC, task_uid: 9atfMsK7PDLgQjqjzKiQAo)
+- [x] Wire Instagram social automation to Heartbeat scheduler (AGENT cron 4x daily at 15:00/19:00/00:00/04:00 UTC, taREDACTED_SECRET: 9atfMsK7PDLgQjqjzKiQAo)
 
 ## Phase 16 — Alternatives for Global Data Site + Databricks (Jul 19, 2026)
 
@@ -1201,10 +1201,10 @@
 - [x] Create server/handlers/discordPostHandler.ts (slot routing: morning/afternoon/evening/night)
 - [x] Register POST /api/scheduled/discord-post in server/\_core/index.ts
 - [x] Create 4 Heartbeat jobs:
-  - discord-morning-pick: "0 0 15 \* \* \*" (8am PT) — task_uid: 9wevuNEV7CHnBDx4VTmNur
-  - discord-afternoon-alert: "0 0 20 \* \* \*" (1pm PT) — task_uid: mSysFg9vHqwc5N8weKcdPT
-  - discord-evening-results: "0 0 1 \* \* \*" (6pm PT) — task_uid: oC6fA4Cy4FFZV95KXXRZcQ
-  - discord-night-preview: "0 0 4 \* \* \*" (9pm PT) — task_uid: HPRvokbj5WYBQheMHwFYB6
+  - discord-morning-pick: "0 0 15 \* \* \*" (8am PT) — taREDACTED_SECRET: 9wevuNEV7CHnBDx4VTmNur
+  - discord-afternoon-alert: "0 0 20 \* \* \*" (1pm PT) — taREDACTED_SECRET: mSysFg9vHqwc5N8weKcdPT
+  - discord-evening-results: "0 0 1 \* \* \*" (6pm PT) — taREDACTED_SECRET: oC6fA4Cy4FFZV95KXXRZcQ
+  - discord-night-preview: "0 0 4 \* \* \*" (9pm PT) — taREDACTED_SECRET: HPRvokbj5WYBQheMHwFYB6
 - [x] Test all 4 slots end-to-end (all return HTTP 200 {"ok":true})
 - [x] Save checkpoint
 
@@ -1231,7 +1231,7 @@
 - [x] Add shared/oddsMath.ts compat exports: noVigProbabilities, noVigProbability, bookmakerHold (decimal), expectedValue (with validation), edgeVsFairLine, kellyFraction (with fraction param), closingLineValue, decimalToImpliedProb, fractionalToDecimal, decimalToFractional
 - [x] All 163 tests passing (1 skipped) — 0 TS errors
 - [x] Deploy latest code to Cloud Computer production mirror (git pull + pnpm build + pm2 restart)
-- [x] Add Ollama warm-up Heartbeat job: POST /api/scheduled/ollama-warmup every 4 minutes (task_uid: 2PgkaJqzhgoCbTcPTHtfjG)
+- [x] Add Ollama warm-up Heartbeat job: POST /api/scheduled/ollama-warmup every 4 minutes (taREDACTED_SECRET: 2PgkaJqzhgoCbTcPTHtfjG)
 - [x] Register ollamaWarmupHandler in server/\_core/index.ts
 - [x] Tested warm-up endpoint: qwen2.5:7b responds in ~3.3s when warm
 
@@ -1278,7 +1278,7 @@
 - [x] Deploy Phase 43 changes to Cloud Computer production mirror (git pull + pnpm build + pm2 restart)
 - [x] cloudSyncHandler.ts created at server/handlers/cloudSyncHandler.ts (SSH → git pull → build → pm2 restart)
 - [x] Registered /api/scheduled/cloud-sync route in server/\_core/index.ts
-- [x] Nightly Heartbeat job created: cloud-sync-nightly (task_uid: FG8TENbfPEu45TMbz7XGdk) — fires at 07:00 UTC (midnight PT) daily
+- [x] Nightly Heartbeat job created: cloud-sync-nightly (taREDACTED_SECRET: FG8TENbfPEu45TMbz7XGdk) — fires at 07:00 UTC (midnight PT) daily
 - [x] n8n email drip workflow: BLOCKED — needs user to enable Public API in bigmain.app.n8n.cloud Settings → API (reply when done, will auto-import)
 - [x] N8N_DRIP_WEBHOOK_URL secret: BLOCKED — will be set automatically after n8n API is enabled and workflow imported
 - [x] All 168 tests passing, 0 TS errors

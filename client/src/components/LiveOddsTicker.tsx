@@ -2,12 +2,19 @@
  * LiveOddsTicker — Real-time scrolling odds ticker powered by SharpAPI SSE stream.
  * Features: interactive click → game detail, sport filter tabs, premium gate with blur.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useOddsStream, StreamOddsRow } from "@/hooks/useOddsStream";
 import { formatSportLabel } from "@/lib/badges";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { Lock, Search, SlidersHorizontal } from "lucide-react";
+import {
+  Bell,
+  Lock,
+  Save,
+  Search,
+  SlidersHorizontal,
+  Trash2,
+} from "lucide-react";
 import {
   filterAndSortLiveOdds,
   type LiveOddsSort,
@@ -27,6 +34,39 @@ const SPORT_TABS = [
   { key: "ncaaf", label: "NCAAF" },
   { key: "soccer", label: "Soccer" },
 ];
+const ODDS_PRESETS_STORAGE_KEY = "chalkpicks:live-odds-presets:v1";
+type OddsPreset = {
+  name: string;
+  selectedSport: string;
+  search: string;
+  selectedBook: string;
+  selectedMarket: string;
+  movementOnly: boolean;
+  sort: LiveOddsSort;
+};
+
+function readOddsPresets(): OddsPreset[] {
+  try {
+    const value = JSON.parse(
+      localStorage.getItem(ODDS_PRESETS_STORAGE_KEY) ?? "[]"
+    );
+    return Array.isArray(value)
+      ? value.filter(
+          (preset): preset is OddsPreset =>
+            preset &&
+            typeof preset.name === "string" &&
+            typeof preset.selectedSport === "string" &&
+            typeof preset.search === "string" &&
+            typeof preset.selectedBook === "string" &&
+            typeof preset.selectedMarket === "string" &&
+            typeof preset.movementOnly === "boolean" &&
+            typeof preset.sort === "string"
+        )
+      : [];
+  } catch {
+    return [];
+  }
+}
 
 function OddsChip({
   row,
@@ -206,6 +246,13 @@ export function LiveOddsTicker({
   const [selectedMarket, setSelectedMarket] = useState("all");
   const [movementOnly, setMovementOnly] = useState(false);
   const [sort, setSort] = useState<LiveOddsSort>("latest");
+  const [presets, setPresets] = useState<OddsPreset[]>(() =>
+    typeof window === "undefined" ? [] : readOddsPresets()
+  );
+  const [presetName, setPresetName] = useState("");
+  const [alertsEnabled, setAlertsEnabled] = useState(false);
+  const [alertThreshold, setAlertThreshold] = useState(10);
+  const alertedRowsRef = useRef<Set<string>>(new Set());
   const { user } = useAuth();
   const { data: subscription } = trpc.subscription.mySubscription.useQuery(
     undefined,
@@ -225,6 +272,29 @@ export function LiveOddsTicker({
     league: selectedSport || undefined,
     maxRows: maxItems,
   });
+  useEffect(() => {
+    if (!alertsEnabled || typeof window === "undefined" || !rows.length) return;
+    if (!("Notification" in window) || Notification.permission !== "granted")
+      return;
+    rows.forEach(row => {
+      const movement =
+        row.prevOdds === undefined
+          ? 0
+          : Math.abs(row.oddsAmerican - row.prevOdds);
+      if (row.direction === "stable" || movement < alertThreshold) return;
+      const key = `${row.eventId}:${row.sportsbook}:${row.marketType}:${row.selection}:${row.timestamp}`;
+      if (alertedRowsRef.current.has(key)) return;
+      alertedRowsRef.current.add(key);
+      new Notification("ChalkPicks line movement", {
+        body: `${row.awayTeam} @ ${row.homeTeam}: ${row.selection} moved ${movement} points at ${row.sportsbook}.`,
+      });
+    });
+    if (alertedRowsRef.current.size > 200) {
+      alertedRowsRef.current = new Set(
+        Array.from(alertedRowsRef.current).slice(-100)
+      );
+    }
+  }, [alertThreshold, alertsEnabled, rows]);
 
   const filteredRows = useMemo(() => {
     const sportRows = selectedSport
@@ -264,6 +334,47 @@ export function LiveOddsTicker({
       ).sort(),
     [rows]
   );
+  const currentPreset: Omit<OddsPreset, "name"> = {
+    selectedSport,
+    search,
+    selectedBook,
+    selectedMarket,
+    movementOnly,
+    sort,
+  };
+  const savePreset = () => {
+    const name = presetName.trim().slice(0, 40);
+    if (!name) return;
+    const next = [
+      ...presets.filter(
+        preset => preset.name.toLowerCase() !== name.toLowerCase()
+      ),
+      { name, ...currentPreset },
+    ].slice(-10);
+    setPresets(next);
+    setPresetName("");
+    localStorage.setItem(ODDS_PRESETS_STORAGE_KEY, JSON.stringify(next));
+  };
+  const deletePreset = (name: string) => {
+    const next = presets.filter(preset => preset.name !== name);
+    setPresets(next);
+    localStorage.setItem(ODDS_PRESETS_STORAGE_KEY, JSON.stringify(next));
+  };
+  const applyPreset = (name: string) => {
+    const preset = presets.find(item => item.name === name);
+    if (!preset) return;
+    setSelectedSport(preset.selectedSport);
+    setSearch(preset.search);
+    setSelectedBook(preset.selectedBook);
+    setSelectedMarket(preset.selectedMarket);
+    setMovementOnly(preset.movementOnly);
+    setSort(preset.sort);
+  };
+  const enableAlerts = async () => {
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") setAlertsEnabled(true);
+  };
 
   // Premium gate: show blurred preview for free users
   if (!isPremium) {
@@ -434,6 +545,77 @@ export function LiveOddsTicker({
           className={`inline-flex h-7 items-center gap-1 rounded-md border px-2 text-[10px] transition-colors ${movementOnly ? "border-primary/60 bg-primary/15 text-primary" : "border-border/60 text-muted-foreground hover:text-foreground"}`}
         >
           <SlidersHorizontal className="h-3 w-3" /> Movement only
+        </button>
+      </div>
+
+      {/* Saved presets and movement alerts */}
+      <div className="mb-2 flex flex-wrap items-center gap-2">
+        <select
+          defaultValue=""
+          onChange={event => applyPreset(event.target.value)}
+          aria-label="Apply saved odds preset"
+          className="h-7 max-w-[150px] rounded-md border border-border/60 bg-background/50 px-2 text-[10px] text-foreground"
+        >
+          <option value="">Saved presets</option>
+          {presets.map(preset => (
+            <option key={preset.name} value={preset.name}>
+              {preset.name}
+            </option>
+          ))}
+        </select>
+        <input
+          value={presetName}
+          onChange={event => setPresetName(event.target.value)}
+          onKeyDown={event => {
+            if (event.key === "Enter") savePreset();
+          }}
+          maxLength={40}
+          placeholder="Preset name"
+          aria-label="New odds preset name"
+          className="h-7 w-28 rounded-md border border-border/60 bg-background/50 px-2 text-[10px] text-foreground outline-none focus:border-primary/60"
+        />
+        <button
+          type="button"
+          onClick={savePreset}
+          disabled={!presetName.trim()}
+          className="inline-flex h-7 items-center gap-1 rounded-md border border-border/60 px-2 text-[10px] text-muted-foreground hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Save className="h-3 w-3" /> Save
+        </button>
+        {presets.length > 0 && (
+          <button
+            type="button"
+            onClick={() => deletePreset(presets[presets.length - 1].name)}
+            title={`Delete ${presets[presets.length - 1].name}`}
+            aria-label={`Delete ${presets[presets.length - 1].name}`}
+            className="inline-flex h-7 items-center rounded-md border border-border/60 px-2 text-[10px] text-muted-foreground hover:text-red-400"
+          >
+            <Trash2 className="h-3 w-3" />
+          </button>
+        )}
+        <span className="mx-1 h-4 w-px bg-border/60" />
+        <label className="flex items-center gap-1 text-[10px] text-muted-foreground">
+          Alert move ≥
+          <input
+            type="number"
+            min={1}
+            max={1000}
+            value={alertThreshold}
+            onChange={event =>
+              setAlertThreshold(Math.max(1, Number(event.target.value) || 1))
+            }
+            aria-label="Minimum odds movement alert threshold"
+            className="h-7 w-14 rounded-md border border-border/60 bg-background/50 px-1 text-center text-[10px] text-foreground"
+          />
+        </label>
+        <button
+          type="button"
+          onClick={alertsEnabled ? () => setAlertsEnabled(false) : enableAlerts}
+          aria-pressed={alertsEnabled}
+          className={`inline-flex h-7 items-center gap-1 rounded-md border px-2 text-[10px] transition-colors ${alertsEnabled ? "border-primary/60 bg-primary/15 text-primary" : "border-border/60 text-muted-foreground hover:text-foreground"}`}
+        >
+          <Bell className="h-3 w-3" />{" "}
+          {alertsEnabled ? "Alerts on" : "Notify me"}
         </button>
       </div>
 

@@ -1904,8 +1904,8 @@
 
 ## RevenueCat Webhook + API Keys (Jul 29 2026)
 
-- [x] VITE_REVENUECAT_IOS_KEY set to sk_cvQquzBeBkNHjTZHilcsbJUTqmBTN
-- [x] VITE_REVENUECAT_ANDROID_KEY set to sk_cvQquzBeBkNHjTZHilcsbJUTqmBTN
+- [x] VITE_REVENUECAT_IOS_KEY configured through the secure project secret manager
+- [x] VITE_REVENUECAT_ANDROID_KEY configured through the secure project secret manager
 - [x] server/revenuecat-webhook.ts: handles INITIAL_PURCHASE/RENEWAL/CANCELLATION/EXPIRATION events
 - [x] registerRevenueCatWebhook registered in server/\_core/index.ts at /api/revenuecat/webhook
 - [x] server/revenuecat.test.ts: 3 tests validating key format and presence (185/185 passing)
@@ -1919,8 +1919,8 @@
 
 ## Discord Server Wiring (Jul 29 2026)
 
-- [x] Set DISCORD_WEBHOOK_URL secret (webhook from #free-daily-pick channel) — https://discord.com/api/webhooks/1528595918369194006/WGgKV0aknXtCPssbDVbE2eaqUK3Onkz2ihZypTF2asgpe_032lF4dOBXrUPPj0ccgcMv
-- [x] Set DISCORD_STEAM_WEBHOOK_URL secret (webhook from #steam-alerts channel) — https://discord.com/api/webhooks/1532167176591507596/OAJP1AryvfTh8Sy0gzvG6NqfCekcDpSTRR43w6hwIEleSQFpJ8EE-Bwhfc6LO6dOypcK
+- [x] Set DISCORD_WEBHOOK_URL through the secure project secret manager
+- [x] Set DISCORD_STEAM_WEBHOOK_URL through the secure project secret manager
 - [x] Add Discord invite CTA to Navbar (Join Discord button) — https://discord.gg/rUrkBW9N
 - [x] Add Discord invite CTA to Home page hero section — "Join Discord" button with MessageCircle icon
 - [x] Wire steam alerts to separate Discord channel webhook — DISCORD_STEAM_WEBHOOK_URL configured and validated (4/4 tests passing)
@@ -1936,7 +1936,7 @@
 ## Ahrefs IndexNow + PageSpeed Insights (Jul 30 2026)
 
 - [x] Host Ahrefs IndexNow key file at /k937cd84x3s9krpmgd5r19dgutqc11hw.txt
-- [x] Add PageSpeed Insights API key (AIzaSyCGJoltLOP4RKkGgFx140NGGcAl6_h_93c) as secret
+- [x] Add PageSpeed Insights API key through the secure project secret manager
 - [x] Add PageSpeed performance tab to admin panel
 
 ## Directory Submissions Tracker (Jul 30 2026)
@@ -1998,7 +1998,7 @@
 - [x] Normalize SharpAPI flat response to OddsEvent[] format
 - [x] Fix flaky Discord webhook test timeout (increased to 15s)
 - [x] Add SHARPAPI_KEY secret via webdev_request_secrets
-- [x] Verify SharpAPI integration end-to-end with live API key (sk_live_YZp... → 200 OK with live MLB odds)
+- [x] Verify SharpAPI integration end-to-end with the secure provider secret (200 OK with live MLB odds)
 
 ## Git Remote Reconciliation (Jul 31 2026)
 
@@ -2016,7 +2016,7 @@
 
 ## Dev Server Smoke Check + SharpAPI Key (Jul 31 2026)
 
-- [x] SharpAPI key set and validated (sk_live_YZp... → 200 OK with live MLB odds)
+- [x] SharpAPI key set and validated through the secure project secret manager (200 OK with live MLB odds)
 - [x] Added scripts/dev-server-check.mjs (7 route checks, exit 0/1)
 - [x] Added docs/DEV_SERVER_CHECK.md
 - [x] Added package.json "dev:check" script
@@ -2056,7 +2056,7 @@
 
 ## SharpAPI Sharp Plan Integration (Aug 6 2026)
 
-- [x] Update SHARPAPI_KEY to new Sharp plan key (sk_live_59w5...)
+- [x] Update SHARPAPI_KEY through the secure project secret manager
 - [x] Add fetchSharpEVOpportunities() to dataService.ts
 - [x] Add fetchSharpArbOpportunities() to dataService.ts
 - [x] Add fetchSharpLowHoldLines() to dataService.ts

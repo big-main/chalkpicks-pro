@@ -2,6 +2,9 @@ import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { getRouteSEO, SITE_URL } from "@shared/seo-routes";
 
+const SOCIAL_IMAGE =
+  "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/og-image-discord-92LVJ3RpG7Qw25SYvGciDU.png";
+
 function upsertMeta(attr: "name" | "property", key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(
     `meta[${attr}="${key}"]`
@@ -45,7 +48,22 @@ export function useRouteSEO() {
     // Always fix the canonical to match the current route
     upsertCanonical(canonicalUrl);
     upsertMeta("property", "og:url", canonicalUrl);
+    upsertMeta("property", "og:type", "website");
+    upsertMeta("property", "og:site_name", "ChalkPicks Pro");
+    upsertMeta("property", "og:image", SOCIAL_IMAGE);
+    upsertMeta(
+      "property",
+      "og:image:alt",
+      "ChalkPicks Pro sports betting analytics"
+    );
     upsertMeta("name", "twitter:url", canonicalUrl);
+    upsertMeta("name", "twitter:card", "summary_large_image");
+    upsertMeta("name", "twitter:image", SOCIAL_IMAGE);
+    upsertMeta(
+      "name",
+      "twitter:image:alt",
+      "ChalkPicks Pro sports betting analytics"
+    );
 
     // Apply route-specific title/description defaults if registered
     const entry = getRouteSEO(path);

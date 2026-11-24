@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X, Zap, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 
@@ -10,13 +10,15 @@ interface AnnouncementBannerProps {
   ctaHref?: string;
   /** Gradient style: "green" | "gold" | "purple" | "cyan" */
   variant?: "green" | "gold" | "purple" | "cyan";
+  /** Show only after the visitor has already visited the site once. */
+  returningUsersOnly?: boolean;
 }
 
 const VARIANTS = {
-  green:  "from-emerald-600/90 via-emerald-500/80 to-teal-600/90",
-  gold:   "from-amber-600/90 via-yellow-500/80 to-orange-600/90",
+  green: "from-emerald-600/90 via-emerald-500/80 to-teal-600/90",
+  gold: "from-amber-600/90 via-yellow-500/80 to-orange-600/90",
   purple: "from-purple-700/90 via-violet-600/80 to-indigo-700/90",
-  cyan:   "from-cyan-600/90 via-sky-500/80 to-blue-600/90",
+  cyan: "from-cyan-600/90 via-sky-500/80 to-blue-600/90",
 };
 
 export default function AnnouncementBanner({
@@ -25,20 +27,25 @@ export default function AnnouncementBanner({
   ctaLabel = "Explore Premium",
   ctaHref = "/pricing",
   variant = "green",
+  returningUsersOnly = false,
 }: AnnouncementBannerProps) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
+  const [visible, setVisible] = useState(() => {
     try {
+      const hasVisited = localStorage.getItem("cp_site_visited_v1") === "1";
+      localStorage.setItem("cp_site_visited_v1", "1");
       const dismissed = localStorage.getItem(storageKey);
-      if (!dismissed) setVisible(true);
+      return !dismissed && (!returningUsersOnly || hasVisited);
     } catch {
-      setVisible(true);
+      return !returningUsersOnly;
     }
-  }, [storageKey]);
+  });
 
   const dismiss = () => {
-    try { localStorage.setItem(storageKey, "1"); } catch {}
+    try {
+      localStorage.setItem(storageKey, "1");
+    } catch {
+      // Ignore storage failures; dismissal still applies for this render.
+    }
     setVisible(false);
   };
 

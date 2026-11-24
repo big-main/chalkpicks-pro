@@ -2,10 +2,11 @@ import { useEffect } from "react";
 import { useLocation } from "wouter";
 
 const SITE_URL = "https://chalkpicks.pro";
-const DEFAULT_TITLE =
-  "AI Betting Analytics & +EV Finder | ChalkPicks Sports Picks";
+const DEFAULT_TITLE = "ChalkPicks Pro | AI Sports Betting Analytics";
 const DEFAULT_DESCRIPTION =
-  "AI betting analytics platform with +EV finder, steam move detection, CLV tracker, and arbitrage finder. Get data-driven sports picks with confidence scores for NFL, NBA, MLB & NHL.";
+  "ChalkPicks Pro delivers AI sports betting analytics, +EV tools, live odds, CLV tracking, and transparent picks for NFL, NBA, MLB, and NHL.";
+const SOCIAL_IMAGE =
+  "https://d2xsxph8kpxj0f.cloudfront.net/310519663518369468/XUi7Hd5RzDcuAESzHPA75p/og-image-discord-92LVJ3RpG7Qw25SYvGciDU.png";
 
 interface SEOProps {
   title?: string;
@@ -75,11 +76,26 @@ export default function SEO({
     upsertMeta("property", "og:title", finalTitle);
     upsertMeta("property", "og:description", finalDescription);
     upsertMeta("property", "og:url", canonicalUrl);
+    upsertMeta("property", "og:type", "website");
+    upsertMeta("property", "og:site_name", "ChalkPicks Pro");
+    upsertMeta("property", "og:image", SOCIAL_IMAGE);
+    upsertMeta(
+      "property",
+      "og:image:alt",
+      "ChalkPicks Pro sports betting analytics"
+    );
 
     // Twitter
     upsertMeta("name", "twitter:title", finalTitle);
     upsertMeta("name", "twitter:description", finalDescription);
     upsertMeta("name", "twitter:url", canonicalUrl);
+    upsertMeta("name", "twitter:card", "summary_large_image");
+    upsertMeta("name", "twitter:image", SOCIAL_IMAGE);
+    upsertMeta(
+      "name",
+      "twitter:image:alt",
+      "ChalkPicks Pro sports betting analytics"
+    );
   }, [title, description, canonicalPath, noindex, location]);
 
   return null;

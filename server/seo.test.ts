@@ -3,6 +3,7 @@
  * the fix for the SPA serving identical meta (and an empty body) on every URL.
  */
 import { describe, it, expect } from "vitest";
+import { readFileSync } from "node:fs";
 import { injectSeo } from "./_core/seo";
 
 const SHELL = `<!doctype html>
@@ -41,8 +42,47 @@ describe("injectSeo", () => {
 
   it("keeps the homepage meta for the root route", async () => {
     const result = await injectSeo(SHELL, "/");
-    expect(result.html).toContain("ChalkPicks | AI Sports Betting Analytics");
+    expect(result.html).toContain(
+      "ChalkPicks Pro | AI Sports Betting Analytics"
+    );
     expect(result.html).toContain('href="https://chalkpicks.pro/"');
+  });
+
+  it("keeps static homepage SEO metadata canonical and focused", () => {
+    const html = readFileSync(
+      new URL("../client/index.html", import.meta.url),
+      "utf8"
+    );
+    const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? "";
+    const description =
+      html.match(/<meta name="description" content="([^"]+)"/)?.[1] ?? "";
+    const keywords =
+      html
+        .match(/<meta name="keywords" content="([^"]+)"/)?.[1]
+        .split(",")
+        .map(keyword => keyword.trim())
+        .filter(Boolean) ?? [];
+
+    expect(title.length).toBeGreaterThanOrEqual(30);
+    expect(title.length).toBeLessThanOrEqual(60);
+    expect(description.length).toBeGreaterThanOrEqual(50);
+    expect(description.length).toBeLessThanOrEqual(160);
+    expect(keywords.length).toBeGreaterThanOrEqual(3);
+    expect(keywords.length).toBeLessThanOrEqual(8);
+    expect(html).toContain('rel="canonical" href="https://chalkpicks.pro/"');
+    expect(html).toContain(
+      'property="og:url" content="https://chalkpicks.pro/"'
+    );
+    expect(html).toContain(
+      'name="twitter:url" content="https://chalkpicks.pro/"'
+    );
+    expect(html).toContain(
+      'property="og:image:alt" content="ChalkPicks Pro sports betting analytics"'
+    );
+    expect(html).toContain(
+      'name="twitter:image:alt" content="ChalkPicks Pro sports betting analytics"'
+    );
+    expect(html).not.toContain("chalkpicks.live");
   });
 
   it("returns 404 status for non-existent pick ids (no DB in tests)", async () => {

@@ -29,6 +29,7 @@ import NeonCard from "@/components/NeonCard";
 import { HeroBackground } from "@/components/HeroBackground";
 import { FadeIn } from "@/components/animations";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 // Lazy-load Recharts to reduce TBT on initial page load
@@ -278,6 +279,14 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-16 md:pb-0">
       <Navbar />
+      <AnnouncementBanner
+        storageKey="cp_domain_migration_pro_v1"
+        returningUsersOnly
+        message="ChalkPicks is now on chalkpicks.pro. Update your bookmark for the official site."
+        ctaLabel="Open chalkpicks.pro"
+        ctaHref="https://chalkpicks.pro/"
+        variant="cyan"
+      />
 
       {/* ─── HERO SECTION ─── */}
       <section className="relative pt-28 pb-20 sm:pt-32 lg:pt-36 lg:pb-28 overflow-hidden">

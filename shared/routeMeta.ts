@@ -16,9 +16,9 @@ export interface PageMetaConfig {
 
 export const PAGE_META_MAP: Record<string, PageMetaConfig> = {
   "/": {
-    title: "ChalkPicks | AI Sports Betting Analytics & +EV Tools",
+    title: "ChalkPicks Pro | AI Sports Betting Analytics",
     description:
-      "AI sports betting analytics: picks with confidence scores, +EV scanning, CLV tracking, and a public Pick Ledger. Free tools available — not a sportsbook.",
+      "ChalkPicks Pro delivers AI sports betting analytics, +EV tools, live odds, CLV tracking, and transparent picks for NFL, NBA, MLB, and NHL.",
   },
   "/picks": {
     title: "AI Sports Betting Picks | ChalkPicks",

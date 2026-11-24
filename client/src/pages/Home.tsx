@@ -123,8 +123,8 @@ function LiveDashboardPreview() {
               AI Pick Engine
             </span>
           </div>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#39ff14]/10 text-[#39ff14] font-bold">
-            LIVE
+          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${pick ? "bg-[#39ff14]/10 text-[#39ff14]" : "bg-white/10 text-white/50"}`}>
+            {pick ? "LIVE DATA" : "AWAITING VERIFIED DATA"}
           </span>
         </div>
 
@@ -132,33 +132,34 @@ function LiveDashboardPreview() {
           <div className="text-lg font-bold text-white mb-1">
             {pick
               ? `${pick.awayTeam || "Away"} vs ${pick.homeTeam || "Home"}`
-              : "Yankees vs Red Sox"}
+              : "No verified pick available"}
           </div>
           <div className="text-sm text-white/40">
-            {pick?.sportKey || "MLB"} · {pick?.pickType || "Moneyline"} ·{" "}
-            {pick?.recommendation || "Yankees ML"}
+            {pick
+              ? `${pick.sportKey || "Sport"} · ${pick.pickType || "Market"} · ${pick.recommendation || "Review pick"}`
+              : "Live feed unavailable — no sample pick is shown"}
           </div>
         </div>
 
         <div className="grid grid-cols-4 gap-3">
           <div className="text-center">
             <div className="text-xl font-bold text-[#39ff14]">
-              {pick?.confidenceScore || 92}%
+              {pick?.confidenceScore != null ? `${pick.confidenceScore}%` : "—"}
             </div>
             <div className="text-[10px] text-white/35 mt-0.5">Confidence</div>
           </div>
           <div className="text-center">
             <div className="text-xl font-bold text-[#f0b800]">
-              +{pick?.edgeScore ? Number(pick.edgeScore).toFixed(1) : "7.3"}%
+              {pick?.edgeScore != null ? `+${Number(pick.edgeScore).toFixed(1)}%` : "—"}
             </div>
             <div className="text-[10px] text-white/35 mt-0.5">+EV Edge</div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-[#60a5fa]">2.1%</div>
+            <div className="text-xl font-bold text-[#60a5fa]">—</div>
             <div className="text-[10px] text-white/35 mt-0.5">Kelly Bet</div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-[#06b6d4]">14.2%</div>
+            <div className="text-xl font-bold text-[#06b6d4]">—</div>
             <div className="text-[10px] text-white/35 mt-0.5">Exp. ROI</div>
           </div>
         </div>
@@ -166,13 +167,13 @@ function LiveDashboardPreview() {
         <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Flame className="w-3.5 h-3.5 text-[#f97316]" />
-            <span className="text-xs text-white/50">Steam Detected</span>
+            <span className="text-xs text-white/50">{pick ? "Pick preview" : "No verified market signal"}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-[#39ff14] font-semibold">
-              Strong Buy
+              {pick ? "View Analysis" : "Data-first"}
             </span>
-            <ArrowRight className="w-3 h-3 text-[#39ff14]" />
+            {pick && <ArrowRight className="w-3 h-3 text-[#39ff14]" />}
           </div>
         </div>
       </div>

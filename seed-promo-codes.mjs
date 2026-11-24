@@ -12,6 +12,16 @@ const pool = mysql.createPool({
 
 const LAUNCH_CODES = [
   {
+    code: "BF50",
+    discountType: "percentage",
+    discountValue: 50.00,
+    tier: "all",
+    maxUses: null,
+    expiresAt: "2026-12-02 07:59:59",
+    source: "black-friday-2026",
+    description: "50% off everything through Dec 1, 2026 at 11:59 PM PT"
+  },
+  {
     code: "LAUNCH50",
     discountType: "percentage",
     discountValue: 50.00,
@@ -67,10 +77,10 @@ async function seedCodes() {
     for (const code of LAUNCH_CODES) {
       const sql = `
         INSERT INTO promo_codes 
-        (code, discountType, discountValue, tier, maxUses, currentUses, source, isActive, createdAt, updatedAt)
-        VALUES (?, ?, ?, ?, ?, 0, ?, true, NOW(), NOW())
+        (code, discountType, discountValue, tier, maxUses, currentUses, expiresAt, source, isActive, createdAt, updatedAt)
+        VALUES (?, ?, ?, ?, ?, 0, ?, ?, true, NOW(), NOW())
         ON DUPLICATE KEY UPDATE
-        isActive = true, updatedAt = NOW()
+        discountType = VALUES(discountType), discountValue = VALUES(discountValue), tier = VALUES(tier), maxUses = VALUES(maxUses), expiresAt = VALUES(expiresAt), source = VALUES(source), isActive = true, updatedAt = NOW()
       `;
       
       await connection.execute(sql, [
@@ -79,6 +89,7 @@ async function seedCodes() {
         code.discountValue,
         code.tier,
         code.maxUses,
+        code.expiresAt || null,
         code.source,
       ]);
       

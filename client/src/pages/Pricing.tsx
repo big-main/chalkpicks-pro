@@ -26,14 +26,9 @@ import {
 // ─── Countdown timer hook ─────────────────────────────────────────────────────
 
 function useCountdown() {
-  // Offer expires 72 hours from the user's first visit (stored in localStorage)
-  const [endTime] = useState(() => {
-    const stored = localStorage.getItem("chalk15_expires");
-    if (stored) return parseInt(stored);
-    const expires = Date.now() + 72 * 60 * 60 * 1000; // 72 hours
-    localStorage.setItem("chalk15_expires", expires.toString());
-    return expires;
-  });
+  const [endTime] = useState(() =>
+    new Date("2026-12-01T23:59:59-08:00").getTime()
+  );
 
   const [timeLeft, setTimeLeft] = useState(() =>
     Math.max(0, endTime - Date.now())
@@ -48,17 +43,19 @@ function useCountdown() {
     return () => clearInterval(interval);
   }, [endTime]);
 
-  const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+  const totalSeconds = Math.floor(timeLeft / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-  return { hours, minutes, seconds, expired: timeLeft <= 0 };
+  return { days, hours, minutes, seconds, expired: timeLeft <= 0 };
 }
 
 // ─── Promo Banner with Countdown ─────────────────────────────────────────────
 
 function PromoBanner({ onApply }: { onApply: () => void }) {
-  const { hours, minutes, seconds, expired } = useCountdown();
+  const { days, hours, minutes, seconds, expired } = useCountdown();
 
   if (expired) return null;
 
@@ -99,18 +96,18 @@ function PromoBanner({ onApply }: { onApply: () => void }) {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-white">
-                  Limited Time Offer
+                  Black Friday Offer
                 </span>
                 <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-green/10 text-brand-green border border-brand-green/20">
-                  15% OFF
+                  50% OFF
                 </span>
               </div>
               <p className="text-xs text-white/50 mt-0.5">
                 Use code{" "}
                 <span className="font-mono font-bold text-brand-green">
-                  CHALK15
+                  BF50
                 </span>{" "}
-                at checkout for 15% off any plan
+                at checkout for 50% off everything
               </p>
             </div>
           </div>
@@ -134,8 +131,14 @@ function PromoBanner({ onApply }: { onApply: () => void }) {
           style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
         >
           <Clock className="w-3.5 h-3.5 text-brand-gold" />
-          <span className="text-xs text-white/50">Offer expires in:</span>
+          <span className="text-xs text-white/50">
+            Ends Dec 1 at 11:59 PM PT:
+          </span>
           <div className="flex items-center gap-1">
+            <span className="px-1.5 py-0.5 text-xs font-mono font-bold rounded bg-white/5 text-brand-green border border-white/10">
+              {pad(days)}
+            </span>
+            <span className="text-white/30 text-xs">:</span>
             <span className="px-1.5 py-0.5 text-xs font-mono font-bold rounded bg-white/5 text-brand-green border border-white/10">
               {pad(hours)}
             </span>
@@ -400,7 +403,7 @@ export default function Pricing() {
   // Auto-apply promo code from URL params (e.g. /pricing?promo=EXIT15)
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const urlPromo = params.get("promo");
+    const urlPromo = params.get("promo") || "BF50";
     if (urlPromo && !promoApplied && !promoCode) {
       setPromoCode(urlPromo.toUpperCase());
       setPromoQueryCode(urlPromo.toUpperCase());
@@ -458,6 +461,14 @@ export default function Pricing() {
     setPromoApplied(false);
     setPromoValidating(true);
     setPromoQueryCode(promoCode.trim());
+  };
+
+  const handleApplyBlackFriday = () => {
+    setPromoCode("BF50");
+    setPromoError("");
+    setPromoApplied(false);
+    setPromoQueryCode("BF50");
+    setPromoValidating(true);
   };
 
   const handleSubscribe = (tier: "daily" | "monthly" | "yearly") => {
@@ -633,9 +644,7 @@ export default function Pricing() {
             ═══════════════════════════════════════════════════════════════════════ */}
         <div className="max-w-2xl mx-auto mb-14">
           {/* Promo banner callout with countdown */}
-          {!promoApplied && (
-            <PromoBanner onApply={() => setPromoCode("CHALK15")} />
-          )}
+          {!promoApplied && <PromoBanner onApply={handleApplyBlackFriday} />}
 
           {/* Promo code input card */}
           <NeonCard
@@ -680,7 +689,7 @@ export default function Pricing() {
                     setPromoApplied(false);
                     setPromoError("");
                   }}
-                  placeholder="CHALK15"
+                  placeholder="BF50"
                   className="w-full px-4 py-3 text-sm font-mono font-semibold tracking-wider rounded-xl bg-white/5 border text-white placeholder:text-white/25 outline-none transition-all"
                   style={{
                     borderColor: promoApplied

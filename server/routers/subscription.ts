@@ -129,6 +129,14 @@ export const subscriptionRouter = router({
         } catch (err) {
           console.warn("[Checkout] Failed to look up Stripe promo code:", err);
         }
+
+        if (!stripePromotionCodeId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "This promo code is not currently available in Stripe. Please try again shortly.",
+          });
+        }
       }
 
       try {
@@ -171,9 +179,6 @@ export const subscriptionRouter = router({
           // If no promo code provided, allow users to enter one at Stripe checkout
           sessionParams.allow_promotion_codes = true;
         }
-        // If user provided a promo code but it's not in Stripe, we apply it via metadata
-        // and the webhook will handle recording the discount
-
         const session =
           await requireStripe().checkout.sessions.create(sessionParams);
 

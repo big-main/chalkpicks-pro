@@ -1,5 +1,11 @@
 # ChalkPicks Pro — TODO
 
+## Black Friday 2026 Campaign
+
+- [ ] Create and verify the live Stripe coupon and promotion code `BF50` for 50% off everything through December 1, 2026 at 11:59 PM Pacific Time; the currently configured Stripe secret is expired.
+- [x] Add responsive Black Friday campaign banners and fixed Pacific-time countdown to the homepage.
+- [x] Update pricing promo UI and checkout validation to use `BF50`.
+
 ## Phase 2: Database Schema & Project Setup
 
 - [x] Design and apply full database schema (picks, sports, players, bets, subscriptions, leaderboard, backtests)

@@ -38,14 +38,12 @@ export async function createOAuthUser(data: {
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database unavailable");
-  await db
-    .insert(users)
-    .values({
-      ...data,
-      loginMethod: "google",
-      subscriptionTier: "free",
-      lastSignedIn: new Date(),
-    });
+  await db.insert(users).values({
+    ...data,
+    loginMethod: "google",
+    subscriptionTier: "free",
+    lastSignedIn: new Date(),
+  });
   const user = await getUserByOpenId(data.openId);
   if (!user) throw new Error("User not created");
   return user;
@@ -83,6 +81,14 @@ export async function grantTrialAfterPaymentMethod(_userId: number) {
 
 // ─── Promo Code Helpers ───────────────────────────────────────────────────────
 
+const CAMPAIGN_PROMOS = {
+  BF50: {
+    discount: 50,
+    discountType: "percentage",
+    expiresAt: new Date("2026-12-01T23:59:59-08:00"),
+  },
+} as const;
+
 export async function getPromoCodeByCode(code: string) {
   const db = await getDb();
   if (!db) return undefined;
@@ -106,6 +112,17 @@ export async function validatePromoCode(
   const promo = await getPromoCodeByCode(code);
 
   if (!promo) {
+    const campaignPromo = CAMPAIGN_PROMOS[code.toUpperCase() as "BF50"];
+    if (campaignPromo) {
+      if (new Date() > campaignPromo.expiresAt) {
+        return { valid: false, message: "Promo code expired" };
+      }
+      return {
+        valid: true,
+        discount: campaignPromo.discount,
+        discountType: campaignPromo.discountType,
+      };
+    }
     return { valid: false, message: "Invalid promo code" };
   }
 

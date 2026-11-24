@@ -170,5 +170,8 @@
     "*.{json,md,css}": [
       "prettier --write"
     ]
+  },
+  "engines": {
+    "node": ">=24 <25"
   }
 }

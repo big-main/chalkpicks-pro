@@ -158,7 +158,7 @@ export default function PricingCard({
           {hasDiscount && (
             <div className="text-xs mt-1.5 font-semibold text-brand-green flex items-center gap-1">
               <Sparkles className="w-3 h-3" />
-              CHALK15 APPLIED — You save $
+              PROMO CODE APPLIED — You save $
               {(originalPrice - finalPrice).toFixed(2)}!
             </div>
           )}

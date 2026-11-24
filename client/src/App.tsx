@@ -16,6 +16,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { usePageTracking } from "@/hooks/usePageTracking";
+import { Analytics } from "@vercel/analytics/react";
 
 import Home from "./pages/Home";
 import NotFound from "@/pages/NotFound";
@@ -345,6 +346,7 @@ function App() {
           </SwipeNavProvider>
         </TooltipProvider>
       </ThemeProvider>
+      <Analytics />
     </ErrorBoundary>
   );
 }

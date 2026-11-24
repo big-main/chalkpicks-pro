@@ -254,6 +254,7 @@ export function LiveOddsTicker({
   const [alertsEnabled, setAlertsEnabled] = useState(false);
   const [alertThreshold, setAlertThreshold] = useState(10);
   const alertedRowsRef = useRef<Set<string>>(new Set());
+  const presetMigrationAttemptedRef = useRef(false);
   const { user } = useAuth();
   const { data: subscription } = trpc.subscription.mySubscription.useQuery(
     undefined,
@@ -278,6 +279,31 @@ export function LiveOddsTicker({
   const removeRemotePreset = trpc.liveOddsPresets.remove.useMutation({
     onSuccess: () => trpcUtils.liveOddsPresets.list.invalidate(),
   });
+
+  useEffect(() => {
+    if (
+      presetMigrationAttemptedRef.current ||
+      !isPremium ||
+      remotePresets === undefined ||
+      remotePresets.length > 0 ||
+      presets.length === 0
+    )
+      return;
+    presetMigrationAttemptedRef.current = true;
+    presets.slice(0, 50).forEach(preset => {
+      saveRemotePreset.mutate({
+        name: preset.name,
+        config: {
+          selectedSport: preset.selectedSport,
+          search: preset.search,
+          selectedBook: preset.selectedBook,
+          selectedMarket: preset.selectedMarket,
+          movementOnly: preset.movementOnly,
+          sort: preset.sort,
+        },
+      });
+    });
+  }, [isPremium, presets, remotePresets, saveRemotePreset]);
 
   const { rows, connected, error } = useOddsStream({
     enabled: true,
@@ -354,13 +380,14 @@ export function LiveOddsTicker({
     movementOnly,
     sort,
   };
-  const availablePresets: OddsPreset[] = remotePresets
-    ? remotePresets.map(record => ({
-        id: record.id,
-        name: record.name,
-        ...(record.config as Omit<OddsPreset, "id" | "name">),
-      }))
-    : presets;
+  const availablePresets: OddsPreset[] =
+    remotePresets && (remotePresets.length > 0 || presets.length === 0)
+      ? remotePresets.map(record => ({
+          id: record.id,
+          name: record.name,
+          ...(record.config as Omit<OddsPreset, "id" | "name">),
+        }))
+      : presets;
   const savePreset = () => {
     const name = presetName.trim().slice(0, 40);
     if (!name) return;

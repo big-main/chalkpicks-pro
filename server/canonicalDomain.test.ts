@@ -17,7 +17,14 @@ function request(hostname: string, originalUrl = "/picks?league=nfl") {
 
 describe("ChalkPicks .pro canonical domain", () => {
   it("uses the .pro apex as the configured application URL", () => {
-    expect(process.env.APP_URL).toBe("https://chalkpicks.pro");
+    // Static check against the committed template so it holds on any clean
+    // checkout/CI runner (APP_URL itself lives in the untracked .env).
+    const template = readFileSync(
+      new URL("../.env.example", import.meta.url),
+      "utf8"
+    );
+    expect(template).toMatch(/^APP_URL=https:\/\/chalkpicks\.pro\s*$/m);
+    expect(SITE_URL).toBe("https://chalkpicks.pro");
   });
 
   it("does not redirect the active apex domain", () => {
@@ -78,7 +85,8 @@ describe("ChalkPicks .pro canonical domain", () => {
     expect(source).toContain("const APP_URL = SITE_URL");
     expect(source).not.toContain("process.env.APP_URL");
   });
-  it.skipIf(!process.env.APP_URL)(
+  // Live production probe: opt-in so CI never depends on prod uptime.
+  it.skipIf(!process.env.APP_URL || process.env.LIVE_HEALTH_CHECK !== "1")(
     "serves health from the configured APP_URL",
     async () => {
       const response = await fetch(`${process.env.APP_URL}/health`);

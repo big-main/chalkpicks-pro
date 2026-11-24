@@ -5,6 +5,12 @@ import { subscriptionOrders, users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import Stripe from "stripe";
+import {
+  ensureStripeDiscount,
+  resolveCheckoutOrigin,
+  resolvePriceId,
+  type StripeDiscount,
+} from "../services/checkoutHelpers";
 
 // Lazy Stripe client — constructing with an empty key throws at import time,
 // which would crash the whole server (and every test) when the env var is
@@ -95,12 +101,12 @@ export const subscriptionRouter = router({
       const plan = PLANS[input.tier];
       if (!plan) throw new TRPCError({ code: "BAD_REQUEST" });
 
-      // Look up Stripe promotion code if user provided one
-      let stripePromotionCodeId: string | undefined;
+      // Validate the promo against our own rules, then resolve the matching
+      // Stripe discount (existing promotion code, or one created on demand).
+      let stripeDiscount: StripeDiscount | undefined;
       let promoCodeDbId: string = "";
 
       if (input.promoCode) {
-        // Validate against our DB first
         const { validatePromoCode, getPromoCodeByCode } = await import("../db");
         const validation = await validatePromoCode(input.promoCode, input.tier);
 
@@ -116,28 +122,27 @@ export const subscriptionRouter = router({
           promoCodeDbId = promo.id.toString();
         }
 
-        // Find the Stripe promotion code by code string
         try {
-          const promoCodes = await requireStripe().promotionCodes.list({
-            code: input.promoCode.toUpperCase(),
-            active: true,
-            limit: 1,
-          });
-          if (promoCodes.data.length > 0) {
-            stripePromotionCodeId = promoCodes.data[0].id;
-          }
-        } catch (err) {
-          console.warn("[Checkout] Failed to look up Stripe promo code:", err);
-        }
-
-        if (!stripePromotionCodeId) {
+          stripeDiscount = await ensureStripeDiscount(
+            requireStripe(),
+            input.promoCode,
+            validation
+          );
+        } catch (err: any) {
+          if (err instanceof TRPCError) throw err;
+          console.error(
+            "[Checkout] Could not apply promo in Stripe:",
+            err?.message
+          );
           throw new TRPCError({
             code: "BAD_REQUEST",
             message:
-              "This promo code is not currently available in Stripe. Please try again shortly.",
+              "We couldn't apply that promo code at checkout. Please try again or contact support.",
           });
         }
       }
+
+      const origin = resolveCheckoutOrigin(input.origin);
 
       try {
         // Build session params using actual Stripe price IDs
@@ -149,7 +154,7 @@ export const subscriptionRouter = router({
           customer_email: ctx.user.email ?? undefined,
           line_items: [
             {
-              price: plan.priceId,
+              price: resolvePriceId(input.tier, plan.priceId),
               quantity: 1,
             },
           ],
@@ -158,8 +163,8 @@ export const subscriptionRouter = router({
           ...(isSubscription && TRIAL_DAYS > 0
             ? { subscription_data: { trial_period_days: TRIAL_DAYS } }
             : {}),
-          success_url: `${input.origin}/payment/success?tier=${input.tier}&session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${input.origin}/pricing`,
+          success_url: `${origin}/payment/success?tier=${input.tier}&session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${origin}/pricing`,
           client_reference_id: ctx.user.id.toString(),
           metadata: {
             user_id: ctx.user.id.toString(),
@@ -171,12 +176,10 @@ export const subscriptionRouter = router({
           },
         };
 
-        // Apply the Stripe promotion code discount
-        if (stripePromotionCodeId) {
-          // When we have a matching Stripe promo code, apply it directly
-          sessionParams.discounts = [{ promotion_code: stripePromotionCodeId }];
-        } else if (!input.promoCode) {
-          // If no promo code provided, allow users to enter one at Stripe checkout
+        if (stripeDiscount) {
+          sessionParams.discounts = [stripeDiscount];
+        } else {
+          // No code supplied: let the customer enter one at Stripe checkout.
           sessionParams.allow_promotion_codes = true;
         }
         const session =

@@ -1,6 +1,6 @@
 import express from "express";
 import Stripe from "stripe";
-import { getDb } from "./db";
+import { getDb, incrementPromoCodeUsage, logPromoCodeUsage } from "./db";
 import { users, subscriptionOrders } from "../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 import { sendWelcomeEmail } from "./email";
@@ -162,6 +162,27 @@ export function registerStripeWebhook(app: express.Application) {
               .catch(() => {
                 // Ignore duplicate key errors — already recorded by activate mutation
               });
+
+            // Count the promo redemption (enforces maxUses, powers admin stats).
+            // Runs after the idempotency guard so Stripe retries never double count.
+            const promoCodeId = parseInt(session.metadata?.promoCodeId ?? "0");
+            if (promoCodeId) {
+              try {
+                const original = PLANS[tier].amountCents / 100;
+                const paid = (session.amount_total ?? 0) / 100;
+                await incrementPromoCodeUsage(promoCodeId);
+                await logPromoCodeUsage({
+                  userId,
+                  codeId: promoCodeId,
+                  originalPrice: original.toFixed(2),
+                  discountAmount: Math.max(0, original - paid).toFixed(2),
+                  finalPrice: paid.toFixed(2),
+                  stripeSessionId: session.id,
+                });
+              } catch (err) {
+                console.error("[Webhook] Failed to record promo usage:", err);
+              }
+            }
 
             // Send welcome email using the pre-update snapshot
             if (userBefore[0]?.email && userBefore[0]?.name) {

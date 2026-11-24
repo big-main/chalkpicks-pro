@@ -403,7 +403,10 @@ export default function Pricing() {
   // Auto-apply promo code from URL params (e.g. /pricing?promo=EXIT15)
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const urlPromo = params.get("promo") || "BF50";
+    // Default to the Black Friday code only while the campaign is live, so
+    // visitors never see an "expired" error after it ends.
+    const campaignLive = Date.now() < Date.parse("2026-12-01T23:59:59-08:00");
+    const urlPromo = params.get("promo") || (campaignLive ? "BF50" : "");
     if (urlPromo && !promoApplied && !promoCode) {
       setPromoCode(urlPromo.toUpperCase());
       setPromoQueryCode(urlPromo.toUpperCase());

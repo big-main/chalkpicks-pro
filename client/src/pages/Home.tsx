@@ -283,7 +283,7 @@ export default function Home() {
         storageKey="cp_domain_migration_pro_v1"
         returningUsersOnly
         message="ChalkPicks is now on chalkpicks.pro. Update your bookmark for the official site."
-        ctaLabel="Open chalkpicks.pro"
+        ctaLabel="Open .pro"
         ctaHref="https://chalkpicks.pro/"
         variant="cyan"
       />

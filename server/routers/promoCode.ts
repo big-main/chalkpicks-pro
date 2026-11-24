@@ -4,13 +4,7 @@ import { publicProcedure, protectedProcedure, adminProcedure, router } from "../
 import * as db from "../db";
 import { promoCodes, promoCodeUsage } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
-
-// Pricing plans - must match subscription.ts PLANS
-const PLANS = [
-  { tier: "daily", name: "Daily Pass", amount: 9.99 },
-  { tier: "monthly", name: "Monthly Pro", amount: 29.99 },
-  { tier: "yearly", name: "Yearly Pro", amount: 199.99 },
-];
+import { PLANS } from "./subscription";
 
 export const promoCodeRouter = router({
   // Validate promo code (public)
@@ -31,8 +25,8 @@ export const promoCodeRouter = router({
         });
       }
 
-      const plan = PLANS.find((p) => p.tier === input.tier);
-      const originalPrice = plan?.amount || 0;
+      const plan = PLANS[input.tier];
+      const originalPrice = plan ? plan.amountCents / 100 : 0;
 
       let discount = 0;
       if (validation.discountType === "percentage") {

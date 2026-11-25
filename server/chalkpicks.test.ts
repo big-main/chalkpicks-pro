@@ -224,6 +224,14 @@ describe("subscription", () => {
     expect(Array.isArray(plans.monthly.features)).toBe(true);
   });
 
+  it("uses the verified live Stripe prices for the ChalkPicks account", async () => {
+    const caller = appRouter.createCaller(createPublicContext());
+    const plans = await caller.subscription.plans();
+    expect(plans.daily.priceId).toBe("price_1TyE4dJXlShpHPhg9dzcCcI3");
+    expect(plans.monthly.priceId).toBe("price_1TyE4dJXlShpHPhgkvMuFmfz");
+    expect(plans.yearly.priceId).toBe("price_1TyE4dJXlShpHPhg8rAyn1VZ");
+  });
+
   it("requires auth to check subscription", async () => {
     const caller = appRouter.createCaller(createPublicContext());
     await expect(caller.subscription.mySubscription()).rejects.toThrow();

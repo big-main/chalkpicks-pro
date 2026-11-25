@@ -33,7 +33,7 @@ export const PLANS = {
     name: "Basic",
     priceId:
       process.env.STRIPE_PRICE_BASIC_MONTHLY ??
-      "price_1UVbnZS584r8Y3F6Iz2ivR3O",
+      "price_1TyE4dJXlShpHPhg9dzcCcI3",
     amountCents: 999,
     interval: "month",
     description: "Essential picks for casual bettors",
@@ -48,7 +48,7 @@ export const PLANS = {
   monthly: {
     name: "Pro",
     priceId:
-      process.env.STRIPE_PRICE_PRO_MONTHLY ?? "price_1UVbnaS584r8Y3F6CvxlhWbj",
+      process.env.STRIPE_PRICE_PRO_MONTHLY ?? "price_1TyE4dJXlShpHPhgkvMuFmfz",
     amountCents: 1999,
     interval: "month",
     description: "Best value for serious bettors",
@@ -67,7 +67,7 @@ export const PLANS = {
   yearly: {
     name: "Elite",
     priceId:
-      process.env.STRIPE_PRICE_ELITE_YEARLY ?? "price_1UVbnbS584r8Y3F6FgOQhYSu",
+      process.env.STRIPE_PRICE_ELITE_YEARLY ?? "price_1TyE4dJXlShpHPhg8rAyn1VZ",
     amountCents: 5999,
     interval: "year",
     description: "Maximum savings for pros",

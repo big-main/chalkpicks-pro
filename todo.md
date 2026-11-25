@@ -1401,7 +1401,7 @@
 - [x] Update PLANS in server/routers/subscription.ts with live price IDs
 - [x] Confirm webhook.ts uses amount-based tier detection (no hardcoded price IDs needed)
 - [x] Identify STRIPE_WEBHOOK_SECRET mismatch (test secret vs live webhook)
-- [x] Update STRIPE_WEBHOOK_SECRET to live signing secret (whsec_S9DQb3LN...)
+- [x] Update the live Stripe webhook signing secret in the deployment secret store (value not recorded)
 - [x] Update STRIPE_SECRET_KEY to live key in Manus secrets
 
 ### Logo Headers
@@ -1430,7 +1430,7 @@
 - [x] Logo banner enlarged on all pages — full-width cover, bottom-only fade
 - [x] Horizontal scroll ticker — draggable news + picks cards with chevron navigation
 - [x] SEO structured data — removed fake aggregateRating, added BreadcrumbList schema
-- [x] Stripe live mode fix — correct live price IDs, STRIPE_WEBHOOK_SECRET updated to whsec_S9DQb3LN...
+- [x] Stripe live mode fix — correct live price IDs and deploy the webhook secret through the secret store (value not recorded)
 - [x] Logo headers added to Leaderboard and Tools pages
 - [x] Streak badges on pick cards (gold fire for 3W+ consecutive wins)
 - [x] Blog test data cleaned up (removed Team Spoon/Coop and generic sport-only titles)

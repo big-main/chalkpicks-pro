@@ -28,10 +28,10 @@ import {
 function useCountdown() {
   // Offer expires 72 hours from the user's first visit (stored in localStorage)
   const [endTime] = useState(() => {
-    const stored = localStorage.getItem("chalk15_expires");
+    const stored = localStorage.getItem("bf50_expires");
     if (stored) return parseInt(stored);
     const expires = Date.now() + 72 * 60 * 60 * 1000; // 72 hours
-    localStorage.setItem("chalk15_expires", expires.toString());
+    localStorage.setItem("bf50_expires", expires.toString());
     return expires;
   });
 
@@ -102,15 +102,15 @@ function PromoBanner({ onApply }: { onApply: () => void }) {
                   Limited Time Offer
                 </span>
                 <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-green/10 text-brand-green border border-brand-green/20">
-                  15% OFF
+                  PROMO
                 </span>
               </div>
               <p className="text-xs text-white/50 mt-0.5">
                 Use code{" "}
                 <span className="font-mono font-bold text-brand-green">
-                  CHALK15
+                  BF50
                 </span>{" "}
-                at checkout for 15% off any plan
+                at checkout when the promotion is active
               </p>
             </div>
           </div>
@@ -397,13 +397,13 @@ export default function Pricing() {
   const [promoValidating, setPromoValidating] = useState(false);
   const [promoQueryCode, setPromoQueryCode] = useState("");
 
-  // Auto-apply promo code from URL params (e.g. /pricing?promo=EXIT15)
+  // Only auto-apply the currently intended campaign code from URL params.
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlPromo = params.get("promo");
-    if (urlPromo && !promoApplied && !promoCode) {
-      setPromoCode(urlPromo.toUpperCase());
-      setPromoQueryCode(urlPromo.toUpperCase());
+    if (urlPromo?.toUpperCase() === "BF50" && !promoApplied && !promoCode) {
+      setPromoCode("BF50");
+      setPromoQueryCode("BF50");
       setPromoValidating(true);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -634,7 +634,12 @@ export default function Pricing() {
         <div className="max-w-2xl mx-auto mb-14">
           {/* Promo banner callout with countdown */}
           {!promoApplied && (
-            <PromoBanner onApply={() => setPromoCode("CHALK15")} />
+            <PromoBanner
+              onApply={() => {
+                setPromoCode("BF50");
+                setPromoError("");
+              }}
+            />
           )}
 
           {/* Promo code input card */}
@@ -680,7 +685,7 @@ export default function Pricing() {
                     setPromoApplied(false);
                     setPromoError("");
                   }}
-                  placeholder="CHALK15"
+                  placeholder="BF50"
                   className="w-full px-4 py-3 text-sm font-mono font-semibold tracking-wider rounded-xl bg-white/5 border text-white placeholder:text-white/25 outline-none transition-all"
                   style={{
                     borderColor: promoApplied

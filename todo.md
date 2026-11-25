@@ -860,7 +860,7 @@
 - [x] Restart dev server to clear stale tsc watcher cache
 - [x] TypeScript: 0 errors (verified via tsc --noEmit)
 
-## Promo Code Enhancement (Jul 7, 2026)
+## Promo Code Enhancement (Jul 7, 2026 — historical, retired campaign)
 
 - [x] Redesign promo code section on Pricing page to be more prominent with CHALK15 highlight
 - [x] Update placeholder text to reference CHALK15 code
@@ -868,7 +868,7 @@
 - [x] Add visual callout/banner promoting CHALK15 discount
 - [x] Seed CHALK15 promo code in database (15% off, all tiers)
 
-## Stripe Checkout Sessions Migration (Jul 7, 2026)
+## Stripe Checkout Sessions Migration (Jul 7, 2026 — historical, retired campaign references)
 
 - [x] Replace Stripe Buy Buttons with Checkout Session CTAs on Pricing page
 - [x] Update createCheckout backend to apply promo code discount via Stripe Coupon
@@ -876,7 +876,7 @@
 - [x] Wire promo code from frontend state into checkout session creation
 - [x] Test end-to-end flow with CHALK15 promo code
 
-## Next Steps Implementation (Jul 7, 2026)
+## Next Steps Implementation (Jul 7, 2026 — historical, retired campaign references)
 
 - [x] Create live-mode CHALK15 promotion code in Stripe (already exists in Stripe account)
 - [x] Add confetti/success animation to payment success page

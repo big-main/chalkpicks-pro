@@ -27,3 +27,7 @@ Stripe rejected a configuration containing both monthly prices because Basic and
 ## Safety
 
 No customer charge or payment method was created. No secret key, webhook signing secret, customer payment detail, or bank detail is recorded here.
+
+## Promotion codes
+
+The application record for the retired `CHALK15` campaign was deactivated in place so historical usage data remains intact. The live Stripe account returned one active `CHALK15` promotion code (`promo_1Tq4TkJXlShpHPhgR186kDLL`) during reconciliation; its Stripe deactivation is still pending because the connected Stripe write operation is not exposed in the current connector catalog and the sandbox key does not authorize that connected account. No replacement `BF50` promotion code was created: the live Stripe account and application database did not return a `BF50` record, so the code is not advertised as confirmed-active until it is created and configured through the authorized Stripe account.

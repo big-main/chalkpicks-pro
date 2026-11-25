@@ -26,6 +26,34 @@ describe.skipIf(!process.env.DATABASE_URL)("Promo Code System", () => {
     expect(result.discountType).toBe("percentage");
   });
 
+  it("should accept BF50 when the application row is active", async () => {
+    const existing = await db.getPromoCodeByCode("BF50");
+    let createdForTest = false;
+    if (!existing) {
+      await db.createPromoCode({
+        code: "BF50",
+        discountType: "percentage",
+        discountValue: "50",
+        tier: "all",
+        source: "test",
+        isActive: true,
+      });
+      createdForTest = true;
+    }
+
+    try {
+      const result = await db.validatePromoCode("BF50", "monthly");
+      expect(result.valid).toBe(true);
+      expect(result.discount).toBe(50);
+      expect(result.discountType).toBe("percentage");
+    } finally {
+      if (createdForTest) {
+        const promo = await db.getPromoCodeByCode("BF50");
+        if (promo) await db.deactivatePromoCode(promo.id);
+      }
+    }
+  });
+
   it("should reject code for wrong tier", async () => {
     const result = await db.validatePromoCode(testCode, "daily");
     // testCode is tier='monthly', so daily should be rejected
@@ -33,16 +61,10 @@ describe.skipIf(!process.env.DATABASE_URL)("Promo Code System", () => {
     expect(result.message).toContain("not valid");
   });
 
-  it("should validate CHALK15 (all-tier code) for any tier", async () => {
-    const resultMonthly = await db.validatePromoCode("CHALK15", "monthly");
-    const resultDaily = await db.validatePromoCode("CHALK15", "daily");
-    const resultYearly = await db.validatePromoCode("CHALK15", "yearly");
-    // CHALK15 is tier='all', so it should work for all tiers
-    expect(resultMonthly.valid).toBe(true);
-    expect(resultMonthly.discount).toBe(15);
-    expect(resultMonthly.discountType).toBe("percentage");
-    expect(resultDaily.valid).toBe(true);
-    expect(resultYearly.valid).toBe(true);
+  it("should reject the retired CHALK15 code as inactive", async () => {
+    const result = await db.validatePromoCode("CHALK15", "monthly");
+    expect(result.valid).toBe(false);
+    expect(result.message).toContain("inactive");
   });
 
   it("should reject non-existent code", async () => {

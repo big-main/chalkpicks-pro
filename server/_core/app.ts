@@ -807,7 +807,7 @@ export async function createApp({ serverless = false } = {}) {
           post: {
             summary: "Create Stripe Checkout Session",
             description:
-              "Creates a Stripe Checkout Session for the selected plan. Supports the CHALK15 promo code for 15% off. Requires authentication.",
+              "Creates a Stripe Checkout Session for the selected plan. Supports configured promotion codes such as BF50 when active in both the application and Stripe. Requires authentication.",
             tags: ["Subscriptions"],
             security: [{ cookieAuth: [] }],
             requestBody: {
@@ -827,7 +827,7 @@ export async function createApp({ serverless = false } = {}) {
                           },
                           promoCode: {
                             type: "string",
-                            example: "CHALK15",
+                            example: "BF50",
                             description: "Optional promo code for discount",
                           },
                           successUrl: {

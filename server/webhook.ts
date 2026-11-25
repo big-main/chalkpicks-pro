@@ -89,6 +89,18 @@ export function registerStripeWebhook(app: express.Application) {
 
             if (!userId) break;
 
+            if (
+              session.mode !== "subscription" ||
+              session.status !== "complete" ||
+              (session.payment_status !== "paid" &&
+                session.payment_status !== "no_payment_required")
+            ) {
+              console.warn(
+                `[Webhook] Checkout ${session.id} is not a completed paid subscription; ignoring`
+              );
+              break;
+            }
+
             const db = await getDb();
             if (!db) break;
 
@@ -319,10 +331,16 @@ export function registerStripeWebhook(app: express.Application) {
             const priceId = item?.price?.id ?? "";
             const amount = item?.price?.unit_amount ?? 0;
 
-            let tier: "daily" | "monthly" | "yearly" = "monthly";
-            if (amount <= 999)
-              tier = "daily"; // $9.99 or less
-            else if (amount >= 19999) tier = "yearly"; // $199.99 or more
+            const tierByPrice: Record<string, "daily" | "monthly" | "yearly"> =
+              {
+                [PLANS.daily.priceId]: "daily",
+                [PLANS.monthly.priceId]: "monthly",
+                [PLANS.yearly.priceId]: "yearly",
+              };
+            let tier = tierByPrice[priceId];
+            if (!tier) {
+              tier = amount <= PLANS.daily.amountCents ? "daily" : "monthly";
+            }
 
             const status = sub.status;
             if (status === "active" || status === "trialing") {

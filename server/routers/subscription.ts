@@ -31,7 +31,9 @@ export const TRIAL_DAYS = 0;
 export const PLANS = {
   daily: {
     name: "Basic",
-    priceId: "price_1TyE4dJXlShpHPhg9dzcCcI3",
+    priceId:
+      process.env.STRIPE_PRICE_BASIC_MONTHLY ??
+      "price_1UVbnZS584r8Y3F6Iz2ivR3O",
     amountCents: 999,
     interval: "month",
     description: "Essential picks for casual bettors",
@@ -45,7 +47,8 @@ export const PLANS = {
   },
   monthly: {
     name: "Pro",
-    priceId: "price_1TyE4dJXlShpHPhgkvMuFmfz",
+    priceId:
+      process.env.STRIPE_PRICE_PRO_MONTHLY ?? "price_1UVbnaS584r8Y3F6CvxlhWbj",
     amountCents: 1999,
     interval: "month",
     description: "Best value for serious bettors",
@@ -63,7 +66,8 @@ export const PLANS = {
   },
   yearly: {
     name: "Elite",
-    priceId: "price_1TyE4dJXlShpHPhg8rAyn1VZ",
+    priceId:
+      process.env.STRIPE_PRICE_ELITE_YEARLY ?? "price_1UVbnbS584r8Y3F6FgOQhYSu",
     amountCents: 5999,
     interval: "year",
     description: "Maximum savings for pros",
@@ -170,9 +174,12 @@ export const subscriptionRouter = router({
         } else if (!input.promoCode) {
           // If no promo code provided, allow users to enter one at Stripe checkout
           sessionParams.allow_promotion_codes = true;
+        } else if (input.promoCode) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "This promotion code is not available for checkout.",
+          });
         }
-        // If user provided a promo code but it's not in Stripe, we apply it via metadata
-        // and the webhook will handle recording the discount
 
         const session =
           await requireStripe().checkout.sessions.create(sessionParams);
@@ -256,14 +263,53 @@ export const subscriptionRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-      let session: Stripe.Checkout.Session | null = null;
+      let session: Stripe.Checkout.Session;
       try {
         session = await requireStripe().checkout.sessions.retrieve(
-          input.sessionId
+          input.sessionId,
+          { expand: ["subscription"] }
         );
       } catch {
-        // If Stripe not configured, use mock activation
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "We could not verify this checkout with Stripe. Please contact support before trying again.",
+        });
       }
+
+      const sessionUserId = Number(
+        session.metadata?.user_id ?? session.client_reference_id ?? 0
+      );
+      const sessionTier = session.metadata?.tier;
+      const expectedTier = input.tier;
+      const paymentVerified =
+        session.mode === "subscription" &&
+        (session.payment_status === "paid" ||
+          session.payment_status === "no_payment_required") &&
+        session.status === "complete" &&
+        sessionUserId === ctx.user.id &&
+        sessionTier === expectedTier &&
+        Boolean(session.subscription);
+
+      if (!paymentVerified) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "This Stripe checkout is not complete or does not match your account.",
+        });
+      }
+
+      if (!session.subscription) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "This checkout does not contain a verified subscription.",
+        });
+      }
+
+      const stripeSubscriptionId =
+        typeof session.subscription === "string"
+          ? session.subscription
+          : session.subscription.id;
 
       const now = new Date();
       const expiresAt = new Date(now);
@@ -282,10 +328,10 @@ export const subscriptionRouter = router({
         .set({
           subscriptionTier,
           subscriptionExpiresAt: expiresAt,
-          stripeSubscriptionId: session?.subscription?.toString() ?? null,
+          stripeSubscriptionId,
           // Persist the Stripe customer id (when the session resolved) so the
           // billing portal works even if the webhook hasn't landed yet.
-          ...(session?.customer
+          ...(session.customer
             ? { stripeCustomerId: session.customer.toString() }
             : {}),
         })
@@ -295,7 +341,7 @@ export const subscriptionRouter = router({
       await db.insert(subscriptionOrders).values({
         userId: ctx.user.id,
         stripeSessionId: input.sessionId,
-        stripeSubscriptionId: session?.subscription?.toString() ?? null,
+        stripeSubscriptionId,
         tier: input.tier,
         status: "active",
         amountCents: PLANS[input.tier].amountCents,
@@ -369,7 +415,6 @@ export const subscriptionRouter = router({
       try {
         const session = await requireStripe().billingPortal.sessions.create({
           customer: u.stripeCustomerId,
-          configuration: "bpc_1TqPBuDksqAHyBc35muDhWXS",
           return_url: input.origin + "/account-settings",
         });
         return { url: session.url };

@@ -12,7 +12,8 @@ import Stripe from "stripe";
 let _stripe: Stripe | null = null;
 function requireStripe(): Stripe {
   if (_stripe) return _stripe;
-  const key = process.env.STRIPE_SECRET_KEY;
+  const key =
+    process.env.CHALKPICKS_STRIPE_SECRET_KEY ?? process.env.STRIPE_SECRET_KEY;
   if (!key) {
     throw new TRPCError({
       code: "PRECONDITION_FAILED",

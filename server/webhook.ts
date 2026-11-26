@@ -11,7 +11,8 @@ import { PLANS } from "./routers/subscription";
 let _stripe: Stripe | null = null;
 function getStripe(): Stripe | null {
   if (_stripe) return _stripe;
-  const key = process.env.STRIPE_SECRET_KEY;
+  const key =
+    process.env.CHALKPICKS_STRIPE_SECRET_KEY ?? process.env.STRIPE_SECRET_KEY;
   if (!key) return null;
   _stripe = new Stripe(key);
   return _stripe;
